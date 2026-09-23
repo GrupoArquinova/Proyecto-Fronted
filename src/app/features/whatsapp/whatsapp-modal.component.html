@@ -1,0 +1,56 @@
+<!-- Botón Flotante para abrir la ventana -->
+<button class="whatsapp-btn-float" type="button" (click)="toggleModal()" aria-label="Abrir WhatsApp">
+  <svg viewBox="0 0 32 32" class="whatsapp-icon">
+    <path fill="currentColor" d="M16 2A13 13 0 0 0 4.68 21.25L3 27.5l6.43-1.65A13 13 0 1 0 16 2zm0 23.8a10.74 10.74 0 0 1-5.46-1.5l-.39-.23-4.06 1.06 1.08-3.95-.25-.4A10.8 10.8 0 1 1 16 25.8zm5.92-8.08c-.32-.16-1.92-.95-2.22-1.06-.3-.11-.52-.16-.74.16s-.85 1.06-1.05 1.28c-.2.21-.39.24-.71.08a9 9 0 0 1-2.63-1.62 9.92 9.92 0 0 1-1.82-2.27c-.19-.32-.02-.5.14-.66.14-.14.32-.37.48-.55.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.55s-.74-1.78-1.01-2.44c-.27-.64-.54-.55-.74-.56h-.63c-.22 0-.58.08-.88.4a3.7 3.7 0 0 0-1.16 2.76 6.43 6.43 0 0 0 1.34 3.42 14.7 14.7 0 0 0 5.64 4.98 19 19 0 0 0 1.88.69 4.52 4.52 0 0 0 2.08.13 3.4 3.4 0 0 0 2.23-1.57 2.78 2.78 0 0 0 .19-1.57c-.07-.12-.27-.2-.59-.36z"/>
+  </svg>
+</button>
+
+<!-- Formulario desplegable -->
+<div class="whatsapp-modal-container" *ngIf="isOpen">
+  <div class="whatsapp-modal-card">
+    
+    <div class="modal-header">
+      <div class="brand-title">
+        <svg viewBox="0 0 32 32" class="header-icon">
+          <path fill="currentColor" d="M16 2A13 13 0 0 0 4.68 21.25L3 27.5l6.43-1.65A13 13 0 1 0 16 2zm0 23.8a10.74 10.74 0 0 1-5.46-1.5l-.39-.23-4.06 1.06 1.08-3.95-.25-.4A10.8 10.8 0 1 1 16 25.8zm5.92-8.08c-.32-.16-1.92-.95-2.22-1.06-.3-.11-.52-.16-.74.16s-.85 1.06-1.05 1.28c-.2.21-.39.24-.71.08a9 9 0 0 1-2.63-1.62 9.92 9.92 0 0 1-1.82-2.27c-.19-.32-.02-.5.14-.66.14-.14.32-.37.48-.55.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.55s-.74-1.78-1.01-2.44c-.27-.64-.54-.55-.74-.56h-.63c-.22 0-.58.08-.88.4a3.7 3.7 0 0 0-1.16 2.76 6.43 6.43 0 0 0 1.34 3.42 14.7 14.7 0 0 0 5.64 4.98 19 19 0 0 0 1.88.69 4.52 4.52 0 0 0 2.08.13 3.4 3.4 0 0 0 2.23-1.57 2.78 2.78 0 0 0 .19-1.57c-.07-.12-.27-.2-.59-.36z"/>
+        </svg>
+        <span>WhatsApp</span>
+      </div>
+      <button class="close-btn" type="button" (click)="toggleModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <h2 class="modal-title">Contacta un Asesor</h2>
+
+      <div *ngIf="errorMessage" class="error-msg">
+        {{ errorMessage }}
+      </div>
+
+      <form (ngSubmit)="iniciarChat()">
+        <div class="form-group">
+          <input type="text" [(ngModel)]="nombre" name="nombre" placeholder="Nombre Completo" required />
+        </div>
+
+        <div class="form-group">
+          <input type="tel" [(ngModel)]="telefono" name="telefono" placeholder="Teléfono" required />
+        </div>
+
+        <div class="form-group">
+          <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required />
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="autorizo" [(ngModel)]="autorizo" name="autorizo" />
+          <label for="autorizo">
+            Autorizo el tratamiento de mis datos personales, las políticas de privacidad y los términos y condiciones.
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit-chat">
+          Iniciar Chat
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>

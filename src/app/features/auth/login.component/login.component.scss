@@ -1,0 +1,240 @@
+@use "sass:color";
+
+// Paleta de colores oficial de Arquinova
+$color-primary: rgb(44, 99, 96);      // Verde turquesa corporativo
+$color-btn: rgb(60, 112, 110);        // Verde boton
+$color-dark-text: rgb(66, 66, 66);    // Gris texto principal
+$color-muted-text: #718096;           // Gris claro subtitulos
+$color-bg-light: #f4f6f6;             // Fondo claro suave
+$color-card-bg: #ffffff;    
+          // Blanco para la tarjeta de login
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $color-bg-light;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  position: relative;
+}
+
+.btn-back-top {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #eef1f1; // Gris suave ajustado a la paleta clara
+  color: #4a5554;            // Texto gris oscuro neutro
+  border: 1px solid #d8e0df;
+  border-radius: 25px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  z-index: 10;
+
+  &:hover {
+    background-color: #e0e6e5;
+    color: #2c6360;           // Resalta con el verde corporativo al pasar el cursor
+    transform: translateX(-3px);
+  }
+}
+
+.login-container {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 4rem;
+  max-width: 1100px;
+  width: 100%;
+  align-items: center;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* ==================== COLUMNA IZQUIERDA ==================== */
+.branding-section {
+  color: $color-dark-text;
+
+  .sub-header {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: $color-primary;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+
+  .main-heading {
+    font-family: 'Georgia', serif;
+    font-size: 2.8rem;
+    line-height: 1.15;
+    font-weight: 400;
+    color: $color-dark-text;
+    margin-bottom: 1.5rem;
+  }
+
+  .description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: color.adjust($color-dark-text, $lightness: 15%);
+    max-width: 460px;
+    margin-bottom: 2.5rem;
+  }
+
+  .experience-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .line {
+      width: 40px;
+      height: 1px;
+      background-color: $color-primary;
+    }
+
+    .text {
+      font-size: 0.85rem;
+      color: $color-primary;
+      font-weight: 500;
+    }
+  }
+}
+
+/* ==================== COLUMNA DERECHA (CARD) ==================== */
+.login-card {
+  background-color: $color-card-bg;
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+
+  .card-header {
+    margin-bottom: 2rem;
+
+    .brand-name {
+      font-family: 'Georgia', serif;
+      font-size: 1.8rem;
+      color: $color-dark-text;
+      margin: 0;
+    }
+
+    .panel-subtitle {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: $color-muted-text;
+      text-transform: uppercase;
+    }
+  }
+
+  .card-body {
+    h3 {
+      font-family: 'Georgia', serif;
+      font-size: 1.35rem;
+      color: $color-dark-text;
+      margin-bottom: 0.3rem;
+      font-weight: 400;
+    }
+
+    .instruction {
+      font-size: 0.875rem;
+      color: $color-muted-text;
+      margin-bottom: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+
+      label {
+        display: block;
+        font-size: 0.8rem;
+        color: $color-muted-text;
+        margin-bottom: 0.4rem;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background-color: #fcfdfe;
+        font-size: 0.9rem;
+        color: $color-dark-text;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+
+        &:focus {
+          border-color: $color-primary;
+          background-color: #ffffff;
+        }
+
+        &::placeholder {
+          color: #a0aec0;
+        }
+      }
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background-color: $color-btn;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: color.adjust($color-btn, $lightness: -6%);
+      }
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      color: $color-muted-text;
+      text-decoration: none;
+      font-size: 0.825rem;
+      transition: color 0.2s;
+
+      &:hover {
+        color: $color-dark-text;
+      }
+    }
+  }
+}
+
+.forgot-password-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
+  margin-bottom: 20px;
+
+  .forgot-password-link {
+    font-size: 0.85rem;
+    color: #2e5954; // Color institucional verde de Arquinova
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: none;
+      opacity: 0.85;
+    }
+  }
+}

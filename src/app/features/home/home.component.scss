@@ -1,0 +1,195 @@
+// Variables de Paleta Arquinova
+$color-primary: rgb(44, 99, 96);       // #2C6360
+$color-secondary: rgb(60, 112, 110);   // #3C706E
+$color-dark: rgb(25, 35, 34);
+$color-light: #ffffff;
+$color-muted: rgba(255, 255, 255, 0.7);
+
+.landing-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: $color-light;
+  background-color: $color-dark;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 4rem;
+  background-color: $color-light;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+  .logo {
+    height: 40px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    .nav-item {
+      text-decoration: none;
+      color: #444444;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+
+      &.active, &:hover {
+        color: $color-primary;
+      }
+
+      &.active {
+        background-color: $color-primary;
+        color: $color-light;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+      }
+    }
+
+    .btn-admin {
+  text-decoration: none;
+  background-color: #eef1f1;  // Gris suave de la paleta
+  color: #4a5554;             // Texto gris oscuro neutro
+  border: 1px solid #d8e0df;  // Borde sutil
+  padding: 0.4rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background-color: #e0e6e5; // Ligero oscurecimiento al pasar el mouse
+    border-color: #2c6360;     // Borde resalta en verde corporativo
+    color: #2c6360;            // Texto en verde corporativo
+  }
+}
+  }
+}
+
+/* HERO SECTION */
+.hero-section {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 4rem 6rem;
+  background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef') center/cover no-repeat; // Reemplazar con la ruta de tu imagen de fondo
+  min-height: 75vh;
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(20, 30, 29, 0.82) 0%, rgba(20, 30, 29, 0.3) 100%);
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+
+    .sub-category {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-size: 3.8rem;
+      line-height: 1.1;
+      margin: 1.5rem 0;
+      font-weight: 400;
+
+      .italic-text {
+        font-style: italic;
+        color: #79a8a3; // Tonalidad más clara del verde primario
+        font-family: Georgia, serif;
+      }
+    }
+
+    .hero-description {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: $color-muted;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1.2rem;
+
+      .btn-primary {
+        background-color: $color-primary;
+        color: $color-light;
+        padding: 0.8rem 2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: $color-secondary;
+        }
+      }
+
+      .btn-secondary {
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: $color-light;
+        padding: 0.8rem 2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+          border-color: $color-light;
+        }
+      }
+    }
+  }
+}
+
+/* STATS BANNER */
+.stats-banner {
+  background-color: rgb(22, 38, 36);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 1.8rem 4rem;
+  text-align: center;
+
+  .stat-item {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+
+    &:last-child {
+      border-right: none;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #8bb3ae;
+      margin: 0;
+      font-family: Georgia, serif;
+    }
+
+    p {
+      margin: 0.2rem 0 0;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
