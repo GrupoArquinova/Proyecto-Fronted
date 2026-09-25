@@ -16,14 +16,16 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  correo: string = 'admin@arquinova.com';
+  correo: string = '';
   password: string = '';
   errorMessage: string = '';
   isLoading: boolean = false;
 
+  private errorTimeout: any;
+
   onSubmit(): void {
     if (!this.correo || !this.password) {
-      this.errorMessage = 'Por favor complete todos los campos';
+      this.setTemporaryError('Por favor complete todos los campos.');
       return;
     }
 
@@ -33,20 +35,36 @@ export class LoginComponent {
     this.authService.login({ correo: this.correo, password: this.password }).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/admin/dashboard']);
+        // Redirige directamente a la ruta hija 'resumen' dentro del modulo 'admin'
+        this.router.navigate(['/admin/resumen']);
       },
-      // Corregido: tipado explícito (err: HttpErrorResponse)
       error: (err: HttpErrorResponse) => {
         this.isLoading = false;
-        if (err.status === 0 || err.status === 404) {
-          // Simulación de acceso durante pruebas locales si el backend no está activo
-          localStorage.setItem('jwt_token', 'mock_token_juan');
-          localStorage.setItem('user_name', 'admin Juan');
-          this.router.navigate(['/admin/dashboard']);
-          return;
+        
+        let msg = 'Ocurrió un error al intentar iniciar sesión.';
+
+        if (err.status === 401) {
+          msg = 'Correo o contraseña incorrectos.';
+        } else if (err.status === 0) {
+          msg = 'No se pudo conectar con el servidor. Verifica tu conexión.';
+        } else if (err.error?.message) {
+          msg = err.error.message;
         }
-        this.errorMessage = err.error?.message || 'Credenciales incorrectas';
+
+        this.setTemporaryError(msg);
       }
     });
+  }
+
+  private setTemporaryError(message: string): void {
+    this.errorMessage = message;
+
+    if (this.errorTimeout) {
+      clearTimeout(this.errorTimeout);
+    }
+
+    this.errorTimeout = setTimeout(() => {
+      this.errorMessage = '';
+    }, 5000);
   }
 }

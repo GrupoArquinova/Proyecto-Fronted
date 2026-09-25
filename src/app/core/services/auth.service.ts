@@ -1,8 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { LoginRequest, AuthResponse } from '../models/auth.models';
 import { ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth.models';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class AuthService {
   // Corregido: signo '=' en lugar de ':'
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:8080/api/auth';
+  private platformId = inject(PLATFORM_ID);
 
   // Corregido: 'Observable' con 'b'
   login(credentials: LoginRequest): Observable<AuthResponse> {
@@ -32,9 +34,12 @@ restablecerPassword(dto: ResetPasswordRequest): Observable<{ mensaje: string }> 
   return this.http.post<{ mensaje: string }>(`${this.apiUrl}/reset-password`, dto);
 }
 
-  getToken(): string | null {
+ getToken(): string | null {
+  if (isPlatformBrowser(this.platformId)) {
     return localStorage.getItem('jwt_token');
   }
+  return null;
+}
 
   getUserName(): string {
     return localStorage.getItem('user_name') || 'Admin Juan';

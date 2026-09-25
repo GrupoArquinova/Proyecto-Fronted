@@ -40,19 +40,20 @@ iniciarChat(): void {
 
     this.errorMessage = '';
 
-    // Colocar mailto: y dejar el correo en su propia línea independiente
     const mensaje = `Hola, mi nombre es ${this.nombre.trim()}.
 
-Teléfono: ${this.telefono.trim()}
-Correo: ${this.email.trim()}
+Telefono: ${this.telefono.trim()}
 
-Quisiera solicitar más información sobre los proyectos de Arquinova.`;
-    
+Correo:
+${this.email.trim()}
+
+Quisiera solicitar mas informacion sobre los proyectos de Arquinova.`;
+
     const url = `https://wa.me/${this.numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
 
     window.open(url, '_blank');
     this.toggleModal();
-  }
+}
 
   private resetForm(): void {
     this.nombre = '';

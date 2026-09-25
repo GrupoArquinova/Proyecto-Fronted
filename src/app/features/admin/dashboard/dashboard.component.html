@@ -1,0 +1,17 @@
+<div class="admin-layout">
+  <!-- Navbar superior -->
+  <header class="navbar">
+    <div class="brand">
+      <img src="https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg" alt="Logo Arquinova" class="brand-logo">
+      <span>Admin</span>
+    </div>
+  </header>
+  <!-- Cuerpo principal -->
+  <div class="admin-body">
+    <app-sidebar (logout)="onLogout()"></app-sidebar>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

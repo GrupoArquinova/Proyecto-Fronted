@@ -1,0 +1,64 @@
+<div class="resumen">
+  <h1 class="titulo">Resumen General</h1>
+
+  <div class="alerta-error" *ngIf="error">{{ error }}</div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-numero">{{ disponibles }}</span>
+      <span class="stat-label">Disponibles</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-numero">{{ reservados }}</span>
+      <span class="stat-label">Reservados</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-numero">{{ vendidos }}</span>
+      <span class="stat-label">Vendidos</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-numero">{{ solicitudesNuevas }}</span>
+      <span class="stat-label">Solicitudes nuevas</span>
+    </div>
+  </div>
+
+  <div class="paneles-grid">
+
+    <div class="panel">
+      <h2 class="panel-titulo">Estado de proyectos</h2>
+
+      <div class="proyecto-item" *ngFor="let proyecto of estadoProyectos">
+        <div class="proyecto-header">
+          <span class="proyecto-nombre">{{ proyecto.nombre }}</span>
+          <span class="proyecto-conteo">{{ proyecto.ocupados }}/{{ proyecto.total }}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="proyecto.porcentaje"></div>
+        </div>
+      </div>
+
+      <p class="vacio" *ngIf="!cargando && estadoProyectos.length === 0">
+        No hay proyectos con lotes registrados.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-titulo">Últimas solicitudes</h2>
+
+      <div class="solicitud-item" *ngFor="let solicitud of ultimasSolicitudes">
+        <div class="solicitud-info">
+          <span class="solicitud-nombre">{{ solicitud.clienteNombre }}</span>
+          <span class="solicitud-detalle">{{ solicitud.proyectoNombre }} · {{ solicitud.creadoEn | date:'yyyy-MM-dd' }}</span>
+        </div>
+        <span class="badge" [ngClass]="claseEstado(solicitud.estadoNombre)">
+          {{ solicitud.estadoNombre }}
+        </span>
+      </div>
+
+      <p class="vacio" *ngIf="!cargando && ultimasSolicitudes.length === 0">
+        No hay solicitudes registradas.
+      </p>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,174 @@
+<div class="proyectos-container">
+  <!-- Encabezado -->
+  <header class="proyectos-header">
+    <h1 class="page-title">Proyectos</h1>
+    <button class="btn-nuevo" (click)="abrirModalCrear()">+ Nuevo</button>
+  </header>
+
+  <!-- Spinner de Carga -->
+  <div *ngIf="loading" class="loading-state">
+    <p>Cargando proyectos...</p>
+  </div>
+
+  <!-- Mensaje de Error -->
+  <div *ngIf="errorMsg && !loading" class="error-state">
+    <p>{{ errorMsg }}</p>
+  </div>
+
+  <!-- Lista de Proyectos Vacía -->
+  <div *ngIf="!loading && proyectos.length === 0 && !errorMsg" class="empty-state">
+    <p>No hay proyectos registrados aún.</p>
+  </div>
+
+  <!-- Lista Dinámica de Tarjetas -->
+  <div class="proyectos-list" *ngIf="!loading && proyectos.length > 0">
+    <div class="proyecto-card" *ngFor="let proyecto of proyectos">
+      <div class="proyecto-main">
+        <img
+          [src]="proyecto.imagenUrl || 'https://via.placeholder.com/120x70?text=Sin+Imagen'"
+          [alt]="proyecto.nombre"
+          class="proyecto-img"
+        />
+        <div class="proyecto-info">
+          <div class="title-row">
+            <h2 class="proyecto-nombre">{{ proyecto.nombre }}</h2>
+
+            <span
+              class="status-badge"
+              [ngClass]="{
+                'badge-activo':       proyecto.estadoProyecto === 'PLANIFICACION',
+                'badge-proximamente': proyecto.estadoProyecto === 'EN_CONSTRUCCION',
+                'badge-entregado':    proyecto.estadoProyecto === 'ENTREGADO',
+                'badge-agotado':      proyecto.estadoProyecto === 'FINALIZADO'
+              }"
+            >
+              {{ proyecto.estadoProyecto }}
+            </span>
+          </div>
+
+          <p class="proyecto-meta">
+            {{ proyecto.descripcion || 'Sin descripción' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="proyecto-actions">
+        <button
+          class="btn-action"
+          [ngClass]="proyecto.publicado ? 'btn-publicado' : 'btn-borrador'"
+          (click)="togglePublicado(proyecto)"
+        >
+          {{ proyecto.publicado ? 'Publicado' : 'Borrador' }}
+        </button>
+
+        <button class="btn-action btn-outline" (click)="abrirModalEditar(proyecto)">
+          Editar
+        </button>
+
+        <button class="btn-action btn-danger" (click)="eliminarProyecto(proyecto.id!)">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CREAR / EDITAR PROYECTO -->
+<div class="modal-overlay" *ngIf="mostrarModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ modoEdicion ? 'Editar Proyecto' : 'Crear Nuevo Proyecto' }}</h2>
+      <button class="btn-close" (click)="cerrarModal()">&times;</button>
+    </div>
+
+    <form [formGroup]="proyectoForm" (ngSubmit)="guardarProyecto()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre del Proyecto *</label>
+          <input type="text" formControlName="nombre" placeholder="Ej: El Pinar" />
+        </div>
+
+        <div class="form-group">
+          <label>Slug (URL amigable)</label>
+          <input type="text" formControlName="slug" placeholder="Ej: el-pinar" />
+        </div>
+
+        <div class="form-group form-group--full">
+          <label>Descripción</label>
+          <textarea formControlName="descripcion" rows="3" placeholder="Descripción del proyecto..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Estado del Proyecto *</label>
+          <select formControlName="estadoProyecto">
+            <option value="PLANIFICACION">Planificación</option>
+            <option value="EN_CONSTRUCCION">En Construcción</option>
+            <option value="ENTREGADO">Entregado</option>
+            <option value="FINALIZADO">Finalizado</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Fecha de Lanzamiento</label>
+          <input type="date" formControlName="fechaLanzamiento" />
+        </div>
+
+        <div class="form-group form-group--full">
+          <label>Imagen del Proyecto</label>
+
+          <!-- Vista previa de la imagen actual (si existe) -->
+          <div class="imagen-preview" *ngIf="proyectoForm.get('imagenUrl')?.value">
+            <img [src]="proyectoForm.get('imagenUrl')?.value" alt="Vista previa" class="preview-img" />
+            <button type="button" class="btn-quitar-imagen" (click)="quitarImagen()">Quitar imagen</button>
+          </div>
+
+          <!-- Input real, oculto -->
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            class="file-input-oculto"
+            (change)="onImagenSeleccionada($event)"
+            [disabled]="subiendoImagen"
+          />
+
+          <!-- Botón custom que dispara el input oculto -->
+          <div class="file-upload-wrapper">
+            <button
+              type="button"
+              class="btn-elegir-archivo"
+              (click)="fileInput.click()"
+              [disabled]="subiendoImagen"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              {{ subiendoImagen ? 'Subiendo...' : 'Elegir imagen' }}
+            </button>
+            <span class="file-nombre">{{ nombreArchivoSeleccionado || 'Ningún archivo seleccionado' }}</span>
+          </div>
+
+          <p class="subiendo-texto" *ngIf="subiendoImagen">Subiendo imagen...</p>
+          <p class="error-texto" *ngIf="errorImagen">{{ errorImagen }}</p>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" formControlName="publicado" />
+            Publicar proyecto
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn-submit" [disabled]="proyectoForm.invalid">
+          {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
