@@ -215,6 +215,38 @@ $color-card-bg: #ffffff;
         color: $color-dark-text;
       }
     }
+
+    .error-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background-color: #fde8e8;  // Fondo rojo muy claro
+    color: #9b1c1c;             // Texto rojo oscuro
+    border: 1px solid #f8b4b4;   // Borde rojo sutil
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.4;
+    animation: fadeIn 0.3s ease-in-out;
+
+    svg {
+      flex-shrink: 0;
+      stroke: #e02424;          // Icono en rojo vivo
+    }
+  }
+
+  @keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
   }
 }
 

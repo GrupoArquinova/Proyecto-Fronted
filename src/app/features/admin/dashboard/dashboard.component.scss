@@ -1,0 +1,93 @@
+.admin-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f6f6;
+  color: #2d3748;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  z-index: 10;
+  height: 65px;
+  box-sizing: border-box;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Georgia', serif;
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #2c5953;
+
+    .brand-logo {
+      height: 38px !important;
+      max-height: 38px !important;
+      width: auto !important;
+      object-fit: contain !important;
+      display: block;
+    }
+  }
+
+  .btn-logout {
+    background-color: #e11d48;
+    color: #ffffff;
+    border: none;
+    padding: 0.55rem 1.1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #be123c;
+    }
+  }
+}
+
+.admin-body {
+  display: flex;
+  flex: 1;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.welcome-box {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+  margin-top: 1.5rem;
+
+  h1 {
+    font-family: 'Georgia', serif;
+    color: #2c5953;
+    margin-bottom: 0.75rem;
+    font-size: 1.8rem;
+  }
+
+  p {
+    color: #718096;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
