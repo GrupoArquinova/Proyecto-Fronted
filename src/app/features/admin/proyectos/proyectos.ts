@@ -5,6 +5,8 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { Proyecto, CrearProyectoDTO } from '../../../core/models/proyecto.models';
 
+declare var pannellum: any;
+
 @Component({
   selector: 'app-proyectos',
   standalone: true,
@@ -28,6 +30,10 @@ export class ProyectosComponent implements OnInit {
   modoEdicion = false;
   proyectoEditandoId: number | null = null;
 
+  // Modal / Visor 360°
+  imagenExpandidaUrl: string | null = null;
+  viewerInstance: any = null;
+
   // Estado de la subida de imagen
   subiendoImagen = false;
   errorImagen = '';
@@ -48,6 +54,74 @@ export class ProyectosComponent implements OnInit {
     this.cargarProyectos();
   }
 
+  // --- Abrir Visor 360° ---
+  ampliarImagen(url: string | undefined): void {
+    if (!url) return;
+    this.imagenExpandidaUrl = url;
+
+    // Damos un tiempo prudente para que Angular pinte el modal en el DOM
+    setTimeout(() => {
+      this.initPannellum(url);
+    }, 200);
+  }
+
+  initPannellum(url: string): void {
+    if (this.viewerInstance) {
+      try {
+        this.viewerInstance.destroy();
+      } catch (e) {
+        // Ignorar si ya fue destruido
+      }
+      this.viewerInstance = null;
+    }
+
+    const contenedor = document.getElementById('panorama-viewer');
+    if (contenedor) {
+      contenedor.innerHTML = '';
+    }
+
+    try {
+      this.viewerInstance = pannellum.viewer('panorama-viewer', {
+        type: 'equirectangular',
+        panorama: url,
+        autoLoad: true,
+        hfov: 100,
+        minHfov: 65,
+        maxHfov: 120,
+        pitch: 0,
+        yaw: 0,
+        friction: 0.15,
+        compass: false,
+        showZoomCtrl: true,
+        mouseZoom: true
+      });
+
+      // Forzar recálculo del tamaño en WebGL una vez cargado
+      this.viewerInstance.on('load', () => {
+        setTimeout(() => {
+          if (this.viewerInstance && typeof this.viewerInstance.resize === 'function') {
+            this.viewerInstance.resize();
+          }
+        }, 100);
+      });
+
+    } catch (e) {
+      console.error('Error al inicializar Pannellum:', e);
+    }
+  }
+
+  cerrarImagen(): void {
+    if (this.viewerInstance) {
+      try {
+        this.viewerInstance.destroy();
+      } catch (e) {
+        // Ignorar
+      }
+      this.viewerInstance = null;
+    }
+    this.imagenExpandidaUrl = null;
+  }
+
   cargarProyectos(): void {
     this.loading = true;
     this.proyectoService.getProyectos().subscribe({
@@ -63,7 +137,6 @@ export class ProyectosComponent implements OnInit {
     });
   }
 
-  // --- Subida de imagen a Cloudinary ---
   onImagenSeleccionada(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -86,7 +159,6 @@ export class ProyectosComponent implements OnInit {
       }
     });
 
-    // Limpia el input para permitir volver a seleccionar el mismo archivo si hace falta
     input.value = '';
   }
 
@@ -95,7 +167,6 @@ export class ProyectosComponent implements OnInit {
     this.nombreArchivoSeleccionado = '';
   }
 
-  // --- Abrir Modal Crear ---
   abrirModalCrear(): void {
     this.modoEdicion = false;
     this.proyectoEditandoId = null;
@@ -114,7 +185,6 @@ export class ProyectosComponent implements OnInit {
     this.mostrarModal = true;
   }
 
-  // --- Abrir Modal Editar ---
   abrirModalEditar(proyecto: Proyecto): void {
     this.modoEdicion = true;
     this.proyectoEditandoId = proyecto.id ?? null;
@@ -137,7 +207,6 @@ export class ProyectosComponent implements OnInit {
     this.mostrarModal = false;
   }
 
-  // --- Guardar (Crear o Actualizar) ---
   guardarProyecto(): void {
     if (this.proyectoForm.invalid) {
       this.proyectoForm.markAllAsTouched();
@@ -169,7 +238,6 @@ export class ProyectosComponent implements OnInit {
     }
   }
 
-  // --- Cambiar estado Publicado ---
   togglePublicado(proyecto: Proyecto): void {
     const nuevoEstado = !proyecto.publicado;
     this.proyectoService.actualizarProyecto(proyecto.id!, {
@@ -185,7 +253,6 @@ export class ProyectosComponent implements OnInit {
     });
   }
 
-  // --- Eliminar Proyecto ---
   eliminarProyecto(id: number): void {
     if (confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
       this.proyectoService.eliminarProyecto(id).subscribe({

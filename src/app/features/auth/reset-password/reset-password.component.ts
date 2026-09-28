@@ -21,10 +21,44 @@ export class ResetPasswordComponent {
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = false;
+  mostrarPassword: boolean = false;
+
+  // Validaciones en tiempo real para la contraseña
+  get tieneLongitudMinima(): boolean {
+    return this.nuevaPassword.length >= 8;
+  }
+
+  get tieneMayuscula(): boolean {
+    return /[A-Z]/.test(this.nuevaPassword);
+  }
+
+  get tieneMinuscula(): boolean {
+    return /[a-z]/.test(this.nuevaPassword);
+  }
+
+  get tieneNumero(): boolean {
+    return /[0-9]/.test(this.nuevaPassword);
+  }
+
+  get tieneEspecial(): boolean {
+    return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(this.nuevaPassword);
+  }
+
+  get esPasswordValida(): boolean {
+    return this.tieneLongitudMinima &&
+           this.tieneMayuscula &&
+           this.tieneMinuscula &&
+           this.tieneNumero &&
+           this.tieneEspecial;
+  }
+
+  toggleMostrarPassword(): void {
+    this.mostrarPassword = !this.mostrarPassword;
+  }
 
   onSubmit(): void {
-    if (!this.token || !this.nuevaPassword) {
-      this.errorMessage = 'Completa todos los campos';
+    if (!this.token || !this.esPasswordValida) {
+      this.errorMessage = 'Por favor completa todos los campos y cumple los requisitos de la contraseña.';
       return;
     }
 
@@ -37,7 +71,7 @@ export class ResetPasswordComponent {
     }).subscribe({
       next: (res) => {
         this.isLoading = false;
-        this.successMessage = res.mensaje;
+        this.successMessage = res.mensaje || 'Contraseña actualizada con éxito.';
         setTimeout(() => this.router.navigate(['/login']), 2500);
       },
       error: (err: HttpErrorResponse) => {

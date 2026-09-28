@@ -4,6 +4,7 @@ import { Observable, tap } from 'rxjs';
 import { LoginRequest, AuthResponse } from '../models/auth.models';
 import { ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth.models';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
@@ -11,14 +12,14 @@ import { isPlatformBrowser } from '@angular/common';
 export class AuthService {
   // Corregido: signo '=' en lugar de ':'
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
   private platformId = inject(PLATFORM_ID);
 
   // Corregido: 'Observable' con 'b'
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response: AuthResponse) => {
-        if (response && response.token) {
+        if (response && response.token && isPlatformBrowser(this.platformId)) {
           localStorage.setItem('jwt_token', response.token);
           localStorage.setItem('user_name', response.nombre || 'Admin Juan');
         }
@@ -42,7 +43,10 @@ restablecerPassword(dto: ResetPasswordRequest): Observable<{ mensaje: string }> 
 }
 
   getUserName(): string {
-    return localStorage.getItem('user_name') || 'Admin Juan';
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('user_name') || 'Admin Juan';
+    }
+    return 'Admin Juan';
   }
 
   isLoggedIn(): boolean {
@@ -50,7 +54,9 @@ restablecerPassword(dto: ResetPasswordRequest): Observable<{ mensaje: string }> 
   }
 
   logout(): void {
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('user_name');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('jwt_token');
+      localStorage.removeItem('user_name');
+    }
   }
 }

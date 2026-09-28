@@ -1,0 +1,153 @@
+<div class="lotes-container">
+  <div class="header-section">
+    <h1 class="page-title">Lotes</h1>
+    <button class="btn-nuevo" (click)="abrirModalCrear()">+ Nuevo</button>
+  </div>
+
+  <div class="table-card">
+    <table class="lotes-table">
+      <thead>
+        <tr>
+          <th>Lote</th>
+          <th>Proyecto</th>
+          <th>Área</th>
+          <th>Estado</th>
+          <th>Activo</th>
+          <th class="text-right"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let lote of lotes">
+          <td class="font-medium">{{ lote.codigo }}</td>
+          <td class="text-muted">
+            {{ obtenerNombreProyecto(lote) }}
+          </td>
+          <td>{{ lote.areaM2 }} m²</td>
+          <td>
+            <div class="select-wrapper">
+              <select [(ngModel)]="lote.estadoId" (change)="actualizarEstado(lote)">
+                <option *ngFor="let est of estadosDisponibles" [value]="est.id">
+                  {{ est.nombre }}
+                </option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <label class="switch">
+              <input type="checkbox" [(ngModel)]="lote.activo" (change)="toggleActivo(lote)" />
+              <span class="slider round"></span>
+            </label>
+          </td>
+          <td class="text-right">
+            <button class="btn-editar" (click)="editarLote(lote)">Editar</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="lotes.length === 0 && !cargando">
+          <td colspan="6" class="empty-message">
+            No hay lotes registrados actualmente.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-overlay" *ngIf="mostrarModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>{{ nuevoLote.id ? 'Editar Lote' : 'Crear Nuevo Lote' }}</h2>
+        <button class="btn-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <form (ngSubmit)="guardarLote()" #loteForm="ngForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="codigo">Código del Lote *</label>
+            <input
+              type="text"
+              id="codigo"
+              name="codigo"
+              [(ngModel)]="nuevoLote.codigo"
+              placeholder="Ej. L-01"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="nombre">Nombre (Opcional)</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              [(ngModel)]="nuevoLote.nombre"
+              placeholder="Ej. Lote Esquinero"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="proyectoId">Proyecto</label>
+            <select id="proyectoId" name="proyectoId" [(ngModel)]="nuevoLote.proyectoId" (change)="alCambiarProyecto()">
+              <option [ngValue]="null">Todos los proyectos</option>
+              <option *ngFor="let proy of proyectosDisponibles" [value]="proy.id">
+                {{ proy.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="etapaId">Etapa *</label>
+            <select id="etapaId" name="etapaId" [(ngModel)]="nuevoLote.etapaId" required [disabled]="!nuevoLote.proyectoId && proyectosDisponibles.length > 0">
+              <option [ngValue]="null" disabled>Selecciona una etapa</option>
+              <option *ngFor="let etapa of etapasFiltradas" [value]="etapa.id">
+                {{ etapa.nombre }}
+              </option>
+            </select>
+            <small *ngIf="etapasFiltradas.length === 0 && nuevoLote.proyectoId" style="color: red; margin-top: 5px; display: block;">
+              No hay etapas creadas en este proyecto.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="areaM2">Área (m²) *</label>
+            <input
+              type="number"
+              id="areaM2"
+              name="areaM2"
+              [(ngModel)]="nuevoLote.areaM2"
+              placeholder="Ej. 420"
+              min="1"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="estadoId">Estado Inicial</label>
+            <select id="estadoId" name="estadoId" [(ngModel)]="nuevoLote.estadoId">
+              <option *ngFor="let est of estadosDisponibles" [value]="est.id">
+                {{ est.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="descripcion">Descripción</label>
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            rows="3"
+            [(ngModel)]="nuevoLote.descripcion"
+            placeholder="Detalles sobre el terreno..."
+          ></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-guardar" [disabled]="!loteForm.form.valid || guardando">
+            {{ guardando ? 'Guardando...' : (nuevoLote.id ? 'Actualizar Lote' : 'Guardar Lote') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

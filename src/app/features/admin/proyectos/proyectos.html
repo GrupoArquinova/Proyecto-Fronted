@@ -27,7 +27,9 @@
         <img
           [src]="proyecto.imagenUrl || 'https://via.placeholder.com/120x70?text=Sin+Imagen'"
           [alt]="proyecto.nombre"
-          class="proyecto-img"
+          class="proyecto-img imagen-expandible"
+          (click)="ampliarImagen(proyecto.imagenUrl)"
+          title="Haz clic para explorar el recorrido 360°"
         />
         <div class="proyecto-info">
           <div class="title-row">
@@ -74,6 +76,21 @@
   </div>
 </div>
 
+<!-- MODAL LIGHTBOX 360° LIMPIO Y ESTÉTICO -->
+<div class="lightbox-overlay" *ngIf="imagenExpandidaUrl" (click)="cerrarImagen()">
+  <div class="lightbox-content" (click)="$event.stopPropagation()">
+    <button type="button" class="btn-close-lightbox" (click)="cerrarImagen()">&times;</button>
+    
+    <div class="tour-header">
+      <h2>Recorrido Panorámico 360°</h2>
+      <p>Arrastra con el mouse o dedo para explorar el entorno.</p>
+    </div>
+
+    <!-- Contenedor con dimensiones fijas y limpias idénticas al ejemplo -->
+    <div id="panorama-viewer"></div>
+  </div>
+</div>
+
 <!-- MODAL CREAR / EDITAR PROYECTO -->
 <div class="modal-overlay" *ngIf="mostrarModal">
   <div class="modal-content">
@@ -117,13 +134,11 @@
         <div class="form-group form-group--full">
           <label>Imagen del Proyecto</label>
 
-          <!-- Vista previa de la imagen actual (si existe) -->
           <div class="imagen-preview" *ngIf="proyectoForm.get('imagenUrl')?.value">
             <img [src]="proyectoForm.get('imagenUrl')?.value" alt="Vista previa" class="preview-img" />
             <button type="button" class="btn-quitar-imagen" (click)="quitarImagen()">Quitar imagen</button>
           </div>
 
-          <!-- Input real, oculto -->
           <input
             #fileInput
             type="file"
@@ -133,7 +148,6 @@
             [disabled]="subiendoImagen"
           />
 
-          <!-- Botón custom que dispara el input oculto -->
           <div class="file-upload-wrapper">
             <button
               type="button"

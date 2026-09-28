@@ -20,6 +20,13 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "styles": [
+  "src/styles.scss",
+  "node_modules/pannellum/build/pannellum.css"
+],
+"scripts": [
+  "node_modules/pannellum/build/pannellum.js"
+],
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",

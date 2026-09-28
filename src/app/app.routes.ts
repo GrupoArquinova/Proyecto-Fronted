@@ -7,6 +7,8 @@ import { ResetPasswordComponent } from './features/auth/reset-password/reset-pas
 import { HomeComponent } from './features/public/home/home.component';
 import { Resumen } from './features/admin/resumen/resumen';
 import { ProyectosComponent } from './features/admin/proyectos/proyectos';
+import { LotesComponent } from './features/admin/lote/lotes.component';
+import { EtapasComponent } from './features/admin/etapas/etapas.component';
 
 export const routes: Routes = [
   // 1. Ruta pública principal
@@ -25,7 +27,9 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'resumen', pathMatch: 'full' },
       { path: 'resumen', component: Resumen },
-      { path: 'proyectos', component: ProyectosComponent }
+      { path: 'proyectos', component: ProyectosComponent },
+      { path: 'etapas', component: EtapasComponent},
+      { path: 'lotes', component: LotesComponent}
     ]
   },
 
