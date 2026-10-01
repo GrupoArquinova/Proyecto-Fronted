@@ -1,0 +1,218 @@
+<div class="admin-container">
+  
+  <!-- Cabecera -->
+  <div class="header-section">
+    <div>
+      <span class="sub-title">GESTIÓN DE INFRAESTRUCTURA</span>
+      <h2>Zonas Comunes</h2>
+    </div>
+    <div class="header-actions">
+      <select [(ngModel)]="proyectoIdSeleccionado" (change)="cargarZonas()" class="select-proyecto">
+        <option value="todos">🌐 Todas las zonas comunes (Todos los proyectos)</option>
+        <option *ngFor="let p of listaProyectos" [value]="p.id">{{ p.nombre }}</option>
+      </select>
+      <button class="btn-primary" (click)="abrirModalCrear()">
+        <span>+</span> Nueva Zona Común
+      </button>
+    </div>
+  </div>
+
+  <!-- Alerta -->
+  <div *ngIf="mensajeAlerta" class="alerta-flotante">
+    <span>✓ {{ mensajeAlerta }}</span>
+  </div>
+
+  <!-- Grid de Zonas Comunes -->
+  <div class="cards-grid" *ngIf="listaZonas.length > 0; else sinDatos">
+    <div class="item-card" *ngFor="let zona of listaZonas">
+      <div class="card-header-info">
+        <div>
+          <span class="badge-proyecto" *ngIf="zona.proyectoNombre">{{ zona.proyectoNombre }}</span>
+          <h3>{{ zona.nombre }}</h3>
+        </div>
+        <span class="badge" [class.activo]="zona.publicado" [class.inactivo]="!zona.publicado">
+          {{ zona.publicado ? 'Publicado' : 'Oculto' }}
+        </span>
+      </div>
+      <p class="card-desc">{{ zona.descripcion || 'Sin descripción registrada.' }}</p>
+      
+      <div class="card-footer">
+        <button class="btn-icon gallery" (click)="abrirGaleriaImagenes(zona)" title="Gestionar Galería de Imágenes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+        </button>
+        <button class="btn-icon edit" (click)="abrirModalEditar(zona)" title="Editar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </button>
+        <button class="btn-icon delete" (click)="prepararEliminacion(zona.id)" title="Eliminar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #sinDatos>
+    <div class="empty-state" *ngIf="!cargando">
+      <p>No hay zonas comunes registradas.</p>
+    </div>
+  </ng-template>
+
+  <!-- Modal Crear / Editar -->
+  <div class="modal-overlay" *ngIf="mostrarModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ esEdicion ? 'Editar Zona Común' : 'Nueva Zona Común' }}</h3>
+        <button class="close-btn" (click)="cerrarModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Proyecto al que pertenece *</label>
+          <select [(ngModel)]="zonaActual.proyectoId" class="modal-select">
+            <option *ngFor="let p of listaProyectos" [value]="p.id">{{ p.nombre }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre de la Zona *</label>
+          <input type="text" [(ngModel)]="zonaActual.nombre" placeholder="Ej. Piscina Olímpica, Cancha Múltiple">
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea [(ngModel)]="zonaActual.descripcion" rows="3" placeholder="Detalles de la zona común..."></textarea>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="zonaActual.publicado"> Publicar en la plataforma pública
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-primary" (click)="guardarZona()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Galería de Imágenes -->
+  <div class="modal-overlay" *ngIf="mostrarModalImagenes">
+    <div class="modal-content modal-galeria">
+      <div class="modal-header">
+        <h3>Galería: {{ zonaSeleccionadaParaGaleria?.nombre }}</h3>
+        <button class="close-btn" (click)="cerrarModalImagenes()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Formulario para agregar o editar imagen -->
+        <div class="sub-form-imagen" [class.modo-edicion]="imagenEditandoId">
+          <div class="sub-form-titulo" *ngIf="imagenEditandoId">
+            <span>Editando imagen</span>
+            <button type="button" class="btn-cancelar-edicion" (click)="cancelarEdicionImagen()">Cancelar edición</button>
+          </div>
+
+          <div class="form-group">
+            <label>Subir desde archivo local</label>
+            <input type="file" class="file-input" accept="image/*" (change)="onArchivoSeleccionado($event)" [disabled]="subiendoImagen">
+            <p class="subiendo-texto" *ngIf="subiendoImagen">Subiendo imagen...</p>
+            <p class="error-texto" *ngIf="errorImagen">{{ errorImagen }}</p>
+          </div>
+
+          <div class="form-group">
+            <label>O ingresa la URL de la Imagen *</label>
+            <input type="text" [(ngModel)]="nuevaImagen.imagenUrl" placeholder="https://ejemplo.com/imagen.jpg">
+          </div>
+
+          <div class="form-group">
+            <label>Título (Opcional)</label>
+            <input type="text" [(ngModel)]="nuevaImagen.titulo" placeholder="Ej. Vista lateral de la piscina">
+          </div>
+
+          <button class="btn-primary btn-agregar-img" (click)="agregarImagenAZona()" [disabled]="subiendoImagen">
+            {{ subiendoImagen ? 'Subiendo...' : (imagenEditandoId ? 'Guardar Cambios' : '+ Agregar Imagen') }}
+          </button>
+        </div>
+
+        <hr class="divider">
+
+        <h4>Imágenes asociadas ({{ listaImagenesZona.length }})</h4>
+        <div class="imagenes-grid" *ngIf="listaImagenesZona.length > 0; else sinImgs">
+          <div class="img-card" *ngFor="let img of listaImagenesZona" [class.editando]="imagenEditandoId === img.id">
+            <img
+              *ngIf="!imagenesConError.has(img.id!)"
+              [src]="img.imagenUrl"
+              [alt]="img.titulo || 'Imagen de zona común'"
+              (error)="marcarImagenConError(img.id)"
+            />
+            <div *ngIf="imagenesConError.has(img.id!)" class="img-error-placeholder">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+            <div class="img-info">
+              <span class="img-title" [title]="img.titulo">{{ img.titulo || 'Sin título' }}</span>
+              <div class="img-actions">
+                <button class="btn-icon-mini" (click)="editarImagenZona(img)" title="Editar imagen">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button class="btn-icon-mini delete" (click)="eliminarImagenZona(img.id)" title="Eliminar imagen">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #sinImgs>
+          <p class="sin-imagenes-txt">No hay imágenes registradas para esta zona común.</p>
+        </ng-template>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModalImagenes()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación de Eliminación -->
+  <div class="modal-overlay" *ngIf="mostrarModalEliminar">
+    <div class="modal-content modal-confirm">
+      <div class="modal-header">
+        <h3>Confirmar Eliminación</h3>
+        <button class="close-btn" (click)="cerrarModalEliminar()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="confirm-text">¿Estás seguro de que deseas eliminar esta zona común? Esta acción no se puede deshacer.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModalEliminar()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmarEliminacion()">Sí, Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="cargando" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+</div>

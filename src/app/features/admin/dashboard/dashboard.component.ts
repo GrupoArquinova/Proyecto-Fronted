@@ -16,6 +16,11 @@ export class DashboardComponent {
   private router = inject(Router);
 
   userName = this.authService.getUserName();
+  sidebarOpen = false;
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
 
   onLogout(): void {
     this.authService.logout();

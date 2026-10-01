@@ -97,3 +97,58 @@
     line-height: 1.5;
   }
 }
+
+.hamburger-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #2c5953;
+  cursor: pointer;
+  padding: 0.2rem;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: block;
+  }
+  
+  .main-content {
+    padding: 1.5rem;
+  }
+  
+  .app-sidebar {
+    position: fixed;
+    top: 65px; // height of navbar
+    left: -250px;
+    height: calc(100vh - 65px);
+    z-index: 100;
+    transition: left 0.3s ease;
+  }
+  
+  .admin-body.sidebar-open {
+    .app-sidebar {
+      left: 0;
+    }
+    
+    .sidebar-overlay {
+      display: block;
+      position: fixed;
+      top: 65px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+    }
+  }
+}
+

@@ -1,13 +1,16 @@
-$primary-teal: #2b5952;
-$primary-hover: #1f423d;
-$text-dark: #2d3748;
-$text-muted: #718096;
-$border-color: #e2e8f0;
+@use 'shared/styles/admin-tokens' as t;
+
+$primary-teal: t.$primary;
+$primary-hover: t.$primary-hover;
+$text-dark: t.$text-dark;
+$text-muted: t.$text-muted;
+$border-color: t.$border;
 
 .etapas-container {
   width: 100%;
   box-sizing: border-box;
-  padding-bottom: 4rem; /* Margen inferior para scroll holgado */
+  padding-bottom: 4px;
+  font-family: t.$font-sans;
 }
 
 /* Header */
@@ -42,19 +45,41 @@ $border-color: #e2e8f0;
       font-size: 0.95rem;
     }
 
-    .btn-nueva {
-      background-color: $primary-teal;
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.75rem 1.4rem;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
 
-      &:hover {
-        background-color: $primary-hover;
+      .select-filtro {
+        padding: 0.65rem 1rem;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        background-color: #ffffff;
+        color: $text-dark;
+        font-size: 0.9rem;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+          border-color: $primary-teal;
+        }
+      }
+
+      .btn-nueva {
+        background-color: $primary-teal;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.4rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: $primary-hover;
+        }
       }
     }
   }
@@ -210,6 +235,8 @@ $border-color: #e2e8f0;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .modal-card {
@@ -217,14 +244,20 @@ $border-color: #e2e8f0;
   border-radius: 12px;
   width: 100%;
   max-width: 540px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   padding: 1.75rem 2rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow-y: auto;
 
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    flex-shrink: 0;
 
     h2 {
       font-size: 1.35rem;
@@ -241,6 +274,12 @@ $border-color: #e2e8f0;
     }
   }
 
+  form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -250,6 +289,8 @@ $border-color: #e2e8f0;
   .form-group {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
 
     &.full-width {
       grid-column: span 2;
@@ -263,16 +304,24 @@ $border-color: #e2e8f0;
     }
 
     input, select, textarea {
+      width: 100%;
       padding: 0.6rem 0.8rem;
       border: 1px solid $border-color;
       border-radius: 6px;
       font-size: 0.9rem;
       color: $text-dark;
       outline: none;
+      box-sizing: border-box;
+      background-color: #ffffff;
 
       &:focus {
         border-color: $primary-teal;
       }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
     }
   }
 
@@ -281,6 +330,7 @@ $border-color: #e2e8f0;
     justify-content: flex-end;
     gap: 0.75rem;
     margin-top: 1.5rem;
+    flex-shrink: 0;
 
     .btn-cancelar {
       background: #f1f5f9;

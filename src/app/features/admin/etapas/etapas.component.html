@@ -7,13 +7,24 @@
         <h1 class="page-title">Etapas</h1>
         <p class="subtitle">Organiza cada proyecto antes de asociar sus lotes.</p>
       </div>
-      <button class="btn-nueva" (click)="abrirModalCrear()">+ Nueva etapa</button>
+
+      <div class="header-actions">
+        <!-- Selector de Filtro por Proyecto -->
+        <select class="select-filtro" [(ngModel)]="filtroProyectoId">
+          <option value="">Todos los proyectos</option>
+          <option *ngFor="let proy of proyectosParaFiltro" [value]="proy.id">
+            {{ proy.nombre }}
+          </option>
+        </select>
+
+        <button class="btn-nueva" (click)="abrirModalCrear()">+ Nueva etapa</button>
+      </div>
     </div>
   </div>
 
-  <!-- Lista de Tarjetas de Etapas -->
-  <div class="etapas-list">
-    <div class="etapa-card" *ngFor="let etapa of etapas">
+  <!-- Lista de Tarjetas de Etapas (Usando el getter de filtrado) -->
+  <div class="etapas-list" *ngIf="etapasFiltradas.length > 0; else sinEtapas">
+    <div class="etapa-card" *ngFor="let etapa of etapasFiltradas">
       <div class="card-header">
         <div class="title-badge-group">
           <h2 class="etapa-title">{{ etapa.nombre }}</h2>
@@ -50,15 +61,16 @@
         </div>
       </div>
     </div>
-
-    <!-- Estado vacío -->
-    <div class="empty-card" *ngIf="etapas.length === 0 && !cargando">
-      <p>No hay etapas registradas. Crea una nueva etapa para comenzar.</p>
-    </div>
   </div>
 
+  <!-- Estado vacío -->
+  <ng-template #sinEtapas>
+    <div class="empty-card" *ngIf="!cargando">
+      <p>No se encontraron etapas para este filtro.</p>
+    </div>
+  </ng-template>
+
   <!-- Modal Crear / Editar Etapa -->
- <!-- Modal Crear / Editar Etapa -->
   <div class="modal-overlay" *ngIf="mostrarModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -136,3 +148,4 @@
       </form>
     </div>
   </div>
+</div>

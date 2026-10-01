@@ -46,4 +46,8 @@ export class ProyectoService {
   eliminarProyecto(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+subirImagen(formData: FormData): Observable<{ url: string }> {
+  return this.http.post<{ url: string }>(`${this.apiUrl}/uploadArchivo`, formData);
+}
 }

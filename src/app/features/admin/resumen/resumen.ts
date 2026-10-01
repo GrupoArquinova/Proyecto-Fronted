@@ -2,6 +2,7 @@ import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReporteService } from '../../../core/services/reporte.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ProyectoService } from '../../../core/services/proyecto.service';
 import { SolicitudReporteItem, LoteReporteItem } from '../../../core/models/reporte.models';
 
 interface EstadoProyectoResumen {
@@ -21,6 +22,7 @@ interface EstadoProyectoResumen {
 export class Resumen implements OnInit {
   private reporteService = inject(ReporteService);
   private authService = inject(AuthService);
+  private proyectoService = inject(ProyectoService);
   private platformId = inject(PLATFORM_ID);
 
   cargando = true;
@@ -33,10 +35,9 @@ export class Resumen implements OnInit {
 
   estadoProyectos: EstadoProyectoResumen[] = [];
   ultimasSolicitudes: SolicitudReporteItem[] = [];
+  listaProyectos: any[] = [];
 
   ngOnInit(): void {
-    // 1. Verificar primero si estamos en el navegador (no en Node/SSR)
-    // 2. Verificar que exista un token activo ANTES de invocar las peticiones
     if (isPlatformBrowser(this.platformId)) {
       const token = this.authService.getToken();
       if (token) {
@@ -77,12 +78,20 @@ export class Resumen implements OnInit {
     this.reporteService.getReporteSolicitudes().subscribe({
       next: (solicitudes) => {
         this.ultimasSolicitudes = solicitudes.slice(0, 4);
+      },
+      error: () => {
+        this.error = 'No se pudieron cargar las últimas solicitudes.';
+      },
+    });
+
+    this.proyectoService.getProyectos().subscribe({
+      next: (proyectos) => {
+        this.listaProyectos = proyectos;
         this.cargando = false;
       },
       error: () => {
-        this.error = 'No se pudo cargar las últimas solicitudes.';
         this.cargando = false;
-      },
+      }
     });
   }
 

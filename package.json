@@ -20,6 +20,7 @@
     "@angular/platform-server": "^21.2.0",
     "@angular/router": "^21.2.0",
     "@angular/ssr": "^21.2.24",
+    "@photo-sphere-viewer/core": "^5.15.1",
     "express": "^5.1.0",
     "pannellum": "^2.5.7",
     "rxjs": "~7.8.0",

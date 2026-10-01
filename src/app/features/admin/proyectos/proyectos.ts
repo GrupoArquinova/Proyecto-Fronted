@@ -1,11 +1,12 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Viewer } from '@photo-sphere-viewer/core';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { Proyecto, CrearProyectoDTO } from '../../../core/models/proyecto.models';
-
-declare var pannellum: any;
 
 @Component({
   selector: 'app-proyectos',
@@ -14,9 +15,11 @@ declare var pannellum: any;
   templateUrl: './proyectos.html',
   styleUrls: ['./proyectos.scss']
 })
-export class ProyectosComponent implements OnInit {
+export class ProyectosComponent implements OnInit, OnDestroy {
   private proyectoService = inject(ProyectoService);
   private cloudinaryService = inject(CloudinaryService);
+  private toastService = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
   private fb = inject(FormBuilder);
 
   private readonly EMPRESA_ID = 1;
@@ -30,14 +33,14 @@ export class ProyectosComponent implements OnInit {
   modoEdicion = false;
   proyectoEditandoId: number | null = null;
 
-  // Modal / Visor 360°
+  // Modal / Visor 360° con Photo Sphere Viewer
   imagenExpandidaUrl: string | null = null;
-  viewerInstance: any = null;
+  private viewer360: Viewer | null = null;
 
-  // Estado de la subida de imagen
-  subiendoImagen = false;
+  // Estado del archivo y carga de Cloudinary
   errorImagen = '';
   nombreArchivoSeleccionado = '';
+  subiendoImagen = false;
 
   proyectoForm: FormGroup = this.fb.group({
     empresaId:        [this.EMPRESA_ID, Validators.required],
@@ -54,106 +57,31 @@ export class ProyectosComponent implements OnInit {
     this.cargarProyectos();
   }
 
-  // --- Abrir Visor 360° ---
-  ampliarImagen(url: string | undefined): void {
-    if (!url) return;
-    this.imagenExpandidaUrl = url;
-
-    // Damos un tiempo prudente para que Angular pinte el modal en el DOM
-    setTimeout(() => {
-      this.initPannellum(url);
-    }, 200);
-  }
-
-  initPannellum(url: string): void {
-    if (this.viewerInstance) {
-      try {
-        this.viewerInstance.destroy();
-      } catch (e) {
-        // Ignorar si ya fue destruido
-      }
-      this.viewerInstance = null;
-    }
-
-    const contenedor = document.getElementById('panorama-viewer');
-    if (contenedor) {
-      contenedor.innerHTML = '';
-    }
-
-    try {
-      this.viewerInstance = pannellum.viewer('panorama-viewer', {
-        type: 'equirectangular',
-        panorama: url,
-        autoLoad: true,
-        hfov: 100,
-        minHfov: 65,
-        maxHfov: 120,
-        pitch: 0,
-        yaw: 0,
-        friction: 0.15,
-        compass: false,
-        showZoomCtrl: true,
-        mouseZoom: true
-      });
-
-      // Forzar recálculo del tamaño en WebGL una vez cargado
-      this.viewerInstance.on('load', () => {
-        setTimeout(() => {
-          if (this.viewerInstance && typeof this.viewerInstance.resize === 'function') {
-            this.viewerInstance.resize();
-          }
-        }, 100);
-      });
-
-    } catch (e) {
-      console.error('Error al inicializar Pannellum:', e);
+  ngOnDestroy(): void {
+    if (this.viewer360) {
+      this.viewer360.destroy();
     }
   }
 
-  cerrarImagen(): void {
-    if (this.viewerInstance) {
-      try {
-        this.viewerInstance.destroy();
-      } catch (e) {
-        // Ignorar
-      }
-      this.viewerInstance = null;
-    }
-    this.imagenExpandidaUrl = null;
-  }
-
-  cargarProyectos(): void {
-    this.loading = true;
-    this.proyectoService.getProyectos().subscribe({
-      next: (data) => {
-        this.proyectos = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error cargando proyectos:', err);
-        this.errorMsg = 'No se pudieron cargar los proyectos.';
-        this.loading = false;
-      }
-    });
-  }
-
+  // --- Subida directa de imagen a Cloudinary ---
   onImagenSeleccionada(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
 
     this.errorImagen = '';
-    this.subiendoImagen = true;
     this.nombreArchivoSeleccionado = file.name;
+    this.subiendoImagen = true;
 
-    this.cloudinaryService.subirImagen(file).subscribe({
-      next: (secureUrl) => {
-        this.proyectoForm.patchValue({ imagenUrl: secureUrl });
+    this.cloudinaryService.subirArchivo(file).subscribe({
+      next: (response: { url: string }) => {
+        this.proyectoForm.patchValue({ imagenUrl: response.url });
         this.subiendoImagen = false;
       },
       error: (err) => {
-        console.error('Error subiendo imagen a Cloudinary:', err);
-        this.errorImagen = 'No se pudo subir la imagen. Intenta de nuevo.';
+        console.error('Error al subir la imagen a Cloudinary:', err);
+        this.toastService.showError('Error al subir la imagen a Cloudinary');
+        this.errorImagen = 'No se pudo subir la imagen. Inténtalo de nuevo.';
         this.subiendoImagen = false;
         this.nombreArchivoSeleccionado = '';
       }
@@ -167,11 +95,83 @@ export class ProyectosComponent implements OnInit {
     this.nombreArchivoSeleccionado = '';
   }
 
+  // --- Visor 360° (Photo Sphere Viewer) ---
+  ampliarImagen(url: string | undefined): void {
+    if (!url) return;
+    this.imagenExpandidaUrl = url;
+
+    setTimeout(() => {
+      this.initVisor360(url);
+    }, 250);
+  }
+
+  initVisor360(url?: string): void {
+    if (this.viewer360) {
+      try {
+        this.viewer360.destroy();
+      } catch (e) {}
+      this.viewer360 = null;
+    }
+
+    const contenedor = document.getElementById('panorama-viewer');
+    if (contenedor) {
+      contenedor.innerHTML = '';
+    }
+
+    const imagenFinal = url || './assets/panoramica.jpg.jpeg';
+
+    setTimeout(() => {
+      try {
+        if (contenedor) {
+          this.viewer360 = new Viewer({
+            container: contenedor as HTMLElement,
+            panorama: imagenFinal,
+            size: { width: '100%', height: '500px' },
+            navbar: [
+              'zoom',
+              'move',
+              'fullscreen'
+            ]
+          });
+        }
+      } catch (e) {
+        console.error('Error al inicializar Photo Sphere Viewer:', e);
+      }
+    }, 250);
+  }
+
+  cerrarImagen(): void {
+    if (this.viewer360) {
+      try {
+        this.viewer360.destroy();
+      } catch (e) {}
+      this.viewer360 = null;
+    }
+    this.imagenExpandidaUrl = null;
+  }
+
+  cargarProyectos(): void {
+    this.loading = true;
+    this.proyectoService.getProyectos().subscribe({
+      next: (data) => {
+        this.proyectos = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando proyectos:', err);
+        this.toastService.showError('No se pudieron cargar los proyectos');
+        this.errorMsg = 'No se pudieron cargar los proyectos.';
+        this.loading = false;
+      }
+    });
+  }
+
   abrirModalCrear(): void {
     this.modoEdicion = false;
     this.proyectoEditandoId = null;
     this.errorImagen = '';
     this.nombreArchivoSeleccionado = '';
+
     this.proyectoForm.reset({
       empresaId: this.EMPRESA_ID,
       nombre: '',
@@ -190,6 +190,7 @@ export class ProyectosComponent implements OnInit {
     this.proyectoEditandoId = proyecto.id ?? null;
     this.errorImagen = '';
     this.nombreArchivoSeleccionado = '';
+
     this.proyectoForm.patchValue({
       empresaId:        proyecto.empresaId ?? this.EMPRESA_ID,
       nombre:           proyecto.nombre,
@@ -222,18 +223,26 @@ export class ProyectosComponent implements OnInit {
           if (index !== -1) {
             this.proyectos[index] = proyectoActualizado;
           }
+          this.toastService.showSuccess('Proyecto actualizado correctamente');
           this.cerrarModal();
         },
-        error: (err) => console.error('Error actualizando proyecto:', err)
+        error: (err) => {
+          console.error('Error actualizando proyecto:', err);
+          this.toastService.showError('Error al actualizar el proyecto');
+        }
       });
     } else {
       const dto: CrearProyectoDTO = formValue;
       this.proyectoService.crearProyecto(dto).subscribe({
         next: (nuevoProyecto) => {
           this.proyectos.unshift(nuevoProyecto);
+          this.toastService.showSuccess('Proyecto creado correctamente');
           this.cerrarModal();
         },
-        error: (err) => console.error('Error creando proyecto:', err)
+        error: (err) => {
+          console.error('Error creando proyecto:', err);
+          this.toastService.showError('Error al crear el proyecto');
+        }
       });
     }
   }
@@ -248,19 +257,33 @@ export class ProyectosComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         proyecto.publicado = res.publicado;
+        this.toastService.showSuccess('Estado de publicación actualizado');
       },
-      error: (err) => console.error('Error cambiando visibilidad:', err)
+      error: (err) => {
+        console.error('Error cambiando visibilidad:', err);
+        this.toastService.showError('Error al cambiar la visibilidad del proyecto');
+      }
     });
   }
 
-  eliminarProyecto(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
-      this.proyectoService.eliminarProyecto(id).subscribe({
-        next: () => {
-          this.proyectos = this.proyectos.filter(p => p.id !== id);
-        },
-        error: (err) => console.error('Error eliminando proyecto:', err)
-      });
-    }
+  async eliminarProyecto(id: number): Promise<void> {
+    const proyecto = this.proyectos.find(p => p.id === id);
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar Proyecto',
+      message: `¿Estás seguro de que deseas eliminar "${proyecto?.nombre || 'este proyecto'}"? Esta acción no se puede deshacer.`,
+      confirmText: 'Sí, eliminar',
+      type: 'danger'
+    });
+    if (!ok) return;
+    this.proyectoService.eliminarProyecto(id).subscribe({
+      next: () => {
+        this.proyectos = this.proyectos.filter(p => p.id !== id);
+        this.toastService.showSuccess('Proyecto eliminado correctamente');
+      },
+      error: (err) => {
+        console.error('Error eliminando proyecto:', err);
+        this.toastService.showError('Error al eliminar el proyecto');
+      }
+    });
   }
 }

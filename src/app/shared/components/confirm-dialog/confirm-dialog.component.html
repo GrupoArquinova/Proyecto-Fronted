@@ -1,0 +1,37 @@
+<div class="cd-backdrop" *ngIf="confirmService.isOpen()" (click)="confirmService.cancel()">
+  <div class="cd-card" (click)="$event.stopPropagation()" role="alertdialog" aria-modal="true">
+
+    <!-- Icono según tipo -->
+    <div class="cd-icon" [ngClass]="'cd-icon--' + confirmService.config().type">
+      <svg *ngIf="confirmService.config().type === 'danger'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+        <path d="M10 11v6"></path>
+        <path d="M14 11v6"></path>
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+      </svg>
+      <svg *ngIf="confirmService.config().type === 'warning'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <svg *ngIf="confirmService.config().type === 'info'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </div>
+
+    <h3 class="cd-title">{{ confirmService.config().title }}</h3>
+    <p class="cd-message">{{ confirmService.config().message }}</p>
+
+    <div class="cd-actions">
+      <button class="cd-btn cd-btn--cancel" (click)="confirmService.cancel()">
+        {{ confirmService.config().cancelText }}
+      </button>
+      <button class="cd-btn" [ngClass]="'cd-btn--' + confirmService.config().type" (click)="confirmService.confirm()">
+        {{ confirmService.config().confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

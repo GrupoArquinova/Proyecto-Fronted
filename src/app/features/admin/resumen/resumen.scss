@@ -1,6 +1,7 @@
 .resumen {
   padding: 2.5rem 3rem;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
 .titulo {
@@ -54,6 +55,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .panel {
@@ -61,6 +63,10 @@
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 1.75rem;
+
+  &.panel-tabla {
+    margin-top: 0;
+  }
 }
 
 .panel-titulo {
@@ -166,6 +172,80 @@
   color: #d9534f;
 }
 
+/* Estilos para la Tabla Ejecutiva */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.executive-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th {
+    padding: 0.85rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #5c6b67;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #fafbfc;
+  }
+
+  td {
+    padding: 0.85rem 1rem;
+    font-size: 0.88rem;
+    color: #1f2b28;
+    border-bottom: 1px solid #f0f1f0;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .project-td-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .td-thumb {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+  }
+
+  .status-pill {
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.pill-planificacion { background: #e0f2fe; color: #0369a1; }
+    &.pill-en_construccion { background: #fef3c7; color: #b45309; }
+    &.pill-entregado { background: #d1fae5; color: #065f46; }
+    &.pill-finalizado { background: #f1f5f9; color: #475569; }
+  }
+
+  .visibility-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+
+    &.public { background: #e6f4ea; color: #137333; }
+    &.draft { background: #fef3c7; color: #92400e; }
+  }
+
+  .empty-table-msg {
+    text-align: center;
+    padding: 2rem;
+    color: #9aa5a2;
+  }
+}
+
 @media (max-width: 1100px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -173,4 +253,20 @@
   .paneles-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.td-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.td-thumb-sin-imagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e2e8e6;
+  color: #94a39e;
 }

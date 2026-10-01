@@ -23,7 +23,6 @@
   </div>
 
   <div class="paneles-grid">
-
     <div class="panel">
       <h2 class="panel-titulo">Estado de proyectos</h2>
 
@@ -59,6 +58,56 @@
         No hay solicitudes registradas.
       </p>
     </div>
+  </div>
 
+  <!-- Nueva Tabla Ejecutiva Inferior -->
+  <div class="panel panel-tabla">
+    <h2 class="panel-titulo">Directorio de Proyectos Activos</h2>
+    
+    <div class="table-responsive">
+      <table class="executive-table">
+        <thead>
+          <tr>
+            <th>Proyecto</th>
+            <th>Estado</th>
+            <th>Slug / URL</th>
+            <th>Lanzamiento</th>
+            <th>Visibilidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of listaProyectos">
+            <td class="font-medium">
+              <div class="project-td-cell">
+  <img *ngIf="p.imagenUrl" [src]="p.imagenUrl" class="td-thumb" alt="Miniatura" />
+  <div *ngIf="!p.imagenUrl" class="td-thumb td-thumb-sin-imagen">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+      <polyline points="21 15 16 10 5 21"></polyline>
+    </svg>
+  </div>
+  <span>{{ p.nombre }}</span>
+</div>
+            </td>
+            <td>
+              <span class="status-pill" [ngClass]="'pill-' + (p.estadoProyecto | lowercase)">
+                {{ p.estadoProyecto }}
+              </span>
+            </td>
+            <td class="text-muted">{{ p.slug || 'N/A' }}</td>
+            <td class="text-muted">{{ p.fechaLanzamiento || 'Sin definir' }}</td>
+            <td>
+              <span class="visibility-badge" [class.public]="p.publicado" [class.draft]="!p.publicado">
+                {{ p.publicado ? 'Publicado' : 'Borrador' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="!cargando && listaProyectos.length === 0">
+            <td colspan="5" class="empty-table-msg">No hay proyectos registrados para mostrar.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

@@ -24,13 +24,25 @@
   <div class="proyectos-list" *ngIf="!loading && proyectos.length > 0">
     <div class="proyecto-card" *ngFor="let proyecto of proyectos">
       <div class="proyecto-main">
-        <img
-          [src]="proyecto.imagenUrl || 'https://via.placeholder.com/120x70?text=Sin+Imagen'"
-          [alt]="proyecto.nombre"
-          class="proyecto-img imagen-expandible"
-          (click)="ampliarImagen(proyecto.imagenUrl)"
-          title="Haz clic para explorar el recorrido 360°"
-        />
+       <img
+  *ngIf="proyecto.imagenUrl"
+  [src]="proyecto.imagenUrl"
+  [alt]="proyecto.nombre"
+  class="proyecto-img imagen-expandible"
+  (click)="ampliarImagen(proyecto.imagenUrl)"
+  title="Haz clic para explorar el recorrido 360°"
+/>
+<div
+  *ngIf="!proyecto.imagenUrl"
+  class="proyecto-img sin-imagen"
+  title="Sin imagen"
+>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+    <polyline points="21 15 16 10 5 21"></polyline>
+  </svg>
+</div>
         <div class="proyecto-info">
           <div class="title-row">
             <h2 class="proyecto-nombre">{{ proyecto.nombre }}</h2>
@@ -38,7 +50,7 @@
             <span
               class="status-badge"
               [ngClass]="{
-                'badge-activo':       proyecto.estadoProyecto === 'PLANIFICACION',
+                'badge-activo':      proyecto.estadoProyecto === 'PLANIFICACION',
                 'badge-proximamente': proyecto.estadoProyecto === 'EN_CONSTRUCCION',
                 'badge-entregado':    proyecto.estadoProyecto === 'ENTREGADO',
                 'badge-agotado':      proyecto.estadoProyecto === 'FINALIZADO'
@@ -76,7 +88,7 @@
   </div>
 </div>
 
-<!-- MODAL LIGHTBOX 360° LIMPIO Y ESTÉTICO -->
+<!-- MODAL LIGHTBOX 360° -->
 <div class="lightbox-overlay" *ngIf="imagenExpandidaUrl" (click)="cerrarImagen()">
   <div class="lightbox-content" (click)="$event.stopPropagation()">
     <button type="button" class="btn-close-lightbox" (click)="cerrarImagen()">&times;</button>
@@ -86,7 +98,6 @@
       <p>Arrastra con el mouse o dedo para explorar el entorno.</p>
     </div>
 
-    <!-- Contenedor con dimensiones fijas y limpias idénticas al ejemplo -->
     <div id="panorama-viewer"></div>
   </div>
 </div>
@@ -132,22 +143,25 @@
         </div>
 
         <div class="form-group form-group--full">
-          <label>Imagen del Proyecto</label>
+          <label>Imagen Panorámica 360° (PC)</label>
 
+          <!-- Vista previa de la imagen -->
           <div class="imagen-preview" *ngIf="proyectoForm.get('imagenUrl')?.value">
             <img [src]="proyectoForm.get('imagenUrl')?.value" alt="Vista previa" class="preview-img" />
             <button type="button" class="btn-quitar-imagen" (click)="quitarImagen()">Quitar imagen</button>
           </div>
 
+          <!-- Input oculto para buscar en la PC -->
           <input
             #fileInput
             type="file"
-            accept="image/*"
+            accept="image/jpeg, image/png, image/jpg"
             class="file-input-oculto"
             (change)="onImagenSeleccionada($event)"
             [disabled]="subiendoImagen"
           />
 
+          <!-- Botón personalizado para abrir el explorador de archivos -->
           <div class="file-upload-wrapper">
             <button
               type="button"
@@ -160,12 +174,11 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              {{ subiendoImagen ? 'Subiendo...' : 'Elegir imagen' }}
+              {{ subiendoImagen ? 'Subiendo...' : 'Elegir desde PC' }}
             </button>
             <span class="file-nombre">{{ nombreArchivoSeleccionado || 'Ningún archivo seleccionado' }}</span>
           </div>
 
-          <p class="subiendo-texto" *ngIf="subiendoImagen">Subiendo imagen...</p>
           <p class="error-texto" *ngIf="errorImagen">{{ errorImagen }}</p>
         </div>
 
@@ -179,7 +192,7 @@
 
       <div class="modal-actions">
         <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
-        <button type="submit" class="btn-submit" [disabled]="proyectoForm.invalid">
+        <button type="submit" class="btn-submit" [disabled]="proyectoForm.invalid || subiendoImagen">
           {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
         </button>
       </div>

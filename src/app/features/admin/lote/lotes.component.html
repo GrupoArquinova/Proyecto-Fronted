@@ -4,6 +4,40 @@
     <button class="btn-nuevo" (click)="abrirModalCrear()">+ Nuevo</button>
   </div>
 
+  <!-- Sección de Filtros y Buscadores -->
+  <div class="filters-card">
+    <div class="filter-group">
+      <label for="filtroCodigo">Buscar por Lote</label>
+      <input
+        type="text"
+        id="filtroCodigo"
+        [(ngModel)]="filtroCodigo"
+        (input)="aplicarFiltros()"
+        placeholder="Ej. LT-104"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="filtroProyecto">Buscar por Proyecto</label>
+      <input
+        type="text"
+        id="filtroProyecto"
+        [(ngModel)]="filtroProyecto"
+        (input)="aplicarFiltros()"
+        placeholder="Ej. Condominio Campestre"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="filtroActivo">Filtrar por Estado</label>
+      <select id="filtroActivo" [(ngModel)]="filtroActivo" (change)="aplicarFiltros()">
+        <option [ngValue]="null">Todos</option>
+        <option [ngValue]="true">Activos</option>
+        <option [ngValue]="false">Inactivos</option>
+      </select>
+    </div>
+  </div>
+
   <div class="table-card">
     <table class="lotes-table">
       <thead>
@@ -17,7 +51,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let lote of lotes">
+        <!-- Se recorre la lista filtrada -->
+        <tr *ngFor="let lote of lotesFiltrados">
           <td class="font-medium">{{ lote.codigo }}</td>
           <td class="text-muted">
             {{ obtenerNombreProyecto(lote) }}
@@ -43,9 +78,9 @@
           </td>
         </tr>
 
-        <tr *ngIf="lotes.length === 0 && !cargando">
+        <tr *ngIf="lotesFiltrados.length === 0 && !cargando">
           <td colspan="6" class="empty-message">
-            No hay lotes registrados actualmente.
+            No se encontraron lotes con los criterios de búsqueda.
           </td>
         </tr>
       </tbody>

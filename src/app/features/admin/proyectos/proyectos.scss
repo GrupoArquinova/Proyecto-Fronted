@@ -1,15 +1,18 @@
 @use 'sass:color';
-$primary-green: #2c5953;
-$bg-gray: #f4f6f8;
-$text-dark: #222222;
-$text-muted: #666666;
+@use 'shared/styles/admin-tokens' as t;
+
+$primary-green: t.$primary;
+$bg-gray: t.$bg-page;
+$text-dark: t.$text-dark;
+$text-muted: t.$text-muted;
 
 .proyectos-container {
   width: 100%;
   box-sizing: border-box;
   padding: 2.5rem 3rem;
-  background-color: $bg-gray;
+  background-color: t.$bg-page;
   min-height: calc(100vh - 65px);
+  font-family: t.$font-sans;
 
   .proyectos-header {
     display: flex;
@@ -136,6 +139,7 @@ $text-muted: #666666;
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        flex-wrap: wrap;
 
         .btn-action {
           border: 1px solid #d1d5db;
@@ -180,10 +184,7 @@ $text-muted: #666666;
   }
 }
 
-// --- VISOR DE IMAGEN EN PANTALLA COMPLETA (LIGHTBOX) ---
-/* --- VISOR 360° EN MODAL LIGHTBOX --- */
-/* --- MODAL LIGHTBOX Y VISOR 360° ESTILO PROFESIONAL --- */
-/* --- MODAL LIGHTBOX Y VISOR 360° --- */
+// --- VISOR 360° EN MODAL LIGHTBOX ---
 .lightbox-overlay {
   position: fixed;
   top: 0;
@@ -196,10 +197,11 @@ $text-muted: #666666;
   align-items: center;
   justify-content: center;
   z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
 
   .lightbox-content {
     position: relative;
-    width: 900px; /* Ancho fijo para evitar colapsos de flexbox */
+    width: 900px;
     background-color: #ffffff;
     border-radius: 14px;
     padding: 25px;
@@ -210,7 +212,7 @@ $text-muted: #666666;
       margin-bottom: 15px;
 
       h2 {
-        color: #2c5953;
+        color: $primary-green;
         font-family: Georgia, serif;
         font-size: 1.5rem;
         margin: 0 0 5px 0;
@@ -223,15 +225,16 @@ $text-muted: #666666;
       }
     }
 
-    /* FORZAMOS LAS DIMENSIONES ABSOLUTAS PARA QUE NO SE CORTE */
+    /* Contenedor obligatorio de Photo Sphere Viewer / Pannellum */
     #panorama-viewer {
       width: 100% !important;
-      height: 500px !important;
+      height: 450px !important;
       position: relative !important;
       display: block !important;
       border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
       background-color: #000000;
+      overflow: hidden;
     }
 
     .btn-close-lightbox {
@@ -261,7 +264,12 @@ $text-muted: #666666;
   }
 }
 
-// --- ESTILOS DEL MODAL ---
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// --- ESTILOS DEL MODAL CREAR / EDITAR ---
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -273,20 +281,28 @@ $text-muted: #666666;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
 
   .modal-content {
     background-color: #ffffff;
     border-radius: 12px;
-    width: 550px;
-    max-width: 90%;
+    width: 600px;
+    max-width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
     padding: 2rem;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    overflow-y: auto;
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.5rem;
+      flex-shrink: 0;
 
       h2 {
         font-family: Georgia, serif;
@@ -304,6 +320,12 @@ $text-muted: #666666;
       }
     }
 
+    form {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -313,8 +335,11 @@ $text-muted: #666666;
         display: flex;
         flex-direction: column;
         gap: 0.35rem;
+        width: 100%;
+        box-sizing: border-box;
 
-        &:nth-child(1), &:nth-child(2), &:nth-child(6) {
+        /* Hacemos que los campos clave ocupen las 2 columnas completas y no se salgan */
+        &:nth-child(1), &:nth-child(2), &:nth-child(3), &:nth-child(6) {
           grid-column: span 2;
         }
 
@@ -324,16 +349,28 @@ $text-muted: #666666;
           font-weight: 500;
         }
 
-        input, select {
+        /* Ajuste estricto del 100% y box-sizing para evitar desbordes */
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+          width: 100%;
           padding: 0.6rem 0.8rem;
           border: 1px solid #d1d5db;
           border-radius: 6px;
           font-size: 0.9rem;
+          color: $text-dark;
           outline: none;
+          box-sizing: border-box;
+          background-color: #ffffff;
 
           &:focus {
             border-color: $primary-green;
           }
+        }
+
+        textarea {
+          resize: vertical;
         }
       }
     }
@@ -343,6 +380,7 @@ $text-muted: #666666;
       justify-content: flex-end;
       gap: 0.75rem;
       margin-top: 1.75rem;
+      flex-shrink: 0;
 
       .btn-cancel {
         background: transparent;
@@ -398,19 +436,13 @@ $text-muted: #666666;
   }
 }
 
-.subiendo-texto {
-  color: #5c6b67;
-  font-size: 0.85rem;
-  margin-top: 0.4rem;
-}
-
 .error-texto {
   color: #d9534f;
   font-size: 0.85rem;
   margin-top: 0.4rem;
 }
 
-// --- BOTÓN "ELEGIR IMAGEN" ---
+// --- BOTÓN "ELEGIR DESDE PC" ---
 .file-input-oculto {
   position: absolute;
   width: 1px;
@@ -445,13 +477,8 @@ $text-muted: #666666;
   white-space: nowrap;
   flex-shrink: 0;
 
-  &:hover:not(:disabled) {
+  &:hover {
     background-color: color.adjust($primary-green, $lightness: -5%);
-  }
-
-  &:disabled {
-    background-color: #9aa5a2;
-    cursor: not-allowed;
   }
 
   svg {
@@ -465,4 +492,47 @@ $text-muted: #666666;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.sin-imagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e2e8e6;
+  color: #94a39e;
+  width: 120px;
+  height: 70px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .proyectos-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .proyectos-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .proyecto-card {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1.5rem;
+  }
+
+  .proyecto-main {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    
+    .form-group:nth-child(1), .form-group:nth-child(2), .form-group:nth-child(3), .form-group:nth-child(6) {
+      grid-column: span 1 !important;
+    }
+  }
 }

@@ -10,6 +10,11 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class SidebarComponent {
   @Output() logout = new EventEmitter<void>();
+  @Output() navigated = new EventEmitter<void>();
+
+  onNavigated(): void {
+    this.navigated.emit();
+  }
 
   onLogout(): void {
     this.logout.emit();

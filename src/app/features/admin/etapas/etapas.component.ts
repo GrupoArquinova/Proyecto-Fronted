@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Etapa, EtapaRequest, ProyectoRef } from '../../../core/models/etapa.models';
 import { EtapaService } from '../../../core/services/etapa.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-etapas',
@@ -13,6 +15,8 @@ import { EtapaService } from '../../../core/services/etapa.service';
 })
 export class EtapasComponent implements OnInit {
   private etapaService = inject(EtapaService);
+  private toastService = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   etapas: Etapa[] = [];
   proyectosDisponibles: ProyectoRef[] = [];
@@ -21,6 +25,9 @@ export class EtapasComponent implements OnInit {
   guardando: boolean = false;
   esEdicion: boolean = false;
   etapaEditandoId: number | null = null;
+
+  // Filtro por Proyecto en la cabecera
+  filtroProyectoId: string = '';
 
   // Formulario temporal adaptado a EtapaRequestDTO
   nuevaEtapa = {
@@ -36,11 +43,31 @@ export class EtapasComponent implements OnInit {
     this.cargarProyectos();
   }
 
+  // Getter para filtrar las etapas según el select del header
+  get etapasFiltradas() {
+    if (!this.filtroProyectoId) {
+      return this.etapas;
+    }
+    return this.etapas.filter(etapa => String(etapa.proyectoId) === String(this.filtroProyectoId));
+  }
+
+  // Lista única de proyectos presentes en las etapas para llenar el select del filtro
+  get proyectosParaFiltro() {
+    const unicos = new Map();
+    this.etapas.forEach(etapa => {
+      const id = etapa.proyectoId || etapa.proyecto?.id;
+      const nombre = etapa.proyectoNombre || etapa.proyecto?.nombre;
+      if (id && nombre) {
+        unicos.set(id, nombre);
+      }
+    });
+    return Array.from(unicos, ([id, nombre]) => ({ id, nombre }));
+  }
+
   cargarEtapas(): void {
     this.cargando = true;
     this.etapaService.obtenerEtapas().subscribe({
       next: (data) => {
-        // Aseguramos el mapeo de proyecto para la vista
         this.etapas = data.map(etapa => ({
           ...etapa,
           proyecto: {
@@ -52,6 +79,7 @@ export class EtapasComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar etapas:', err);
+        this.toastService.showError('Error al cargar las etapas');
         this.cargando = false;
       }
     });
@@ -60,7 +88,10 @@ export class EtapasComponent implements OnInit {
   cargarProyectos(): void {
     this.etapaService.obtenerProyectos().subscribe({
       next: (data) => (this.proyectosDisponibles = data),
-      error: (err) => console.error('Error al cargar proyectos:', err)
+      error: (err) => {
+        console.error('Error al cargar proyectos:', err);
+        this.toastService.showError('Error al cargar proyectos');
+      }
     });
   }
 
@@ -100,7 +131,6 @@ export class EtapasComponent implements OnInit {
 
     this.guardando = true;
 
-    // Payload exacto exigido por EtapaRequestDTO
     const payload: EtapaRequest = {
       proyectoId: Number(this.nuevaEtapa.proyectoId),
       nombre: this.nuevaEtapa.nombre,
@@ -113,11 +143,13 @@ export class EtapasComponent implements OnInit {
       this.etapaService.actualizarEtapa(this.etapaEditandoId, payload).subscribe({
         next: () => {
           this.guardando = false;
+          this.toastService.showSuccess('Etapa actualizada correctamente');
           this.cerrarModal();
           this.cargarEtapas();
         },
         error: (err) => {
           console.error('Error al actualizar la etapa:', err);
+          this.toastService.showError('Error al actualizar la etapa');
           this.guardando = false;
         }
       });
@@ -125,25 +157,38 @@ export class EtapasComponent implements OnInit {
       this.etapaService.crearEtapa(payload).subscribe({
         next: () => {
           this.guardando = false;
+          this.toastService.showSuccess('Etapa creada correctamente');
           this.cerrarModal();
           this.cargarEtapas();
         },
         error: (err) => {
           console.error('Error al crear la etapa:', err);
+          this.toastService.showError('Error al crear la etapa');
           this.guardando = false;
         }
       });
     }
   }
 
-  eliminarEtapa(etapa: Etapa): void {
+  async eliminarEtapa(etapa: Etapa): Promise<void> {
     if (!etapa.id) return;
-    if (confirm(`¿Estás seguro de eliminar la etapa "${etapa.nombre}"?`)) {
-      this.etapaService.eliminarEtapa(etapa.id).subscribe({
-        next: () => this.cargarEtapas(),
-        error: (err) => console.error('Error al eliminar etapa:', err)
-      });
-    }
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar Etapa',
+      message: `¿Estás seguro de eliminar la etapa "${etapa.nombre}"? Esta acción no se puede deshacer.`,
+      confirmText: 'Sí, eliminar',
+      type: 'danger'
+    });
+    if (!ok) return;
+    this.etapaService.eliminarEtapa(etapa.id).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Etapa eliminada correctamente');
+        this.cargarEtapas();
+      },
+      error: (err) => {
+        console.error('Error al eliminar etapa:', err);
+        this.toastService.showError('Error al eliminar la etapa');
+      }
+    });
   }
 
   getBadgeClass(activo?: boolean): string {

@@ -8,27 +8,40 @@ import { DashboardResponse, LoteReporteItem, SolicitudReporteItem } from '../mod
 })
 export class ReporteService {
   private http = inject(HttpClient);
-
   private apiUrl = 'http://localhost:8080/api/reportes';
+  private apiDocumentos = 'http://localhost:8080/api/documentos';
 
-  /**
-   * Obtiene los indicadores generales del dashboard (RF22)
-   */
   getDashboard(): Observable<DashboardResponse> {
     return this.http.get<DashboardResponse>(`${this.apiUrl}/dashboard`);
   }
 
-  /**
-   * Obtiene el reporte de lotes, usado para calcular el estado por proyecto (RF24)
-   */
   getReporteLotes(): Observable<LoteReporteItem[]> {
     return this.http.get<LoteReporteItem[]>(`${this.apiUrl}/lotes`);
   }
 
-  /**
-   * Obtiene el reporte de solicitudes de contacto (RF26)
-   */
   getReporteSolicitudes(): Observable<SolicitudReporteItem[]> {
     return this.http.get<SolicitudReporteItem[]>(`${this.apiUrl}/solicitudes`);
+  }
+
+  // --- Métodos de Exportación / Documentos ---
+  descargarExcelLotes(): Observable<Blob> {
+    return this.http.get(`${this.apiDocumentos}/excel/lotes`, { responseType: 'blob' });
+  }
+
+  descargarExcelProyectos(): Observable<Blob> {
+    return this.http.get(`${this.apiDocumentos}/excel/proyectos`, { responseType: 'blob' });
+  }
+
+  descargarExcelSolicitudes(): Observable<Blob> {
+    return this.http.get(`${this.apiDocumentos}/excel/solicitudes`, { responseType: 'blob' });
+  }
+
+  descargarFichaProyectoPdf(proyectoId: number): Observable<Blob> {
+    return this.http.get(`${this.apiDocumentos}/pdf/proyecto/${proyectoId}/ficha-tecnica`, { responseType: 'blob' });
+  }
+
+  // Agrega esto para obtener la lista de proyectos (id y nombre)
+  getProyectosResumen(): Observable<any[]> {
+    return this.http.get<any[]>('http://localhost:8080/api/proyectos'); // Ajusta la ruta según tu API de proyectos si es distinta
   }
 }

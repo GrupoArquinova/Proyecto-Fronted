@@ -1,15 +1,18 @@
-$primary-teal: #2c5953;
-$primary-hover: #224540;
-$text-dark: #2c3e50;
-$text-muted: #64748b;
-$border-color: #e2e8f0;
-$bg-main: #f8fafc;
+@use 'shared/styles/admin-tokens' as t;
+
+$primary-teal: t.$primary;
+$primary-hover: t.$primary-hover;
+$text-dark: t.$text-dark;
+$text-muted: t.$text-muted;
+$border-color: t.$border;
+$bg-main: t.$bg-page;
 
 .lotes-container {
   padding: 2rem 2.5rem;
-  background-color: $bg-main;
+  background-color: t.$bg-page;
   min-height: 100vh;
   box-sizing: border-box;
+  font-family: t.$font-sans;
 }
 
 /* Header */
@@ -17,7 +20,7 @@ $bg-main: #f8fafc;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 
   .page-title {
     font-family: 'Georgia', serif;
@@ -28,22 +31,48 @@ $bg-main: #f8fafc;
   }
 
   .btn-nuevo {
-    background-color: $primary-teal;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.65rem 1.4rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    @include t.btn-primary;
+  }
+}
 
-    &:hover {
-      background-color: $primary-hover;
+/* Filters Card */
+.filters-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid $border-color;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-size: 0.83rem;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.35rem;
     }
 
-    &:active {
-      transform: scale(0.98);
+    input, select {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: $text-dark;
+      outline: none;
+      transition: border-color 0.2s;
+      background-color: #ffffff;
+      box-sizing: border-box;
+      width: 100%;
+
+      &:focus {
+        border-color: $primary-teal;
+      }
     }
   }
 }
@@ -54,7 +83,7 @@ $bg-main: #f8fafc;
   border-radius: 12px;
   border: 1px solid $border-color;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .lotes-table {
@@ -206,6 +235,8 @@ $bg-main: #f8fafc;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .modal-card {
@@ -213,14 +244,20 @@ $bg-main: #f8fafc;
   border-radius: 12px;
   width: 100%;
   max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   padding: 1.75rem 2rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow-y: auto;
 
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    flex-shrink: 0;
 
     h2 {
       font-size: 1.35rem;
@@ -242,6 +279,12 @@ $bg-main: #f8fafc;
     }
   }
 
+  form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -252,6 +295,8 @@ $bg-main: #f8fafc;
     display: flex;
     flex-direction: column;
     margin-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
 
     &.full-width {
       grid-column: span 2;
@@ -265,17 +310,25 @@ $bg-main: #f8fafc;
     }
 
     input, select, textarea {
+      width: 100%;
       padding: 0.6rem 0.8rem;
       border: 1px solid $border-color;
       border-radius: 6px;
       font-size: 0.9rem;
       color: $text-dark;
       outline: none;
+      box-sizing: border-box;
+      background-color: #ffffff;
       transition: border-color 0.2s;
 
       &:focus {
         border-color: $primary-teal;
       }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
     }
   }
 
@@ -284,6 +337,7 @@ $bg-main: #f8fafc;
     justify-content: flex-end;
     gap: 0.75rem;
     margin-top: 1.5rem;
+    flex-shrink: 0;
 
     .btn-cancelar {
       background: #f1f5f9;
@@ -317,5 +371,25 @@ $bg-main: #f8fafc;
         cursor: not-allowed;
       }
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .lotes-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .form-group.full-width {
+    grid-column: span 1 !important;
   }
 }

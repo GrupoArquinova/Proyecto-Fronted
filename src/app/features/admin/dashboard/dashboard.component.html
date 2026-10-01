@@ -1,14 +1,24 @@
+
+
 <div class="admin-layout">
   <!-- Navbar superior -->
   <header class="navbar">
     <div class="brand">
+      <button class="hamburger-btn" (click)="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
       <img src="https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg" alt="Logo Arquinova" class="brand-logo">
       <span>Admin</span>
     </div>
   </header>
   <!-- Cuerpo principal -->
-  <div class="admin-body">
-    <app-sidebar (logout)="onLogout()"></app-sidebar>
+  <div class="admin-body" [class.sidebar-open]="sidebarOpen">
+    <div class="sidebar-overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
+    <app-sidebar class="app-sidebar" (logout)="onLogout()" (navigated)="sidebarOpen = false"></app-sidebar>
 
     <main class="main-content">
       <router-outlet></router-outlet>
