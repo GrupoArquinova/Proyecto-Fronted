@@ -20,6 +20,18 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "styles": [
+              "src/styles.scss",
+              "node_modules/pannellum/build/pannellum.css"
+            ],
+            "scripts": [
+              "node_modules/pannellum/build/pannellum.js"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/app"
+              ]
+            },
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -28,9 +40,6 @@
                 "glob": "**/*",
                 "input": "public"
               }
-            ],
-            "styles": [
-              "src/styles.scss"
             ],
             "polyfills": [
               "zone.js"

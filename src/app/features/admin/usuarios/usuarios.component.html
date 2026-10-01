@@ -1,0 +1,110 @@
+<div class="admin-container">
+  <div class="header-section">
+    <h2>Gestión de Administradores</h2>
+    <button class="btn-primary" (click)="abrirModalCrear()">+ Nuevo Administrador</button>
+  </div>
+
+  <div class="alerta-exito" *ngIf="mensajeExito">
+    <span>✓ {{ mensajeExito }}</span>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre Completo</th>
+          <th>Correo Electrónico</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let admin of listaAdmins">
+          <td>{{ admin.nombreCompleto }}</td>
+          <td>{{ admin.correo }}</td>
+          <td>
+            <span class="badge" [class.activo]="admin.activo" [class.inactivo]="!admin.activo">
+              {{ admin.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-action edit" (click)="abrirModalEditar(admin)" title="Editar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              <button class="btn-action delete" (click)="eliminarAdmin(admin.id)" title="Eliminar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" *ngIf="modalAbierto">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ esEdicion ? 'Editar Administrador' : 'Crear Nuevo Administrador' }}</h3>
+        <button class="close-btn" (click)="cerrarModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre Completo *</label>
+          <input type="text" name="nombre" autocomplete="off"
+                 [(ngModel)]="usuarioActual.nombreCompleto" placeholder="Ej. Juan Pérez">
+        </div>
+
+        <div class="form-group">
+          <label>Correo Electrónico *</label>
+          <input type="email" name="correo" autocomplete="off"
+                 [(ngModel)]="usuarioActual.correo" placeholder="admin@correo.com">
+        </div>
+
+        <div class="form-group">
+          <label>{{ esEdicion ? 'Nueva Contraseña (Opcional)' : 'Contraseña *' }}</label>
+          <div class="password-wrapper">
+            <input [type]="verPassword ? 'text' : 'password'"
+                   name="nueva-password"
+                   autocomplete="new-password"
+                   [(ngModel)]="usuarioActual.passwordHash"
+                   [placeholder]="esEdicion ? 'Déjala vacía para mantener la actual' : '••••••••'">
+            <button type="button" class="toggle-pass" (click)="verPassword = !verPassword">
+              {{ verPassword ? 'Ocultar' : 'Ver' }}
+            </button>
+          </div>
+          <small class="hint" *ngIf="esEdicion && !mostrarRequisitos">Si la dejas vacía, la contraseña actual no cambia.</small>
+
+          <ul class="requisitos" *ngIf="mostrarRequisitos">
+            <li [class.ok]="tieneLongitudMinima">{{ tieneLongitudMinima ? '✓' : '○' }} Mínimo 8 caracteres</li>
+            <li [class.ok]="tieneMayuscula">{{ tieneMayuscula ? '✓' : '○' }} Una mayúscula</li>
+            <li [class.ok]="tieneMinuscula">{{ tieneMinuscula ? '✓' : '○' }} Una minúscula</li>
+            <li [class.ok]="tieneNumero">{{ tieneNumero ? '✓' : '○' }} Un número</li>
+            <li [class.ok]="tieneEspecial">{{ tieneEspecial ? '✓' : '○' }} Un carácter especial</li>
+          </ul>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="usuarioActual.activo"> Cuenta Activa
+          </label>
+        </div>
+
+        <p class="error-form" *ngIf="errorForm">{{ errorForm }}</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-primary" (click)="guardarUsuario()">{{ esEdicion ? 'Actualizar' : 'Guardar' }}</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,319 @@
+.solicitudes-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #1e293b;
+      font-family: serif;
+    }
+
+    .subtitle {
+      margin: 0.2rem 0 0 0;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .filtros-estados {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+
+      .btn-filtro {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        padding: 0.4rem 0.9rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #475569;
+        transition: all 0.2s;
+
+        &.active, &:hover {
+          background: #1b4d3e;
+          color: white;
+          border-color: #1b4d3e;
+        }
+      }
+    }
+  }
+
+  .loading-state, .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #64748b;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .solicitudes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+
+    .solicitud-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      border: 1px solid #e2e8f0;
+      transition: box-shadow 0.2s;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+
+      .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.8rem;
+
+        .cliente-info {
+          h3 {
+            margin: 0 0 0.2rem 0;
+            font-size: 1.1rem;
+            color: #0f172a;
+          }
+
+          .contacto-links {
+            font-size: 0.85rem;
+            color: #64748b;
+
+            a {
+              color: #1b4d3e;
+              text-decoration: none;
+              font-weight: 500;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+
+            span {
+              margin: 0 0.4rem;
+            }
+          }
+        }
+
+        .card-meta {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 0.3rem;
+
+          .badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-weight: 600;
+
+            &.badge-nueva { background: #e0f2fe; color: #0369a1; }
+            &.badge-contactada { background: #fef3c7; color: #b45309; }
+            &.badge-seguimiento { background: #ede9fe; color: #6d28d9; }
+            &.badge-atendida { background: #dcfce7; color: #15803d; }
+            &.badge-cerrada { background: #e2e8f0; color: #475569; }
+          }
+
+          .fecha {
+            font-size: 0.75rem;
+            color: #94a3b8;
+          }
+        }
+      }
+
+      .interes-info {
+        font-size: 0.85rem;
+        margin-bottom: 0.6rem;
+        color: #334155;
+
+        .tag-proyecto, .tag-lote {
+          background: #f1f5f9;
+          padding: 0.1rem 0.5rem;
+          border-radius: 4px;
+          margin-left: 0.4rem;
+          font-weight: 500;
+        }
+      }
+
+      .mensaje-box {
+        background: #f8fafc;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #334155;
+        margin-bottom: 0.8rem;
+        border-left: 3px solid #cbd5e1;
+
+        p {
+          margin: 0;
+        }
+      }
+
+      .notas-internas {
+        background: #fefce8;
+        border: 1px solid #fef08a;
+        padding: 0.5rem 0.8rem;
+        border-radius: 6px;
+        margin-bottom: 0.8rem;
+        font-size: 0.8rem;
+        color: #854d0e;
+      }
+
+      .atencion-info {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-bottom: 0.6rem;
+      }
+
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.8rem;
+        border-top: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+
+        .acciones-estado {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.4rem;
+
+          .label-cambiar {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-right: 0.2rem;
+          }
+
+          .btn-estado {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            color: #475569;
+            font-weight: 500;
+            transition: all 0.15s;
+
+            &:hover {
+              background: #f1f5f9;
+            }
+
+            &.seleccionado {
+              background: #1b4d3e;
+              color: white;
+              border-color: #1b4d3e;
+            }
+          }
+        }
+
+        .btn-observacion {
+          background: none;
+          border: 1px dashed #94a3b8;
+          padding: 0.3rem 0.8rem;
+          border-radius: 6px;
+          font-size: 0.8rem;
+          cursor: pointer;
+          color: #475569;
+
+          &:hover {
+            background: #f8fafc;
+            border-color: #475569;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Estilos del modal flotante de notas
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+
+    h3 {
+      margin-top: 0;
+      color: #0f172a;
+      font-family: serif;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      font-family: inherit;
+      resize: vertical;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: #1b4d3e;
+      }
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      margin-top: 1.2rem;
+
+      button {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .btn-cancelar {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        color: #475569;
+      }
+
+      .btn-guardar {
+        background: #1b4d3e;
+        border: none;
+        color: white;
+      }
+    }
+  }
+}

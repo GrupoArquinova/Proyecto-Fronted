@@ -1,0 +1,98 @@
+<div class="contenido-container">
+  <div class="header-section">
+    <div>
+      <h2>Contenido Institucional</h2>
+      <p>Administra la información pública de la landing page por secciones.</p>
+    </div>
+    <button class="btn-nuevo" (click)="toggleFormularioNuevo()">
+      <span class="icon">{{ mostrarFormularioNuevo ? '✕' : '+' }}</span>
+      {{ mostrarFormularioNuevo ? 'Cancelar' : 'Nueva Sección' }}
+    </button>
+  </div>
+
+
+
+  <!-- Formulario para Crear Nueva Sección -->
+  <div class="card-nuevo-container" *ngIf="mostrarFormularioNuevo">
+    <div class="card-nuevo">
+      <h3>Crear Nueva Sección</h3>
+      <form (ngSubmit)="guardarNuevaSeccion()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Identificador (Ej: VISION, VALORES)</label>
+            <input type="text" [(ngModel)]="nuevaSeccion.seccion" name="seccion" placeholder="MAYÚSCULAS sin espacios" required>
+          </div>
+          <div class="form-group">
+            <label>Título Visible</label>
+            <input type="text" [(ngModel)]="nuevaSeccion.titulo" name="titulo" placeholder="Ej: Nuestra Visión" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Contenido</label>
+          <textarea [(ngModel)]="nuevaSeccion.contenido" name="contenido" rows="3" placeholder="Escribe el contenido institucional..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <div class="switch-container">
+            <span>{{ nuevaSeccion.publicado ? 'Publicado' : 'Oculto' }}</span>
+            <label class="switch">
+              <input type="checkbox" [(ngModel)]="nuevaSeccion.publicado" name="publicado">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <button type="submit" class="btn-guardar" [disabled]="cargandoCrear">
+            {{ cargandoCrear ? 'Guardando...' : 'Guardar Sección' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="cargando" class="loading-state">
+    <p>Cargando contenidos...</p>
+  </div>
+
+  <!-- Listado de Secciones en Grid de 3 Columnas -->
+  <div class="secciones-grid" *ngIf="!cargando">
+    <div class="contenido-card" *ngFor="let item of secciones">
+      
+      <!-- Cabecera de la tarjeta -->
+      <div class="card-header">
+        <div class="titulo-grupo">
+          <h3 class="titulo-texto">{{ item.titulo }}</h3>
+          <span class="badge-seccion">Clave: {{ item.seccion }}</span>
+        </div>
+        
+        <div class="switch-container">
+          <label class="switch" [title]="item.publicado ? 'Publicado' : 'Oculto'">
+            <input type="checkbox" [(ngModel)]="item.publicado">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Cuerpo de la tarjeta -->
+      <div class="card-body">
+        <textarea [(ngModel)]="item.contenido" rows="4" placeholder="Escribe el contenido institucional..."></textarea>
+      </div>
+
+      <!-- Pie con botón de Eliminar mejorado, auditoría y botón de actualizar -->
+      <div class="card-footer">
+        <button class="btn-eliminar" (click)="eliminarSeccion(item)" title="Eliminar sección">
+          <svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+          Eliminar
+        </button>
+        
+        <div class="footer-actions">
+          <span class="audit-text" *ngIf="item.actualizadoEn">{{ item.actualizadoEn | date:'shortDate' }}</span>
+          <button class="btn-guardar" (click)="guardarSeccion(item)">Actualizar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

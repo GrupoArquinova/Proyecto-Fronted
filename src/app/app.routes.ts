@@ -7,28 +7,42 @@ import { ResetPasswordComponent } from './features/auth/reset-password/reset-pas
 import { HomeComponent } from './features/public/home/home.component';
 import { Resumen } from './features/admin/resumen/resumen';
 import { ProyectosComponent } from './features/admin/proyectos/proyectos';
+import { LotesComponent } from './features/admin/lote/lotes.component';
+import { EtapasComponent } from './features/admin/etapas/etapas.component';
+import { MultimediaComponent } from './features/admin/multimedia/multimedia.component';
+import { UbicacionesComponent } from './features/admin/ubicaciones/ubicaciones.component';
+import { SolicitudesComponent } from './features/admin/solicitudes/solicitudes.component';
+import { ContenidoInstitucionalComponent } from './features/admin/contenido/contenido.component';
+import { ReportesComponent } from './features/admin/reportes/reportes.component';
+import { ZonasComunesComponent } from './features/admin/zonasComunes/zonas-comunes.component';
+import { UsuariosComponent } from './features/admin/usuarios/usuarios.component';
 
 export const routes: Routes = [
-  // 1. Ruta pública principal
   { path: '', component: HomeComponent, pathMatch: 'full' },
 
-  // 2. Autenticación
   { path: 'login', component: LoginComponent },
   { path: 'recuperar-password', component: RecuperarPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
 
-  // 3. Panel de administración protegido
-  { 
-    path: 'admin', 
-    component: DashboardComponent, 
+  {
+    path: 'admin',
+    component: DashboardComponent,
     canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'resumen', pathMatch: 'full' },
       { path: 'resumen', component: Resumen },
-      { path: 'proyectos', component: ProyectosComponent }
+      { path: 'proyectos', component: ProyectosComponent },
+      { path: 'etapas', component: EtapasComponent },
+      { path: 'lotes', component: LotesComponent },
+      { path: 'zonas-comunes', component: ZonasComunesComponent },
+      { path: 'multimedia', component: MultimediaComponent },
+      { path: 'ubicaciones', component: UbicacionesComponent },
+      { path: 'solicitudes', component: SolicitudesComponent },
+      { path: 'contenido-institucional', component: ContenidoInstitucionalComponent },
+      { path: 'usuarios', component: UsuariosComponent },
+      { path: 'reportes', component: ReportesComponent }
     ]
   },
 
-  // 4. Comodín redirige al home
   { path: '**', redirectTo: '' }
 ];

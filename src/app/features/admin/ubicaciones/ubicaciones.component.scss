@@ -1,0 +1,182 @@
+@use 'shared/styles/admin-tokens' as t;
+
+.ubicaciones-container {
+  @include t.page-container;
+
+  .header-section {
+    @include t.page-header;
+
+    h2 {
+      @include t.page-title;
+    }
+
+    .btn-nuevo {
+      @include t.btn-primary;
+    }
+  }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: t.$space-lg;
+}
+
+.ubicacion-card {
+  @include t.card;
+  padding: t.$space-lg;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .icon-circle {
+    width: 36px;
+    height: 36px;
+    background: t.$primary;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: t.$space-md;
+    flex-shrink: 0;
+  }
+
+  .card-content {
+    h3 {
+      font-size: 1.1rem;
+      color: t.$text-dark;
+      margin: 0 0 0.4rem 0;
+      font-weight: 600;
+      font-family: t.$font-sans;
+    }
+
+    .ubicacion-sub {
+      color: t.$text-muted;
+      font-size: 0.9rem;
+      margin: 0 0 t.$space-lg 0;
+      font-family: t.$font-sans;
+    }
+  }
+
+  .card-footer {
+    border-top: 1px solid t.$border;
+    padding-top: t.$space-md;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .btn-ver-ubicacion {
+      @include t.btn-secondary;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.88rem;
+      border-color: transparent;
+      color: t.$primary;
+      font-weight: 600;
+      background: transparent;
+
+      &:hover {
+        background: t.$primary-light;
+      }
+    }
+
+    .btn-eliminar-ubicacion {
+      @include t.btn-danger;
+      font-size: 0.82rem;
+      padding: 0.4rem 0.75rem;
+    }
+  }
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+.modal-card {
+  @include t.card;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: t.$space-xl;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: t.$space-lg;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: t.$text-dark;
+      margin: 0;
+      font-family: t.$font-sans;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      color: t.$text-muted;
+      cursor: pointer;
+      font-size: 1.3rem;
+      line-height: 1;
+      padding: 0.2rem;
+      &:hover { color: t.$text-dark; }
+    }
+  }
+
+  .form-group {
+    @include t.form-group;
+    margin-bottom: t.$space-md;
+  }
+
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: t.$space-md;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: t.$space-sm;
+    margin-top: t.$space-lg;
+    padding-top: t.$space-md;
+    border-top: 1px solid t.$border;
+
+    .btn-cancelar { @include t.btn-secondary; }
+    .btn-guardar  { @include t.btn-primary; }
+  }
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: t.$space-md;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}

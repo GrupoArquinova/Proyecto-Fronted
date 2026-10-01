@@ -1,0 +1,112 @@
+<div class="solicitudes-container">
+  <!-- Cabecera y Filtros -->
+  <div class="header-section">
+    <div>
+      <h2>Solicitudes de Contacto</h2>
+      <p class="subtitle">Gestiona los clientes interesados en proyectos y lotes.</p>
+    </div>
+
+    <!-- Filtros Rápidos por Estado -->
+    <div class="filtros-estados">
+      <button class="btn-filtro" [class.active]="filtroEstado === null" (click)="filtrarPorEstado(null)">Todas</button>
+      <button class="btn-filtro" [class.active]="filtroEstado === 1" (click)="filtrarPorEstado(1)">Nuevas</button>
+      <button class="btn-filtro" [class.active]="filtroEstado === 2" (click)="filtrarPorEstado(2)">Contactadas</button>
+      <button class="btn-filtro" [class.active]="filtroEstado === 3" (click)="filtrarPorEstado(3)">En seguimiento</button>
+      <button class="btn-filtro" [class.active]="filtroEstado === 4" (click)="filtrarPorEstado(4)">Atendidas</button>
+      <button class="btn-filtro" [class.active]="filtroEstado === 6" (click)="filtrarPorEstado(6)">Cerradas</button>
+    </div>
+  </div>
+
+  <!-- Estado de Carga -->
+  <div *ngIf="cargando" class="loading-state">
+    <p>Cargando solicitudes...</p>
+  </div>
+
+  <!-- Mensaje si no hay registros -->
+  <div *ngIf="!cargando && solicitudesFiltradas.length === 0" class="empty-state">
+    <p>No hay solicitudes registradas con este filtro.</p>
+  </div>
+
+  <!-- Grid / Lista de Tarjetas de Solicitudes -->
+  <div class="solicitudes-grid">
+    <div class="solicitud-card" *ngFor="let item of solicitudesFiltradas">
+
+      <!-- Cabecera de la Tarjeta -->
+      <div class="card-top">
+        <div class="cliente-info">
+          <h3>{{ item.nombre }}</h3>
+          <div class="contacto-links">
+            <a [href]="'mailto:' + item.correo">{{ item.correo }}</a>
+            <span>&bull;</span>
+            <a [href]="'tel:' + item.telefono">{{ item.telefono }}</a>
+          </div>
+        </div>
+        <div class="card-meta">
+          <span class="badge" [ngClass]="obtenerClaseEstado(item.estadoId)">
+            {{ item.estadoNombre || 'Nueva' }}
+          </span>
+          <span class="fecha">{{ item.creadoEn | date:'yyyy-MM-dd' }}</span>
+        </div>
+      </div>
+
+      <!-- Información del Proyecto / Lote de Interés -->
+      <div class="interes-info" *ngIf="item.proyectoNombre || item.loteCodigo">
+        <p>
+          <strong>Interés:</strong>
+          <span class="tag-proyecto" *ngIf="item.proyectoNombre">Proyecto: {{ item.proyectoNombre }}</span>
+          <span class="tag-lote" *ngIf="item.loteCodigo">Lote: {{ item.loteCodigo }}</span>
+        </p>
+      </div>
+
+      <!-- Mensaje del Cliente -->
+      <div class="mensaje-box">
+        <p>{{ item.mensaje || 'Sin mensaje especificado.' }}</p>
+      </div>
+
+      <!-- Notas Internas (Si las hay) -->
+      <div class="notas-internas" *ngIf="item.observacionesInternas">
+        <small><strong>Nota interna:</strong> {{ item.observacionesInternas }}</small>
+      </div>
+
+      <!-- Info de atención, si ya fue atendida -->
+      <div class="atencion-info" *ngIf="item.atendidaPorNombre || item.atendidaEn">
+        <small>
+          Atendida por <strong>{{ item.atendidaPorNombre || 'N/D' }}</strong>
+          <span *ngIf="item.atendidaEn"> el {{ item.atendidaEn | date:'yyyy-MM-dd HH:mm' }}</span>
+        </small>
+      </div>
+
+      <!-- Pie de Tarjeta / Botones de Acción de Estado -->
+      <div class="card-footer">
+        <div class="acciones-estado">
+          <span class="label-cambiar">Cambiar estado:</span>
+          <button class="btn-estado nueva" [class.seleccionado]="item.estadoId === 1" (click)="cambiarEstado(item, 1)">Nueva</button>
+          <button class="btn-estado contactada" [class.seleccionado]="item.estadoId === 2" (click)="cambiarEstado(item, 2)">Contactada</button>
+          <button class="btn-estado seguimiento" [class.seleccionado]="item.estadoId === 3" (click)="cambiarEstado(item, 3)">Seguimiento</button>
+          <button class="btn-estado atendida" [class.seleccionado]="item.estadoId === 4" (click)="cambiarEstado(item, 4)">Atendida</button>
+          <button class="btn-estado cerrada" [class.seleccionado]="item.estadoId === 6" (click)="cambiarEstado(item, 6)">Cerrada</button>
+        </div>
+
+        <button class="btn-observacion" (click)="abrirModalNotas(item)">
+          + Nota Interna
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal Simple para Notas Internas -->
+<div class="modal-overlay" *ngIf="mostrarModalNotas">
+  <div class="modal-content">
+    <h3>Observaciones Internas</h3>
+    <p>Añade notas privadas sobre la gestión de <strong>{{ solicitudSeleccionada?.nombre }}</strong>:</p>
+
+    <textarea [(ngModel)]="observacionTemporal" rows="4" placeholder="Ej. Se llamó al cliente pero no contestó, quedó de llamar el viernes..."></textarea>
+
+    <div class="modal-buttons">
+      <button class="btn-cancelar" (click)="cerrarModalNotas()">Cancelar</button>
+      <button class="btn-guardar" (click)="guardarObservacion()">Guardar Nota</button>
+    </div>
+  </div>
+</div>

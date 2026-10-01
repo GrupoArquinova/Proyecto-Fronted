@@ -1,3 +1,6 @@
+@use 'shared/styles/admin-tokens' as t;
+@import '@photo-sphere-viewer/core/index.css';
+
 /* Reset global de márgenes, paddings y fondo */
 * {
   margin: 0;
@@ -43,5 +46,87 @@ html, body {
     width: 34px;
     height: 34px;
     fill: #ffffff;
+  }
+}
+
+/* =============================================
+   OVERLAY GLOBAL: ROTACIÓN DE DISPOSITIVO
+   Se activa SOLO en móvil modo vertical (portrait)
+   ============================================= */
+.rotate-device-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #1f2b28 0%, #2c5953 100%);
+  z-index: 999999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  box-sizing: border-box;
+
+  .rotate-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    max-width: 320px;
+    width: 100%;
+
+    .phone-icon {
+      margin-bottom: 1.5rem;
+
+      svg {
+        width: 60px;
+        height: 60px;
+        color: #ffffff;
+        animation: wiggleRotate 2.5s ease-in-out infinite;
+      }
+    }
+
+    h2 {
+      font-family: Georgia, serif;
+      color: #ffffff;
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin: 0 0 0.85rem 0;
+      letter-spacing: 0.01em;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 0;
+
+      strong {
+        color: #ffffff;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@keyframes wiggleRotate {
+  0%   { transform: rotate(0deg); }
+  30%  { transform: rotate(-80deg); }
+  60%  { transform: rotate(-90deg); }
+  80%  { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Mostrar overlay y ocultar contenido en portrait móvil */
+@media screen and (max-width: 900px) and (orientation: portrait) {
+  .rotate-device-overlay {
+    display: flex !important;
+  }
+
+  /* Ocultar el botón de WhatsApp también */
+  .whatsapp-float {
+    display: none !important;
   }
 }

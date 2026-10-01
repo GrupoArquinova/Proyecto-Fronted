@@ -1,0 +1,78 @@
+<div class="reportes-container">
+  
+  <!-- Cabecera con selector de proyectos estilizado y botón PDF -->
+  <div class="header-section">
+    <div>
+      <span class="sub-title">ANÁLISIS COMERCIAL</span>
+      <h2>Reportes y Trazabilidad</h2>
+    </div>
+    <div class="actions-header">
+      <div class="select-wrapper">
+        <select [(ngModel)]="proyectoIdPdf" class="styled-project-select">
+          <option *ngFor="let p of listaProyectos" [value]="p.id">
+            {{ p.nombre || ('Proyecto ' + p.id) }}
+          </option>
+        </select>
+      </div>
+      <button class="btn-primary" (click)="descargarFichaPdf()">
+        <span>📄</span> Descargar Ficha PDF
+      </button>
+    </div>
+  </div>
+
+
+
+  <!-- Tarjetas de Indicadores Principales -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.totalProyectos }}</div>
+      <div class="stat-label">Proyectos Totales ({{ stats.proyectosPublicados }} publicados)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.totalLotes }}</div>
+      <div class="stat-label">Lotes Registrados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.totalSolicitudes }}</div>
+      <div class="stat-label">Solicitudes ({{ stats.solicitudesNuevas }} nuevas)</div>
+    </div>
+  </div>
+
+  <!-- Bloque de Estado Comercial de Lotes -->
+  <div class="commercial-status-card">
+    <h3>Estado comercial de lotes</h3>
+    <div class="status-columns">
+      <div class="status-item">
+        <span class="status-num">{{ stats.lotesDisponibles }}</span>
+        <span class="status-name">Disponibles</span>
+      </div>
+      <div class="divider"></div>
+      <div class="status-item">
+        <span class="status-num">{{ stats.lotesReservados }}</span>
+        <span class="status-name">Reservados</span>
+      </div>
+      <div class="divider"></div>
+      <div class="status-item">
+        <span class="status-num">{{ stats.lotesVendidos }}</span>
+        <span class="status-name">Vendidos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de Exportaciones Avanzadas (Excel / Reportes) -->
+  <div class="advanced-exports">
+    <h4>Exportaciones del Sistema (Excel / Reportes)</h4>
+    <div class="export-buttons-grid">
+      <button class="btn-export" (click)="exportarExcelProyectos()">📥 Descargar Proyectos (Excel)</button>
+      <button class="btn-export" (click)="exportarExcelLotes()">📥 Descargar Lotes (Excel)</button>
+      <button class="btn-export" (click)="exportarExcelSolicitudes()">📥 Descargar Solicitudes (Excel)</button>
+    </div>
+  </div>
+
+  <!-- Overlay de carga -->
+  <div *ngIf="cargando" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Cargando información y generando archivos...</p>
+  </div>
+
+</div>

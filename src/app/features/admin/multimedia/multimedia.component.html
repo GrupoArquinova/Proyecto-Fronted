@@ -1,0 +1,305 @@
+<div class="multimedia-container">
+  <div class="header-section">
+    <h1 class="page-title">Multimedia</h1>
+    <button class="btn-nuevo" (click)="abrirModalCrear()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Subir Archivo
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-card">
+    <div class="filter-group">
+      <label for="filtroTitulo">Buscar por Título</label>
+      <input
+        type="text"
+        id="filtroTitulo"
+        [(ngModel)]="filtroTitulo"
+        (input)="aplicarFiltros()"
+        placeholder="Ej. El Pinar"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="filtroTipo">Tipo de Multimedia</label>
+      <select id="filtroTipo" [(ngModel)]="filtroTipo" (change)="aplicarFiltros()">
+        <option value="">Todos los tipos</option>
+        <option value="IMAGEN">Imagen</option>
+        <option value="VIDEO">Video</option>
+        <option value="PDF">PDF</option>
+        <option value="PLANO">Plano</option>
+        <option value="PANORAMICA_360">Panorámica 360</option>
+        <option value="OTRO">Otro</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="media-grid" *ngIf="!cargando && multimediaFiltrada.length > 0">
+    <div class="media-card" *ngFor="let item of multimediaFiltrada">
+      <!-- Vista previa interactiva para 360° -->
+      <div class="media-preview" 
+           (click)="item.tipo === 'PANORAMICA_360' ? abrirVisor360(item) : (item.tipo === 'IMAGEN' ? abrirImagenAmpliada(item) : null)" 
+           [style.cursor]="item.tipo === 'PANORAMICA_360' || item.tipo === 'IMAGEN' ? 'pointer' : 'default'">
+        
+        <img
+          *ngIf="item.tipo === 'IMAGEN' || item.tipo === 'PANORAMICA_360'"
+          [src]="item.url"
+          [alt]="item.titulo || 'Multimedia'"
+          loading="lazy"
+          (error)="manejarErrorImagen($event)"
+        />
+        
+        <video *ngIf="item.tipo === 'VIDEO'" controls preload="metadata" class="media-video">
+          <source [src]="item.url" type="video/mp4">
+          Tu navegador no soporta la reproducción de videos.
+        </video>
+
+        <a *ngIf="item.tipo !== 'IMAGEN' && item.tipo !== 'PANORAMICA_360' && item.tipo !== 'VIDEO'" 
+           [href]="item.url" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="file-placeholder" 
+           title="Ver documento">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          <span>{{ item.tipo }} (Ver)</span>
+        </a>
+
+        <span class="badge-portada" *ngIf="item.portada">Portada</span>
+        <span class="badge-tipo clickable-badge" *ngIf="item.tipo === 'PANORAMICA_360'">360° (Explorar)</span>
+      </div>
+
+      <div class="media-info">
+        <h3 class="media-title">{{ item.titulo || 'Sin título' }}</h3>
+        <p class="media-vinculo">
+          {{ item.proyectoNombre ? 'Proyecto: ' + item.proyectoNombre : 
+             item.loteCodigo ? 'Lote: ' + item.loteCodigo : 
+             item.zonaComunNombre ? 'Zona común: ' + item.zonaComunNombre : 
+             item.casaModeloNombre ? 'Casa modelo: ' + item.casaModeloNombre : 'Sin vínculo' }}
+        </p>
+        <p class="media-desc">{{ item.descripcion || 'Sin descripción' }}</p>
+
+        <div class="media-actions">
+          <button class="btn-icon" (click)="editarMultimedia(item)" title="Editar">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+            </svg>
+          </button>
+          <button class="btn-icon delete" (click)="eliminarMultimedia(item.id!)" title="Eliminar">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!cargando && multimediaFiltrada.length === 0">
+    <p>No se encontraron elementos multimedia registrados.</p>
+  </div>
+
+  <!-- Modal Formulario (Crear / Editar) -->
+  <div class="modal-overlay" *ngIf="mostrarModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>{{ editandoId ? 'Editar Multimedia' : 'Subir Nuevo Archivo' }}</h2>
+        <button class="btn-close" (click)="cerrarModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="guardarMultimedia()" #mediaForm="ngForm" id="mediaForm">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Archivo *</label>
+              <div class="archivo-preview" *ngIf="formData.url">
+                <img *ngIf="formData.tipo === 'IMAGEN' || formData.tipo === 'PANORAMICA_360'" [src]="formData.url" alt="Vista previa" class="preview-img" />
+                <video *ngIf="formData.tipo === 'VIDEO'" [src]="formData.url" class="preview-img" controls muted></video>
+                <div *ngIf="formData.tipo !== 'IMAGEN' && formData.tipo !== 'PANORAMICA_360' && formData.tipo !== 'VIDEO'" class="preview-file">{{ nombreArchivoSeleccionado || formData.url }}</div>
+                <button type="button" class="btn-quitar-archivo" (click)="quitarArchivo()">Quitar</button>
+              </div>
+
+              <input
+                #fileInput
+                type="file"
+                class="file-input-oculto"
+                (change)="onArchivoSeleccionado($event)"
+                [disabled]="subiendoArchivo"
+              />
+
+              <div class="file-upload-wrapper">
+                <button
+                  type="button"
+                  class="btn-elegir-archivo"
+                  (click)="fileInput.click()"
+                  [disabled]="subiendoArchivo"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  {{ subiendoArchivo ? 'Subiendo...' : 'Elegir archivo' }}
+                </button>
+                <span class="file-nombre">{{ nombreArchivoSeleccionado || 'Ningún archivo seleccionado' }}</span>
+              </div>
+
+              <p class="error-texto" *ngIf="errorArchivo">{{ errorArchivo }}</p>
+
+              <input
+                type="text"
+                name="url"
+                [(ngModel)]="formData.url"
+                placeholder="O pega una URL manualmente"
+                required
+                class="url-manual"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="tipo">Tipo de Archivo *</label>
+              <select id="tipo" name="tipo" [(ngModel)]="formData.tipo" required>
+                <option value="IMAGEN">Imagen</option>
+                <option value="VIDEO">Video</option>
+                <option value="PDF">PDF</option>
+                <option value="PLANO">Plano</option>
+                <option value="PANORAMICA_360">Panorámica 360</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="orden">Orden</label>
+              <input type="number" id="orden" name="orden" [(ngModel)]="formData.orden" min="1" />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="titulo">Título</label>
+              <input type="text" id="titulo" name="titulo" [(ngModel)]="formData.titulo" placeholder="Ej. El Pinar" />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="descripcion">Descripción</label>
+              <textarea id="descripcion" name="descripcion" rows="2" [(ngModel)]="formData.descripcion" placeholder="Ej. Imagen de portada del proyecto"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label>Vincular a *</label>
+              <select name="tipoPadre" [(ngModel)]="tipoPadre" (change)="onCambioTipoPadre()">
+                <option value="proyecto">Proyecto</option>
+                <option value="lote">Lote</option>
+                <option value="zonaComun">Zona Común</option>
+                <option value="casaModelo">Casa Modelo</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width" *ngIf="tipoPadre === 'proyecto'">
+              <label for="proyectoId">Proyecto *</label>
+              <select id="proyectoId" name="proyectoId" [(ngModel)]="formData.proyectoId" required>
+                <option [ngValue]="null" disabled>Selecciona un proyecto</option>
+                <option *ngFor="let p of proyectosDisponibles" [value]="p.id">{{ p.nombre }}</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width" *ngIf="tipoPadre === 'lote'">
+              <label for="loteId">Lote *</label>
+              <select id="loteId" name="loteId" [(ngModel)]="formData.loteId" required>
+                <option [ngValue]="null" disabled>Selecciona un lote</option>
+                <option *ngFor="let l of lotesDisponibles" [value]="l.id">{{ l.codigo }}</option>
+              </select>
+            </div>
+
+            <ng-container *ngIf="tipoPadre === 'zonaComun' || tipoPadre === 'casaModelo'">
+              <div class="form-group full-width">
+                <label>Proyecto de referencia *</label>
+                <select name="proyectoReferenciaId" [(ngModel)]="proyectoReferenciaId" (change)="onCambioProyectoReferencia()" required>
+                  <option [ngValue]="null" disabled>Selecciona el proyecto</option>
+                  <option *ngFor="let p of proyectosDisponibles" [value]="p.id">{{ p.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width" *ngIf="tipoPadre === 'zonaComun'">
+                <label for="zonaComunId">Zona Común *</label>
+                <select id="zonaComunId" name="zonaComunId" [(ngModel)]="formData.zonaComunId" required [disabled]="!proyectoReferenciaId">
+                  <option [ngValue]="null" disabled>Selecciona una zona común</option>
+                  <option *ngFor="let z of zonasComunesDisponibles" [value]="z.id">{{ z.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width" *ngIf="tipoPadre === 'casaModelo'">
+                <label for="casaModeloId">Casa Modelo *</label>
+                <select id="casaModeloId" name="casaModeloId" [(ngModel)]="formData.casaModeloId" required [disabled]="!proyectoReferenciaId">
+                  <option [ngValue]="null" disabled>Selecciona una casa modelo</option>
+                  <option *ngFor="let c of casasModelosDisponibles" [value]="c.id">{{ c.nombre }}</option>
+                </select>
+              </div>
+            </ng-container>
+
+            <div class="form-group full-width checkbox-group">
+              <label>
+                <input type="checkbox" name="portada" [(ngModel)]="formData.portada" />
+                Establecer como imagen de portada
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" form="mediaForm" class="btn-guardar" [disabled]="!mediaForm.form.valid || guardando">
+          {{ guardando ? 'Guardando...' : (editandoId ? 'Actualizar' : 'Guardar') }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Visor 360 -->
+  <div class="modal-overlay" *ngIf="mostrarModal360">
+    <div class="modal-card modal-360-card">
+      <div class="modal-header">
+        <h2>{{ titulo360Actual }}</h2>
+        <button class="btn-close" (click)="cerrarModal360()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body-360">
+        <div id="viewerContainer360" style="width: 100%; height: 500px;"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal para Ampliar Imagen -->
+  <div class="modal-overlay" *ngIf="imagenAmpliadaUrl" (click)="cerrarImagenAmpliada()">
+    <div class="modal-card modal-imagen-ampliada" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ imagenAmpliadaTitulo }}</h2>
+        <button class="btn-close" (click)="cerrarImagenAmpliada()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body-imagen">
+        <img [src]="imagenAmpliadaUrl" [alt]="imagenAmpliadaTitulo" />
+      </div>
+    </div>
+  </div>
+</div>

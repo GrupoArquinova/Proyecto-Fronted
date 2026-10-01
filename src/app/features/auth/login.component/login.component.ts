@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -16,23 +16,30 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  correo: string = '';
-  password: string = '';
+  private fb = inject(FormBuilder);
+
+  loginForm: FormGroup = this.fb.group({
+    correo: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required]
+  });
+
   errorMessage: string = '';
   isLoading: boolean = false;
 
-  private errorTimeout: any;
+  private errorTimeout: ReturnType<typeof setTimeout> | null = null;
 
   onSubmit(): void {
-    if (!this.correo || !this.password) {
-      this.setTemporaryError('Por favor complete todos los campos.');
+    if (this.loginForm.invalid) {
+      this.setTemporaryError('Por favor complete todos los campos correctamente.');
       return;
     }
 
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.authService.login({ correo: this.correo, password: this.password }).subscribe({
+    const { correo, password } = this.loginForm.value;
+
+    this.authService.login({ correo, password }).subscribe({
       next: () => {
         this.isLoading = false;
         // Redirige directamente a la ruta hija 'resumen' dentro del modulo 'admin'

@@ -3,10 +3,12 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { ToastService } from '../services/toast.service';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const toastService = inject(ToastService);
 
   // 1. Evitar interceptar o redirigir en endpoints públicos y servicios externos
   const esRutaPublica = req.url.includes('/auth/login') || 
@@ -26,6 +28,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
       // 3. Manejar 401/403 únicamente en rutas protegidas
       if (!esRutaPublica && (error.status === 401 || error.status === 403)) {
         authService.logout();
+        toastService.showInfo('Tu sesión ha expirado, por favor ingresa de nuevo.');
         router.navigate(['/login']);
       }
       return throwError(() => error);

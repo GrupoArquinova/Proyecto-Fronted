@@ -1,0 +1,28 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { ZonaComun } from '../models/zona-comun.models';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ZonaComunService {
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/api/zonas-comunes';
+
+  listarPorProyecto(proyectoId: number): Observable<ZonaComun[]> {
+    return this.http.get<ZonaComun[]>(`${this.apiUrl}/proyecto/${proyectoId}`);
+  }
+
+  crear(zona: ZonaComun): Observable<ZonaComun> {
+    return this.http.post<ZonaComun>(this.apiUrl, zona);
+  }
+
+  actualizar(id: number, zona: ZonaComun): Observable<ZonaComun> {
+    return this.http.put<ZonaComun>(`${this.apiUrl}/${id}`, zona);
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+}

@@ -1,0 +1,395 @@
+@use 'shared/styles/admin-tokens' as t;
+
+$primary-teal: t.$primary;
+$primary-hover: t.$primary-hover;
+$text-dark: t.$text-dark;
+$text-muted: t.$text-muted;
+$border-color: t.$border;
+$bg-main: t.$bg-page;
+
+.lotes-container {
+  padding: 2rem 2.5rem;
+  background-color: t.$bg-page;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: t.$font-sans;
+}
+
+/* Header */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  .page-title {
+    font-family: 'Georgia', serif;
+    font-size: 2.25rem;
+    color: $text-dark;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .btn-nuevo {
+    @include t.btn-primary;
+  }
+}
+
+/* Filters Card */
+.filters-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid $border-color;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-size: 0.83rem;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.35rem;
+    }
+
+    input, select {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: $text-dark;
+      outline: none;
+      transition: border-color 0.2s;
+      background-color: #ffffff;
+      box-sizing: border-box;
+      width: 100%;
+
+      &:focus {
+        border-color: $primary-teal;
+      }
+    }
+  }
+}
+
+/* Table Card */
+.table-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid $border-color;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  overflow-x: auto;
+}
+
+.lotes-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th {
+    padding: 1.1rem 1.5rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $text-muted;
+    border-bottom: 1px solid $border-color;
+    background-color: #ffffff;
+  }
+
+  td {
+    padding: 1rem 1.5rem;
+    font-size: 0.92rem;
+    color: $text-dark;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .text-muted {
+    color: $text-muted;
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  .empty-message {
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    color: $text-muted;
+    font-size: 0.95rem;
+  }
+}
+
+/* Select en Tabla */
+.select-wrapper {
+  display: inline-block;
+
+  select {
+    appearance: none;
+    background-color: #ffffff;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    padding: 0.4rem 2rem 0.4rem 0.75rem;
+    font-size: 0.88rem;
+    color: $text-dark;
+    cursor: pointer;
+    outline: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem top 50%;
+    background-size: 0.65rem auto;
+
+    &:focus {
+      border-color: $primary-teal;
+    }
+  }
+}
+
+/* Switch Activo */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .slider {
+      background-color: $primary-teal;
+    }
+
+    &:checked + .slider:before {
+      transform: translateX(20px);
+    }
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+
+    &:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      transition: 0.3s;
+    }
+
+    &.round {
+      border-radius: 24px;
+
+      &:before {
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+.btn-editar {
+  background: transparent;
+  border: none;
+  color: $text-muted;
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+
+  &:hover {
+    color: $primary-teal;
+    background-color: #f1f5f9;
+  }
+}
+
+/* Modal Overlay & Card */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow-y: auto;
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+
+    h2 {
+      font-size: 1.35rem;
+      color: $text-dark;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      color: $text-muted;
+      cursor: pointer;
+
+      &:hover {
+        color: $text-dark;
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+
+    &.full-width {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 0.83rem;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.35rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: $text-dark;
+      outline: none;
+      box-sizing: border-box;
+      background-color: #ffffff;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: $primary-teal;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    flex-shrink: 0;
+
+    .btn-cancelar {
+      background: #f1f5f9;
+      border: none;
+      color: #475569;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+
+      &:hover {
+        background: #e2e8f0;
+      }
+    }
+
+    .btn-guardar {
+      background: $primary-teal;
+      border: none;
+      color: #ffffff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+
+      &:hover {
+        background: $primary-hover;
+      }
+
+      &:disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .lotes-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .form-group.full-width {
+    grid-column: span 1 !important;
+  }
+}

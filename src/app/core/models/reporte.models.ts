@@ -35,3 +35,12 @@ export interface SolicitudReporteItem {
   atendidaPorNombre: string;
   creadoEn: string;
 }
+
+export interface DashboardStats {
+  totalProyectos: number;
+  totalLotes: number;
+  totalSolicitudes: number;
+  lotesDisponibles: number;
+  lotesReservados: number;
+  lotesVendidos: number;
+}

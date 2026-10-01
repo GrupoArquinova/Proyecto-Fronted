@@ -1,0 +1,151 @@
+<div class="etapas-container">
+  <!-- Subtítulo e Identificador Comercial -->
+  <div class="top-header">
+    <span class="section-tag">ESTRUCTURA COMERCIAL</span>
+    <div class="header-main">
+      <div>
+        <h1 class="page-title">Etapas</h1>
+        <p class="subtitle">Organiza cada proyecto antes de asociar sus lotes.</p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Selector de Filtro por Proyecto -->
+        <select class="select-filtro" [(ngModel)]="filtroProyectoId">
+          <option value="">Todos los proyectos</option>
+          <option *ngFor="let proy of proyectosParaFiltro" [value]="proy.id">
+            {{ proy.nombre }}
+          </option>
+        </select>
+
+        <button class="btn-nueva" (click)="abrirModalCrear()">+ Nueva etapa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Tarjetas de Etapas (Usando el getter de filtrado) -->
+  <div class="etapas-list" *ngIf="etapasFiltradas.length > 0; else sinEtapas">
+    <div class="etapa-card" *ngFor="let etapa of etapasFiltradas">
+      <div class="card-header">
+        <div class="title-badge-group">
+          <h2 class="etapa-title">{{ etapa.nombre }}</h2>
+          <span class="badge" [ngClass]="getBadgeClass(etapa.activo)">
+            {{ etapa.activo ? 'Activa' : 'Inactiva' }}
+          </span>
+        </div>
+        <div class="actions">
+          <button class="btn-eliminar" (click)="eliminarEtapa(etapa)">Eliminar</button>
+          <button class="btn-editar" (click)="abrirModalEditar(etapa)">Editar</button>
+        </div>
+      </div>
+
+      <p class="etapa-descripcion">
+        <span *ngIf="etapa.proyectoNombre">{{ etapa.proyectoNombre }} · </span>{{ etapa.descripcion }}
+      </p>
+
+      <hr class="divider" />
+
+      <div class="card-details">
+        <div class="detail-item">
+          <span class="detail-label">Proyecto</span>
+          <span class="detail-value font-semibold">{{ etapa.proyectoNombre || 'Sin asignación' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Orden</span>
+          <span class="detail-value">{{ etapa.orden || 1 }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Fecha de creación</span>
+          <span class="detail-value">{{ etapa.creadoEn ? (etapa.creadoEn | date:'yyyy-MM-dd') : 'Reciente' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <ng-template #sinEtapas>
+    <div class="empty-card" *ngIf="!cargando">
+      <p>No se encontraron etapas para este filtro.</p>
+    </div>
+  </ng-template>
+
+  <!-- Modal Crear / Editar Etapa -->
+  <div class="modal-overlay" *ngIf="mostrarModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>{{ esEdicion ? 'Editar Etapa' : 'Crear Nueva Etapa' }}</h2>
+        <button class="btn-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <form (ngSubmit)="guardarEtapa()" #etapaForm="ngForm">
+        <div class="form-grid">
+          <!-- Nombre de la Etapa -->
+          <div class="form-group full-width">
+            <label for="nombre">Nombre de la Etapa *</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              [(ngModel)]="nuevaEtapa.nombre"
+              placeholder="Ej. Etapa 1 - El Roble"
+              required
+            />
+          </div>
+
+          <!-- Selección del Proyecto -->
+          <div class="form-group">
+            <label for="proyectoId">Proyecto Pertenece *</label>
+            <select id="proyectoId" name="proyectoId" [(ngModel)]="nuevaEtapa.proyectoId" required>
+              <option [ngValue]="null" disabled>Selecciona un proyecto</option>
+              <option *ngFor="let proy of proyectosDisponibles" [value]="proy.id">
+                {{ proy.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Estado (Booleano) -->
+          <div class="form-group">
+            <label for="activo">Estado *</label>
+            <select id="activo" name="activo" [(ngModel)]="nuevaEtapa.activo" required>
+              <option [ngValue]="true">Activa</option>
+              <option [ngValue]="false">Inactiva</option>
+            </select>
+          </div>
+
+          <!-- Orden de Visualización -->
+          <div class="form-group full-width">
+            <label for="orden">Orden de Visualización *</label>
+            <input
+              type="number"
+              id="orden"
+              name="orden"
+              min="1"
+              [(ngModel)]="nuevaEtapa.orden"
+              required
+            />
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group full-width">
+            <label for="descripcion">Descripción</label>
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              rows="3"
+              [(ngModel)]="nuevaEtapa.descripcion"
+              placeholder="Resumen o características de la etapa..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-guardar" [disabled]="!etapaForm.form.valid || guardando">
+            {{ guardando ? 'Guardando...' : (esEdicion ? 'Actualizar' : 'Guardar Etapa') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
