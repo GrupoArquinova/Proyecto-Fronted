@@ -1,9 +1,24 @@
 // Variables de Paleta Arquinova
 $color-primary: rgb(44, 99, 96);       // #2C6360
-$color-secondary: rgb(60, 112, 110);   // #3C706E
-$color-dark: rgb(25, 35, 34);
+$color-secondary: rgb(60, 112, 110);    // #3C706E
+$color-dark: rgb(25, 35, 34);           // Fondo oscuro general
+$color-card-dark: rgb(32, 46, 44);      // Fondo para tarjetas oscuras
 $color-light: #ffffff;
 $color-muted: rgba(255, 255, 255, 0.7);
+
+/* Habilitar scroll suave y offset para el menú fijo */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px; /* Evita que el menú fijo tape los títulos al hacer clic */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: $color-dark;
+  color: $color-light;
+  overflow-y: auto;
+}
 
 .landing-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,10 +27,18 @@ $color-muted: rgba(255, 255, 255, 0.7);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* NAVBAR */
+/* NAVBAR FIJO */
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,6 +48,7 @@ $color-muted: rgba(255, 255, 255, 0.7);
 
   .logo {
     height: 40px;
+    cursor: pointer;
   }
 
   .nav-links {
@@ -34,54 +58,48 @@ $color-muted: rgba(255, 255, 255, 0.7);
 
     .nav-item {
       text-decoration: none;
-      color: #444444;
+      color: #333;
       font-size: 0.95rem;
+      padding: 0.5rem 1.2rem;
+      border-radius: 50px;
       font-weight: 500;
-      transition: color 0.3s ease;
+      transition: all 0.3s ease;
+      cursor: pointer;
 
-      &.active, &:hover {
-        color: $color-primary;
-      }
-
-      &.active {
-        background-color: $color-primary;
-        color: $color-light;
-        padding: 0.4rem 1rem;
-        border-radius: 20px;
+      &:hover {
+        color: #ffffff;
+        background-color: #2c6360;
       }
     }
 
     .btn-admin {
-  text-decoration: none;
-  background-color: #eef1f1;  // Gris suave de la paleta
-  color: #4a5554;             // Texto gris oscuro neutro
-  border: 1px solid #d8e0df;  // Borde sutil
-  padding: 0.4rem 1.2rem;
-  border-radius: 20px;
-  font-size: 0.88rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  transition: all 0.25s ease;
+      text-decoration: none;
+      background-color: #eef1f1;
+      color: #4a5554;
+      border: 1px solid #d8e0df;
+      padding: 0.4rem 1.2rem;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
 
-  &:hover {
-    background-color: #e0e6e5; // Ligero oscurecimiento al pasar el mouse
-    border-color: #2c6360;     // Borde resalta en verde corporativo
-    color: #2c6360;            // Texto en verde corporativo
-  }
-}
+      &:hover {
+        background-color: #e0e6e5;
+        border-color: $color-primary;
+        color: $color-primary;
+      }
+    }
   }
 }
 
 /* HERO SECTION */
 .hero-section {
   position: relative;
-  flex: 1;
   display: flex;
   align-items: center;
-  padding: 4rem 6rem;
-  background: url('https://res.cloudinary.com/dn3s7utod/image/upload/v1790258654/paisaje_abyyfm.jpg') center/cover no-repeat; // Reemplazar con la ruta de tu imagen de fondo
-  min-height: 75vh;
+  padding: 10rem 6rem 6rem 6rem;
+  background: url('https://res.cloudinary.com/dn3s7utod/image/upload/v1790973153/seebensee-2384369-810x540_tdtca1.jpg') center/cover no-repeat;
+  min-height: 85vh;
 
   .hero-overlay {
     position: absolute;
@@ -89,7 +107,7 @@ $color-muted: rgba(255, 255, 255, 0.7);
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, rgba(20, 30, 29, 0.82) 0%, rgba(20, 30, 29, 0.3) 100%);
+    background: linear-gradient(90deg, rgba(20, 30, 29, 0.85) 0%, rgba(20, 30, 29, 0.35) 100%);
     z-index: 1;
   }
 
@@ -114,7 +132,7 @@ $color-muted: rgba(255, 255, 255, 0.7);
 
       .italic-text {
         font-style: italic;
-        color: #79a8a3; // Tonalidad más clara del verde primario
+        color: #79a8a3;
         font-family: Georgia, serif;
       }
     }
@@ -168,7 +186,7 @@ $color-muted: rgba(255, 255, 255, 0.7);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 1.8rem 4rem;
+  padding: 2.2rem 4rem;
   text-align: center;
 
   .stat-item {
@@ -190,6 +208,615 @@ $color-muted: rgba(255, 255, 255, 0.7);
       margin: 0.2rem 0 0;
       font-size: 0.85rem;
       color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+/* SECCIONES COMUNES */
+.section-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 3.5rem auto;
+
+  .section-tag {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: #79a8a3;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    font-family: Georgia, serif;
+    font-weight: 400;
+    margin: 0.5rem 0 1rem 0;
+    color: #ffffff;
+  }
+
+  p {
+    color: $color-muted;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
+/* 2. PROYECTOS SECTION */
+.projects-section {
+  padding: 7rem 4rem;
+  background-color: #ffffff;
+  color: #333333;
+
+  .section-header {
+    h2 { color: #2c3e3b; }
+    p { color: #666666; }
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+
+    .project-card {
+      background: #ffffff;
+      border: 1px solid #e0e6e5;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      }
+
+      .card-image {
+        height: 220px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+
+        .badge-status {
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          background: rgba(0, 0, 0, 0.6);
+          color: #fff;
+          padding: 0.3rem 0.8rem;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+      }
+
+      .card-body {
+        padding: 1.8rem;
+
+        .location {
+          font-size: 0.8rem;
+          color: #7a8a88;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        h3 {
+          font-size: 1.6rem;
+          font-family: Georgia, serif;
+          margin: 0.4rem 0 0.8rem 0;
+          color: #253533;
+        }
+
+        p {
+          font-size: 0.9rem;
+          color: #555555;
+          line-height: 1.5;
+          margin-bottom: 1.5rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .card-metrics {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          padding: 1rem 0;
+          border-top: 1px solid #eee;
+          border-bottom: 1px solid #eee;
+          text-align: center;
+          margin-bottom: 1.5rem;
+
+          strong {
+            display: block;
+            font-size: 1.1rem;
+            color: #2c6360;
+            font-family: Georgia, serif;
+          }
+
+          span {
+            font-size: 0.7rem;
+            color: #888;
+            letter-spacing: 1px;
+          }
+        }
+
+        .card-link {
+          text-decoration: none;
+          color: #2c6360;
+          font-weight: 600;
+          font-size: 0.95rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: gap 0.2s ease;
+
+          &:hover {
+            gap: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 3. RESPALDO SECTION */
+.trust-section {
+  padding: 7rem 4rem;
+  background-color: $color-dark;
+
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+
+    .trust-card {
+      background: $color-card-dark;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 2rem;
+      border-radius: 10px;
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+
+      .trust-icon {
+        font-size: 1.8rem;
+        background: rgba(44, 99, 96, 0.3);
+        padding: 0.8rem;
+        border-radius: 8px;
+      }
+
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 0.4rem 0;
+        color: #ffffff;
+      }
+
+      p {
+        font-size: 0.88rem;
+        color: $color-muted;
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+/* 5. BENEFICIOS SECTION */
+.benefits-section {
+  padding: 7rem 4rem;
+  background-color: #f8faf9; // Fondo claro limpio que contrasta bien con las tarjetas blancas
+  color: #333333;
+
+  .section-header {
+    h2 { color: #2c3e3b; }
+    p { color: #666666; }
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 columnas como en tu imagen
+    gap: 1.8rem;
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 100%;
+
+    .benefit-card {
+      background: #ffffff;
+      border: 1px solid #e0e6e5;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      }
+
+      .icon-container {
+        width: 45px;
+        height: 45px;
+        background: rgba(44, 99, 96, 0.1);
+        color: $color-primary;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+      }
+
+      h3 {
+        font-size: 1.15rem;
+        font-family: Georgia, serif;
+        margin: 0 0 0.6rem 0;
+        color: #253533;
+      }
+
+      p {
+        font-size: 0.85rem;
+        color: #555555;
+        line-height: 1.5;
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* 4. CONTACTO SECTION */
+.contact-section {
+  padding: 7rem 4rem;
+  background-color: rgb(20, 30, 29);
+
+  .contact-container-box {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+    background: $color-card-dark;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 3rem;
+    width: 100%;
+
+    .contact-info {
+      h2 { font-size: 2.5rem; font-family: Georgia, serif; margin: 0.5rem 0 1rem 0; }
+      p { color: $color-muted; line-height: 1.6; margin-bottom: 2rem; }
+
+      .contact-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .icon-container {
+      width: 42px;
+      height: 42px;
+      background-color: rgba(121, 168, 163, 0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #79a8a3;
+      flex-shrink: 0;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .label {
+      font-size: 0.75rem;
+      color: #7a8a88;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+    }
+
+    p, a {
+      font-size: 1rem;
+      color: #fff;
+      margin: 0;
+      text-decoration: none;
+    }
+
+    .whatsapp-link {
+      color: #79a8a3;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #9cd4cf;
+      }
+    }
+  }
+}
+    }
+
+    .contact-form-card {
+      background: rgb(25, 35, 34);
+      padding: 2.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+
+      h3 {
+        font-size: 1.4rem;
+        font-family: Georgia, serif;
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.2rem;
+
+        label {
+          display: block;
+          font-size: 0.82rem;
+          color: $color-muted;
+          margin-bottom: 0.4rem;
+        }
+
+        input, select, textarea {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          padding: 0.75rem 1rem;
+          border-radius: 8px;
+          color: #fff;
+          font-size: 0.9rem;
+          outline: none;
+          transition: border-color 0.2s;
+
+          &:focus {
+            border-color: #79a8a3;
+          }
+
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+          }
+        }
+
+        select option {
+          background: #253533;
+          color: #fff;
+        }
+      }
+
+      .btn-submit {
+        width: 100%;
+        background-color: $color-primary;
+        color: #fff;
+        border: none;
+        padding: 0.9rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-top: 0.5rem;
+
+        &:hover:not(:disabled) {
+          background-color: $color-secondary;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+/* FOOTER PROFESIONAL */
+.footer-arquinova {
+  background-color: rgb(15, 23, 22);
+  color: #ffffff;
+  padding: 3rem 2rem 1.5rem 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .footer-col {
+      .footer-logo {
+        height: 38px;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        color: $color-muted;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        max-width: 350px;
+        margin-bottom: 1.5rem;
+      }
+
+      h4 {
+        font-size: 1.1rem;
+        font-family: Georgia, serif;
+        margin-bottom: 1.2rem;
+        color: #ffffff;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          margin-bottom: 0.8rem;
+
+          a {
+            color: $color-muted;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+
+            &:hover {
+              color: #79a8a3;
+            }
+          }
+        }
+      }
+
+      .footer-contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+
+        span {
+          color: $color-muted;
+          font-size: 0.88rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+    }
+  }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 1.5rem auto 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.4);
+
+    .legal-links {
+      display: flex;
+      gap: 1.5rem;
+
+      a {
+        color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+/* BOTÓN FLOTANTE WHATSAPP */
+.whatsapp-float {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #25d366;
+  color: #fff;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1024px) {
+  .benefits-section .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-arquinova .footer-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 968px) {
+  .projects-section .projects-grid,
+  .trust-section .trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-section .contact-container-box {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-banner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .benefits-section .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-arquinova .footer-container {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-arquinova .footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+
+.form-group-checkbox {
+  margin-bottom: 1rem;
+
+  .checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    line-height: 1.4;
+
+    input[type="checkbox"] {
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    a {
+      color: #5eead4;
+      text-decoration: underline;
     }
   }
 }

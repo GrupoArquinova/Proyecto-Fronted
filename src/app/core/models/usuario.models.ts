@@ -3,6 +3,6 @@ export interface Usuario {
   rolId: number;
   nombreCompleto: string;
   correo: string;
-  passwordHash?: string;
+  password?: string;   // ← antes: passwordHash. Contraseña en texto plano que el admin escribe.
   activo: boolean;
 }

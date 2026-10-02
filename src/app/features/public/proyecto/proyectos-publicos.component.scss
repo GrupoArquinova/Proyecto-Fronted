@@ -1,0 +1,172 @@
+.all-projects-container {
+  padding: 120px 4rem 4rem 4rem;
+  background-color: #141e1d;
+  min-height: 100vh;
+  color: #fff;
+
+  .header-seccion {
+    text-align: center;
+    margin-bottom: 3rem;
+
+    .section-tag {
+      color: #79a8a3;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      font-family: Georgia, serif;
+      margin: 0.5rem 0;
+      color: #fff;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1rem;
+    }
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @media (max-width: 992px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+
+    .project-card {
+      background: #202e2c;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      }
+
+      .card-image {
+        height: 220px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+
+        .badge-status {
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(4px);
+          color: #fff;
+          padding: 0.3rem 0.8rem;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+      }
+
+      .card-body {
+        padding: 1.8rem;
+
+        .location {
+          font-size: 0.8rem;
+          color: #7a8a88;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        h3 {
+          font-size: 1.5rem;
+          font-family: Georgia, serif;
+          margin: 0.4rem 0 0.8rem 0;
+          color: #fff;
+        }
+
+        p {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.7);
+          line-height: 1.5;
+          margin-bottom: 1.5rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        /* Estilo para las métricas de lotes y disponibles */
+        .card-metrics {
+          display: flex;
+          justify-content: space-between;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 1rem 0;
+          margin-bottom: 1.5rem;
+
+          .metric {
+            text-align: center;
+            flex: 1;
+
+            strong {
+              display: block;
+              font-size: 1.1rem;
+              color: #fff;
+              font-family: Georgia, serif;
+            }
+
+            span {
+              font-size: 0.7rem;
+              color: #7a8a88;
+              letter-spacing: 1px;
+              margin-top: 0.2rem;
+              display: block;
+            }
+          }
+        }
+
+        .card-link {
+          color: #79a8a3;
+          text-decoration: none;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: #9cd4cf;
+          }
+        }
+      }
+    }
+  }
+
+  .back-home {
+    text-align: center;
+    margin-top: 3rem;
+
+    a {
+      color: #fff;
+      background: #2c6360;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #357774;
+      }
+    }
+  }
+}

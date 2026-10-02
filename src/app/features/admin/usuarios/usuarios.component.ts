@@ -28,9 +28,9 @@ export class UsuariosComponent implements OnInit {
     this.cargarAdmins();
   }
 
-  // Requisitos de contraseña (mismos que en reset-password)
+  // Requisitos de contraseña (mismos que exige el backend al crear)
   get pass(): string {
-    return this.usuarioActual.passwordHash ?? '';
+    return this.usuarioActual.password ?? '';
   }
   get tieneLongitudMinima(): boolean { return this.pass.length >= 8; }
   get tieneMayuscula(): boolean { return /[A-Z]/.test(this.pass); }
@@ -50,7 +50,7 @@ export class UsuariosComponent implements OnInit {
       rolId: 1, // Asumiendo ID 1 para Administrador
       nombreCompleto: '',
       correo: '',
-      passwordHash: '',
+      password: '',
       activo: true
     };
   }
@@ -75,7 +75,7 @@ export class UsuariosComponent implements OnInit {
     this.errorForm = '';
     this.verPassword = false;
     // La contraseña se deja vacía: solo se cambia si el admin escribe una nueva
-    this.usuarioActual = { ...admin, passwordHash: '' };
+    this.usuarioActual = { ...admin, password: '' };
     this.modalAbierto = true;
   }
 
@@ -90,8 +90,8 @@ export class UsuariosComponent implements OnInit {
   }
 
   guardarUsuario(): void {
-    const { passwordHash, ...resto } = this.usuarioActual;
-    const nuevaPass = passwordHash?.trim() ?? '';
+    const { password, ...resto } = this.usuarioActual;
+    const nuevaPass = password?.trim() ?? '';
 
     if (!resto.nombreCompleto.trim() || !resto.correo.trim()) {
       this.errorForm = 'El nombre y el correo son obligatorios.';
@@ -102,13 +102,13 @@ export class UsuariosComponent implements OnInit {
       return;
     }
     if (nuevaPass && !this.esPasswordValida) {
-      this.errorForm = 'La contraseña no cumple todos los requisitos.';
+      this.errorForm = 'La contraseña debe tener mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y carácter especial.';
       return;
     }
     this.errorForm = '';
 
     // Solo se envía la contraseña si el admin escribió una
-    const datos: Usuario = nuevaPass ? { ...resto, passwordHash: nuevaPass } : resto;
+    const datos: Usuario = nuevaPass ? { ...resto, password: nuevaPass } : resto;
 
     const peticion =
       this.esEdicion && this.usuarioActual.id
@@ -131,10 +131,25 @@ export class UsuariosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al guardar', err);
-        this.errorForm =
-          err?.error?.message || err?.error?.mensaje || 'No se pudo guardar. Intenta de nuevo.';
+        this.errorForm = this.extraerMensajeError(err);
       }
     });
+  }
+
+  /**
+   * Arma un mensaje legible a partir de la respuesta de error del backend.
+   * Las validaciones de campo (ej. requisitos de contraseña, correo inválido)
+   * vienen en err.error.detalles como un mapa campo -> mensaje.
+   */
+  private extraerMensajeError(err: any): string {
+    const detalles = err?.error?.detalles;
+    if (detalles && typeof detalles === 'object') {
+      const mensajes = Object.values(detalles) as string[];
+      if (mensajes.length > 0) {
+        return mensajes.join(' ');
+      }
+    }
+    return err?.error?.mensaje || err?.error?.message || 'No se pudo guardar. Intenta de nuevo.';
   }
 
   eliminarAdmin(id?: number): void {

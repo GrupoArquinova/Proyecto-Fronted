@@ -54,11 +54,6 @@ export class SolicitudesComponent implements OnInit {
     this.filtroEstado = estadoId;
   }
 
-  /**
-   * Cambia el estado desde los botones rápidos, manteniendo la observación
-   * actual para no borrarla (el backend sobrescribe ese campo siempre que
-   * se llama /atender).
-   */
   cambiarEstado(item: Solicitud, nuevoEstadoId: number): void {
     this.solicitudService.atenderSolicitud(item.id, {
       estadoId: nuevoEstadoId,
@@ -76,15 +71,15 @@ export class SolicitudesComponent implements OnInit {
   }
 
   obtenerClaseEstado(estadoId: number): string {
-  switch (estadoId) {
-    case 1: return 'badge-nueva';
-    case 2: return 'badge-contactada';
-    case 3: return 'badge-seguimiento';
-    case 4: return 'badge-atendida';
-    case 6: return 'badge-cerrada';
-    default: return 'badge-nueva';
+    switch (estadoId) {
+      case 1: return 'badge-nueva';
+      case 2: return 'badge-contactada';
+      case 3: return 'badge-seguimiento';
+      case 4: return 'badge-atendida';
+      case 6: return 'badge-cerrada';
+      default: return 'badge-nueva';
+    }
   }
-}
 
   abrirModalNotas(solicitud: Solicitud): void {
     this.solicitudSeleccionada = solicitud;
@@ -97,10 +92,6 @@ export class SolicitudesComponent implements OnInit {
     this.solicitudSeleccionada = null;
   }
 
-  /**
-   * Guarda la nota manteniendo el estado actual, por el mismo motivo
-   * que cambiarEstado mantiene la observación.
-   */
   guardarObservacion(): void {
     if (!this.solicitudSeleccionada) return;
 

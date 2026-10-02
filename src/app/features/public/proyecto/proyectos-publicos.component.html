@@ -1,0 +1,50 @@
+<div class="all-projects-container">
+  <div class="header-seccion">
+    <span class="section-tag">PORTAFOLIO COMPLETO</span>
+    <h2>Todos Nuestros Proyectos</h2>
+    <p>Explora la totalidad de nuestros desarrollos inmobiliarios y encuentra el espacio ideal para ti.</p>
+  </div>
+
+  <div class="projects-grid">
+    <div class="project-card" *ngFor="let proyecto of listaProyectos">
+      
+      <!-- Imagen y Estado -->
+      <div class="card-image" [style.backgroundImage]="'url(' + (proyecto.imagenUrl || 'assets/images/default-project.jpg') + ')'">
+        <span class="badge-status" *ngIf="proyecto.estado">{{ proyecto.estado }}</span>
+      </div>
+
+      <!-- Cuerpo de la Tarjeta -->
+      <div class="card-body">
+        <span class="location">{{ proyecto.ubicacion || 'Colombia' }}</span>
+        <h3>{{ proyecto.nombre }}</h3>
+        <p>{{ proyecto.descripcion || 'Proyecto campestre diseñado para quienes buscan tranquilidad, naturaleza y alta plusvalía.' }}</p>
+
+        <!-- Métricas (Lotes, Disponibles, 360) -->
+        <div class="card-metrics">
+          <div class="metric">
+            <strong>{{ proyecto.totalLotes || 0 }}</strong>
+            <span>LOTES</span>
+          </div>
+          <div class="metric">
+            <strong>{{ proyecto.lotesDisponibles || 0 }}</strong>
+            <span>DISPONIBLES</span>
+          </div>
+          <div class="metric">
+            <strong>360°</strong>
+            <span>EXPERIENCIA</span>
+          </div>
+        </div>
+
+        <!-- Enlace de Exploración -->
+        <a [routerLink]="['/proyectos', proyecto.id]" class="card-link">
+          Explorar proyecto &rarr;
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="back-home">
+    <a routerLink="/">&larr; Volver al Inicio</a>
+  </div>
+</div>
