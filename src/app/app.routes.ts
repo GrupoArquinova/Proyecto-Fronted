@@ -16,9 +16,12 @@ import { ContenidoInstitucionalComponent } from './features/admin/contenido/cont
 import { ReportesComponent } from './features/admin/reportes/reportes.component';
 import { ZonasComunesComponent } from './features/admin/zonasComunes/zonas-comunes.component';
 import { UsuariosComponent } from './features/admin/usuarios/usuarios.component';
+import { CasasModeloComponent } from './features/admin/CasaModelo/casas-modelo.component';
+import { ProyectosPublicosComponent } from './features/public/proyecto/proyectos-publicos.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
+  { path: 'proyectos', component: ProyectosPublicosComponent},
 
   { path: 'login', component: LoginComponent },
   { path: 'recuperar-password', component: RecuperarPasswordComponent },
@@ -35,6 +38,7 @@ export const routes: Routes = [
       { path: 'etapas', component: EtapasComponent },
       { path: 'lotes', component: LotesComponent },
       { path: 'zonas-comunes', component: ZonasComunesComponent },
+      { path: 'casas-modelo', component: CasasModeloComponent},
       { path: 'multimedia', component: MultimediaComponent },
       { path: 'ubicaciones', component: UbicacionesComponent },
       { path: 'solicitudes', component: SolicitudesComponent },

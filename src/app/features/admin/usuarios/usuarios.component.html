@@ -70,27 +70,27 @@
         </div>
 
         <div class="form-group">
-          <label>{{ esEdicion ? 'Nueva Contraseña (Opcional)' : 'Contraseña *' }}</label>
-          <div class="password-wrapper">
-            <input [type]="verPassword ? 'text' : 'password'"
-                   name="nueva-password"
-                   autocomplete="new-password"
-                   [(ngModel)]="usuarioActual.passwordHash"
-                   [placeholder]="esEdicion ? 'Déjala vacía para mantener la actual' : '••••••••'">
-            <button type="button" class="toggle-pass" (click)="verPassword = !verPassword">
-              {{ verPassword ? 'Ocultar' : 'Ver' }}
-            </button>
-          </div>
-          <small class="hint" *ngIf="esEdicion && !mostrarRequisitos">Si la dejas vacía, la contraseña actual no cambia.</small>
+  <label>{{ esEdicion ? 'Nueva Contraseña (Opcional)' : 'Contraseña *' }}</label>
+  <div class="password-wrapper">
+    <input [type]="verPassword ? 'text' : 'password'"
+           name="nueva-password"
+           autocomplete="new-password"
+           [(ngModel)]="usuarioActual.password"
+           [placeholder]="esEdicion ? 'Déjala vacía para mantener la actual' : '••••••••'">
+    <button type="button" class="toggle-pass" (click)="verPassword = !verPassword">
+      {{ verPassword ? 'Ocultar' : 'Ver' }}
+    </button>
+  </div>
+  <small class="hint" *ngIf="esEdicion && !mostrarRequisitos">Si la dejas vacía, la contraseña actual no cambia.</small>
 
-          <ul class="requisitos" *ngIf="mostrarRequisitos">
-            <li [class.ok]="tieneLongitudMinima">{{ tieneLongitudMinima ? '✓' : '○' }} Mínimo 8 caracteres</li>
-            <li [class.ok]="tieneMayuscula">{{ tieneMayuscula ? '✓' : '○' }} Una mayúscula</li>
-            <li [class.ok]="tieneMinuscula">{{ tieneMinuscula ? '✓' : '○' }} Una minúscula</li>
-            <li [class.ok]="tieneNumero">{{ tieneNumero ? '✓' : '○' }} Un número</li>
-            <li [class.ok]="tieneEspecial">{{ tieneEspecial ? '✓' : '○' }} Un carácter especial</li>
-          </ul>
-        </div>
+  <ul class="requisitos" *ngIf="mostrarRequisitos">
+    <li [class.ok]="tieneLongitudMinima">{{ tieneLongitudMinima ? '✓' : '○' }} Mínimo 8 caracteres</li>
+    <li [class.ok]="tieneMayuscula">{{ tieneMayuscula ? '✓' : '○' }} Una mayúscula</li>
+    <li [class.ok]="tieneMinuscula">{{ tieneMinuscula ? '✓' : '○' }} Una minúscula</li>
+    <li [class.ok]="tieneNumero">{{ tieneNumero ? '✓' : '○' }} Un número</li>
+    <li [class.ok]="tieneEspecial">{{ tieneEspecial ? '✓' : '○' }} Un carácter especial</li>
+  </ul>
+</div>
 
         <div class="form-group checkbox-group">
           <label>

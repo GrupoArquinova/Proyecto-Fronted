@@ -20,10 +20,11 @@ export class SolicitudService {
     return this.http.get<Solicitud[]>(this.apiUrl);
   }
 
-  /**
-   * Único endpoint del backend para cambiar estado y/o notas internas.
-   * Siempre manda ambos campos juntos para no pisar el que no se está editando.
-   */
+  // Corregido para apuntar a la ruta pública del backend
+  enviarSolicitud(datos: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/publico`, datos);
+  }
+
   atenderSolicitud(id: number, payload: AtenderSolicitudPayload): Observable<Solicitud> {
     return this.http.patch<Solicitud>(`${this.apiUrl}/${id}/atender`, payload);
   }
