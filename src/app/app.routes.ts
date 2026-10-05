@@ -1,50 +1,96 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './features/auth/login.component/login.component';
-import { DashboardComponent } from './features/admin/dashboard/dashboard.component';
 import { authGuard } from './core/guards/auth.guard';
-import { RecuperarPasswordComponent } from './features/auth/recuperar-password/recuperar-password.component';
-import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
-import { HomeComponent } from './features/public/home/home.component';
-import { Resumen } from './features/admin/resumen/resumen';
-import { ProyectosComponent } from './features/admin/proyectos/proyectos';
-import { LotesComponent } from './features/admin/lote/lotes.component';
-import { EtapasComponent } from './features/admin/etapas/etapas.component';
-import { MultimediaComponent } from './features/admin/multimedia/multimedia.component';
-import { UbicacionesComponent } from './features/admin/ubicaciones/ubicaciones.component';
-import { SolicitudesComponent } from './features/admin/solicitudes/solicitudes.component';
-import { ContenidoInstitucionalComponent } from './features/admin/contenido/contenido.component';
-import { ReportesComponent } from './features/admin/reportes/reportes.component';
-import { ZonasComunesComponent } from './features/admin/zonasComunes/zonas-comunes.component';
-import { UsuariosComponent } from './features/admin/usuarios/usuarios.component';
-import { CasasModeloComponent } from './features/admin/CasaModelo/casas-modelo.component';
-import { ProyectosPublicosComponent } from './features/public/proyecto/proyectos-publicos.component';
 
+// Todas las rutas usan lazy loading: cada pantalla se descarga solo cuando se visita,
+// asi el panel de administracion no engorda el bundle inicial de la pagina publica.
 export const routes: Routes = [
-  { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'proyectos', component: ProyectosPublicosComponent},
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./features/public/home/home.component').then(m => m.HomeComponent)
+  },
+  {
+    path: 'proyectos',
+    loadComponent: () => import('./features/public/proyecto/proyectos-publicos.component')
+      .then(m => m.ProyectosPublicosComponent)
+  },
 
-  { path: 'login', component: LoginComponent },
-  { path: 'recuperar-password', component: RecuperarPasswordComponent },
-  { path: 'reset-password', component: ResetPasswordComponent },
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login.component/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'recuperar-password',
+    loadComponent: () => import('./features/auth/recuperar-password/recuperar-password.component')
+      .then(m => m.RecuperarPasswordComponent)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./features/auth/reset-password/reset-password.component')
+      .then(m => m.ResetPasswordComponent)
+  },
 
   {
     path: 'admin',
-    component: DashboardComponent,
+    loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard],
+    canActivateChild: [authGuard], // revisa la sesión en cada navegación dentro del panel
     children: [
       { path: '', redirectTo: 'resumen', pathMatch: 'full' },
-      { path: 'resumen', component: Resumen },
-      { path: 'proyectos', component: ProyectosComponent },
-      { path: 'etapas', component: EtapasComponent },
-      { path: 'lotes', component: LotesComponent },
-      { path: 'zonas-comunes', component: ZonasComunesComponent },
-      { path: 'casas-modelo', component: CasasModeloComponent},
-      { path: 'multimedia', component: MultimediaComponent },
-      { path: 'ubicaciones', component: UbicacionesComponent },
-      { path: 'solicitudes', component: SolicitudesComponent },
-      { path: 'contenido-institucional', component: ContenidoInstitucionalComponent },
-      { path: 'usuarios', component: UsuariosComponent },
-      { path: 'reportes', component: ReportesComponent }
+      {
+        path: 'resumen',
+        loadComponent: () => import('./features/admin/resumen/resumen').then(m => m.Resumen)
+      },
+      {
+        path: 'proyectos',
+        loadComponent: () => import('./features/admin/proyectos/proyectos').then(m => m.ProyectosComponent)
+      },
+      {
+        path: 'etapas',
+        loadComponent: () => import('./features/admin/etapas/etapas.component').then(m => m.EtapasComponent)
+      },
+      {
+        path: 'lotes',
+        loadComponent: () => import('./features/admin/lote/lotes.component').then(m => m.LotesComponent)
+      },
+      {
+        path: 'zonas-comunes',
+        loadComponent: () => import('./features/admin/zonas-comunes/zonas-comunes.component')
+          .then(m => m.ZonasComunesComponent)
+      },
+      {
+        path: 'casas-modelo',
+        loadComponent: () => import('./features/admin/casas-modelo/casas-modelo.component')
+          .then(m => m.CasasModeloComponent)
+      },
+      {
+        path: 'multimedia',
+        loadComponent: () => import('./features/admin/multimedia/multimedia.component')
+          .then(m => m.MultimediaComponent)
+      },
+      {
+        path: 'ubicaciones',
+        loadComponent: () => import('./features/admin/ubicaciones/ubicaciones.component')
+          .then(m => m.UbicacionesComponent)
+      },
+      {
+        path: 'solicitudes',
+        loadComponent: () => import('./features/admin/solicitudes/solicitudes.component')
+          .then(m => m.SolicitudesComponent)
+      },
+      {
+        path: 'contenido-institucional',
+        loadComponent: () => import('./features/admin/contenido/contenido.component')
+          .then(m => m.ContenidoInstitucionalComponent)
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () => import('./features/admin/usuarios/usuarios.component').then(m => m.UsuariosComponent)
+      },
+      {
+        path: 'reportes',
+        loadComponent: () => import('./features/admin/reportes/reportes.component').then(m => m.ReportesComponent)
+      }
     ]
   },
 
