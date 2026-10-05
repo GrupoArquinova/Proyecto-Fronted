@@ -275,7 +275,7 @@
             </div>
             <div>
               <span class="label">Teléfono</span>
-              <p>(+57) 316 784 9671</p>
+              <p>{{ contacto.telefonoTexto }}</p>
             </div>
           </div>
 
@@ -285,7 +285,7 @@
             </div>
             <div>
               <span class="label">Correo</span>
-              <p>ventas@arquinova.com.co</p>
+              <p>{{ contacto.correo }}</p>
             </div>
           </div>
 
@@ -295,7 +295,7 @@
             </div>
             <div>
               <span class="label">WhatsApp</span>
-              <a href="https://wa.me/573167849671" target="_blank" class="whatsapp-link">Escríbanos ahora &rarr;</a>
+              <a [href]="whatsappUrl" target="_blank" rel="noopener" class="whatsapp-link">Escríbanos ahora &rarr;</a>
             </div>
           </div>
         </div>
@@ -312,7 +312,7 @@
             </div>
             <div class="form-group">
               <label>Teléfono *</label>
-              <input type="text" formControlName="telefono" placeholder="316 784 9671" />
+              <input type="text" formControlName="telefono" placeholder="Ej: 300 123 4567" />
             </div>
           </div>
 
@@ -360,8 +360,8 @@
         <p>Desarrollo de proyectos inmobiliarios campestres de alta calidad en Colombia, conectando a las familias con la naturaleza y la tranquilidad.</p>
         <div class="footer-contact-info">
           <span>Armenia, Quindio, Colombia</span>
-          <span>ventas@arquinova.com.co</span>
-          <span>+57 3167849671</span>
+          <span>{{ contacto.correo }}</span>
+          <span>{{ contacto.telefonoTexto }}</span>
         </div>
       </div>
       <div class="footer-col">

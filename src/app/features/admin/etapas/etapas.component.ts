@@ -1,7 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Etapa, EtapaRequest, ProyectoRef } from '../../../core/models/etapa.models';
+import { Etapa, EtapaRequest } from '../../../core/models/etapa.models';
+import { Proyecto } from '../../../core/models/proyecto.models';
+import { ProyectoService } from '../../../core/services/proyecto.service';
 import { EtapaService } from '../../../core/services/etapa.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
@@ -15,11 +17,12 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
 })
 export class EtapasComponent implements OnInit {
   private etapaService = inject(EtapaService);
+  private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
   private confirmDialog = inject(ConfirmDialogService);
 
   etapas: Etapa[] = [];
-  proyectosDisponibles: ProyectoRef[] = [];
+  proyectosDisponibles: Proyecto[] = [];
   cargando: boolean = false;
   mostrarModal: boolean = false;
   guardando: boolean = false;
@@ -86,7 +89,7 @@ export class EtapasComponent implements OnInit {
   }
 
   cargarProyectos(): void {
-    this.etapaService.obtenerProyectos().subscribe({
+    this.proyectoService.getProyectos().subscribe({
       next: (data) => (this.proyectosDisponibles = data),
       error: (err) => {
         console.error('Error al cargar proyectos:', err);
@@ -103,7 +106,7 @@ export class EtapasComponent implements OnInit {
       descripcion: '',
       orden: 1,
       activo: true,
-      proyectoId: this.proyectosDisponibles.length > 0 ? this.proyectosDisponibles[0].id : null
+      proyectoId: this.proyectosDisponibles.length > 0 ? (this.proyectosDisponibles[0].id ?? null) : null
     };
     this.mostrarModal = true;
   }

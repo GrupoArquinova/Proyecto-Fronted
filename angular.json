@@ -21,11 +21,7 @@
           "builder": "@angular/build:application",
           "options": {
             "styles": [
-              "src/styles.scss",
-              "node_modules/pannellum/build/pannellum.css"
-            ],
-            "scripts": [
-              "node_modules/pannellum/build/pannellum.js"
+              "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -63,8 +59,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "8kB",
+                  "maximumError": "16kB"
                 }
               ],
               "outputHashing": "all"

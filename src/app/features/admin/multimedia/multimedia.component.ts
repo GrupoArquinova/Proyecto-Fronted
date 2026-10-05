@@ -3,6 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Viewer } from '@photo-sphere-viewer/core';
 import { Multimedia, TipoMultimedia } from '../../../core/models/multimedia.models';
+import { Proyecto } from '../../../core/models/proyecto.models';
+import { Lote } from '../../../core/models/lote.models';
+import { ZonaComun } from '../../../core/models/zona-comun.models';
+import { CasaModelo } from '../../../core/models/casa-modelo.models';
+import { ProyectoService } from '../../../core/services/proyecto.service';
+import { LoteService } from '../../../core/services/lote.service';
 import { MultimediaService } from '../../../core/services/multimedia.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -19,16 +25,18 @@ type TipoPadre = 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo';
 })
 export class MultimediaComponent implements OnInit, OnDestroy {
   private multimediaService = inject(MultimediaService);
+  private proyectoService = inject(ProyectoService);
+  private loteService = inject(LoteService);
   private cloudinaryService = inject(CloudinaryService);
   private toastService = inject(ToastService);
   private confirmDialog = inject(ConfirmDialogService);
 
   listaMultimedia: Multimedia[] = [];
   multimediaFiltrada: Multimedia[] = [];
-  proyectosDisponibles: any[] = [];
-  lotesDisponibles: any[] = [];
-  zonasComunesDisponibles: any[] = [];
-  casasModelosDisponibles: any[] = [];
+  proyectosDisponibles: Proyecto[] = [];
+  lotesDisponibles: Lote[] = [];
+  zonasComunesDisponibles: ZonaComun[] = [];
+  casasModelosDisponibles: CasaModelo[] = [];
 
   cargando = false;
   mostrarModal = false;
@@ -99,8 +107,8 @@ export class MultimediaComponent implements OnInit, OnDestroy {
   }
 
   cargarCatalogosBase(): void {
-    this.multimediaService.obtenerProyectos().subscribe(res => this.proyectosDisponibles = res);
-    this.multimediaService.obtenerLotes().subscribe(res => this.lotesDisponibles = res);
+    this.proyectoService.getProyectos().subscribe(res => this.proyectosDisponibles = res);
+    this.loteService.obtenerLotes().subscribe(res => this.lotesDisponibles = res);
   }
 
   aplicarFiltros(): void {

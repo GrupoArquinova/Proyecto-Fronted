@@ -2,7 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Lote, EstadoLote, Etapa } from '../../../core/models/lote.models';
-import { LoteService, Proyecto } from '../../../core/services/lote.service';
+import { Proyecto } from '../../../core/models/proyecto.models';
+import { LoteService } from '../../../core/services/lote.service';
+import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
@@ -14,6 +16,7 @@ import { ToastService } from '../../../core/services/toast.service';
 })
 export class LotesComponent implements OnInit {
   private loteService = inject(LoteService);
+  private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
 
   lotes: Lote[] = [];
@@ -101,7 +104,7 @@ export class LotesComponent implements OnInit {
   }
 
   cargarProyectos(): void {
-    this.loteService.obtenerProyectos().subscribe({
+    this.proyectoService.getProyectos().subscribe({
       next: (data) => (this.proyectosDisponibles = data),
       error: (err) => {
         console.error('Error al cargar proyectos:', err);
@@ -224,7 +227,6 @@ export class LotesComponent implements OnInit {
     if (!lote.id) return;
     this.loteService.cambiarEstado(lote.id, Number(lote.estadoId)).subscribe({
       next: () => {
-        console.log(`Estado de ${lote.codigo} actualizado`);
         this.toastService.showSuccess('Estado del lote actualizado');
       },
       error: (err) => {
@@ -238,7 +240,6 @@ export class LotesComponent implements OnInit {
     if (!lote.id) return;
     this.loteService.toggleActivo(lote.id, lote.activo).subscribe({
       next: () => {
-        console.log(`Visibilidad de ${lote.codigo} actualizada`);
         this.toastService.showSuccess('Visibilidad del lote actualizada');
         // Volver a aplicar filtros por si el switch afecta la vista filtrada por estado
         this.aplicarFiltros();

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZonaComunService } from '../../../core/services/zona-comun.service';
 import { ZonaComun } from '../../../core/models/zona-comun.models';
-import { ReporteService } from '../../../core/services/reporte.service';
+import { Proyecto } from '../../../core/models/proyecto.models';
+import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ZonaComunImagenService } from '../../../core/services/zona-comun-imagen.service';
 import { ZonaComunImagen } from '../../../core/models/zona-comun-imagen.models';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
@@ -17,7 +18,7 @@ import { CloudinaryService } from '../../../core/services/cloudinary.service';
 })
 export class ZonasComunesComponent implements OnInit {
   private zonaService = inject(ZonaComunService);
-  private reporteService = inject(ReporteService);
+  private proyectoService = inject(ProyectoService);
   private zonaImagenService = inject(ZonaComunImagenService);
   private cloudinaryService = inject(CloudinaryService);
 
@@ -45,7 +46,7 @@ export class ZonasComunesComponent implements OnInit {
   };
 
   listaZonas: ZonaComun[] = [];
-  listaProyectos: any[] = [];
+  listaProyectos: Proyecto[] = [];
 
   proyectoIdSeleccionado: string | number = 'todos';
 
@@ -70,7 +71,7 @@ export class ZonasComunesComponent implements OnInit {
   }
 
   cargarProyectos(): void {
-    this.reporteService.getProyectosResumen().subscribe({
+    this.proyectoService.getProyectos().subscribe({
       next: (proyectos) => {
         this.listaProyectos = proyectos;
         this.cargarZonas();
@@ -93,7 +94,7 @@ export class ZonasComunesComponent implements OnInit {
       let zonasAcumuladas: ZonaComun[] = [];
 
       this.listaProyectos.forEach(proj => {
-        this.zonaService.listarPorProyecto(proj.id).subscribe({
+        this.zonaService.listarPorProyecto(proj.id as number).subscribe({
           next: (zonas) => {
             const zonasConProyecto = zonas.map(z => ({ ...z, proyectoNombre: proj.nombre }));
             zonasAcumuladas.push(...zonasConProyecto);
@@ -138,7 +139,7 @@ export class ZonasComunesComponent implements OnInit {
     this.esEdicion = false;
     const defaultProj = this.proyectoIdSeleccionado !== 'todos'
       ? Number(this.proyectoIdSeleccionado)
-      : (this.listaProyectos.length > 0 ? this.listaProyectos[0].id : 1);
+      : (this.listaProyectos.length > 0 ? (this.listaProyectos[0].id ?? 1) : 1);
 
     this.zonaActual = {
       proyectoId: defaultProj,
@@ -258,8 +259,8 @@ export class ZonasComunesComponent implements OnInit {
   }
 
   /** Sube el archivo a Cloudinary en vez de convertirlo a base64. */
-  onArchivoSeleccionado(event: any): void {
-    const file = event.target.files[0];
+  onArchivoSeleccionado(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
     this.archivoSeleccionado = file;

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Etapa, EtapaRequest, ProyectoRef } from '../models/etapa.models';
+import { Etapa, EtapaRequest } from '../models/etapa.models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -10,14 +10,9 @@ import { environment } from '../../../environments/environment';
 export class EtapaService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/etapas`;
-  private proyectosUrl = `${environment.apiUrl}/proyectos`;
 
   obtenerEtapas(): Observable<Etapa[]> {
     return this.http.get<Etapa[]>(this.apiUrl);
-  }
-
-  obtenerProyectos(): Observable<ProyectoRef[]> {
-    return this.http.get<ProyectoRef[]>(this.proyectosUrl);
   }
 
   crearEtapa(etapa: EtapaRequest): Observable<Etapa> {

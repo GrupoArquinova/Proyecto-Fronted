@@ -8,6 +8,12 @@ export interface CloudinaryUploadResult {
   resourceType: string; // 'image', 'video', 'raw'
 }
 
+/** Campos de la respuesta de Cloudinary que usamos. */
+interface CloudinaryUploadResponse {
+  secure_url: string;
+  resource_type: string;
+}
+
 /** Respuesta de POST /api/cloudinary/firma (backend). */
 interface CloudinaryFirma {
   cloudName: string;
@@ -50,7 +56,7 @@ export class CloudinaryService {
 
         // 'auto' detecta el tipo de recurso (imagen, video, pdf, etc.) automáticamente
         const uploadUrl = `https://api.cloudinary.com/v1_1/${firma.cloudName}/auto/upload`;
-        return this.http.post<any>(uploadUrl, formData);
+        return this.http.post<CloudinaryUploadResponse>(uploadUrl, formData);
       }),
       map(response => ({
         url: response.secure_url,

@@ -10,9 +10,7 @@ import { environment } from '../../../environments/environment';
 export class UbicacionService {
   private http = inject(HttpClient);
   
-  // Cambia esta URL según la ruta de tu API backend
   private apiUrl = `${environment.apiUrl}/ubicaciones`; 
-  private proyectosUrl = `${environment.apiUrl}/proyectos`; // O la ruta donde obtienes tus proyectos
 
   obtenerUbicaciones(): Observable<Ubicacion[]> {
     return this.http.get<Ubicacion[]>(this.apiUrl);
@@ -32,10 +30,5 @@ export class UbicacionService {
 
   eliminarUbicacion(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  // Método para obtener el listado de proyectos disponibles para el selector
-  obtenerProyectos(): Observable<any[]> {
-    return this.http.get<any[]>(this.proyectosUrl);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Solicitud } from '../models/solicitud.models';
+import { Solicitud, SolicitudPublicaRequest } from '../models/solicitud.models';
 import { environment } from '../../../environments/environment';
 
 export interface AtenderSolicitudPayload {
@@ -22,8 +22,8 @@ export class SolicitudService {
   }
 
   // Corregido para apuntar a la ruta pública del backend
-  enviarSolicitud(datos: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/publico`, datos);
+  enviarSolicitud(datos: SolicitudPublicaRequest): Observable<Solicitud> {
+    return this.http.post<Solicitud>(`${this.apiUrl}/publico`, datos);
   }
 
   atenderSolicitud(id: number, payload: AtenderSolicitudPayload): Observable<Solicitud> {

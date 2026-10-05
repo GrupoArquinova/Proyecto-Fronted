@@ -9,7 +9,7 @@
     <div class="project-card" *ngFor="let proyecto of listaProyectos">
       
       <!-- Imagen y Estado -->
-      <div class="card-image" [style.backgroundImage]="'url(' + (proyecto.imagenUrl || 'assets/images/default-project.jpg') + ')'">
+      <div class="card-image" [style.backgroundImage]="'url(' + (proyecto.imagenUrl || 'assets/images/default-project.svg') + ')'">
         <span class="badge-status" *ngIf="proyecto.estado">{{ proyecto.estado }}</span>
       </div>
 

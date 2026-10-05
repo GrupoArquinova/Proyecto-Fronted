@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { Proyecto } from '../../../core/models/proyecto.models';
+import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ReporteService } from '../../../core/services/reporte.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { DashboardResponse } from '../../../core/models/reporte.models';
@@ -15,6 +17,7 @@ import { DashboardResponse } from '../../../core/models/reporte.models';
 })
 export class ReportesComponent implements OnInit {
   private reporteService = inject(ReporteService);
+  private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
 
   stats: DashboardResponse = {
@@ -33,7 +36,7 @@ export class ReportesComponent implements OnInit {
   cargando = false;
   
   // Lista dinámica de proyectos para el select de la ficha PDF
-  listaProyectos: { id: number; nombre: string }[] = [];
+  listaProyectos: Proyecto[] = [];
   proyectoIdPdf: number = 1;
 
   ngOnInit(): void {
@@ -57,11 +60,11 @@ export class ReportesComponent implements OnInit {
   }
 
   cargarProyectos(): void {
-    this.reporteService.getProyectosResumen().subscribe({
+    this.proyectoService.getProyectos().subscribe({
       next: (proyectos) => {
         this.listaProyectos = proyectos;
         if (proyectos && proyectos.length > 0) {
-          this.proyectoIdPdf = proyectos[0].id; // Selecciona el primero por defecto
+          this.proyectoIdPdf = proyectos[0].id as number; // Selecciona el primero por defecto
         }
       },
       error: (err) => {

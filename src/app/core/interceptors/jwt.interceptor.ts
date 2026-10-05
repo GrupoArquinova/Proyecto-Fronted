@@ -11,7 +11,10 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const toastService = inject(ToastService);
 
   // 1. Evitar interceptar o redirigir en endpoints públicos y servicios externos
+  // '/auth/logout' se excluye porque AuthService.cerrarSesion() ya envía su propio token
+  // y un 401 ahí no debe disparar el aviso de "sesión expirada".
   const esRutaPublica = req.url.includes('/auth/login') || 
+                        req.url.includes('/auth/logout') || 
                         req.url.includes('/recuperar-password') || 
                         req.url.includes('/reset-password') ||
                         req.url.includes('cloudinary.com');
