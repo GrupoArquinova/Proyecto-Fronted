@@ -4,7 +4,7 @@ import { Observable, tap } from 'rxjs';
 import { LoginRequest, AuthResponse } from '../models/auth.models';
 import { ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth.models';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'

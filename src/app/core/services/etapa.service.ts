@@ -2,14 +2,15 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Etapa, EtapaRequest, ProyectoRef } from '../models/etapa.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EtapaService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/etapas';
-  private proyectosUrl = 'http://localhost:8080/api/proyectos';
+  private apiUrl = `${environment.apiUrl}/etapas`;
+  private proyectosUrl = `${environment.apiUrl}/proyectos`;
 
   obtenerEtapas(): Observable<Etapa[]> {
     return this.http.get<Etapa[]>(this.apiUrl);

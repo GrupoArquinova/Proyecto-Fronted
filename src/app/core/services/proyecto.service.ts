@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Proyecto, CrearProyectoDTO } from '../models/proyecto.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class ProyectoService {
   private http = inject(HttpClient);
   
   // URL base de tu backend en Spring Boot
-  private apiUrl = 'http://localhost:8080/api/proyectos';
+  private apiUrl = `${environment.apiUrl}/proyectos`;
 
   /**
    * Obtiene la lista completa de proyectos registrados
@@ -46,8 +47,4 @@ export class ProyectoService {
   eliminarProyecto(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-
-subirImagen(formData: FormData): Observable<{ url: string }> {
-  return this.http.post<{ url: string }>(`${this.apiUrl}/uploadArchivo`, formData);
-}
 }

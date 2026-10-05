@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ContenidoInstitucional } from '../models/contenido.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContenidoService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/contenidos-institucionales';
+  private apiUrl = `${environment.apiUrl}/contenidos-institucionales`;
 
   // Obtener todas las secciones por ID de empresa
   obtenerContenidosPorEmpresa(empresaId: number): Observable<ContenidoInstitucional[]> {
