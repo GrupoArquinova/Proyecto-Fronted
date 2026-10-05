@@ -1,0 +1,50 @@
+@use '../tokens' as t;
+
+:host { display: block; }
+
+.ubicacion {
+  max-width: 1000px;
+  margin: 0 auto;
+
+  h2 {
+    margin-bottom: 1.4rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 3px solid t.$verde-claro;
+    width: fit-content;
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: t.$verde;
+  }
+}
+
+// Marco común de lo que se muestra (visor, mapa, imagen, video)
+iframe {
+  display: block;
+  width: 100%;
+  height: min(70vh, 560px);
+  border: 0;
+  border-radius: t.$radio;
+  background: t.$fondo-suave;
+  box-shadow: t.$sombra;
+}
+
+.ayuda {
+  margin-top: 0.9rem;
+  text-align: center;
+  color: t.$texto-suave;
+}
+
+.datos {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1.8rem;
+  padding: 1.4rem 1.7rem;
+  background: t.$fondo-suave;
+  border-left: 4px solid t.$verde;
+  border-radius: 0 t.$radio t.$radio 0;
+  line-height: 1.7;
+  color: t.$texto;
+
+  p { margin: 0; }
+  strong { color: t.$verde; }
+}

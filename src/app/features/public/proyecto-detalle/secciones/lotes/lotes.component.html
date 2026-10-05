@@ -1,0 +1,33 @@
+@if (proyecto(); as p) {
+  <section class="seccion">
+    <header>
+      <h2>Lotes</h2>
+      <p class="resumen">
+        {{ lotes().length }} {{ lotes().length === 1 ? 'lote' : 'lotes' }} · {{ disponibles() }}
+        {{ disponibles() === 1 ? 'disponible' : 'disponibles' }}
+      </p>
+    </header>
+
+    <div class="cuerpo">
+      <div class="principal">
+        <app-plano-lotes [imagenUrl]="plano()" [lotes]="lotes()" [seleccionadoId]="seleccionado()?.id ?? null"
+                         (seleccionar)="elegir($event)" />
+
+        <ul class="chips" aria-label="Lotes del proyecto">
+          @for (l of lotes(); track l.id) {
+            <li>
+              <a [routerLink]="[]" [queryParams]="{ vista: l.id }" [class]="clave(l)"
+                 [class.activo]="l.id === seleccionado()?.id">
+                <strong>{{ l.codigo }}</strong> <span>{{ area(l) }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      @if (seleccionado(); as lote) {
+        <app-lote-tarjeta [lote]="lote" [proyectoId]="p.id!" />
+      }
+    </div>
+  </section>
+}

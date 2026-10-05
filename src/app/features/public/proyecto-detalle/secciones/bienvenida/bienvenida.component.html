@@ -1,0 +1,35 @@
+@if (proyecto(); as p) {
+  @switch (vista()) {
+
+    @case ('beneficios') {
+      @if (beneficios(); as b) {
+        <section class="bloque">
+          <h2>{{ b.titulo }}</h2>
+          <p class="texto">{{ b.contenido }}</p>
+        </section>
+      }
+    }
+
+    @case ('video') {
+      @if (video(); as v) {
+        <section class="bloque ancho">
+          <app-medio [url]="v.url" [titulo]="v.titulo || 'video del proyecto'" />
+          <p class="pie">{{ v.titulo || 'Video del proyecto' }} · {{ p.nombre }}</p>
+        </section>
+      }
+    }
+
+    @default {
+      <section class="hero" [style.backgroundImage]="p.imagenUrl ? 'url(' + p.imagenUrl + ')' : null">
+        <div class="hero-contenido">
+          <span class="etiqueta">{{ etiqueta() }}</span>
+          <h2>{{ p.nombre }}</h2>
+          @if (p.descripcion) {
+            <p>{{ p.descripcion }}</p>
+          }
+          <a class="boton" [routerLink]="['/proyectos', p.id, 'contacto']">Quiero más información</a>
+        </div>
+      </section>
+    }
+  }
+}

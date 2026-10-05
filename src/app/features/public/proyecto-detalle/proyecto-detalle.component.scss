@@ -1,0 +1,288 @@
+@use 'secciones/tokens' as t;
+
+$menu-ancho: 310px;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: t.$blanco;
+  color: t.$texto;
+  font-family: t.$fuente;
+  -webkit-font-smoothing: antialiased;
+}
+
+// Los controles no heredan la tipografía por defecto: se fuerza para todo el micrositio
+:host button,
+:host input,
+:host textarea,
+:host select { font-family: inherit; }
+
+/* ---------- Estados (cargando / error / no encontrado) ---------- */
+.estado-pantalla {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(160deg, t.$fondo-suave, t.$blanco 60%);
+
+  h2 { color: t.$verde; font-size: 1.7rem; font-weight: 700; }
+  p { color: t.$texto-suave; max-width: 380px; }
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid t.$fondo-suave-2;
+  border-top-color: t.$verde;
+  border-radius: 50%;
+  animation: girar 0.9s linear infinite;
+}
+
+@keyframes girar { to { transform: rotate(360deg); } }
+
+.btn-estado {
+  margin-top: 0.8rem;
+  padding: 0.75rem 1.6rem;
+  background: t.$verde;
+  color: t.$blanco;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+
+  &:hover { background: t.$verde-claro; transform: translateY(-1px); }
+}
+
+/* ---------- Visor ---------- */
+.visor {
+  position: relative;
+  display: grid;
+  grid-template-columns: $menu-ancho 1fr;
+  min-height: 100vh;
+  transition: grid-template-columns 0.25s ease;
+
+  &.colapsado {
+    grid-template-columns: 0 1fr;
+
+    .menu { transform: translateX(-100%); visibility: hidden; }
+    .btn-colapsar { left: 0; }
+  }
+}
+
+/* ---------- Menú lateral ---------- */
+.menu {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: t.$verde;
+  color: t.$blanco;
+  overflow-y: auto;
+  transition: transform 0.25s ease;
+  z-index: 20;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(t.$blanco, 0.3) transparent;
+}
+
+.menu-marca {
+  padding: 1.8rem 1.6rem 1.4rem;
+  border-bottom: 1px solid rgba(t.$blanco, 0.16);
+
+  .sello {
+    display: block;
+    margin-bottom: 0.7rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(t.$blanco, 0.7);
+  }
+
+  h1 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .lugar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: rgba(t.$blanco, 0.78);
+
+    svg { width: 14px; height: 14px; flex-shrink: 0; }
+  }
+}
+
+nav { flex: 1; padding: 1.1rem 0.9rem; }
+
+.menu-grupo { margin-bottom: 0.2rem; }
+
+.menu-seccion {
+  display: block;
+  padding: 0.7rem 1rem;
+  color: rgba(t.$blanco, 0.92);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: background 0.18s;
+
+  &:hover { background: rgba(t.$blanco, 0.1); }
+}
+
+.menu-grupo.activo > .menu-seccion {
+  background: t.$blanco;
+  color: t.$verde;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+}
+
+.menu-vistas {
+  list-style: none;
+  margin: 0.45rem 0 0.7rem 0.6rem;
+  padding: 0.35rem;
+  background: t.$verde-claro;
+  border-radius: 12px;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(t.$blanco, 0.4) transparent;
+
+  a {
+    display: block;
+    padding: 0.6rem 0.85rem;
+    color: rgba(t.$blanco, 0.86);
+    font-size: 0.93rem;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.15s;
+
+    &:hover { background: rgba(t.$blanco, 0.12); color: t.$blanco; }
+    &.activa { background: t.$blanco; color: t.$verde; font-weight: 600; }
+  }
+}
+
+.menu-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.6rem;
+  border-top: 1px solid rgba(t.$blanco, 0.16);
+  font-size: 0.85rem;
+  color: rgba(t.$blanco, 0.75);
+
+  a { color: inherit; text-decoration: none; &:hover { color: t.$blanco; } }
+  span { font-weight: 600; letter-spacing: 0.08em; }
+}
+
+.btn-colapsar {
+  position: absolute;
+  top: 50%;
+  left: $menu-ancho;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 56px;
+  background: t.$verde-claro;
+  color: t.$blanco;
+  border: none;
+  border-radius: 0 10px 10px 0;
+  cursor: pointer;
+  font-size: 1.2rem;
+  z-index: 30;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.12);
+  transition: left 0.25s ease, background 0.2s;
+
+  &:hover { background: t.$verde; }
+}
+
+/* ---------- Contenido ---------- */
+.contenido {
+  min-width: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, t.$fondo-suave, t.$blanco 280px);
+}
+
+.barra {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 1.1rem 2.5rem;
+  font-size: 0.9rem;
+  color: t.$texto-suave;
+
+  strong { color: t.$verde; font-weight: 600; }
+  .sep { opacity: 0.5; }
+}
+
+.pagina {
+  flex: 1;
+  padding: 0.5rem 2.5rem 3rem;
+}
+
+.btn-menu-movil, .velo { display: none; }
+
+/* ---------- Móvil: el menú pasa a ser un cajón ---------- */
+@media (max-width: 900px) {
+  .visor,
+  .visor.colapsado { grid-template-columns: 1fr; }
+
+  .menu,
+  .visor.colapsado .menu {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(310px, 86vw);
+    transform: translateX(-100%);
+    visibility: visible;
+    box-shadow: t.$sombra-fuerte;
+  }
+
+  .visor.movil-abierto .menu { transform: translateX(0); }
+
+  .velo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 15;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .visor.movil-abierto .velo { opacity: 1; pointer-events: auto; }
+
+  .btn-colapsar { display: none; }
+
+  .btn-menu-movil {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    top: 0.8rem;
+    left: 0.8rem;
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    background: t.$verde;
+    color: t.$blanco;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: t.$sombra;
+  }
+
+  .barra { padding: 1rem 1.2rem 0.4rem 4.2rem; justify-content: flex-start; }
+  .pagina { padding: 0.5rem 1.2rem 2.5rem; }
+}

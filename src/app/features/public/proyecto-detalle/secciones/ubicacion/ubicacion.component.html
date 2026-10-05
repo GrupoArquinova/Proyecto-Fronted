@@ -1,0 +1,53 @@
+@if (ubicacion(); as u) {
+  <section class="ubicacion">
+
+    @switch (vista()) {
+      @case ('entorno-360') {
+        <h2>Entorno 360°</h2>
+        @if (esPanorama()) {
+          <app-visor-360 [url]="u.recorrido360Url!" titulo="entorno del proyecto" />
+          <p class="ayuda">Arrastra para explorar el entorno 360°</p>
+        } @else {
+          <app-medio [url]="u.recorrido360Url!" titulo="el recorrido 360°" />
+        }
+      }
+
+      @case ('vista-aerea') {
+        <h2>Vista aérea</h2>
+        <app-medio [url]="u.vistaAereaUrl!" titulo="la vista aérea" />
+      }
+
+      @case ('urbanismo') {
+        <h2>Urbanismo</h2>
+        <app-medio [url]="u.urbanismoUrl!" titulo="el plano de urbanismo" />
+      }
+
+      @case ('mapa') {
+        <h2>Mapa</h2>
+        @if (mapaUrl(); as mapa) {
+          <iframe [src]="mapa" title="Mapa de ubicación del proyecto" loading="lazy"></iframe>
+        }
+      }
+
+      @case ('google-maps') {
+        <h2>Google Maps</h2>
+        <app-medio [url]="u.googleMapsUrl!" titulo="la ubicación en Google Maps" />
+      }
+
+      @default {
+        <h2>Ubicación</h2>
+      }
+    }
+
+    @if (lugar() || u.referencias) {
+      <aside class="datos">
+        @if (lugar()) {
+          <p><strong>Dirección:</strong> {{ lugar() }}</p>
+        }
+        @if (u.referencias) {
+          <p><strong>Cómo llegar:</strong> {{ u.referencias }}</p>
+        }
+      </aside>
+    }
+  </section>
+}

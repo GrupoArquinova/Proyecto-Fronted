@@ -1,0 +1,119 @@
+@use '../tokens' as t;
+
+:host { display: block; }
+
+.tarjeta {
+  max-width: 580px;
+  margin: 0.5rem auto;
+  padding: 2.4rem 2.2rem;
+  background: t.$blanco;
+  border: 1px solid t.$borde;
+  border-top: 5px solid t.$verde;
+  border-radius: 20px;
+  box-shadow: t.$sombra-fuerte;
+
+  h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: t.$verde;
+  }
+
+  .sub { text-align: center; color: t.$texto-suave; margin: 0.5rem 0 1.8rem; line-height: 1.6; }
+
+  .lote {
+    margin: -0.8rem auto 1.6rem;
+    padding: 0.45rem 1.2rem;
+    width: fit-content;
+    background: t.$fondo-suave-2;
+    border-radius: 999px;
+    color: t.$verde;
+    font-size: 0.92rem;
+  }
+}
+
+form { display: grid; gap: 1.1rem; }
+
+label {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: t.$verde-claro;
+}
+
+input[type='text'], input[type='tel'], input[type='email'], textarea {
+  padding: 0.85rem 1rem;
+  background: t.$blanco;
+  color: t.$texto;
+  border: 1.5px solid t.$borde;
+  border-radius: 12px;
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+  transition: border-color 0.18s, box-shadow 0.18s;
+
+  &::placeholder { color: #a5a5a5; }
+  &:hover { border-color: rgba(t.$verde, 0.4); }
+  &:focus { outline: none; border-color: t.$verde; box-shadow: 0 0 0 4px rgba(t.$verde, 0.14); }
+  &.error { border-color: t.$vendido; box-shadow: 0 0 0 4px rgba(t.$vendido, 0.1); }
+}
+
+textarea { resize: vertical; min-height: 110px; }
+
+small { color: t.$vendido; text-transform: none; letter-spacing: normal; font-weight: 500; font-size: 0.82rem; }
+.aviso { margin-top: -0.5rem; }
+
+.consentimiento {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: t.$texto-suave;
+  line-height: 1.5;
+
+  input { margin-top: 0.25rem; width: 1.05rem; height: 1.05rem; accent-color: t.$verde; }
+}
+
+.enviar {
+  padding: 1rem;
+  background: t.$verde;
+  color: t.$blanco;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(t.$verde, 0.28);
+  transition: background 0.2s, transform 0.2s;
+
+  &:hover:not(:disabled) { background: t.$verde-claro; transform: translateY(-1px); }
+  &:disabled { opacity: 0.65; cursor: wait; }
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1.8rem;
+  margin-top: 1.8rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid t.$borde;
+  color: t.$texto-suave;
+  font-size: 0.92rem;
+
+  a { color: t.$verde; font-weight: 600; text-decoration: none; &:hover { text-decoration: underline; } }
+}
+
+@media (max-width: 600px) {
+  .tarjeta { padding: 1.8rem 1.3rem; }
+}
+
+// Los controles de formulario no heredan la tipografía por defecto
+button, input, textarea { font-family: inherit; }

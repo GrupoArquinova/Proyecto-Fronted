@@ -1,0 +1,96 @@
+@switch (datos.estado()) {
+  @case ('cargando') {
+    <div class="estado-pantalla" role="status">
+      <div class="spinner"></div>
+      <p>Cargando proyecto...</p>
+    </div>
+  }
+  @case ('no-encontrado') {
+    <div class="estado-pantalla">
+      <h2>Proyecto no encontrado</h2>
+      <p>El proyecto que buscas no existe o aún no está disponible.</p>
+      <a routerLink="/proyectos" class="btn-estado">&larr; Ver todos los proyectos</a>
+    </div>
+  }
+  @case ('error') {
+    <div class="estado-pantalla">
+      <h2>No pudimos cargar el proyecto</h2>
+      <p>Revisa tu conexión e inténtalo de nuevo.</p>
+      <button type="button" class="btn-estado" (click)="reintentar()">Reintentar</button>
+    </div>
+  }
+  @case ('listo') {
+    <div class="visor" [class.colapsado]="menuColapsado()" [class.movil-abierto]="menuMovilAbierto()">
+
+      <button type="button" class="btn-menu-movil" (click)="menuMovilAbierto.set(true)" aria-label="Abrir menú">
+        &#9776;
+      </button>
+      <div class="velo" (click)="cerrarMenuMovil()"></div>
+
+      <aside class="menu" aria-label="Secciones del proyecto">
+        <header class="menu-marca">
+          <span class="sello">Arquinova</span>
+          <h1>{{ proyecto()?.nombre }}</h1>
+          @if (ubicacionTexto()) {
+            <p class="lugar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" />
+              </svg>
+              {{ ubicacionTexto() }}
+            </p>
+          }
+        </header>
+
+        <nav>
+          @for (seccion of datos.secciones(); track seccion.id) {
+            <div class="menu-grupo" [class.activo]="seccionActiva() === seccion.id">
+              <a class="menu-seccion"
+                 [routerLink]="['/proyectos', proyecto()?.id, seccion.id]"
+                 (click)="cerrarMenuMovil()">
+                {{ seccion.titulo }}
+              </a>
+
+              @if (seccionActiva() === seccion.id && seccion.subsecciones.length > 0) {
+                <ul class="menu-vistas">
+                  @for (vista of seccion.subsecciones; track vista.id) {
+                    <li>
+                      <a [routerLink]="['/proyectos', proyecto()?.id, seccion.id]"
+                         [queryParams]="{ vista: vista.id }"
+                         [class.activa]="(vistaActiva() ?? seccion.subsecciones[0].id) === vista.id"
+                         (click)="cerrarMenuMovil()">
+                        {{ vista.titulo }}
+                      </a>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </nav>
+
+        <footer class="menu-pie">
+          <a routerLink="/proyectos">&larr; Todos los proyectos</a>
+        </footer>
+      </aside>
+
+      <button type="button" class="btn-colapsar" (click)="menuColapsado.set(!menuColapsado())"
+              [attr.aria-label]="menuColapsado() ? 'Mostrar menú' : 'Ocultar menú'">
+        {{ menuColapsado() ? '›' : '‹' }}
+      </button>
+
+      <main class="contenido">
+        <div class="barra">
+          <strong>{{ seccionTitulo() }}</strong>
+          @if (vistaTitulo() && vistaTitulo() !== seccionTitulo()) {
+            <span class="sep">›</span>
+            <span>{{ vistaTitulo() }}</span>
+          }
+        </div>
+        <div class="pagina">
+          <router-outlet></router-outlet>
+        </div>
+      </main>
+    </div>
+  }
+}

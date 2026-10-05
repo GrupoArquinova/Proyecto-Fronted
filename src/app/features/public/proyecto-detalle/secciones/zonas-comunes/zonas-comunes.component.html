@@ -1,0 +1,68 @@
+@switch (vista()) {
+
+  @case ('galeria') {
+    <section class="seccion">
+      <h2>Galería</h2>
+
+      @if (zonasConImagenes().length > 1) {
+        <div class="filtros" role="group" aria-label="Filtrar por zona">
+          <button type="button" [class.activo]="filtroZona() === null" (click)="filtroZona.set(null)">Todas</button>
+          @for (z of zonasConImagenes(); track z.id) {
+            <button type="button" [class.activo]="filtroZona() === z.id" (click)="filtroZona.set(z.id!)">
+              {{ z.nombre }}
+            </button>
+          }
+        </div>
+      }
+
+      <div class="galeria">
+        @for (img of imagenesVisibles(); track img.url) {
+          <button type="button" class="miniatura" (click)="imagenAbierta.set(img)"
+                  [attr.aria-label]="'Ampliar ' + img.titulo">
+            <img [src]="img.url" [alt]="img.titulo" loading="lazy" />
+            <span>{{ img.titulo }}</span>
+          </button>
+        }
+      </div>
+    </section>
+
+    @if (imagenAbierta(); as abierta) {
+      <div class="lightbox" role="dialog" aria-modal="true" [attr.aria-label]="abierta.titulo"
+           (click)="cerrarImagen()">
+        <button type="button" class="cerrar" (click)="cerrarImagen()" aria-label="Cerrar">&times;</button>
+        <img [src]="abierta.url" [alt]="abierta.titulo" (click)="$event.stopPropagation()" />
+        <p>{{ abierta.zonaNombre }}</p>
+      </div>
+    }
+  }
+
+  @default {
+    <section class="seccion">
+      <h2 class="titulo-grande">Zonas comunes</h2>
+
+      @if (zonaActiva(); as zona) {
+        <article class="destacada">
+          @if (portada(zona); as foto) {
+            <img [src]="foto" [alt]="zona.nombre" />
+          }
+          <div>
+            <h3>{{ zona.nombre }}</h3>
+            @if (zona.descripcion) {
+              <p>{{ zona.descripcion }}</p>
+            }
+          </div>
+        </article>
+      }
+
+      <ol class="lista">
+        @for (z of zonas(); track z.id; let i = $index) {
+          <li>
+            <button type="button" [class.activa]="seleccionada() === i" (click)="seleccionada.set(i)">
+              <span class="num">{{ i + 1 }}</span> {{ z.nombre }}
+            </button>
+          </li>
+        }
+      </ol>
+    </section>
+  }
+}
