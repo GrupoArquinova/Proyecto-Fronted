@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Proyecto } from '../../../core/models/proyecto.models';
 import { CasaModelo } from '../../../core/models/casa-modelo.models';
 import { CasaModeloService } from '../../../core/services/casa-modelo.service';
 import { ProyectoService } from '../../../core/services/proyecto.service';
@@ -17,7 +18,7 @@ export class CasasModeloComponent implements OnInit {
   private proyectoService = inject(ProyectoService);
 
   listaCasas: CasaModelo[] = [];
-  listaProyectos: any[] = [];
+  listaProyectos: Proyecto[] = [];
   modalAbierto = false;
   esEdicion = false;
 
@@ -56,7 +57,7 @@ export class CasasModeloComponent implements OnInit {
   abrirModalCrear(): void {
     this.esEdicion = false;
     this.casaActual = {
-      proyectoId: this.listaProyectos.length > 0 ? this.listaProyectos[0].id : 0,
+      proyectoId: this.listaProyectos.length > 0 ? (this.listaProyectos[0].id ?? 0) : 0,
       nombre: '',
       descripcion: '',
       areaConstruidaM2: undefined,
