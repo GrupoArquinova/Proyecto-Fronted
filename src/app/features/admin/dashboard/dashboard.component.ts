@@ -23,7 +23,8 @@ export class DashboardComponent {
   }
 
   onLogout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    this.authService.cerrarSesion().subscribe(() => {
+      this.router.navigate(['/login']);
+    });
   }
 }
