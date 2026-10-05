@@ -180,3 +180,105 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Estilos migrados desde atributos style="" inline (mismo aspecto, mayor especificidad que las reglas base) */
+:host .u-1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+:host .u-2 {
+  background: #1b4d3e;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+:host .u-3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+:host .u-4 {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+}
+:host .u-5 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+:host .u-6 {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+:host .u-7 {
+  margin: 0;
+  font-family: serif;
+}
+:host .u-8 {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+:host .u-9 {
+  grid-column: span 2;
+}
+:host .u-10 {
+  display:block;
+  font-size:0.85rem;
+  font-weight:500;
+  margin-bottom:0.3rem;
+}
+:host .u-11 {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+:host .u-12 {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+:host .u-13 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+:host .u-14 {
+  padding: 0.5rem 1rem;
+  background: #e2e8f0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+:host .u-15 {
+  padding: 0.5rem 1.2rem;
+  background: #1b4d3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

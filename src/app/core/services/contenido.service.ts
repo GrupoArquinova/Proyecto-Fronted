@@ -17,7 +17,7 @@ export class ContenidoService {
   }
 
   // Crear una nueva sección institucional (POST)
-  guardarSeccion(data: any): Observable<ContenidoInstitucional> {
+  guardarSeccion(data: ContenidoInstitucional): Observable<ContenidoInstitucional> {
     return this.http.post<ContenidoInstitucional>(this.apiUrl, data);
   }
 
@@ -27,7 +27,7 @@ export class ContenidoService {
   }
 
   // Nuevo método para eliminar una sección por su ID
-  eliminarSeccion(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  eliminarSeccion(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

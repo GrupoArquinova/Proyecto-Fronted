@@ -2,6 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Ubicacion } from '../../../core/models/ubicacion.models';
+import { Proyecto } from '../../../core/models/proyecto.models';
+import { ProyectoService } from '../../../core/services/proyecto.service';
 import { UbicacionService } from '../../../core/services/ubicacion.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
@@ -15,11 +17,12 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
 })
 export class UbicacionesComponent implements OnInit {
   private ubicacionService = inject(UbicacionService);
+  private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
   private confirmDialog = inject(ConfirmDialogService);
 
   listaUbicaciones: Ubicacion[] = [];
-  proyectosDisponibles: { id: number; nombre: string }[] = [];
+  proyectosDisponibles: Proyecto[] = [];
   
   cargando = false;
   mostrarModal = false;
@@ -63,7 +66,7 @@ export class UbicacionesComponent implements OnInit {
   }
 
   cargarProyectos(): void {
-    this.ubicacionService.obtenerProyectos().subscribe({
+    this.proyectoService.getProyectos().subscribe({
       next: (data) => {
         this.proyectosDisponibles = data;
       },

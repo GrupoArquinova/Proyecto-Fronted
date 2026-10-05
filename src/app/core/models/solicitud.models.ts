@@ -16,3 +16,14 @@ export interface Solicitud {
   observacionesInternas?: string;
   creadoEn: string;
 }
+
+/** Cuerpo del formulario de contacto público (POST /solicitudes-contacto/publico). */
+export interface SolicitudPublicaRequest {
+  nombre: string;
+  correo: string;
+  telefono: string;
+  proyectoId: number | null;
+  mensaje: string;
+  consentimientoDatos: boolean;
+  userAgent?: string;
+}

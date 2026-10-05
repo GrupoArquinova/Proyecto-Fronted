@@ -31,6 +31,7 @@ export interface Lote {
   activo: boolean;
 
   // Campos planos del backend (LoteResponseDTO)
+  proyectoId?: number;
   etapaId?: number;
   etapaNombre?: string;
   estadoId: number;

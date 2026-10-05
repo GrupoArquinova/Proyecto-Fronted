@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Multimedia } from '../models/multimedia.models';
+import { ZonaComun } from '../models/zona-comun.models';
+import { CasaModelo } from '../models/casa-modelo.models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -11,8 +13,6 @@ export class MultimediaService {
   private http = inject(HttpClient);
 
   private apiUrl = `${environment.apiUrl}/multimedia`;
-  private proyectosUrl = `${environment.apiUrl}/proyectos`;
-  private lotesUrl = `${environment.apiUrl}/lotes`;
   private zonasComunesUrl = `${environment.apiUrl}/zonas-comunes`;
   private casasModeloUrl = `${environment.apiUrl}/casas-modelo`;
 
@@ -36,21 +36,13 @@ export class MultimediaService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  obtenerProyectos(): Observable<any[]> {
-    return this.http.get<any[]>(this.proyectosUrl);
-  }
-
-  obtenerLotes(): Observable<any[]> {
-    return this.http.get<any[]>(this.lotesUrl);
-  }
-
   /** Zonas comunes de UN proyecto específico (no existe endpoint "listar todas") */
-  obtenerZonasComunesPorProyecto(proyectoId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.zonasComunesUrl}/proyecto/${proyectoId}`);
+  obtenerZonasComunesPorProyecto(proyectoId: number): Observable<ZonaComun[]> {
+    return this.http.get<ZonaComun[]>(`${this.zonasComunesUrl}/proyecto/${proyectoId}`);
   }
 
   /** Casas modelo de UN proyecto específico (no existe endpoint "listar todas") */
-  obtenerCasasModeloPorProyecto(proyectoId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.casasModeloUrl}/proyecto/${proyectoId}`);
+  obtenerCasasModeloPorProyecto(proyectoId: number): Observable<CasaModelo[]> {
+    return this.http.get<CasaModelo[]>(`${this.casasModeloUrl}/proyecto/${proyectoId}`);
   }
 }

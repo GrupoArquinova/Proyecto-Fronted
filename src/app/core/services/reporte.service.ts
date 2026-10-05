@@ -41,8 +41,4 @@ export class ReporteService {
     return this.http.get(`${this.apiDocumentos}/pdf/proyecto/${proyectoId}/ficha-tecnica`, { responseType: 'blob' });
   }
 
-  // Agrega esto para obtener la lista de proyectos (id y nombre)
-  getProyectosResumen(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/proyectos`); // Ajusta la ruta según tu API de proyectos si es distinta
-  }
 }

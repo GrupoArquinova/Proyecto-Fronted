@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../../core/models/usuario.models';
 import { UsuarioService } from '../../../core/services/usuario.service';
@@ -141,7 +142,7 @@ export class UsuariosComponent implements OnInit {
    * Las validaciones de campo (ej. requisitos de contraseña, correo inválido)
    * vienen en err.error.detalles como un mapa campo -> mensaje.
    */
-  private extraerMensajeError(err: any): string {
+  private extraerMensajeError(err: HttpErrorResponse): string {
     const detalles = err?.error?.detalles;
     if (detalles && typeof detalles === 'object') {
       const mensajes = Object.values(detalles) as string[];

@@ -4,25 +4,21 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { Lote, Etapa } from '../models/lote.models';
 
-export interface Proyecto {
-    id: number;
-    nombre: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class LoteService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/lotes`;
-  private proyectosUrl = `${environment.apiUrl}/proyectos`;
 
+  /** Todos los lotes, incluidos ocultos e inactivos. Solo para el panel de administración (requiere sesión). */
   obtenerLotes(): Observable<Lote[]> {
     return this.http.get<Lote[]>(this.apiUrl);
   }
 
-  obtenerProyectos(): Observable<Proyecto[]> {
-    return this.http.get<Proyecto[]>(this.proyectosUrl);
+  /** Solo lotes publicados y activos. Para las páginas públicas (no requiere sesión). */
+  obtenerLotesPublicos(): Observable<Lote[]> {
+    return this.http.get<Lote[]>(`${this.apiUrl}/publicos`);
   }
 
   cambiarEstado(loteId: number, estadoId: number): Observable<Lote> {

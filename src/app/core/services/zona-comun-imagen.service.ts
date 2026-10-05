@@ -23,8 +23,8 @@ export class ZonaComunImagenService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  marcarComoPrincipal(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/principal`, {});
+  marcarComoPrincipal(id: number): Observable<ZonaComunImagen> {
+    return this.http.patch<ZonaComunImagen>(`${this.apiUrl}/${id}/principal`, {});
   }
 
   actualizar(id: number, imagen: ZonaComunImagen): Observable<ZonaComunImagen> {

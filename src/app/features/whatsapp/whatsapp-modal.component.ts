@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-whatsapp-modal',
@@ -18,7 +19,7 @@ export class WhatsappModalComponent {
   autorizo: boolean = false;
   errorMessage: string = '';
 
-  private numeroWhatsApp: string = '573167849671';
+  private numeroWhatsApp: string = environment.contacto.whatsapp;
 
   toggleModal(): void {
     this.isOpen = !this.isOpen;

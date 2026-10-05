@@ -2,6 +2,7 @@ import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReporteService } from '../../../core/services/reporte.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { Proyecto } from '../../../core/models/proyecto.models';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { SolicitudReporteItem, LoteReporteItem } from '../../../core/models/reporte.models';
 
@@ -35,7 +36,7 @@ export class Resumen implements OnInit {
 
   estadoProyectos: EstadoProyectoResumen[] = [];
   ultimasSolicitudes: SolicitudReporteItem[] = [];
-  listaProyectos: any[] = [];
+  listaProyectos: Proyecto[] = [];
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {

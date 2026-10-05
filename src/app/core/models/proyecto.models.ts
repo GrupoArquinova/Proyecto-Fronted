@@ -11,6 +11,9 @@ export interface Proyecto {
   activo?: boolean;
   fechaLanzamiento?: string;
   imagenUrl?: string;
+  // Datos de presentación que el backend puede enviar para las páginas públicas
+  estado?: string;
+  ubicacion?: string;
   creadoEn?: string;
   actualizadoEn?: string;
 }
@@ -25,4 +28,21 @@ export interface CrearProyectoDTO {
   imagenUrl?: string;
   fechaLanzamiento?: string;
 }
-
+
+
+/** Proyecto listo para mostrar en las páginas públicas (con valores por defecto y conteo de lotes). */
+export interface ProyectoPublico extends Proyecto {
+  id: number;
+  imagenUrl: string;
+  estado: string;
+  ubicacion: string;
+  descripcion: string;
+  totalLotes: number;
+  lotesDisponibles: number;
+}
+
+/** Catálogo público: todos los proyectos enriquecidos + total de lotes publicados. */
+export interface CatalogoPublico {
+  proyectos: ProyectoPublico[];
+  totalLotes: number;
+}
