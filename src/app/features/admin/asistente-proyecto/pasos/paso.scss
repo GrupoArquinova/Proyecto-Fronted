@@ -1,0 +1,66 @@
+@use '../../../../shared/styles/admin-tokens' as t;
+
+// Estilos comunes de los pasos del asistente (cada paso los importa como su styleUrl)
+:host { display: block; font-family: t.$font-sans; }
+
+h2 { margin: 0 0 0.3rem; font-size: 1.35rem; color: t.$text-dark; }
+.intro { margin: 0 0 1.6rem; color: t.$text-body; line-height: 1.6; }
+
+form { display: grid; gap: 1.2rem; }
+
+.fila { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: t.$text-dark;
+
+  .opcional { font-weight: 400; color: t.$text-muted; }
+}
+
+input[type='text'], input[type='number'], input[type='date'], select, textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.65rem 0.8rem;
+  background: t.$bg-card;
+  border: 1px solid t.$border;
+  border-radius: t.$radius-sm;
+  font: inherit;
+  font-weight: 400;
+  color: t.$text-dark;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus { outline: none; border-color: t.$primary; box-shadow: 0 0 0 3px t.$primary-light; }
+  &.invalido { border-color: t.$danger; }
+}
+
+textarea { resize: vertical; min-height: 90px; }
+
+small { font-weight: 400; font-size: 0.8rem; }
+.error { color: t.$danger; }
+.ayuda { color: t.$text-muted; }
+
+.acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.6rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid t.$border;
+}
+
+button {
+  padding: 0.7rem 1.4rem;
+  border-radius: t.$radius-sm;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &.primario { background: t.$primary; color: #fff; border: none; &:hover:not(:disabled) { background: t.$primary-hover; } }
+  &.secundario { background: t.$bg-card; color: t.$text-body; border: 1px solid t.$border; &:hover { background: t.$bg-page; } }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}

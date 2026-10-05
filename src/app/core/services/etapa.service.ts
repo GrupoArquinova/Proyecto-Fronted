@@ -15,6 +15,11 @@ export class EtapaService {
     return this.http.get<Etapa[]>(this.apiUrl);
   }
 
+  /** Etapas de un proyecto, ordenadas por el campo orden. */
+  listarPorProyecto(proyectoId: number): Observable<Etapa[]> {
+    return this.http.get<Etapa[]>(`${this.apiUrl}/proyecto/${proyectoId}`);
+  }
+
   crearEtapa(etapa: EtapaRequest): Observable<Etapa> {
     return this.http.post<Etapa>(this.apiUrl, etapa);
   }

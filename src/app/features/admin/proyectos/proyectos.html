@@ -2,7 +2,10 @@
   <!-- Encabezado -->
   <header class="proyectos-header">
     <h1 class="page-title">Proyectos</h1>
-    <button class="btn-nuevo" (click)="abrirModalCrear()">+ Nuevo</button>
+    <div class="acciones-cabecera">
+      <button class="btn-nuevo" (click)="abrirModalCrear()">+ Nuevo</button>
+      <a class="btn-asistente" routerLink="/admin/proyectos/nuevo">Crear con asistente</a>
+    </div>
   </header>
 
   <!-- Spinner de Carga -->

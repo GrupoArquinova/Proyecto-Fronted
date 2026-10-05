@@ -99,6 +99,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/resumen/resumen').then(m => m.Resumen)
       },
       {
+        path: 'proyectos/nuevo',
+        loadComponent: () => import('./features/admin/asistente-proyecto/asistente-proyecto.component')
+          .then(m => m.AsistenteProyectoComponent)
+      },
+      {
         path: 'proyectos',
         loadComponent: () => import('./features/admin/proyectos/proyectos').then(m => m.ProyectosComponent)
       },

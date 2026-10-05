@@ -6,6 +6,26 @@ $bg-gray: t.$bg-page;
 $text-dark: t.$text-dark;
 $text-muted: t.$text-muted;
 
+// Botón de entrada al asistente de creación, junto al "+ Nuevo"
+.acciones-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.btn-asistente {
+  padding: 0.6rem 1.1rem;
+  background: #fff;
+  color: t.$primary;
+  border: 1.5px solid t.$primary;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover { background: t.$primary; color: #fff; }
+}
+
 .proyectos-container {
   width: 100%;
   box-sizing: border-box;
