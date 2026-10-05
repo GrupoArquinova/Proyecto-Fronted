@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Multimedia } from '../models/multimedia.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +10,11 @@ import { Multimedia } from '../models/multimedia.models';
 export class MultimediaService {
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:8080/api/multimedia';
-  private proyectosUrl = 'http://localhost:8080/api/proyectos';
-  private lotesUrl = 'http://localhost:8080/api/lotes';
-  private zonasComunesUrl = 'http://localhost:8080/api/zonas-comunes';
-  private casasModeloUrl = 'http://localhost:8080/api/casas-modelo';
+  private apiUrl = `${environment.apiUrl}/multimedia`;
+  private proyectosUrl = `${environment.apiUrl}/proyectos`;
+  private lotesUrl = `${environment.apiUrl}/lotes`;
+  private zonasComunesUrl = `${environment.apiUrl}/zonas-comunes`;
+  private casasModeloUrl = `${environment.apiUrl}/casas-modelo`;
 
   obtenerMultimedia(): Observable<Multimedia[]> {
     return this.http.get<Multimedia[]>(this.apiUrl);

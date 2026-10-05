@@ -2,14 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DashboardResponse, LoteReporteItem, SolicitudReporteItem } from '../models/reporte.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReporteService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/reportes';
-  private apiDocumentos = 'http://localhost:8080/api/documentos';
+  private apiUrl = `${environment.apiUrl}/reportes`;
+  private apiDocumentos = `${environment.apiUrl}/documentos`;
 
   getDashboard(): Observable<DashboardResponse> {
     return this.http.get<DashboardResponse>(`${this.apiUrl}/dashboard`);
@@ -42,6 +43,6 @@ export class ReporteService {
 
   // Agrega esto para obtener la lista de proyectos (id y nombre)
   getProyectosResumen(): Observable<any[]> {
-    return this.http.get<any[]>('http://localhost:8080/api/proyectos'); // Ajusta la ruta según tu API de proyectos si es distinta
+    return this.http.get<any[]>(`${environment.apiUrl}/proyectos`); // Ajusta la ruta según tu API de proyectos si es distinta
   }
 }

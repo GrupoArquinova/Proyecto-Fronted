@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Solicitud } from '../models/solicitud.models';
+import { environment } from '../../../environments/environment';
 
 export interface AtenderSolicitudPayload {
   estadoId: number;
@@ -14,7 +15,7 @@ export interface AtenderSolicitudPayload {
 })
 export class SolicitudService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/solicitudes-contacto';
+  private apiUrl = `${environment.apiUrl}/solicitudes-contacto`;
 
   obtenerSolicitudes(): Observable<Solicitud[]> {
     return this.http.get<Solicitud[]>(this.apiUrl);

@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080/api' // Cambiar al dominio real de produccion
+  // Dominio del backend definido en k8s/ingress.yaml del proyecto backend
+  apiUrl: 'https://api.constructora.grupoarquinova.com/api'
 };

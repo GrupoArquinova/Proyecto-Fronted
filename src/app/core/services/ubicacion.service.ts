@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Ubicacion } from '../models/ubicacion.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +11,8 @@ export class UbicacionService {
   private http = inject(HttpClient);
   
   // Cambia esta URL según la ruta de tu API backend
-  private apiUrl = 'http://localhost:8080/api/ubicaciones'; 
-  private proyectosUrl = 'http://localhost:8080/api/proyectos'; // O la ruta donde obtienes tus proyectos
+  private apiUrl = `${environment.apiUrl}/ubicaciones`; 
+  private proyectosUrl = `${environment.apiUrl}/proyectos`; // O la ruta donde obtienes tus proyectos
 
   obtenerUbicaciones(): Observable<Ubicacion[]> {
     return this.http.get<Ubicacion[]>(this.apiUrl);
