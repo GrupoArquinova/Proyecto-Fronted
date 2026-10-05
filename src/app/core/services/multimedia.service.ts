@@ -20,6 +20,16 @@ export class MultimediaService {
     return this.http.get<Multimedia[]>(this.apiUrl);
   }
 
+  /** Recursos publicados de un proyecto, lote, zona común o casa modelo (sitio público). */
+  listarPublicadosPorEntidad(
+    tipoEntidad: 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo',
+    entidadId: number
+  ): Observable<Multimedia[]> {
+    return this.http.get<Multimedia[]>(`${this.apiUrl}/${tipoEntidad}/${entidadId}`, {
+      params: { soloPublicados: true }
+    });
+  }
+
   obtenerMultimediaPorId(id: number): Observable<Multimedia> {
     return this.http.get<Multimedia>(`${this.apiUrl}/${id}`);
   }

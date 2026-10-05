@@ -16,6 +16,13 @@ export class ContenidoService {
     return this.http.get<ContenidoInstitucional[]>(`${this.apiUrl}/empresa/${empresaId}`);
   }
 
+  // Secciones publicadas de una empresa (sitio público)
+  obtenerPublicadosPorEmpresa(empresaId: number): Observable<ContenidoInstitucional[]> {
+    return this.http.get<ContenidoInstitucional[]>(`${this.apiUrl}/empresa/${empresaId}`, {
+      params: { soloPublicados: true }
+    });
+  }
+
   // Crear una nueva sección institucional (POST)
   guardarSeccion(data: ContenidoInstitucional): Observable<ContenidoInstitucional> {
     return this.http.post<ContenidoInstitucional>(this.apiUrl, data);

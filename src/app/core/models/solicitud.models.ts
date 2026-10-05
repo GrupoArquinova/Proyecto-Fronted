@@ -23,6 +23,7 @@ export interface SolicitudPublicaRequest {
   correo: string;
   telefono: string;
   proyectoId: number | null;
+  loteId?: number | null;
   mensaje: string;
   consentimientoDatos: boolean;
   userAgent?: string;

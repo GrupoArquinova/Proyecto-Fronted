@@ -19,6 +19,11 @@ export class CasaModeloService {
     return this.http.get<CasaModelo[]>(`${this.apiUrl}/proyecto/${proyectoId}`);
   }
 
+  /** Casas modelo publicadas y activas de un proyecto (sitio público). */
+  listarPublicasPorProyecto(proyectoId: number): Observable<CasaModelo[]> {
+    return this.http.get<CasaModelo[]>(`${this.apiUrl}/proyecto/${proyectoId}/publicas`);
+  }
+
   obtenerPorId(id: number): Observable<CasaModelo> {
     return this.http.get<CasaModelo>(`${this.apiUrl}/${id}`);
   }
