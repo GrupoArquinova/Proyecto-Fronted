@@ -105,7 +105,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     }, 250);
   }
 
-  initVisor360(url?: string): void {
+  initVisor360(url: string): void {
     if (this.viewer360) {
       try {
         this.viewer360.destroy();
@@ -118,14 +118,12 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       contenedor.innerHTML = '';
     }
 
-    const imagenFinal = url || './assets/panoramica.jpg.jpeg';
-
     setTimeout(() => {
       try {
         if (contenedor) {
           this.viewer360 = new Viewer({
             container: contenedor as HTMLElement,
-            panorama: imagenFinal,
+            panorama: url,
             size: { width: '100%', height: '500px' },
             navbar: [
               'zoom',
