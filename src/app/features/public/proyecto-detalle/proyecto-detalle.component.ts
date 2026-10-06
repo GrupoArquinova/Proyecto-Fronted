@@ -59,6 +59,7 @@ export class ProyectoDetalleComponent {
    */
   readonly inmersivo = computed(() => {
     if (this.seccionActiva() === 'respaldo') return true;
+    if (this.datos.esInmersiva(this.seccionActiva(), this.vistaDe(this.seccionActiva()))) return true;
     if (this.seccionActiva() !== 'bienvenida') return false;
     const vista = this.vistaDe('bienvenida');
     // Beneficios solo es inmersiva si hay lámina; con solo texto usa el panel normal

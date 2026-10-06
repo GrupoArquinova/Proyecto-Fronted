@@ -48,3 +48,6 @@ iframe {
   p { margin: 0; }
   strong { color: t.$verde; }
 }
+
+/* Pantalla completa: el video o el tour llenan el espacio del contenido */
+.lienzo { position: absolute; inset: 0; background: #0b1413; }

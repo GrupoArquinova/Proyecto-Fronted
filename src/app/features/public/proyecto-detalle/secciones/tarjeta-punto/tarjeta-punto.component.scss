@@ -1,0 +1,90 @@
+@use '../tokens' as t;
+
+:host { display: contents; }
+
+// Tarjeta flotante centrada en el área de contenido (a la derecha del menú), por encima de la imagen.
+// --menu-offset lo define el visor y vale 0 con el menú plegado y en móvil.
+.tarjeta {
+  position: fixed;
+  top: 50%;
+  left: calc((100vw + var(--menu-offset, 0px)) / 2);
+  transform: translate(-50%, -50%);
+  z-index: 40;
+  width: min(440px, calc(100vw - var(--menu-offset, 0px) - 2rem));
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  padding: 1.6rem 1.7rem 1.7rem;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(t.$blanco, 0.7);
+  border-radius: 20px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  color: t.$texto;
+  font-family: t.$fuente;
+}
+
+.cerrar {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.9rem;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0 0 3px;
+  background: t.$fondo-suave;
+  color: t.$verde;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  &:hover { background: t.$fondo-suave-2; }
+}
+
+.tipo {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  background: t.$fondo-suave-2;
+  color: t.$verde;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h3 {
+  margin: 0.7rem 2rem 0.6rem 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: t.$verde;
+}
+
+.datos {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.98rem;
+
+  strong { color: t.$verde; }
+}
+
+.vacio {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  background: t.$fondo-suave;
+  border-left: 4px solid t.$verde-claro;
+  border-radius: 0 12px 12px 0;
+  color: t.$texto-suave;
+  font-size: 0.95rem;
+}
+
+// Con imagen 360° la tarjeta se ensancha y la imagen queda horizontal, no una columna alta y angosta
+.tarjeta.ancha { width: min(860px, calc(100vw - var(--menu-offset, 0px) - 2rem)); }
+
+:host ::ng-deep app-visor-360 { display: block; margin-top: 0.4rem; }
+:host ::ng-deep app-visor-360 .visor-360 { height: clamp(230px, 46vh, 440px); }

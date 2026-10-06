@@ -49,6 +49,8 @@ export function clasificarMedio(url: string | null | undefined): MedioClasificad
 
   const ruta = u.pathname + u.search;
   if (EXT_IMAGEN.test(ruta)) return { tipo: 'imagen' };
+  // Cloudinary también sirve imágenes sin extensión: /image/upload/...
+  if (u.hostname === 'res.cloudinary.com' && u.pathname.includes('/image/upload/')) return { tipo: 'imagen' };
   if (EXT_PDF.test(ruta)) return { tipo: 'pdf' };
   // Cloudinary sirve los videos sin extensión: /video/upload/...
   if (EXT_VIDEO.test(ruta) || u.pathname.includes('/video/upload/')) return { tipo: 'video' };

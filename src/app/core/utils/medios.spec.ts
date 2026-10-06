@@ -11,6 +11,11 @@ describe('clasificarMedio', () => {
     expect(clasificarMedio('https://res.cloudinary.com/demo/video/upload/v1/abc').tipo).toBe('video');
   });
 
+  it('trata como imagen las URLs de imagen de Cloudinary sin extension', () => {
+    expect(clasificarMedio('https://res.cloudinary.com/demo/image/upload/v1/entorno360').tipo).toBe('imagen');
+    expect(clasificarMedio('https://otro-host.com/image/upload/v1/entorno360').tipo).toBe('enlace');
+  });
+
   it('convierte enlaces de YouTube a su version incrustable', () => {
     const esperado = 'https://www.youtube-nocookie.com/embed/abc123';
     expect(clasificarMedio('https://www.youtube.com/watch?v=abc123')).toEqual({ tipo: 'incrustado', embedUrl: esperado });

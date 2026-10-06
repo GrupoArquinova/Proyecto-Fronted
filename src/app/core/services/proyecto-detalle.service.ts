@@ -8,6 +8,8 @@ import { CasaModeloService } from './casa-modelo.service';
 import { LoteService } from './lote.service';
 import { MultimediaService } from './multimedia.service';
 import { ContenidoService } from './contenido.service';
+import { Punto360Service } from './punto-360.service';
+import { EscenaPunto } from '../models/punto-360.models';
 import { clasificarMedio } from '../utils/medios';
 import { formatoArea, ordenarLotes } from '../utils/lotes';
 import {
@@ -34,6 +36,7 @@ export class ProyectoDetalleService {
   private loteService = inject(LoteService);
   private multimediaService = inject(MultimediaService);
   private contenidoService = inject(ContenidoService);
+  private puntoService = inject(Punto360Service);
 
   private carga?: Subscription;
 
@@ -77,6 +80,29 @@ export class ProyectoDetalleService {
       .filter(m => m.tipo === 'RESPALDO')
       .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)));
 
+  /** Botones de una imagen (entorno, vista aérea o plano de urbanismo). */
+  puntosDe(escena: EscenaPunto) {
+    return (this.detalle()?.puntos ?? []).filter(p => p.escena === escena);
+  }
+
+  /**
+   * ¿Esta vista se muestra a pantalla completa (con el menú flotando encima)? Pasa con el entorno 360° y la vista
+   * aérea cuando son imagen, video o un tour incrustable, y con el plano de urbanismo cuando es una imagen.
+   * Si el administrador cargó un enlace que no se puede incrustar, queda la página normal con su botón.
+   */
+  esInmersiva(seccionId: string, vistaId: string | null): boolean {
+    const u = this.detalle()?.ubicacion;
+    if (seccionId !== 'ubicacion' || !u) return false;
+
+    const tipo = (url?: string | null) => clasificarMedio(url).tipo;
+    switch (vistaId) {
+      case 'entorno-360': return ['imagen', 'video', 'incrustado'].includes(tipo(u.recorrido360Url));
+      case 'vista-aerea': return ['imagen', 'video', 'incrustado'].includes(tipo(u.vistaAereaUrl));
+      case 'urbanismo': return tipo(u.urbanismoUrl) === 'imagen';
+      default: return false;
+    }
+  }
+
   cargar(proyectoId: number): void {
     this.carga?.unsubscribe();
     this.estado.set('cargando');
@@ -92,7 +118,8 @@ export class ProyectoDetalleService {
           opcional([])
         ),
         multimedia: this.multimediaService.listarPublicadosPorEntidad('proyecto', proyectoId).pipe(opcional([])),
-        contenido: this.contenidoService.obtenerPublicadosPorEmpresa(proyecto.empresaId).pipe(opcional([]))
+        contenido: this.contenidoService.obtenerPublicadosPorEmpresa(proyecto.empresaId).pipe(opcional([])),
+        puntos: this.puntoService.listarPorProyecto(proyectoId).pipe(opcional([]))
       }).pipe(map(datos => ({ proyecto, ...datos }))))
     ).subscribe({
       next: detalle => {

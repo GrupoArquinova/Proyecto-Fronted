@@ -282,3 +282,11 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
+.subir-imagen { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.4rem; }
+.subir-imagen small { color: #6b7a8c; font-size: 0.78rem; }
+.btn-subir {
+  align-self: flex-start; padding: 0.4rem 0.9rem; border: 1px solid #2c6360; border-radius: 8px;
+  color: #2c6360; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: #fff;
+}
+.btn-subir:hover { background: rgba(44, 99, 96, 0.08); }

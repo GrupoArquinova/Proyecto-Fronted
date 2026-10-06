@@ -11,7 +11,8 @@ const detalleVacio = (): ProyectoDetalle => ({
   casasModelo: [],
   lotes: [],
   multimedia: [],
-  contenido: []
+  contenido: [],
+  puntos: []
 });
 
 describe('ProyectoDetalleService', () => {
@@ -155,6 +156,55 @@ describe('ProyectoDetalleService', () => {
     });
   });
 
+  describe('vistas a pantalla completa', () => {
+    const conUbicacion = (u: object) =>
+      service.detalle.set({ ...detalleVacio(), ubicacion: { proyectoId: 7, ciudad: 'Tunja', departamento: 'Boyacá', ...u } });
+
+    it('el entorno 360 y la vista aerea son inmersivos con imagen, video o tour incrustable', () => {
+      conUbicacion({
+        recorrido360Url: 'https://res.cloudinary.com/x/image/upload/v1/entorno.jpg',
+        vistaAereaUrl: 'https://res.cloudinary.com/x/video/upload/v1/aerea.mp4'
+      });
+
+      expect(service.esInmersiva('ubicacion', 'entorno-360')).toBe(true);
+      expect(service.esInmersiva('ubicacion', 'vista-aerea')).toBe(true);
+    });
+
+    it('un enlace que no se puede incrustar deja la pagina normal', () => {
+      conUbicacion({ recorrido360Url: 'https://ejemplo.com/tour', urbanismoUrl: 'https://ejemplo.com/plano.pdf' });
+
+      expect(service.esInmersiva('ubicacion', 'entorno-360')).toBe(false);
+      expect(service.esInmersiva('ubicacion', 'urbanismo')).toBe(false);
+    });
+
+    it('el urbanismo solo es inmersivo si es una imagen', () => {
+      conUbicacion({ urbanismoUrl: 'https://res.cloudinary.com/x/image/upload/v1/plano.png' });
+
+      expect(service.esInmersiva('ubicacion', 'urbanismo')).toBe(true);
+    });
+
+    it('el mapa, Google Maps y las demas secciones nunca son inmersivos aqui', () => {
+      conUbicacion({ googleMapsUrl: 'https://www.google.com/maps/embed?pb=1', latitud: 1, longitud: 2 });
+
+      expect(service.esInmersiva('ubicacion', 'mapa')).toBe(false);
+      expect(service.esInmersiva('ubicacion', 'google-maps')).toBe(false);
+      expect(service.esInmersiva('lotes', null)).toBe(false);
+    });
+
+    it('puntosDe separa los botones de cada imagen', () => {
+      service.detalle.set({
+        ...detalleVacio(),
+        puntos: [
+          { id: 1, proyectoId: 7, escena: 'ENTORNO', etiqueta: 'C1' },
+          { id: 2, proyectoId: 7, escena: 'URBANISMO', etiqueta: 'Etapa B' }
+        ]
+      });
+
+      expect(service.puntosDe('ENTORNO').map(p => p.etiqueta)).toEqual(['C1']);
+      expect(service.puntosDe('AEREA')).toEqual([]);
+    });
+  });
+
   describe('cargar', () => {
     it('queda en no-encontrado si el proyecto responde 404', () => {
       service.cargar(99);
@@ -177,8 +227,10 @@ describe('ProyectoDetalleService', () => {
       ]);
       http.expectOne(r => r.url.endsWith('/multimedia/proyecto/7')).flush([]);
       http.expectOne(r => r.url.endsWith('/contenidos-institucionales/empresa/1')).flush([]);
+      http.expectOne(r => r.url.endsWith('/puntos-360/proyecto/7')).flush(null, { status: 500, statusText: 'Error' });
 
       expect(service.estado()).toBe('listo');
+      expect(service.detalle()!.puntos).toEqual([]);
       expect(service.detalle()!.zonasComunes).toEqual([]);
       expect(service.detalle()!.ubicacion).toBeNull();
       expect(service.detalle()!.lotes.map(l => l.codigo)).toEqual(['L1']);

@@ -28,8 +28,9 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // 3. Manejar 401/403 únicamente en rutas protegidas
-      if (!esRutaPublica && (error.status === 401 || error.status === 403)) {
+      // 3. Manejar 401/403 únicamente en rutas protegidas y cuando había una sesión que expiró:
+      // un visitante sin sesión no debe ser enviado al login por un recurso que falló en el sitio público
+      if (!esRutaPublica && token && (error.status === 401 || error.status === 403)) {
         authService.logout();
         toastService.showInfo('Tu sesión ha expirado, por favor ingresa de nuevo.');
         router.navigate(['/login']);

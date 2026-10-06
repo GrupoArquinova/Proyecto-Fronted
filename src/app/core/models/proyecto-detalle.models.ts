@@ -5,6 +5,7 @@ import { CasaModelo } from './casa-modelo.models';
 import { Lote } from './lote.models';
 import { Multimedia } from './multimedia.models';
 import { ContenidoInstitucional } from './contenido.models';
+import { Punto360 } from './punto-360.models';
 
 /** Todo lo que el sitio público necesita para mostrar un proyecto. Las listas vacías ocultan su sección. */
 export interface ProyectoDetalle {
@@ -15,6 +16,8 @@ export interface ProyectoDetalle {
   lotes: Lote[];
   multimedia: Multimedia[];
   contenido: ContenidoInstitucional[];
+  /** Botones sobre el entorno 360°, la vista aérea y el plano de urbanismo. */
+  puntos: Punto360[];
 }
 
 /** Clave del texto institucional que alimenta la vista "Beneficios" de Bienvenida (no se repite en Respaldo). */
