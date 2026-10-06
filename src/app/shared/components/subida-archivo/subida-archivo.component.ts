@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model, signal } from '@angular/core';
+import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { TipoArchivo, atributoAccept, validarArchivo } from '../../../core/utils/archivos';
@@ -76,6 +76,12 @@ export class SubidaArchivoComponent {
   readonly ayuda = input<string>('');
   /** Enlace del archivo subido (enlazable con [(url)]). */
   readonly url = model<string>('');
+  /**
+   * Para "agregar varios": al terminar de subir emite `subido` y se deja limpio, listo para otro archivo,
+   * en vez de quedarse mostrando la previa.
+   */
+  readonly limpiarAlSubir = input(false);
+  readonly subido = output<{ url: string; nombre: string }>();
 
   readonly subiendo = signal(false);
   readonly error = signal('');
@@ -111,8 +117,13 @@ export class SubidaArchivoComponent {
 
     this.cloudinary.subirArchivo(archivo).subscribe({
       next: resultado => {
-        this.url.set(resultado.url);
         this.subiendo.set(false);
+        this.subido.emit({ url: resultado.url, nombre: archivo.name });
+        if (this.limpiarAlSubir()) {
+          this.nombre.set('');
+        } else {
+          this.url.set(resultado.url);
+        }
       },
       error: err => {
         console.error('Error al subir el archivo a Cloudinary:', err);

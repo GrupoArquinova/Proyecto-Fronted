@@ -33,17 +33,9 @@
         @case (1) { <app-paso-proyecto /> }
         @case (2) { <app-paso-ubicacion /> }
         @case (3) { <app-paso-etapas /> }
-        @default {
-          <div class="proximamente">
-            <h2>{{ pasos[asistente.paso() - 1].titulo }}</h2>
-            <p>Este paso llega en la siguiente fase del asistente. Mientras tanto, lo creado hasta aquí ya está guardado
-               y puedes terminar de completarlo desde las secciones del panel.</p>
-            <div class="acciones">
-              <button type="button" class="secundario" (click)="asistente.anterior()">Atrás</button>
-              <a routerLink="/admin/proyectos" class="boton-link">Ir a Proyectos</a>
-            </div>
-          </div>
-        }
+        @case (4) { <app-paso-lotes /> }
+        @case (5) { <app-paso-contenido /> }
+        @case (6) { <app-paso-revisar /> }
       }
     </section>
   }

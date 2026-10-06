@@ -74,12 +74,40 @@ describe('AsistenteProyectoService', () => {
     http.expectOne(r => r.url.endsWith('/proyectos/7')).flush({ id: 7, empresaId: 1, nombre: 'Casas Circacias' });
     http.expectOne(r => r.url.endsWith('/ubicaciones/proyecto/7')).flush(null, { status: 404, statusText: 'Not Found' });
     http.expectOne(r => r.url.endsWith('/etapas/proyecto/7')).flush([{ id: 1, proyectoId: 7, nombre: 'Etapa 1', orden: 1 }]);
+    http.expectOne(r => r.url.endsWith('/lotes')).flush([
+      { id: 1, proyectoId: 7, codigo: 'LT-01' }, { id: 2, proyectoId: 9, codigo: 'OTRO' }
+    ]);
+    http.expectOne(r => r.url.endsWith('/zonas-comunes/proyecto/7')).flush([{ id: 3, proyectoId: 7, nombre: 'Piscina' }]);
+    http.expectOne(r => r.url.endsWith('/casas-modelo/proyecto/7')).flush([]);
+    http.expectOne(r => r.url.endsWith('/multimedia/proyecto/7')).flush([{ id: 4, tipo: 'VIDEO', url: 'https://x.com/v.mp4' }]);
 
     expect(hay).toBe(true);
     expect(service.proyecto()?.nombre).toBe('Casas Circacias');
     expect(service.ubicacion()).toBeNull();
     expect(service.etapas().length).toBe(1);
+    // Solo los lotes de este proyecto
+    expect(service.lotes().map(l => l.codigo)).toEqual(['LT-01']);
+    expect(service.zonas().length).toBe(1);
+    expect(service.recursos().length).toBe(1);
     expect(service.paso()).toBe(3);
+  });
+
+  it('retomar no falla si una lista opcional no responde', () => {
+    localStorage.setItem(CLAVE, JSON.stringify({ proyectoId: 7, paso: 4 }));
+    let hay: boolean | undefined;
+    service.retomarBorrador().subscribe(v => (hay = v));
+
+    http.expectOne(r => r.url.endsWith('/proyectos/7')).flush({ id: 7, empresaId: 1, nombre: 'X' });
+    http.expectOne(r => r.url.endsWith('/ubicaciones/proyecto/7')).flush(null, { status: 404, statusText: 'Not Found' });
+    http.expectOne(r => r.url.endsWith('/etapas/proyecto/7')).flush([]);
+    http.expectOne(r => r.url.endsWith('/lotes')).flush(null, { status: 500, statusText: 'Error' });
+    http.expectOne(r => r.url.endsWith('/zonas-comunes/proyecto/7')).flush(null, { status: 500, statusText: 'Error' });
+    http.expectOne(r => r.url.endsWith('/casas-modelo/proyecto/7')).flush(null, { status: 500, statusText: 'Error' });
+    http.expectOne(r => r.url.endsWith('/multimedia/proyecto/7')).flush(null, { status: 500, statusText: 'Error' });
+
+    expect(hay).toBe(true);
+    expect(service.lotes()).toEqual([]);
+    expect(service.paso()).toBe(4);
   });
 
   it('ignora un borrador corrupto', () => {

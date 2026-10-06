@@ -37,6 +37,11 @@ export class LoteService {
     return this.http.put<Lote>(`${this.apiUrl}/${id}`, lote);
   }
 
+  /** Elimina el lote de forma permanente. */
+  eliminarLote(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
   obtenerEtapas(): Observable<Etapa[]> {
     return this.http.get<Etapa[]>(`${environment.apiUrl}/etapas`);
   }

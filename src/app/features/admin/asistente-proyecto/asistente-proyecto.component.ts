@@ -4,15 +4,21 @@ import { AsistenteProyectoService, PASOS, PasoAsistente } from './asistente-proy
 import { PasoProyectoComponent } from './pasos/paso-proyecto.component';
 import { PasoUbicacionComponent } from './pasos/paso-ubicacion.component';
 import { PasoEtapasComponent } from './pasos/paso-etapas.component';
+import { PasoLotesComponent } from './pasos/paso-lotes.component';
+import { PasoContenidoComponent } from './pasos/paso-contenido.component';
+import { PasoRevisarComponent } from './pasos/paso-revisar.component';
 
 /**
- * Asistente para crear un proyecto completo en un solo flujo (proyecto, ubicación, etapas y, en las
- * siguientes fases, lotes, zonas comunes, casa modelo y publicación). Cada paso guarda al continuar.
+ * Asistente para crear un proyecto completo en un solo flujo: proyecto, ubicación, etapas, lotes,
+ * zonas comunes, casa modelo, recursos y publicación. Cada paso guarda al continuar.
  */
 @Component({
   selector: 'app-asistente-proyecto',
   standalone: true,
-  imports: [RouterLink, PasoProyectoComponent, PasoUbicacionComponent, PasoEtapasComponent],
+  imports: [
+    RouterLink, PasoProyectoComponent, PasoUbicacionComponent, PasoEtapasComponent,
+    PasoLotesComponent, PasoContenidoComponent, PasoRevisarComponent
+  ],
   providers: [AsistenteProyectoService],
   templateUrl: './asistente-proyecto.component.html',
   styleUrl: './asistente-proyecto.component.scss'
