@@ -16,6 +16,63 @@ export const routes: Routes = [
   },
 
   {
+    // Micrositio de un proyecto: el menú lateral solo muestra las secciones con contenido
+    path: 'proyectos/:id',
+    loadComponent: () => import('./features/public/proyecto-detalle/proyecto-detalle.component')
+      .then(m => m.ProyectoDetalleComponent),
+    children: [
+      { path: '', redirectTo: 'bienvenida', pathMatch: 'full' },
+      {
+        path: 'bienvenida',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/bienvenida/bienvenida.component')
+          .then(m => m.BienvenidaComponent)
+      },
+      {
+        path: 'ubicacion',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/ubicacion/ubicacion.component')
+          .then(m => m.UbicacionComponent)
+      },
+      {
+        path: 'zonas-comunes',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/zonas-comunes/zonas-comunes.component')
+          .then(m => m.ZonasComunesPublicoComponent)
+      },
+      {
+        path: 'casa-modelo',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/casa-modelo/casa-modelo.component')
+          .then(m => m.CasaModeloPublicoComponent)
+      },
+      {
+        path: 'contacto',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/contacto/contacto.component')
+          .then(m => m.ContactoPublicoComponent)
+      },
+      {
+        path: 'lotes',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/lotes/lotes.component')
+          .then(m => m.LotesPublicoComponent)
+      },
+      {
+        path: 'disponibilidad',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/disponibilidad/disponibilidad.component')
+          .then(m => m.DisponibilidadPublicoComponent)
+      },
+      {
+        path: 'respaldo',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/respaldo/respaldo.component')
+          .then(m => m.RespaldoPublicoComponent)
+      },
+      {
+        path: 'videos',
+        loadComponent: () => import('./features/public/proyecto-detalle/secciones/videos/videos.component')
+          .then(m => m.VideosPublicoComponent)
+      },
+      // Una sección que no existe (URL escrita a mano) vuelve al inicio del proyecto
+      { path: '**', redirectTo: 'bienvenida' }
+    ]
+  },
+
+  {
     path: 'login',
     loadComponent: () => import('./features/auth/login.component/login.component').then(m => m.LoginComponent)
   },
@@ -40,6 +97,11 @@ export const routes: Routes = [
       {
         path: 'resumen',
         loadComponent: () => import('./features/admin/resumen/resumen').then(m => m.Resumen)
+      },
+      {
+        path: 'proyectos/nuevo',
+        loadComponent: () => import('./features/admin/asistente-proyecto/asistente-proyecto.component')
+          .then(m => m.AsistenteProyectoComponent)
       },
       {
         path: 'proyectos',

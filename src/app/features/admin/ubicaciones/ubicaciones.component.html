@@ -27,6 +27,9 @@
       <button class="btn-ver-ubicacion" (click)="abrirDetalleUbicacion(item)">
         Ver / Editar &rarr;
       </button>
+      <button class="btn-ver-ubicacion" (click)="editorPuntos.set(item)" title="Colocar los botones de los lotes sobre las imágenes 360° y el plano">
+        Botones 360° &rarr;
+      </button>
       <button class="btn-eliminar u-4" (click)="eliminarUbicacion(item.id!)">
         Eliminar
       </button>
@@ -99,16 +102,40 @@
         <div class="form-group">
           <label class="u-10">Urbanismo URL</label>
           <input class="u-12" type="text" name="urbanismoUrl" [(ngModel)]="formData.urbanismoUrl" />
+          <div class="subir-imagen">
+            <label class="btn-subir">
+              {{ subiendoCampo === 'urbanismoUrl' ? 'Subiendo...' : 'Subir imagen desde mi equipo' }}
+              <input type="file" accept="image/*" hidden [disabled]="subiendoCampo !== null"
+                     (change)="subirImagen('urbanismoUrl', $event)" />
+            </label>
+            <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
+          </div>
         </div>
 
         <div class="form-group">
           <label class="u-10">Vista Aérea URL</label>
           <input class="u-12" type="text" name="vistaAereaUrl" [(ngModel)]="formData.vistaAereaUrl" />
+          <div class="subir-imagen">
+            <label class="btn-subir">
+              {{ subiendoCampo === 'vistaAereaUrl' ? 'Subiendo...' : 'Subir imagen desde mi equipo' }}
+              <input type="file" accept="image/*" hidden [disabled]="subiendoCampo !== null"
+                     (change)="subirImagen('vistaAereaUrl', $event)" />
+            </label>
+            <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
+          </div>
         </div>
 
         <div class="form-group">
           <label class="u-10">Recorrido 360 URL</label>
           <input class="u-12" type="text" name="recorrido360Url" [(ngModel)]="formData.recorrido360Url" />
+          <div class="subir-imagen">
+            <label class="btn-subir">
+              {{ subiendoCampo === 'recorrido360Url' ? 'Subiendo...' : 'Subir imagen desde mi equipo' }}
+              <input type="file" accept="image/*" hidden [disabled]="subiendoCampo !== null"
+                     (change)="subirImagen('recorrido360Url', $event)" />
+            </label>
+            <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
+          </div>
         </div>
 
         <div class="form-group">
@@ -127,3 +154,8 @@
     </form>
   </div>
 </div>
+
+<!-- Editor de los botones sobre el entorno 360°, la vista aérea y el plano de urbanismo -->
+@if (editorPuntos(); as ubicacion) {
+  <app-editor-puntos [ubicacion]="ubicacion" (cerrar)="editorPuntos.set(null)" />
+}

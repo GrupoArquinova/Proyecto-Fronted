@@ -1,0 +1,94 @@
+@use '../../../shared/styles/admin-tokens' as t;
+
+:host { display: block; }
+
+.asistente {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  font-family: t.$font-sans;
+}
+
+.cabecera {
+  margin-bottom: 1.4rem;
+
+  h1 { margin: 0.2rem 0 0; font-family: t.$font-serif; font-size: 2rem; color: t.$text-dark; }
+  .volver { color: t.$text-body; font-size: 0.9rem; text-decoration: none; &:hover { color: t.$primary; } }
+}
+
+.estado { color: t.$text-body; }
+
+.borrador {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+  padding: 0.8rem 1.1rem;
+  background: t.$primary-light;
+  border-radius: t.$radius-md;
+  color: t.$primary-hover;
+
+  button { background: none; border: none; color: t.$primary; font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; }
+}
+
+/* ---------- Barra de pasos ---------- */
+.pasos {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.4rem;
+  margin: 0 0 1.4rem;
+  padding: 0;
+
+  button {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.2rem;
+    background: none;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+
+    &:disabled { cursor: default; }
+  }
+
+  .numero {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    background: t.$bg-card;
+    border: 2px solid t.$border;
+    color: t.$text-muted;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+
+  .titulo { font-size: 0.8rem; color: t.$text-muted; text-align: center; line-height: 1.25; }
+
+  .actual .numero { background: t.$primary; border-color: t.$primary; color: #fff; }
+  .actual .titulo { color: t.$primary; font-weight: 700; }
+  .completo .numero { background: t.$primary-light; border-color: t.$primary; color: t.$primary; }
+  .completo .titulo { color: t.$text-body; }
+}
+
+.panel {
+  padding: 2rem 2.2rem;
+  background: t.$bg-card;
+  border: 1px solid t.$border;
+  border-radius: t.$radius-lg;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 720px) {
+  .asistente { padding: 1.2rem 0.8rem 2rem; }
+  .panel { padding: 1.3rem 1.1rem; }
+  .pasos { grid-template-columns: repeat(3, 1fr); row-gap: 0.8rem; }
+}

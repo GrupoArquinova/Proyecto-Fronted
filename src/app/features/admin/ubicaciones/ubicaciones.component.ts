@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Ubicacion } from '../../../core/models/ubicacion.models';
@@ -7,11 +7,14 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { UbicacionService } from '../../../core/services/ubicacion.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { validarArchivo } from '../../../core/utils/archivos';
+import { EditorPuntosComponent } from './editor-puntos/editor-puntos.component';
 
 @Component({
   selector: 'app-ubicaciones',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EditorPuntosComponent],
   templateUrl: './ubicaciones.component.html',
   styleUrls: ['./ubicaciones.component.scss']
 })
@@ -20,6 +23,13 @@ export class UbicacionesComponent implements OnInit {
   private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
   private confirmDialog = inject(ConfirmDialogService);
+  private cloudinary = inject(CloudinaryService);
+
+  /** Campo de imagen que se está subiendo en este momento (bloquea los demás botones de subida). */
+  subiendoCampo: 'urbanismoUrl' | 'vistaAereaUrl' | 'recorrido360Url' | null = null;
+
+  /** Ubicación cuyo editor de botones sobre las imágenes 360° está abierto. */
+  readonly editorPuntos = signal<Ubicacion | null>(null);
 
   listaUbicaciones: Ubicacion[] = [];
   proyectosDisponibles: Proyecto[] = [];
@@ -44,6 +54,34 @@ export class UbicacionesComponent implements OnInit {
     recorrido360Url: '',
     videoComoLlegarUrl: ''
   };
+
+  /** Sube una imagen desde el equipo a Cloudinary y deja su enlace en el campo correspondiente. */
+  subirImagen(campo: 'urbanismoUrl' | 'vistaAereaUrl' | 'recorrido360Url', evento: Event): void {
+    const input = evento.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    input.value = '';
+    if (!archivo) return;
+
+    const problema = validarArchivo(archivo, ['imagen']);
+    if (problema) {
+      this.toastService.showError(problema);
+      return;
+    }
+
+    this.subiendoCampo = campo;
+    this.cloudinary.subirArchivo(archivo).subscribe({
+      next: resultado => {
+        this.formData[campo] = resultado.url;
+        this.subiendoCampo = null;
+        this.toastService.showSuccess('Imagen subida. Recuerda guardar la ubicación.');
+      },
+      error: err => {
+        console.error('Error al subir la imagen:', err);
+        this.subiendoCampo = null;
+        this.toastService.showError('No se pudo subir la imagen. Inténtalo de nuevo.');
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.cargarUbicaciones();

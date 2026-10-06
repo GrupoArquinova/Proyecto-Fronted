@@ -1,0 +1,26 @@
+// Identidad visual del micrositio de proyecto.
+// Paleta de marca: RGB 44-99-96, 60-112-110, 66-66-66 y 255-255-255.
+$verde: #2c6360;
+$verde-claro: #3c706e;
+$gris: #424242;
+$blanco: #ffffff;
+
+// Tipografía única para todo el micrositio
+$fuente: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+// Derivados de la paleta (tintes del mismo color, no colores nuevos)
+$texto: $gris;
+$texto-suave: #6a6a6a;
+$borde: rgba($verde, 0.16);
+$fondo-suave: rgba($verde, 0.06);
+$fondo-suave-2: rgba($verde, 0.11);
+$sombra: 0 6px 24px rgba($verde, 0.1);
+$sombra-fuerte: 0 14px 40px rgba($verde, 0.18);
+$radio: 16px;
+
+// Estados de los lotes: único lugar donde se usan colores fuera de la marca,
+// porque el significado (libre / apartado / vendido) debe entenderse de un vistazo.
+$disponible: #2f9e63;
+$reservado: #d9951a;
+$vendido: #c94a4a;
+$sin-estado: #8a8a8a;

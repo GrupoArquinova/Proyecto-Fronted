@@ -1,5 +1,6 @@
 @use 'shared/styles/admin-tokens' as t;
 @import '@photo-sphere-viewer/core/index.css';
+@import '@photo-sphere-viewer/markers-plugin/index.css';
 
 /* Reset global de márgenes, paddings y fondo */
 * {
@@ -135,3 +136,6 @@ app-root {
     display: none !important;
   }
 }
+/* En el micrositio de proyecto el botón de pantalla completa va debajo de WhatsApp */
+body.micrositio .whatsapp-btn-float { bottom: 80px; }
+body.micrositio .whatsapp-modal-container { bottom: 150px; }

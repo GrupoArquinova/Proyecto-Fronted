@@ -1,0 +1,82 @@
+@if (ubicacion(); as u) {
+  @if (inmersiva()) {
+
+    <!-- Pantalla completa: la imagen, el video o el plano llenan el espacio y el menú flota encima -->
+    @switch (vista()) {
+      @case ('entorno-360') {
+        @if (tipoEntorno() === 'imagen') {
+          <app-visor-360 [completo]="true" [url]="u.recorrido360Url!" titulo="entorno del proyecto"
+                         [puntos]="puntosEntorno()" (puntoElegido)="abrirPunto($event)" />
+        } @else {
+          <div class="lienzo"><app-medio [completo]="true" [url]="u.recorrido360Url!" titulo="el recorrido 360°" /></div>
+        }
+      }
+
+      @case ('vista-aerea') {
+        @if (tipoAerea() === 'imagen') {
+          <app-visor-360 [completo]="true" [url]="u.vistaAereaUrl!" titulo="vista aérea del proyecto"
+                         [puntos]="puntosAerea()" (puntoElegido)="abrirPunto($event)" />
+        } @else {
+          <div class="lienzo"><app-medio [completo]="true" [url]="u.vistaAereaUrl!" titulo="la vista aérea" /></div>
+        }
+      }
+
+      @case ('urbanismo') {
+        <app-plano-puntos [completo]="true" [url]="u.urbanismoUrl!" [puntos]="puntosPlano()"
+                          (puntoElegido)="abrirPunto($event)" />
+      }
+    }
+
+    @if (tarjeta(); as punto) {
+      <app-tarjeta-punto [punto]="punto" (cerrar)="tarjeta.set(null)" />
+    }
+
+  } @else {
+    <section class="ubicacion">
+
+      @switch (vista()) {
+        @case ('entorno-360') {
+          <h2>Entorno 360°</h2>
+          <app-medio [url]="u.recorrido360Url!" titulo="el recorrido 360°" />
+        }
+
+        @case ('vista-aerea') {
+          <h2>Vista aérea</h2>
+          <app-medio [url]="u.vistaAereaUrl!" titulo="la vista aérea" />
+        }
+
+        @case ('urbanismo') {
+          <h2>Urbanismo</h2>
+          <app-medio [url]="u.urbanismoUrl!" titulo="el plano de urbanismo" />
+        }
+
+        @case ('mapa') {
+          <h2>Mapa</h2>
+          @if (mapaUrl(); as mapa) {
+            <iframe [src]="mapa" title="Mapa de ubicación del proyecto" loading="lazy"></iframe>
+          }
+        }
+
+        @case ('google-maps') {
+          <h2>Google Maps</h2>
+          <app-medio [url]="u.googleMapsUrl!" titulo="la ubicación en Google Maps" />
+        }
+
+        @default {
+          <h2>Ubicación</h2>
+        }
+      }
+
+      @if (lugar() || u.referencias) {
+        <aside class="datos">
+          @if (lugar()) {
+            <p><strong>Dirección:</strong> {{ lugar() }}</p>
+          }
+          @if (u.referencias) {
+            <p><strong>Cómo llegar:</strong> {{ u.referencias }}</p>
+          }
+        </aside>
+      }
+    </section>
+  }
+}

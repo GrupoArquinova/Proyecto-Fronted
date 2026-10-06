@@ -15,6 +15,11 @@ export class ZonaComunService {
     return this.http.get<ZonaComun[]>(`${this.apiUrl}/proyecto/${proyectoId}`);
   }
 
+  /** Zonas comunes publicadas y activas de un proyecto, con su galería (sitio público). */
+  listarPublicasPorProyecto(proyectoId: number): Observable<ZonaComun[]> {
+    return this.http.get<ZonaComun[]>(`${this.apiUrl}/proyecto/${proyectoId}/publicas`);
+  }
+
   crear(zona: ZonaComun): Observable<ZonaComun> {
     return this.http.post<ZonaComun>(this.apiUrl, zona);
   }

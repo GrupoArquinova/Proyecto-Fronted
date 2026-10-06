@@ -1,0 +1,46 @@
+@if (proyecto(); as p) {
+  @switch (vista()) {
+
+    @case ('galeria') {
+      @if (galeria().length > 0) {
+        <app-carrusel-laminas [laminas]="galeria()" [alt]="p.nombre" etiqueta="Imágenes del proyecto" />
+      }
+    }
+
+    @case ('beneficios') {
+      @if (imagenBeneficios(); as lamina) {
+        <section class="lamina" aria-label="Beneficios del proyecto">
+          <div class="lamina-fondo" [style.backgroundImage]="'url(' + lamina + ')'"></div>
+          <div class="lamina-imagen">
+            <img [src]="lamina" [alt]="'Beneficios de ' + p.nombre" />
+          </div>
+        </section>
+      } @else if (beneficios(); as b) {
+        <section class="bloque">
+          <h2>{{ b.titulo }}</h2>
+          <p class="texto">{{ b.contenido }}</p>
+        </section>
+      }
+    }
+
+    @case ('video') {
+      @if (video(); as v) {
+        <section class="pantalla-video" [style.backgroundImage]="p.imagenUrl ? 'url(' + p.imagenUrl + ')' : null">
+          <app-medio [completo]="true" [url]="v.url" [titulo]="v.titulo || 'video del proyecto'" />
+        </section>
+      }
+    }
+
+    @default {
+      <section class="hero" [style.backgroundImage]="p.imagenUrl ? 'url(' + p.imagenUrl + ')' : null">
+        <div class="hero-contenido">
+          <span class="etiqueta">{{ etiqueta() }}</span>
+          <h2>{{ p.nombre }}</h2>
+          @if (p.descripcion) {
+            <p>{{ p.descripcion }}</p>
+          }
+        </div>
+      </section>
+    }
+  }
+}

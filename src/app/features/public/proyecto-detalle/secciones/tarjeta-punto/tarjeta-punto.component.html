@@ -1,0 +1,26 @@
+<aside class="tarjeta" [class.ancha]="!!panorama()" role="dialog" [attr.aria-label]="punto().etiqueta">
+  <button type="button" class="cerrar" (click)="cerrar.emit()" aria-label="Cerrar">&times;</button>
+
+  <span class="tipo">{{ esLote() ? 'Lote' : 'Etapa' }}</span>
+  <h3>{{ punto().etiqueta }}</h3>
+
+  @if (esLote()) {
+    <ul class="datos">
+      @if (area()) { <li><strong>Área:</strong> {{ area() }}</li> }
+      @if (punto().loteEstado) { <li><strong>Estado:</strong> {{ punto().loteEstado }}</li> }
+    </ul>
+
+    @if (panorama(); as url) {
+      <app-visor-360 [url]="url" [titulo]="'lote ' + punto().etiqueta" />
+    } @else if (panorama() === null) {
+      <p class="vacio">Este lote aún no tiene imagen 360°.</p>
+    } @else {
+      <p class="vacio">Buscando imagen 360°...</p>
+    }
+  } @else {
+    @if (punto().etapaNombre) {
+      <ul class="datos"><li><strong>Etapa:</strong> {{ punto().etapaNombre }}</li></ul>
+    }
+    <p class="vacio">Esta etapa aún no tiene imágenes.</p>
+  }
+</aside>

@@ -20,6 +20,24 @@ export class MultimediaService {
     return this.http.get<Multimedia[]>(this.apiUrl);
   }
 
+  /** Todos los recursos activos de una entidad. Para el administrador incluye los no publicados. */
+  listarPorEntidad(
+    tipoEntidad: 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo',
+    entidadId: number
+  ): Observable<Multimedia[]> {
+    return this.http.get<Multimedia[]>(`${this.apiUrl}/${tipoEntidad}/${entidadId}`);
+  }
+
+  /** Recursos publicados de un proyecto, lote, zona común o casa modelo (sitio público). */
+  listarPublicadosPorEntidad(
+    tipoEntidad: 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo',
+    entidadId: number
+  ): Observable<Multimedia[]> {
+    return this.http.get<Multimedia[]>(`${this.apiUrl}/${tipoEntidad}/${entidadId}`, {
+      params: { soloPublicados: true }
+    });
+  }
+
   obtenerMultimediaPorId(id: number): Observable<Multimedia> {
     return this.http.get<Multimedia>(`${this.apiUrl}/${id}`);
   }

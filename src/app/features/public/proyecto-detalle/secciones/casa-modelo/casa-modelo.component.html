@@ -1,0 +1,41 @@
+@if (casa(); as c) {
+  <section class="seccion">
+
+    @if (casas().length > 1) {
+      <div class="selector" role="group" aria-label="Elegir casa modelo">
+        @for (item of casas(); track item.id; let i = $index) {
+          <button type="button" [class.activo]="seleccionada() === i" (click)="seleccionada.set(i)">
+            {{ item.nombre }}
+          </button>
+        }
+      </div>
+    }
+
+    <h2>{{ c.nombre }}</h2>
+
+    @if (c.areaConstruidaM2 || c.numeroHabitaciones || c.numeroBanos) {
+      <ul class="datos">
+        @if (c.areaConstruidaM2) { <li><strong>{{ c.areaConstruidaM2 }} m²</strong> construidos</li> }
+        @if (c.numeroHabitaciones) { <li><strong>{{ c.numeroHabitaciones }}</strong> habitaciones</li> }
+        @if (c.numeroBanos) { <li><strong>{{ c.numeroBanos }}</strong> baños</li> }
+      </ul>
+    }
+
+    @switch (vista()) {
+      @case ('planos') {
+        @if (c.planoUrl) {
+          <app-medio [url]="c.planoUrl" titulo="el plano de la casa" />
+        }
+      }
+      @default {
+        @if (c.tourVirtualUrl) {
+          <app-medio [url]="c.tourVirtualUrl" titulo="el tour virtual" />
+        }
+      }
+    }
+
+    @if (c.descripcion) {
+      <p class="descripcion">{{ c.descripcion }}</p>
+    }
+  </section>
+}

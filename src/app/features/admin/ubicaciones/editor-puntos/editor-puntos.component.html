@@ -1,0 +1,124 @@
+<div class="fondo" (click)="cerrar.emit()"></div>
+
+<div class="ventana" role="dialog" aria-modal="true" aria-label="Botones sobre las imágenes 360°">
+  <header>
+    <div>
+      <h3>Botones sobre las imágenes</h3>
+      <p>{{ ubicacion().proyectoNombre || 'Proyecto' }}</p>
+    </div>
+    <button type="button" class="cerrar" (click)="cerrar.emit()" aria-label="Cerrar">&times;</button>
+  </header>
+
+  @if (escenas().length === 0) {
+    <p class="vacio">
+      Este proyecto todavía no tiene una imagen para ubicar botones. Carga, en la ubicación, la URL de una imagen para el
+      <strong>entorno 360°</strong>, la <strong>vista aérea</strong> o el <strong>plano de urbanismo</strong>
+      (tiene que ser una imagen, no un enlace a una página).
+    </p>
+  } @else {
+    <nav class="pestanas" aria-label="Imagen">
+      @for (e of escenas(); track e.id) {
+        <button type="button" [class.activa]="e.id === escena()" (click)="elegirEscena(e.id)">{{ e.titulo }}</button>
+      }
+    </nav>
+
+    <div class="cuerpo">
+      <div class="imagen">
+        @if (escenaActual(); as actual) {
+          <!-- Se vuelve a crear al cambiar de imagen: el visor lee su URL una sola vez -->
+          @for (clave of [actual.id]; track clave) {
+            @if (esPlano()) {
+              <app-plano-puntos [url]="actual.url" [puntos]="puntosDeEscena()" [pendiente]="pendientePlano()"
+                                (clicEnPlano)="clicEnPlano($event)" />
+            } @else {
+              <app-visor-360 [url]="actual.url" [titulo]="actual.titulo" [puntos]="puntosDeEscena()"
+                             [pendiente]="pendiente360()" (clicEnImagen)="clicEn360($event)" />
+            }
+          }
+        }
+        <p class="ayuda">
+          @if (esPlano()) {
+            Haz clic en el plano donde va el botón de la etapa.
+          } @else {
+            Arrastra para girar y haz clic donde va el botón del lote.
+          }
+        </p>
+      </div>
+
+      <aside class="panel">
+        <section class="nuevo">
+          <h4>Botón nuevo</h4>
+
+          @if (!hayPendiente()) {
+            <p class="paso">1. Haz clic en la imagen para marcar el lugar (aparece un punto amarillo).</p>
+          } @else {
+            <p class="paso listo">Lugar marcado. {{ esLugar() ? 'Ahora escribe el nombre del lugar.' : 'Ahora elige a qué apunta.' }}</p>
+
+            @if (esPlano()) {
+              <label>Etapa
+                <select [ngModel]="etapaId()" (ngModelChange)="elegirEtapa($event)">
+                  <option [ngValue]="null">Elige una etapa</option>
+                  @for (etapa of etapas(); track etapa.id) {
+                    <option [ngValue]="etapa.id">{{ etapa.nombre }}</option>
+                  }
+                </select>
+              </label>
+            }
+
+            @if (!esPlano() && !esLugar()) {
+              <label>Lote
+                <select [ngModel]="loteId()" (ngModelChange)="elegirLote($event)">
+                  <option [ngValue]="null">Elige un lote</option>
+                  @for (lote of lotesLibres(); track lote.id) {
+                    <option [ngValue]="lote.id">{{ tituloDeLote(lote) }}</option>
+                  }
+                </select>
+              </label>
+            }
+
+            <label>{{ esLugar() ? 'Nombre del lugar' : 'Texto del botón' }}
+              <input type="text" maxlength="120" [ngModel]="etiqueta()" (ngModelChange)="etiqueta.set($event)"
+                     [placeholder]="esLugar() ? 'Jericó · 12 min' : 'C21'" />
+            </label>
+            @if (esLugar()) {
+              <p class="paso">Un lugar cercano es solo un rótulo (un pueblo, un río, la vía...). No abre ninguna tarjeta.</p>
+            }
+
+            <div class="acciones">
+              <button type="button" class="secundario" (click)="elegirEscena(escena()!)">Cancelar</button>
+              <button type="button" class="primario" [disabled]="!puedeGuardar()" (click)="guardar()">
+                {{ guardando() ? 'Guardando...' : 'Guardar botón' }}
+              </button>
+            </div>
+          }
+        </section>
+
+        <section class="lista">
+          <h4>Botones de esta imagen ({{ puntosDeEscena().length }})</h4>
+          <ul>
+            @for (punto of puntosDeEscena(); track punto.id) {
+              <li>
+                <span class="nombre">{{ punto.etiqueta }}</span>
+                @if (!esPlano() && punto.loteId == null) {
+                  <span class="etiqueta-lugar">Lugar</span>
+                  <button type="button" class="enlace" (click)="verEnLaImagen(punto)">Ver</button>
+                } @else if (!esPlano()) {
+                  @if (tienePanorama(punto)) { <span class="con-360" title="Este lote ya tiene su imagen 360°">360° ✓</span> }
+                  <button type="button" class="enlace" (click)="verEnLaImagen(punto)">Ver</button>
+                  <label class="enlace subir" [class.ocupado]="subiendoLote() === punto.loteId">
+                    {{ subiendoLote() === punto.loteId ? 'Subiendo...' : (tienePanorama(punto) ? 'Cambiar 360°' : 'Subir 360°') }}
+                    <input type="file" accept="image/*" hidden [disabled]="subiendoLote() !== null"
+                           (change)="subir360(punto, $event)" />
+                  </label>
+                }
+                <button type="button" class="enlace peligro" (click)="quitar(punto)">Quitar</button>
+              </li>
+            } @empty {
+              <li class="sin-puntos">Todavía no hay botones en esta imagen.</li>
+            }
+          </ul>
+        </section>
+      </aside>
+    </div>
+  }
+</div>

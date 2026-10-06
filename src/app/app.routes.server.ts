@@ -10,6 +10,8 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 export const serverRoutes: ServerRoute[] = [
   { path: '', renderMode: RenderMode.Server },
   { path: 'proyectos', renderMode: RenderMode.Server },
+  { path: 'proyectos/:id', renderMode: RenderMode.Server },
+  { path: 'proyectos/:id/**', renderMode: RenderMode.Server },
 
   { path: 'login', renderMode: RenderMode.Client },
   { path: 'recuperar-password', renderMode: RenderMode.Client },

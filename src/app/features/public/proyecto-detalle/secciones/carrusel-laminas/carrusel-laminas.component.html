@@ -1,0 +1,37 @@
+@if (actual(); as lamina) {
+  <section class="carrusel" [attr.aria-label]="etiqueta()" [class.sin-miniaturas]="!miniaturasVisibles()">
+    <!-- Clic en la mitad izquierda: imagen anterior; en la derecha: siguiente (también se desliza en táctil) -->
+    <div class="imagen" (click)="clicEnImagen($event)" (touchstart)="inicioToque($event)" (touchend)="finToque($event)">
+      <img [src]="lamina.url" [alt]="lamina.titulo || alt()" draggable="false" />
+    </div>
+
+    @if (laminas().length > 1) {
+      <button type="button" class="flecha anterior" (click)="anterior()" aria-label="Imagen anterior">&#8249;</button>
+      <button type="button" class="flecha siguiente" (click)="siguiente()" aria-label="Imagen siguiente">&#8250;</button>
+
+      <button type="button" class="ver-miniaturas" (click)="miniaturasVisibles.set(!miniaturasVisibles())"
+              [attr.aria-expanded]="miniaturasVisibles()"
+              [attr.aria-label]="miniaturasVisibles() ? 'Ocultar imágenes' : 'Ver imágenes'"
+              [title]="miniaturasVisibles() ? 'Ocultar imágenes' : 'Ver imágenes'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+             stroke-linejoin="round" aria-hidden="true">
+          <path [attr.d]="miniaturasVisibles() ? 'M6 9l6 6 6-6' : 'M6 15l6-6 6 6'" />
+        </svg>
+      </button>
+
+      @if (miniaturasVisibles()) {
+        <ul class="miniaturas" aria-label="Elegir imagen">
+          @for (item of laminas(); track item.url; let i = $index) {
+            <li>
+              <button type="button" [class.activa]="i === indiceActual()" (click)="irA(i)"
+                      [attr.aria-label]="'Ver imagen ' + (i + 1) + ' de ' + laminas().length"
+                      [attr.aria-current]="i === indiceActual()">
+                <img [src]="item.url" alt="" loading="lazy" />
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </section>
+}

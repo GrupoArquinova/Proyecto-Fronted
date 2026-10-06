@@ -23,6 +23,7 @@ export interface Lote {
   codigo: string;
   nombre?: string;
   areaM2: number;
+  precio?: number;
   descripcion?: string;
   caracteristicas?: string;
   posicionX?: number;

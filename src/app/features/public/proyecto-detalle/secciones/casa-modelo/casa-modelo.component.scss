@@ -1,0 +1,75 @@
+@use '../tokens' as t;
+
+:host { display: block; }
+
+.seccion {
+  max-width: 1000px;
+  margin: 0 auto;
+
+  h2 {
+    margin-bottom: 1rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 3px solid t.$verde-claro;
+    width: fit-content;
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: t.$verde;
+  }
+}
+
+.selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+
+  button {
+    padding: 0.5rem 1.2rem;
+    background: t.$blanco;
+    color: t.$verde;
+    border: 1px solid t.$borde;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+
+    &:hover { background: t.$fondo-suave; }
+    &.activo { background: t.$verde; border-color: t.$verde; color: t.$blanco; }
+  }
+}
+
+// Ficha rápida: área, habitaciones y baños como tarjetas
+.datos {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1.6rem;
+
+  li {
+    padding: 0.7rem 1.2rem;
+    background: t.$blanco;
+    border: 1px solid t.$borde;
+    border-radius: 12px;
+    box-shadow: t.$sombra;
+    color: t.$texto-suave;
+    font-size: 0.92rem;
+  }
+
+  strong { color: t.$verde; font-size: 1.15rem; margin-right: 0.2rem; }
+}
+
+.descripcion {
+  margin-top: 1.6rem;
+  padding: 1.3rem 1.6rem;
+  background: t.$fondo-suave;
+  border-left: 4px solid t.$verde;
+  border-radius: 0 t.$radio t.$radio 0;
+  line-height: 1.8;
+  color: t.$texto;
+  white-space: pre-line;
+}
+
+// Los controles de formulario no heredan la tipografía por defecto
+button, input, textarea { font-family: inherit; }

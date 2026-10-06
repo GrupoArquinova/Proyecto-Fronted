@@ -1,0 +1,36 @@
+@if (proyecto(); as p) {
+  <section class="seccion">
+    <h2>{{ etapaNombre() }}</h2>
+
+    <ul class="leyenda" aria-label="Estados de los lotes">
+      @for (item of leyenda(); track item.clave) {
+        <li><span class="punto" [class]="item.clave"></span> {{ item.etiqueta }} <strong>{{ item.total }}</strong></li>
+      }
+    </ul>
+
+    <div class="cuerpo">
+      <div class="principal">
+        <app-plano-lotes [imagenUrl]="plano()" [lotes]="lotesDeEtapa()" [seleccionadoId]="elegido()?.id ?? null"
+                         (seleccionar)="elegir($event)" />
+
+        <ul class="grilla">
+          @for (l of lotesDeEtapa(); track l.id) {
+            <li>
+              <button type="button" [class]="clave(l)" [class.activo]="l.id === elegido()?.id"
+                      (click)="elegir(l)">
+                <strong>{{ l.codigo }}</strong>
+                <span>{{ area(l) }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+
+      @if (elegido(); as lote) {
+        <app-lote-tarjeta [lote]="lote" [proyectoId]="p.id!" />
+      } @else {
+        <p class="ayuda">Elige un lote para ver su ficha.</p>
+      }
+    </div>
+  </section>
+}

@@ -23,13 +23,18 @@ export class ProyectoService {
     return this.http.get<Proyecto[]>(this.apiUrl);
   }
 
+  /** Solo proyectos publicados y activos (sitio público). */
+  getProyectosPublicos(): Observable<Proyecto[]> {
+    return this.http.get<Proyecto[]>(this.apiUrl, { params: { soloPublicados: true } });
+  }
+
   /**
    * Proyectos + lotes publicados, combinados para las páginas públicas.
    * Es el único lugar que calcula totalLotes / lotesDisponibles y los valores por defecto.
    */
   obtenerCatalogoPublico(): Observable<CatalogoPublico> {
     return forkJoin({
-      proyectos: this.getProyectos(),
+      proyectos: this.getProyectosPublicos(),
       lotes: this.loteService.obtenerLotesPublicos()
     }).pipe(
       map(({ proyectos, lotes }) => ({

@@ -1,0 +1,55 @@
+@if (proyecto(); as p) {
+  <section class="tarjeta">
+    <h2>Contáctanos</h2>
+    <p class="sub">Déjanos tus datos y te contamos todo sobre {{ p.nombre }}.</p>
+    @if (lote(); as l) {
+      <p class="lote">Consultando por el lote <strong>{{ l.codigo }}</strong></p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <label>
+        Nombre
+        <input type="text" formControlName="nombre" placeholder="Tu nombre completo" autocomplete="name"
+               [class.error]="invalido('nombre')" />
+        @if (invalido('nombre')) { <small>Escribe tu nombre.</small> }
+      </label>
+
+      <label>
+        Teléfono / WhatsApp
+        <input type="tel" formControlName="telefono" placeholder="Ej: 300 123 4567" autocomplete="tel"
+               [class.error]="invalido('telefono')" />
+        @if (invalido('telefono')) { <small>Escribe un teléfono de contacto.</small> }
+      </label>
+
+      <label>
+        Correo
+        <input type="email" formControlName="correo" placeholder="correo@ejemplo.com" autocomplete="email"
+               [class.error]="invalido('correo')" />
+        @if (invalido('correo')) { <small>Escribe un correo válido.</small> }
+      </label>
+
+      <label>
+        Mensaje
+        <textarea formControlName="mensaje" rows="4" placeholder="¿En qué podemos ayudarte?"
+                  [class.error]="invalido('mensaje')"></textarea>
+        @if (invalido('mensaje')) { <small>Cuéntanos qué necesitas.</small> }
+      </label>
+
+      <label class="consentimiento">
+        <input type="checkbox" formControlName="consentimientoDatos" />
+        <span>Autorizo el tratamiento de mis datos personales para que me contacten.</span>
+      </label>
+      @if (invalido('consentimientoDatos')) { <small class="aviso">Debes autorizar el tratamiento de tus datos.</small> }
+
+      <button type="submit" class="enviar" [disabled]="enviando()">
+        {{ enviando() ? 'Enviando...' : 'Enviar mensaje' }}
+      </button>
+    </form>
+
+    <footer class="pie">
+      <a [href]="'tel:+' + contacto.whatsapp">{{ contacto.telefonoTexto }}</a>
+      <a [href]="whatsappUrl" target="_blank" rel="noopener">WhatsApp</a>
+      @if (lugar()) { <span>{{ lugar() }}</span> }
+    </footer>
+  </section>
+}
