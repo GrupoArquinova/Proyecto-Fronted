@@ -10,9 +10,11 @@ import { SeccionProyectoId } from '../../../../core/models/proyecto-detalle.mode
  * (inicializador de campo o constructor). Entrega:
  *  - detalle: todos los datos del proyecto
  *  - vista: la vista activa (query param `vista`), o la primera disponible si no hay una válida
+ *    (con `primeraPorDefecto: false` queda en null: la sección muestra su vista principal, como la portada)
  * y devuelve a Bienvenida si la sección no tiene contenido (por ejemplo, URL escrita a mano).
  */
-export function inicializarSeccion(id: SeccionProyectoId) {
+export function inicializarSeccion(id: SeccionProyectoId, opciones: { primeraPorDefecto?: boolean } = {}) {
+  const primeraPorDefecto = opciones.primeraPorDefecto ?? true;
   const datos = inject(ProyectoDetalleService);
   const route = inject(ActivatedRoute);
   const router = inject(Router);
@@ -26,7 +28,7 @@ export function inicializarSeccion(id: SeccionProyectoId) {
   const vista = computed(() => {
     const subs = subsecciones();
     const pedida = vistaSolicitada();
-    return subs.some(s => s.id === pedida) ? pedida : (subs[0]?.id ?? null);
+    return subs.some(s => s.id === pedida) ? pedida : (primeraPorDefecto ? (subs[0]?.id ?? null) : null);
   });
 
   effect(() => {

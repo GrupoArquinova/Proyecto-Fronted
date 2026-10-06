@@ -135,3 +135,6 @@ app-root {
     display: none !important;
   }
 }
+/* En el micrositio de proyecto el botón de pantalla completa va debajo de WhatsApp */
+body.micrositio .whatsapp-btn-float { bottom: 80px; }
+body.micrositio .whatsapp-modal-container { bottom: 150px; }

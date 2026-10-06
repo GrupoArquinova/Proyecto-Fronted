@@ -61,6 +61,22 @@ export class ProyectoDetalleService {
     return candidatas.find(url => !!url && clasificarMedio(url).tipo === 'imagen') ?? null;
   });
 
+  /** Lámina de beneficios (una imagen hecha en Canva): multimedia de tipo BENEFICIOS. */
+  readonly imagenBeneficios = computed<string | null>(() =>
+    this.detalle()?.multimedia.find(m => m.tipo === 'BENEFICIOS')?.url ?? null);
+
+  /** Fotos del carrusel de Bienvenida: las imágenes del proyecto, en el orden definido por el administrador. */
+  readonly galeria = computed(() =>
+    (this.detalle()?.multimedia ?? [])
+      .filter(m => m.tipo === 'IMAGEN')
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)));
+
+  /** Láminas de respaldo del proyecto (documentos y avales hechos en Canva): multimedia de tipo RESPALDO. */
+  readonly respaldo = computed(() =>
+    (this.detalle()?.multimedia ?? [])
+      .filter(m => m.tipo === 'RESPALDO')
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)));
+
   cargar(proyectoId: number): void {
     this.carga?.unsubscribe();
     this.estado.set('cargando');
@@ -92,20 +108,22 @@ export class ProyectoDetalleService {
     const u = d.ubicacion;
     const videos = d.multimedia.filter(m => m.tipo === 'VIDEO');
     const esBeneficios = (c: { seccion: string }) => c.seccion.toUpperCase() === SECCION_BENEFICIOS;
-    const respaldo = d.contenido.filter(c => !esBeneficios(c));
+    const hayRespaldo = d.multimedia.some(m => m.tipo === 'RESPALDO');
 
-    // Bienvenida: Beneficios sale del contenido institucional (sección BENEFICIOS) y Video del multimedia del proyecto
+    // Bienvenida: sin vista elegida muestra la portada. El carrusel (vista con el nombre del proyecto) sale de las
+    // imágenes del proyecto; Beneficios, de la lámina BENEFICIOS o, si no hay, del contenido institucional.
     secciones.push({
       id: 'bienvenida',
       titulo: 'Bienvenida',
       subsecciones: this.vistas([
-        ['inicio', d.proyecto.nombre, true],
-        ['beneficios', 'Beneficios', d.contenido.some(esBeneficios)],
+        ['galeria', d.proyecto.nombre, d.multimedia.some(m => m.tipo === 'IMAGEN')],
+        ['beneficios', 'Beneficios', d.multimedia.some(m => m.tipo === 'BENEFICIOS') || d.contenido.some(esBeneficios)],
         ['video', 'Video', videos.length > 0]
       ])
     });
 
-    if (respaldo.length > 0) {
+    // Respaldo es propio de cada proyecto (láminas); el de la empresa vive en el inicio del sitio
+    if (hayRespaldo) {
       secciones.push({ id: 'respaldo', titulo: 'Respaldo', subsecciones: [] });
     }
 

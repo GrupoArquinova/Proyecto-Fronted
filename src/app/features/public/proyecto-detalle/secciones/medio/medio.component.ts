@@ -9,6 +9,7 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
 @Component({
   selector: 'app-medio',
   standalone: true,
+  host: { '[class.completo]': 'completo()' },
   template: `
     @switch (clasificado().tipo) {
       @case ('imagen') {
@@ -44,6 +45,19 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
     img { height: auto; max-height: 78vh; object-fit: contain; }
     video { max-height: 78vh; }
     iframe { aspect-ratio: 16 / 9; min-height: 320px; }
+    /* A pantalla completa: sin bordes ni sombras, llena el espacio que le da el contenedor */
+    :host(.completo) { height: 100%; }
+    :host(.completo) img, :host(.completo) video, :host(.completo) iframe {
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      min-height: 0;
+      aspect-ratio: auto;
+      border-radius: 0;
+      box-shadow: none;
+      background: #0b1413;
+    }
+    :host(.completo) video, :host(.completo) img { object-fit: contain; }
     .enlace {
       display: inline-block;
       margin-top: 0.9rem;
@@ -64,6 +78,8 @@ export class MedioComponent {
 
   readonly url = input.required<string>();
   readonly titulo = input<string>('el recurso');
+  /** Llena todo el espacio disponible, sin bordes redondeados (video a pantalla completa). */
+  readonly completo = input(false);
 
   readonly clasificado = computed(() => clasificarMedio(this.url()));
 

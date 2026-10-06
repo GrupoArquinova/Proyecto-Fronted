@@ -13,7 +13,9 @@ const OPCIONES: { tipo: TipoMultimedia; etiqueta: string; archivos: TipoArchivo[
   { tipo: 'VIDEO', etiqueta: 'Video del proyecto', archivos: ['video'] },
   { tipo: 'PDF', etiqueta: 'PDF (brochure, ficha técnica)', archivos: ['pdf'] },
   { tipo: 'PLANO', etiqueta: 'Plano', archivos: ['imagen', 'pdf'] },
-  { tipo: 'IMAGEN', etiqueta: 'Foto', archivos: ['imagen'] },
+  { tipo: 'IMAGEN', etiqueta: 'Foto del carrusel de Bienvenida', archivos: ['imagen'] },
+  { tipo: 'BENEFICIOS', etiqueta: 'Lámina de beneficios (una sola)', archivos: ['imagen'] },
+  { tipo: 'RESPALDO', etiqueta: 'Lámina de respaldo (carrusel de Respaldo)', archivos: ['imagen'] },
   { tipo: 'PANORAMICA_360', etiqueta: 'Panorámica 360°', archivos: ['imagen'] }
 ];
 
@@ -25,7 +27,7 @@ const OPCIONES: { tipo: TipoMultimedia; etiqueta: string; archivos: TipoArchivo[
   template: `
     <section class="bloque" aria-label="Videos, PDF y otros recursos">
       <h3>Videos, PDF y otros recursos</h3>
-      <p class="nota">Archivos del proyecto: el video de presentación, el brochure en PDF, planos, fotos y panorámicas.</p>
+      <p class="nota">Archivos del proyecto: video, brochure en PDF, planos, fotos del carrusel de Bienvenida, la lámina de beneficios y panorámicas.</p>
 
       <div class="fila">
         <label>Tipo de recurso
@@ -100,10 +102,14 @@ export class BloqueRecursosComponent {
       activo: true
     };
 
+    // La lámina de beneficios es una sola por proyecto: la nueva reemplaza a la anterior
+    const anterior = recurso.tipo === 'BENEFICIOS' ? this.asistente.recursos().find(r => r.tipo === 'BENEFICIOS') : undefined;
+
     this.multimediaService.crearMultimedia(recurso).subscribe({
       next: creado => {
-        this.asistente.recursos.update(l => [...l, creado]);
+        this.asistente.recursos.update(l => [...l.filter(r => r.id !== anterior?.id), creado]);
         this.titulo.set('');
+        if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
       },
       error: err => {
         console.error('Error al guardar el recurso:', err);

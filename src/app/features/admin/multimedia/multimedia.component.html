@@ -32,6 +32,8 @@
         <option value="PDF">PDF</option>
         <option value="PLANO">Plano</option>
         <option value="PANORAMICA_360">Panorámica 360</option>
+        <option value="BENEFICIOS">Beneficios (lámina del proyecto)</option>
+        <option value="RESPALDO">Respaldo (láminas del proyecto)</option>
         <option value="OTRO">Otro</option>
       </select>
     </div>
@@ -46,7 +48,7 @@
            [style.cursor]="item.tipo === 'PANORAMICA_360' || item.tipo === 'IMAGEN' ? 'pointer' : 'default'">
         
         <img
-          *ngIf="item.tipo === 'IMAGEN' || item.tipo === 'PANORAMICA_360'"
+          *ngIf="item.tipo === 'IMAGEN' || item.tipo === 'PANORAMICA_360' || item.tipo === 'BENEFICIOS' || item.tipo === 'RESPALDO'"
           [src]="item.url"
           [alt]="item.titulo || 'Multimedia'"
           loading="lazy"
@@ -58,7 +60,7 @@
           Tu navegador no soporta la reproducción de videos.
         </video>
 
-        <a *ngIf="item.tipo !== 'IMAGEN' && item.tipo !== 'PANORAMICA_360' && item.tipo !== 'VIDEO'" 
+        <a *ngIf="item.tipo !== 'IMAGEN' && item.tipo !== 'PANORAMICA_360' && item.tipo !== 'BENEFICIOS' && item.tipo !== 'RESPALDO' && item.tipo !== 'VIDEO'" 
            [href]="item.url" 
            target="_blank" 
            rel="noopener noreferrer" 
@@ -127,9 +129,9 @@
             <div class="form-group full-width">
               <label>Archivo *</label>
               <div class="archivo-preview" *ngIf="formData.url">
-                <img *ngIf="formData.tipo === 'IMAGEN' || formData.tipo === 'PANORAMICA_360'" [src]="formData.url" alt="Vista previa" class="preview-img" />
+                <img *ngIf="formData.tipo === 'IMAGEN' || formData.tipo === 'PANORAMICA_360' || formData.tipo === 'BENEFICIOS' || formData.tipo === 'RESPALDO'" [src]="formData.url" alt="Vista previa" class="preview-img" />
                 <video *ngIf="formData.tipo === 'VIDEO'" [src]="formData.url" class="preview-img" controls muted></video>
-                <div *ngIf="formData.tipo !== 'IMAGEN' && formData.tipo !== 'PANORAMICA_360' && formData.tipo !== 'VIDEO'" class="preview-file">{{ nombreArchivoSeleccionado || formData.url }}</div>
+                <div *ngIf="formData.tipo !== 'IMAGEN' && formData.tipo !== 'PANORAMICA_360' && formData.tipo !== 'BENEFICIOS' && formData.tipo !== 'RESPALDO' && formData.tipo !== 'VIDEO'" class="preview-file">{{ nombreArchivoSeleccionado || formData.url }}</div>
                 <button type="button" class="btn-quitar-archivo" (click)="quitarArchivo()">Quitar</button>
               </div>
 
@@ -178,6 +180,8 @@
                 <option value="PDF">PDF</option>
                 <option value="PLANO">Plano</option>
                 <option value="PANORAMICA_360">Panorámica 360</option>
+        <option value="BENEFICIOS">Beneficios (lámina del proyecto)</option>
+        <option value="RESPALDO">Respaldo (láminas del proyecto)</option>
                 <option value="OTRO">Otro</option>
               </select>
             </div>

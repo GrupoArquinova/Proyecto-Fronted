@@ -2,35 +2,38 @@
 
 :host { display: block; }
 
-/* ---------- Portada ---------- */
-.hero {
-  position: relative;
-  min-height: calc(100vh - 8rem);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  text-align: center;
-  border-radius: 24px;
-  overflow: hidden;
+/* ---------- Portada y video: ocupan toda la pantalla ---------- */
+// --menu-offset lo define el visor: deja libre el espacio del menú flotante en escritorio
+.hero,
+.pantalla-video {
+  position: absolute;
+  inset: 0;
   background: t.$verde center / cover no-repeat;
-  box-shadow: t.$sombra-fuerte;
+}
 
-  // La foto se ve limpia: un toque casi imperceptible de verde arriba y un degradado
-  // oscuro solo en la parte baja, donde va el texto, para que siempre se lea
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: var(--menu-offset, 0px);
+  text-align: center;
+  transition: padding-left 0.25s ease;
+
+  // La foto se ve limpia: un velo muy suave y un degradado oscuro solo abajo para que el texto se lea
   &::before {
     content: '';
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(to top, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0) 68%),
-      rgba(t.$verde, 0.08);
+      linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.18) 45%, rgba(0, 0, 0, 0.08) 100%),
+      rgba(t.$verde, 0.06);
   }
 }
 
 .hero-contenido {
   position: relative;
   max-width: 780px;
-  padding: 2.5rem 1.5rem 3.2rem;
+  padding: 2.5rem 1.5rem;
   color: t.$blanco;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
 
@@ -63,22 +66,56 @@
   }
 }
 
-.boton {
-  display: inline-block;
-  margin-top: 2rem;
-  padding: 0.95rem 2.1rem;
-  background: t.$blanco;
-  color: t.$verde;
-  border-radius: 999px;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
-  transition: transform 0.2s, background 0.2s, color 0.2s;
+// El video llena toda la pantalla; el menú translúcido flota por encima, como en el carrusel
+.pantalla-video {
+  display: flex;
 
-  &:hover { background: t.$verde-claro; color: t.$blanco; transform: translateY(-2px); }
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 20, 19, 0.72);
+  }
+
+  app-medio { position: relative; flex: 1; min-width: 0; }
 }
 
-/* ---------- Beneficios y Video ---------- */
+/* ---------- Beneficios (lámina): la imagen se ve entera, sin recortar ---------- */
+.lamina {
+  position: absolute;
+  inset: 0;
+  padding-left: var(--menu-offset, 0px);
+  background: #0b1413;
+  overflow: hidden;
+  transition: padding-left 0.25s ease;
+}
+
+// La misma imagen, desenfocada y oscura, rellena los costados; la lámina se ve entera encima
+.lamina-fondo {
+  position: absolute;
+  inset: -30px;
+  background: center / cover no-repeat;
+  filter: blur(28px) brightness(0.55);
+}
+
+.lamina-imagen {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr); // la imagen se encoge para caber, nunca se recorta
+  place-items: center;
+  padding: 0.8rem 0.8rem 0.8rem 0.4rem;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ---------- Beneficios (solo texto) y Video ---------- */
 .bloque {
   max-width: 780px;
   margin: 1rem auto;
@@ -116,6 +153,5 @@
 }
 
 @media (max-width: 600px) {
-  .hero { min-height: 70vh; border-radius: 18px; }
   .bloque { padding: 1.5rem 1.3rem; }
 }

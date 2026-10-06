@@ -41,7 +41,7 @@ describe('ProyectoDetalleService', () => {
         zonasComunes: [{ proyectoId: 7, nombre: 'Piscina', descripcion: '', publicado: true, activo: true }],
         casasModelo: [{ proyectoId: 7, nombre: 'Casa', publicado: true, activo: true, tourVirtualUrl: 'z' }],
         lotes: [{ codigo: 'L1', areaM2: 800, activo: true, estadoId: 1, etapaId: 1, etapaNombre: 'Etapa B' }],
-        contenido: [{ empresaId: 1, seccion: 'RESPALDO', titulo: 't', contenido: 'c', publicado: true }]
+        multimedia: [{ tipo: 'RESPALDO', url: 'https://x.com/respaldo.png', portada: false, publicado: true, activo: true }]
       });
 
       expect(ids()).toEqual([
@@ -117,6 +117,8 @@ describe('ProyectoDetalleService', () => {
 
   describe('respaldo y beneficios', () => {
     const texto = (seccion: string) => ({ empresaId: 1, seccion, titulo: seccion, contenido: 'c', publicado: true });
+    const lamina = (tipo: 'RESPALDO' | 'BENEFICIOS', url: string, orden = 1) =>
+      ({ tipo, url, orden, portada: false, publicado: true, activo: true });
 
     it('un texto BENEFICIOS alimenta Bienvenida pero no abre Respaldo por si solo', () => {
       service.detalle.set({ ...detalleVacio(), contenido: [texto('BENEFICIOS')] });
@@ -126,10 +128,30 @@ describe('ProyectoDetalleService', () => {
       expect(bienvenida.subsecciones.map(v => v.id)).toContain('beneficios');
     });
 
-    it('cualquier otro texto institucional abre Respaldo', () => {
-      service.detalle.set({ ...detalleVacio(), contenido: [texto('BENEFICIOS'), texto('TRAYECTORIA')] });
+    it('el texto institucional de la empresa ya no abre Respaldo: es propio de cada proyecto', () => {
+      service.detalle.set({ ...detalleVacio(), contenido: [texto('TRAYECTORIA'), texto('MISION')] });
+
+      expect(ids()).not.toContain('respaldo');
+    });
+
+    it('Respaldo aparece solo cuando el proyecto tiene laminas RESPALDO, en el orden del administrador', () => {
+      expect(ids()).not.toContain('respaldo');
+
+      service.detalle.set({
+        ...detalleVacio(),
+        multimedia: [lamina('RESPALDO', 'https://x.com/2.png', 2), lamina('RESPALDO', 'https://x.com/1.png', 1)]
+      });
 
       expect(ids()).toContain('respaldo');
+      expect(service.respaldo().map(l => l.url)).toEqual(['https://x.com/1.png', 'https://x.com/2.png']);
+    });
+
+    it('una lamina BENEFICIOS abre la vista Beneficios aunque no haya texto', () => {
+      service.detalle.set({ ...detalleVacio(), multimedia: [lamina('BENEFICIOS', 'https://x.com/b.png')] });
+
+      const bienvenida = service.secciones().find(s => s.id === 'bienvenida')!;
+      expect(bienvenida.subsecciones.map(v => v.id)).toContain('beneficios');
+      expect(service.imagenBeneficios()).toBe('https://x.com/b.png');
     });
   });
 

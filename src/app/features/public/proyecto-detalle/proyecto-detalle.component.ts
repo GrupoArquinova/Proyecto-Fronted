@@ -1,5 +1,5 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, HostListener, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
@@ -20,6 +20,8 @@ import { ProyectoDetalleService } from '../../../core/services/proyecto-detalle.
 export class ProyectoDetalleComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private document = inject(DOCUMENT);
+  private platformId = inject(PLATFORM_ID);
   readonly datos = inject(ProyectoDetalleService);
 
   private proyectoId = 0;
@@ -48,8 +50,23 @@ export class ProyectoDetalleComponent {
     this.datos.secciones().find(s => s.id === this.seccionActiva())?.titulo ?? '');
   readonly vistaTitulo = computed(() => {
     const subs = this.datos.secciones().find(s => s.id === this.seccionActiva())?.subsecciones ?? [];
-    return subs.find(v => v.id === (this.vistaActiva() ?? subs[0]?.id))?.titulo ?? '';
+    return subs.find(v => v.id === this.vistaDe(this.seccionActiva()))?.titulo ?? '';
   });
+
+  /**
+   * Vistas "inmersivas": ocupan toda la pantalla (portada y video de Bienvenida) y el menú
+   * flota translúcido encima. El resto de secciones conserva el menú sólido y su página.
+   */
+  readonly inmersivo = computed(() => {
+    if (this.seccionActiva() === 'respaldo') return true;
+    if (this.seccionActiva() !== 'bienvenida') return false;
+    const vista = this.vistaDe('bienvenida');
+    // Beneficios solo es inmersiva si hay lámina; con solo texto usa el panel normal
+    return vista !== 'beneficios' || !!this.datos.imagenBeneficios();
+  });
+
+  readonly pantallaCompleta = signal(false);
+  readonly pantallaCompletaDisponible = signal(false);
 
   readonly proyecto = computed(() => this.datos.detalle()?.proyecto ?? null);
   readonly ubicacionTexto = computed(() => {
@@ -58,6 +75,14 @@ export class ProyectoDetalleComponent {
   });
 
   constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      // iPhone no permite pantalla completa en páginas: en ese caso el botón no se muestra
+      this.pantallaCompletaDisponible.set(!!this.document.documentElement.requestFullscreen);
+      // Sube el botón de WhatsApp para que el de pantalla completa quede debajo (ver styles.scss)
+      this.document.body.classList.add('micrositio');
+      inject(DestroyRef).onDestroy(() => this.document.body.classList.remove('micrositio'));
+    }
+
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe(params => {
       this.proyectoId = Number(params.get('id'));
       if (Number.isInteger(this.proyectoId) && this.proyectoId > 0) {
@@ -68,11 +93,37 @@ export class ProyectoDetalleComponent {
     });
   }
 
+  /**
+   * Vista activa de una sección: la pedida en la URL si existe o, si no, la primera.
+   * Bienvenida es la excepción: sin vista elegida muestra la portada y ninguna vista queda marcada.
+   */
+  vistaDe(seccionId: string): string | null {
+    if (seccionId !== this.seccionActiva()) return null;
+    const subs = this.datos.secciones().find(s => s.id === seccionId)?.subsecciones ?? [];
+    const pedida = this.vistaActiva();
+    if (subs.some(v => v.id === pedida)) return pedida ?? null;
+    return seccionId === 'bienvenida' ? null : (subs[0]?.id ?? null);
+  }
+
   reintentar(): void {
     this.datos.cargar(this.proyectoId);
   }
 
   cerrarMenuMovil(): void {
     this.menuMovilAbierto.set(false);
+  }
+
+  /** Se pone toda la página (no solo este componente) para que el botón de WhatsApp siga visible. */
+  alternarPantallaCompleta(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const accion = this.document.fullscreenElement
+      ? this.document.exitFullscreen()
+      : this.document.documentElement.requestFullscreen();
+    accion.catch(() => undefined);
+  }
+
+  @HostListener('document:fullscreenchange')
+  sincronizarPantallaCompleta(): void {
+    this.pantallaCompleta.set(!!this.document.fullscreenElement);
   }
 }

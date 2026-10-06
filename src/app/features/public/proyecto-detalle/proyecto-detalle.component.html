@@ -20,7 +20,11 @@
     </div>
   }
   @case ('listo') {
-    <div class="visor" [class.colapsado]="menuColapsado()" [class.movil-abierto]="menuMovilAbierto()">
+    <div class="visor" [class.colapsado]="menuColapsado()" [class.movil-abierto]="menuMovilAbierto()"
+         [class.inmersivo]="inmersivo()">
+
+      <div class="fondo" aria-hidden="true"
+           [style.backgroundImage]="proyecto()?.imagenUrl ? 'url(' + proyecto()?.imagenUrl + ')' : null"></div>
 
       <button type="button" class="btn-menu-movil" (click)="menuMovilAbierto.set(true)" aria-label="Abrir menú">
         &#9776;
@@ -57,7 +61,7 @@
                     <li>
                       <a [routerLink]="['/proyectos', proyecto()?.id, seccion.id]"
                          [queryParams]="{ vista: vista.id }"
-                         [class.activa]="(vistaActiva() ?? seccion.subsecciones[0].id) === vista.id"
+                         [class.activa]="vistaDe(seccion.id) === vista.id"
                          (click)="cerrarMenuMovil()">
                         {{ vista.titulo }}
                       </a>
@@ -78,6 +82,21 @@
               [attr.aria-label]="menuColapsado() ? 'Mostrar menú' : 'Ocultar menú'">
         {{ menuColapsado() ? '›' : '‹' }}
       </button>
+
+      @if (pantallaCompletaDisponible()) {
+        <button type="button" class="btn-pantalla" (click)="alternarPantallaCompleta()"
+                [attr.aria-label]="pantallaCompleta() ? 'Salir de pantalla completa' : 'Pantalla completa'"
+                [title]="pantallaCompleta() ? 'Salir de pantalla completa' : 'Pantalla completa'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+               stroke-linejoin="round" aria-hidden="true">
+            @if (pantallaCompleta()) {
+              <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+            } @else {
+              <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+            }
+          </svg>
+        </button>
+      }
 
       <main class="contenido">
         <div class="barra">
