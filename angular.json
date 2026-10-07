@@ -65,6 +65,24 @@
               ],
               "outputHashing": "all"
             },
+            "vercel": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "16kB",
+                  "maximumError": "32kB"
+                }
+              ],
+              "outputHashing": "all",
+              "server": false,
+              "ssr": false,
+              "outputMode": "static"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
