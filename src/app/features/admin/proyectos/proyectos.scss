@@ -32,7 +32,7 @@ $text-muted: t.$text-muted;
   padding: 2.5rem 3rem;
   background-color: t.$bg-page;
   min-height: calc(100vh - 65px);
-  font-family: t.$font-sans;
+  font-family: t.$font-ui;
 
   .proyectos-header {
     display: flex;
@@ -42,7 +42,7 @@ $text-muted: t.$text-muted;
     margin-bottom: 2rem;
 
     .page-title {
-      font-family: Georgia, serif;
+      font-family: t.$font-ui;
       font-size: 2.25rem;
       font-weight: 500;
       color: $text-dark;
@@ -66,6 +66,49 @@ $text-muted: t.$text-muted;
     }
   }
 
+  // Filtro activos / inactivos / todos
+  .filtros {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: -0.5rem 0 1.4rem;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      background: #ffffff;
+      color: t.$text-body;
+      border: 1px solid t.$border;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+      &:hover { border-color: $primary-green; }
+
+      .contador {
+        min-width: 1.5rem;
+        padding: 0.05rem 0.45rem;
+        background: t.$bg-page;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      &.activo {
+        background: $primary-green;
+        border-color: $primary-green;
+        color: #ffffff;
+
+        .contador { background: rgba(255, 255, 255, 0.22); color: #ffffff; }
+      }
+    }
+  }
+
   .proyectos-list {
     width: 100%;
     display: flex;
@@ -78,15 +121,25 @@ $text-muted: t.$text-muted;
       background-color: #ffffff;
       border-radius: 12px;
       padding: 1.25rem 2rem;
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
+      column-gap: 2rem;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+      // Proyecto inactivo: se ve atenuado para distinguirlo de los activos
+      &.inactivo {
+        background-color: #fafafa;
+
+        .proyecto-img { filter: grayscale(0.85); opacity: 0.7; }
+        .proyecto-nombre { color: t.$text-body; }
+      }
 
       .proyecto-main {
         display: flex;
         align-items: center;
         gap: 1.5rem;
+        min-width: 0;
 
         .proyecto-img {
           width: 120px;
@@ -110,14 +163,16 @@ $text-muted: t.$text-muted;
           display: flex;
           flex-direction: column;
           gap: 0.35rem;
+          min-width: 0;
 
           .title-row {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.4rem 0.75rem;
 
             .proyecto-nombre {
-              font-family: Georgia, serif;
+              font-family: t.$font-ui;
               font-size: 1.25rem;
               font-weight: 500;
               color: $text-dark;
@@ -129,6 +184,12 @@ $text-muted: t.$text-muted;
               padding: 0.2rem 0.65rem;
               border-radius: 6px;
               text-transform: capitalize;
+              white-space: nowrap;
+
+              &.badge-inactivo {
+                background-color: #e5e7eb;
+                color: #4b5563;
+              }
 
               &.badge-activo {
                 background-color: #b1c7c3;
@@ -151,19 +212,26 @@ $text-muted: t.$text-muted;
             margin: 0;
             font-size: 0.88rem;
             color: $text-muted;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
           }
         }
       }
 
+      // Los tres botones siempre en una sola fila y del mismo ancho: quedan alineados entre tarjetas
       .proyecto-actions {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(3, 7rem);
         align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
+        gap: 0.6rem;
 
         .btn-action {
           border: 1px solid #d1d5db;
-          padding: 0.5rem 1.2rem;
+          padding: 0.5rem 0.4rem;
+          text-align: center;
+          white-space: nowrap;
           border-radius: 6px;
           font-size: 0.88rem;
           cursor: pointer;
@@ -233,7 +301,7 @@ $text-muted: t.$text-muted;
 
       h2 {
         color: $primary-green;
-        font-family: Georgia, serif;
+        font-family: t.$font-ui;
         font-size: 1.5rem;
         margin: 0 0 5px 0;
       }
@@ -325,7 +393,7 @@ $text-muted: t.$text-muted;
       flex-shrink: 0;
 
       h2 {
-        font-family: Georgia, serif;
+        font-family: t.$font-ui;
         font-size: 1.5rem;
         color: $text-dark;
         margin: 0;
@@ -554,5 +622,14 @@ $text-muted: t.$text-muted;
     .form-group:nth-child(1), .form-group:nth-child(2), .form-group:nth-child(3), .form-group:nth-child(6) {
       grid-column: span 1 !important;
     }
+  }
+}
+// En pantallas angostas la tarjeta se apila: información arriba y botones abajo
+@media (max-width: 1100px) {
+  .proyectos-container .proyectos-list .proyecto-card {
+    grid-template-columns: 1fr;
+    row-gap: 1rem;
+
+    .proyecto-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 }

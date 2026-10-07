@@ -1,7 +1,7 @@
 @use '../../../../shared/styles/admin-tokens' as t;
 
 // Estilos comunes de los pasos del asistente (cada paso los importa como su styleUrl)
-:host { display: block; font-family: t.$font-sans; }
+:host { display: block; font-family: t.$font-ui; }
 
 h2 { margin: 0 0 0.3rem; font-size: 1.35rem; color: t.$text-dark; }
 .intro { margin: 0 0 1.6rem; color: t.$text-body; line-height: 1.6; }

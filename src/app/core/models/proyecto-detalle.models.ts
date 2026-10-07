@@ -20,6 +20,17 @@ export interface ProyectoDetalle {
   puntos: Punto360[];
 }
 
+/** Una imagen de la galería de las zonas comunes, con la zona a la que pertenece. */
+export interface ImagenZona {
+  url: string;
+  titulo: string;
+  zonaId: number;
+  zonaNombre: string;
+}
+
+/** Secciones que, sin vista elegida en el menú, muestran su portada (a pantalla completa) y no la primera vista. */
+export const SECCIONES_CON_PORTADA: string[] = ['bienvenida', 'zonas-comunes'];
+
 /** Clave del texto institucional que alimenta la vista "Beneficios" de Bienvenida (no se repite en Respaldo). */
 export const SECCION_BENEFICIOS = 'BENEFICIOS';
 

@@ -16,6 +16,8 @@ const OPCIONES: { tipo: TipoMultimedia; etiqueta: string; archivos: TipoArchivo[
   { tipo: 'IMAGEN', etiqueta: 'Foto del carrusel de Bienvenida', archivos: ['imagen'] },
   { tipo: 'BENEFICIOS', etiqueta: 'Lámina de beneficios (una sola)', archivos: ['imagen'] },
   { tipo: 'RESPALDO', etiqueta: 'Lámina de respaldo (carrusel de Respaldo)', archivos: ['imagen'] },
+  { tipo: 'MAPA', etiqueta: 'Imagen del mapa de ubicación (carrusel de Mapa)', archivos: ['imagen'] },
+  { tipo: 'ZONAS_DESTACADAS', etiqueta: 'Imagen de zonas destacadas (vista aérea o plano con los botones de cada zona)', archivos: ['imagen'] },
   { tipo: 'PANORAMICA_360', etiqueta: 'Panorámica 360°', archivos: ['imagen'] }
 ];
 

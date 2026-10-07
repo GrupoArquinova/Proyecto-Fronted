@@ -3,6 +3,7 @@
   background-color: #141e1d;
   min-height: 100vh;
   color: #fff;
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
 
   .header-seccion {
     text-align: center;
@@ -18,7 +19,7 @@
 
     h2 {
       font-size: 2.5rem;
-      font-family: Georgia, serif;
+      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
       margin: 0.5rem 0;
       color: #fff;
     }
@@ -88,7 +89,7 @@
 
         h3 {
           font-size: 1.5rem;
-          font-family: Georgia, serif;
+          font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
           margin: 0.4rem 0 0.8rem 0;
           color: #fff;
         }
@@ -121,7 +122,7 @@
               display: block;
               font-size: 1.1rem;
               color: #fff;
-              font-family: Georgia, serif;
+              font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
             }
 
             span {
@@ -151,17 +152,20 @@
     }
   }
 
+  // Botón para volver al inicio, arriba para que el cliente lo vea sin bajar
   .back-home {
-    text-align: center;
-    margin-top: 3rem;
+    text-align: left;
+    max-width: 1200px;
+    margin: 0 auto 1.5rem;
 
     a {
+      display: inline-block;
       color: #fff;
       background: #2c6360;
-      padding: 10px 20px;
-      border-radius: 6px;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
       transition: background 0.2s ease;
 
       &:hover {

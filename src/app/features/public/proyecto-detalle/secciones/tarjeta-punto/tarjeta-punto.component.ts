@@ -7,8 +7,8 @@ import { formatoArea } from '../../../../../core/utils/lotes';
 import { Visor360Component } from '../visor-360/visor-360.component';
 
 /**
- * Tarjeta que se abre al pulsar un botón sobre la imagen. Muestra los datos del lote (o de la etapa) y, si el
- * lote ya tiene su propia imagen 360°, la abre ahí mismo; si no, avisa que todavía está vacía.
+ * Tarjeta que se abre al pulsar un botón sobre la imagen. Muestra los datos del lote, de la etapa o de la zona común
+ * y, si el lote o la zona ya tiene su propia imagen 360°, la abre ahí mismo; si no, avisa que todavía está vacía.
  */
 @Component({
   selector: 'app-tarjeta-punto',
@@ -21,17 +21,24 @@ export class TarjetaPuntoComponent {
   private multimedia = inject(MultimediaService);
 
   readonly punto = input.required<Punto360>();
+  /** Descripción y foto de la zona común (solo cuando el botón apunta a una zona). */
+  readonly descripcion = input<string | null>(null);
+  readonly foto = input<string | null>(null);
   readonly cerrar = output<void>();
 
   readonly esLote = computed(() => this.punto().loteId != null);
+  readonly esZona = computed(() => this.punto().zonaComunId != null);
   readonly area = computed(() => formatoArea(this.punto().loteAreaM2));
 
-  /** undefined = consultando · null = el lote no tiene imagen 360° · texto = URL de su 360°. */
+  /** undefined = consultando · null = no tiene imagen 360° · texto = URL de su 360°. */
   readonly panorama = toSignal(
     toObservable(this.punto).pipe(
       switchMap(punto => {
-        if (punto.loteId == null) return of(null);
-        return this.multimedia.listarPublicadosPorEntidad('lote', punto.loteId).pipe(
+        const dueno = punto.zonaComunId != null
+          ? { tipo: 'zonaComun' as const, id: punto.zonaComunId }
+          : punto.loteId != null ? { tipo: 'lote' as const, id: punto.loteId } : null;
+        if (!dueno) return of(null);
+        return this.multimedia.listarPublicadosPorEntidad(dueno.tipo, dueno.id).pipe(
           map(recursos => recursos.find(r => r.tipo === 'PANORAMICA_360')?.url ?? null),
           catchError(() => of(null)),
           startWith(undefined)

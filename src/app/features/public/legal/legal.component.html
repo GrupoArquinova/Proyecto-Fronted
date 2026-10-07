@@ -1,0 +1,48 @@
+<div class="legal">
+  <div class="legal-contenedor">
+    <a routerLink="/" class="volver">&larr; Volver al Inicio</a>
+
+    @if (documento(); as doc) {
+      <header>
+        <h1>{{ doc.titulo }}</h1>
+        <p class="resumen">{{ doc.resumen }}</p>
+      </header>
+
+      @for (s of doc.secciones; track s.titulo) {
+        <section>
+          <h2>{{ s.titulo }}</h2>
+          @for (p of s.parrafos ?? []; track $index) {
+            <p>@for (t of partes(p); track $index) {@if (t.pendiente) {<mark>{{ t.texto }}</mark>} @else {{{ t.texto }}}}</p>
+          }
+          @if (s.items?.length) {
+            <ul>
+              @for (i of s.items; track $index) {
+                <li>@for (t of partes(i); track $index) {@if (t.pendiente) {<mark>{{ t.texto }}</mark>} @else {{{ t.texto }}}}</li>
+              }
+            </ul>
+          }
+          @for (p of s.parrafos2 ?? []; track $index) {
+            <p>@for (t of partes(p); track $index) {@if (t.pendiente) {<mark>{{ t.texto }}</mark>} @else {{{ t.texto }}}}</p>
+          }
+        </section>
+      }
+
+      <nav class="otros" aria-label="Otros documentos legales">
+        <span>Otros documentos:</span>
+        @for (o of otros(); track o.clave) {
+          <a [routerLink]="['/legal', o.clave]">{{ o.corto }}</a>
+        }
+      </nav>
+    } @else {
+      <header>
+        <h1>Documento no encontrado</h1>
+        <p class="resumen">El documento que buscas no existe. Elige uno de la lista.</p>
+      </header>
+      <nav class="otros">
+        @for (o of otros(); track o.clave) {
+          <a [routerLink]="['/legal', o.clave]">{{ o.corto }}</a>
+        }
+      </nav>
+    }
+  </div>
+</div>

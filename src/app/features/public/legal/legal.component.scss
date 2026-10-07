@@ -1,0 +1,100 @@
+:host { display: block; }
+
+$verde: #2c6360;
+$verde-oscuro: #253533;
+$fuente: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+
+.legal {
+  min-height: 100vh;
+  padding: 7rem 1.5rem 4rem;
+  background: #f8faf9;
+  color: #333;
+  font-family: $fuente;
+}
+
+.legal-contenedor {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2.5rem clamp(1.2rem, 4vw, 3rem);
+  background: #fff;
+  border: 1px solid #e0e6e5;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.volver {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  padding: 0.55rem 1.3rem;
+  background: $verde;
+  color: #fff;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s;
+
+  &:hover { background: #357774; }
+}
+
+h1 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  color: $verde-oscuro;
+  line-height: 1.2;
+}
+
+.resumen {
+  margin: 0 0 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e6e5;
+  color: #666;
+  font-size: 1.05rem;
+}
+
+h2 {
+  margin: 2rem 0 0.7rem;
+  font-size: 1.2rem;
+  color: $verde;
+}
+
+p, li {
+  line-height: 1.7;
+  font-size: 0.98rem;
+  color: #444;
+}
+
+p { margin: 0 0 0.9rem; }
+ul { margin: 0 0 1rem; padding-left: 1.3rem; }
+li { margin-bottom: 0.45rem; }
+
+// Dato de la empresa que todavía falta completar
+mark {
+  padding: 0 0.3rem;
+  background: #fff1b8;
+  color: #6b4a00;
+  border-radius: 4px;
+}
+
+.otros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e6e5;
+
+  span { color: #777; font-size: 0.9rem; }
+
+  a {
+    padding: 0.4rem 1rem;
+    border: 1px solid #c9d6d3;
+    border-radius: 999px;
+    color: $verde;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    &:hover { background: #eaf0ee; }
+  }
+}

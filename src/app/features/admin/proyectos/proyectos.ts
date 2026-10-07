@@ -9,6 +9,8 @@ import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { Proyecto, CrearProyectoDTO } from '../../../core/models/proyecto.models';
 
+export type FiltroProyectos = 'activos' | 'inactivos' | 'todos';
+
 @Component({
   selector: 'app-proyectos',
   standalone: true,
@@ -26,6 +28,8 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   private readonly EMPRESA_ID = 1;
 
   proyectos: Proyecto[] = [];
+  /** Qué proyectos se listan: por defecto los activos; los inactivos se ven con su filtro. */
+  filtro: FiltroProyectos = 'activos';
   loading = false;
   errorMsg = '';
 
@@ -56,6 +60,33 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarProyectos();
+  }
+
+  /** Un proyecto sin el dato `activo` se considera activo. */
+  esActivo(proyecto: Proyecto): boolean {
+    return proyecto.activo !== false;
+  }
+
+  get totalActivos(): number {
+    return this.proyectos.filter(p => this.esActivo(p)).length;
+  }
+
+  get totalInactivos(): number {
+    return this.proyectos.length - this.totalActivos;
+  }
+
+  get proyectosVisibles(): Proyecto[] {
+    switch (this.filtro) {
+      case 'activos': return this.proyectos.filter(p => this.esActivo(p));
+      case 'inactivos': return this.proyectos.filter(p => !this.esActivo(p));
+      default: return this.proyectos;
+    }
+  }
+
+  /** "EN_CONSTRUCCION" se muestra como "En construccion" en la tarjeta. */
+  etiquetaEstado(estado?: string): string {
+    const texto = (estado ?? '').replace(/_/g, ' ').toLowerCase();
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
   }
 
   ngOnDestroy(): void {

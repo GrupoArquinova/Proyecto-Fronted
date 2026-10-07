@@ -1,3 +1,4 @@
+@use '../../../shared/styles/admin-tokens' as t;
 .reportes-container {
   padding: 1.5rem;
   max-width: 1250px;
@@ -24,7 +25,7 @@
       margin: 0.2rem 0 0 0;
       font-size: 1.8rem;
       color: #1e293b;
-      font-family: serif;
+      font-family: t.$font-ui;
     }
 
     .actions-header {

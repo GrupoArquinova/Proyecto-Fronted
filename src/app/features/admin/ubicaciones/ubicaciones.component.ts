@@ -145,10 +145,14 @@ export class UbicacionesComponent implements OnInit {
   }
 
   guardarUbicacion(): void {
+    const coordenadas = this.coordenadasValidas();
+    if (!coordenadas) return;
+
     this.guardando = true;
+    const datos = { ...this.formData, ...coordenadas };
     const peticion = this.editandoId
-      ? this.ubicacionService.actualizarUbicacion(this.editandoId, this.formData)
-      : this.ubicacionService.crearUbicacion(this.formData);
+      ? this.ubicacionService.actualizarUbicacion(this.editandoId, datos)
+      : this.ubicacionService.crearUbicacion(datos);
 
     peticion.subscribe({
       next: () => {
@@ -159,10 +163,33 @@ export class UbicacionesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al guardar la ubicación:', err);
-        this.toastService.showError('Error al guardar la ubicación');
+        const detalle = typeof err?.error?.mensaje === 'string' ? `: ${err.error.mensaje}` : '';
+        this.toastService.showError(`Error al guardar la ubicación${detalle}`);
         this.guardando = false;
       }
     });
+  }
+
+  /**
+   * Latitud y longitud listas para enviar: dentro de su rango y con 7 decimales (lo que guarda la base de datos).
+   * Si alguna está mal (por ejemplo, un punto decimal que se perdió al pegar), avisa y no envía nada.
+   */
+  private coordenadasValidas(): { latitud?: number; longitud?: number } | null {
+    const leer = (valor: unknown, limite: number, nombre: string): number | undefined | null => {
+      if (valor === null || valor === undefined || valor === '') return undefined;
+      const n = Number(valor);
+      if (!Number.isFinite(n) || Math.abs(n) > limite) {
+        this.toastService.showError(`La ${nombre} debe estar entre -${limite} y ${limite} (por ejemplo ${nombre === 'latitud' ? '4.5388890' : '-75.6727780'}). Revisa el punto decimal.`);
+        return null;
+      }
+      return Math.round(n * 1e7) / 1e7;
+    };
+
+    const latitud = leer(this.formData.latitud, 90, 'latitud');
+    if (latitud === null) return null;
+    const longitud = leer(this.formData.longitud, 180, 'longitud');
+    if (longitud === null) return null;
+    return { latitud, longitud };
   }
 
   async eliminarUbicacion(id: number): Promise<void> {

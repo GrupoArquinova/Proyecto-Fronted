@@ -5,6 +5,10 @@
       <img [src]="lamina.url" [alt]="lamina.titulo || alt()" draggable="false" />
     </div>
 
+    @if (leyenda() && lamina.titulo) {
+      <p class="leyenda">{{ lamina.titulo }}</p>
+    }
+
     @if (laminas().length > 1) {
       <button type="button" class="flecha anterior" (click)="anterior()" aria-label="Imagen anterior">&#8249;</button>
       <button type="button" class="flecha siguiente" (click)="siguiente()" aria-label="Imagen siguiente">&#8250;</button>

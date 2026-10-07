@@ -10,10 +10,12 @@ import { MultimediaService } from './multimedia.service';
 import { ContenidoService } from './contenido.service';
 import { Punto360Service } from './punto-360.service';
 import { EscenaPunto } from '../models/punto-360.models';
-import { clasificarMedio } from '../utils/medios';
+import { ZonaComun } from '../models/zona-comun.models';
+import { clasificarMedio, coordenadasDeGoogleMaps, urlGoogleMapsSatelite } from '../utils/medios';
 import { formatoArea, ordenarLotes } from '../utils/lotes';
 import {
   EstadoCargaProyecto,
+  ImagenZona,
   SECCION_BENEFICIOS,
   ProyectoDetalle,
   SeccionProyecto,
@@ -80,6 +82,53 @@ export class ProyectoDetalleService {
       .filter(m => m.tipo === 'RESPALDO')
       .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)));
 
+  /** Imágenes del mapa de ubicación (hechas en Canva): multimedia de tipo MAPA, en el orden del administrador. */
+  readonly mapas = computed(() =>
+    (this.detalle()?.multimedia ?? [])
+      .filter(m => m.tipo === 'MAPA')
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)));
+
+  /**
+   * Mapa de Google para la vista "Google Maps": una URL embed ya lista o, si no, un mapa satelital armado con las
+   * coordenadas del enlace (o las de la ubicación). Con un enlace corto que no se puede leer y sin coordenadas es null
+   * y queda el botón que abre Google Maps.
+   */
+  readonly urlGoogleMaps = computed<string | null>(() => {
+    const d = this.detalle();
+    const u = d?.ubicacion;
+    if (!d || !u) return null;
+
+    const embed = clasificarMedio(u.googleMapsUrl);
+    if (embed.tipo === 'incrustado' && embed.embedUrl?.startsWith('https://www.google.com/maps/embed')) return embed.embedUrl;
+
+    const coordenadas = coordenadasDeGoogleMaps(u.googleMapsUrl)
+      ?? (u.latitud != null && u.longitud != null ? { latitud: Number(u.latitud), longitud: Number(u.longitud) } : null);
+    return coordenadas && Number.isFinite(coordenadas.latitud) && Number.isFinite(coordenadas.longitud)
+      ? urlGoogleMapsSatelite(coordenadas.latitud, coordenadas.longitud, d.proyecto.nombre)
+      : null;
+  });
+
+  /** Imagen de fondo de Zonas destacadas (vista aérea o plano con los botones de cada zona): multimedia ZONAS_DESTACADAS. */
+  readonly imagenZonasDestacadas = computed<string | null>(() =>
+    (this.detalle()?.multimedia ?? [])
+      .filter(m => m.tipo === 'ZONAS_DESTACADAS')
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))[0]?.url ?? null);
+
+  /** Todas las imágenes de las zonas comunes (galería), en el orden de las zonas. */
+  readonly imagenesZonas = computed<ImagenZona[]>(() =>
+    (this.detalle()?.zonasComunes ?? []).flatMap(z =>
+      (z.imagenes ?? []).map(i => ({
+        url: i.imagenUrl,
+        titulo: i.titulo || z.nombre,
+        zonaId: z.id as number,
+        zonaNombre: z.nombre
+      }))));
+
+  /** Foto con la que se presenta una zona: la principal, la primera de su galería o, en último caso, la del proyecto. */
+  fotoDeZona(zona: ZonaComun | null | undefined): string | null {
+    return zona?.imagenPrincipalUrl ?? zona?.imagenes?.[0]?.imagenUrl ?? this.detalle()?.proyecto.imagenUrl ?? null;
+  }
+
   /** Botones de una imagen (entorno, vista aérea o plano de urbanismo). */
   puntosDe(escena: EscenaPunto) {
     return (this.detalle()?.puntos ?? []).filter(p => p.escena === escena);
@@ -91,6 +140,8 @@ export class ProyectoDetalleService {
    * Si el administrador cargó un enlace que no se puede incrustar, queda la página normal con su botón.
    */
   esInmersiva(seccionId: string, vistaId: string | null): boolean {
+    if (seccionId === 'zonas-comunes') return this.zonasInmersiva(vistaId);
+
     const u = this.detalle()?.ubicacion;
     if (seccionId !== 'ubicacion' || !u) return false;
 
@@ -99,7 +150,21 @@ export class ProyectoDetalleService {
       case 'entorno-360': return ['imagen', 'video', 'incrustado'].includes(tipo(u.recorrido360Url));
       case 'vista-aerea': return ['imagen', 'video', 'incrustado'].includes(tipo(u.vistaAereaUrl));
       case 'urbanismo': return tipo(u.urbanismoUrl) === 'imagen';
+      // Con imágenes de mapa subidas se ve como carrusel a pantalla completa; sin ellas queda el mapa interactivo
+      case 'mapa': return this.mapas().length > 0;
+      // Google Maps se incrusta a pantalla completa cuando hay con qué armar el mapa
+      case 'google-maps': return this.urlGoogleMaps() != null;
       default: return false;
+    }
+  }
+
+  /** Zonas comunes: la portada (sin vista), las zonas destacadas (imagen con botones) y la galería van a pantalla completa. */
+  private zonasInmersiva(vistaId: string | null): boolean {
+    const zonas = this.detalle()?.zonasComunes ?? [];
+    switch (vistaId) {
+      case 'destacadas': return this.imagenZonasDestacadas() != null;
+      case 'galeria': return this.imagenesZonas().length > 0;
+      default: return zonas.length > 0;
     }
   }
 
@@ -162,7 +227,7 @@ export class ProyectoDetalleService {
           ['entorno-360', 'Entorno 360', !!u.recorrido360Url],
           ['vista-aerea', 'Vista Aérea', !!u.vistaAereaUrl],
           ['urbanismo', 'Urbanismo', !!u.urbanismoUrl],
-          ['mapa', 'Mapa', u.latitud != null && u.longitud != null],
+          ['mapa', 'Mapa', d.multimedia.some(m => m.tipo === 'MAPA') || (u.latitud != null && u.longitud != null)],
           ['google-maps', 'Google Maps', !!u.googleMapsUrl]
         ])
       });
@@ -173,7 +238,7 @@ export class ProyectoDetalleService {
         id: 'zonas-comunes',
         titulo: 'Zonas Comunes',
         subsecciones: this.vistas([
-          ['destacadas', 'Zonas Destacadas', true],
+          ['destacadas', 'Zonas Destacadas', d.multimedia.some(m => m.tipo === 'ZONAS_DESTACADAS')],
           ['galeria', 'Galería', d.zonasComunes.some(z => (z.imagenes?.length ?? 0) > 0)]
         ])
       });

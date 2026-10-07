@@ -1,68 +1,85 @@
 @switch (vista()) {
 
-  @case ('galeria') {
-    <section class="seccion">
-      <h2>Galería</h2>
+  <!-- Zonas destacadas: una imagen con un botón por zona; cada botón abre el 360° de esa zona -->
+  @case ('destacadas') {
+    @if (imagenFondo(); as url) {
+      <app-plano-puntos [completo]="true" [url]="url" titulo="las zonas destacadas" [puntos]="puntos()"
+                        (puntoElegido)="abrirPunto($event)" />
+    }
 
-      @if (zonasConImagenes().length > 1) {
-        <div class="filtros" role="group" aria-label="Filtrar por zona">
-          <button type="button" [class.activo]="filtroZona() === null" (click)="filtroZona.set(null)">Todas</button>
-          @for (z of zonasConImagenes(); track z.id) {
-            <button type="button" [class.activo]="filtroZona() === z.id" (click)="filtroZona.set(z.id!)">
-              {{ z.nombre }}
-            </button>
+    @if (tarjeta(); as punto) {
+      <app-tarjeta-punto [punto]="punto" [descripcion]="zonaDeLaTarjeta()?.descripcion ?? null"
+                         [foto]="foto(zonaDeLaTarjeta())" (cerrar)="tarjeta.set(null)" />
+    }
+  }
+
+  <!-- Galería: todas las imágenes de las zonas en un carrusel, con filtro por zona -->
+  @case ('galeria') {
+    @if (zonasConImagenes().length > 1) {
+      <div class="filtros" role="group" aria-label="Filtrar por zona">
+        <button type="button" [class.activo]="filtroZona() === null" (click)="filtroZona.set(null)">Todas</button>
+        @for (z of zonasConImagenes(); track z.id) {
+          <button type="button" [class.activo]="filtroZona() === z.id" (click)="filtroZona.set(z.id!)">
+            {{ z.nombre }}
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Se vuelve a crear al cambiar el filtro para que el carrusel empiece en la primera imagen -->
+    @for (clave of [filtroZona()]; track clave) {
+      <app-carrusel-laminas [laminas]="laminas()" alt="Galería de las zonas comunes"
+                            etiqueta="Galería de las zonas comunes" [leyenda]="true" />
+    }
+  }
+
+  <!-- Portada: la foto de la zona elegida a pantalla completa y la lista numerada de zonas -->
+  @default {
+    <section class="portada">
+      @for (z of zonas(); track z.id; let i = $index) {
+        @if (foto(z); as imagen) {
+          <img class="fondo-zona" [class.visible]="seleccionada() === i" [src]="imagen" alt="" aria-hidden="true" />
+        }
+      }
+
+      <div class="velo" aria-hidden="true"></div>
+
+      @if (zonaActiva(); as zona) {
+        <div class="portada-texto">
+          <h2>Zonas comunes</h2>
+          <h3>{{ zona.nombre }}</h3>
+          @if (zona.descripcion) {
+            <p>{{ zona.descripcion }}</p>
           }
         </div>
       }
 
-      <div class="galeria">
-        @for (img of imagenesVisibles(); track img.url) {
-          <button type="button" class="miniatura" (click)="imagenAbierta.set(img)"
-                  [attr.aria-label]="'Ampliar ' + img.titulo">
-            <img [src]="img.url" [alt]="img.titulo" loading="lazy" />
-            <span>{{ img.titulo }}</span>
-          </button>
-        }
-      </div>
-    </section>
-
-    @if (imagenAbierta(); as abierta) {
-      <div class="lightbox" role="dialog" aria-modal="true" [attr.aria-label]="abierta.titulo"
-           (click)="cerrarImagen()">
-        <button type="button" class="cerrar" (click)="cerrarImagen()" aria-label="Cerrar">&times;</button>
-        <img [src]="abierta.url" [alt]="abierta.titulo" (click)="$event.stopPropagation()" />
-        <p>{{ abierta.zonaNombre }}</p>
-      </div>
-    }
-  }
-
-  @default {
-    <section class="seccion">
-      <h2 class="titulo-grande">Zonas comunes</h2>
-
-      @if (zonaActiva(); as zona) {
-        <article class="destacada">
-          @if (portada(zona); as foto) {
-            <img [src]="foto" [alt]="zona.nombre" />
-          }
-          <div>
-            <h3>{{ zona.nombre }}</h3>
-            @if (zona.descripcion) {
-              <p>{{ zona.descripcion }}</p>
-            }
-          </div>
-        </article>
-      }
-
-      <ol class="lista">
+      <ol class="portada-lista" aria-label="Zonas comunes">
         @for (z of zonas(); track z.id; let i = $index) {
           <li>
-            <button type="button" [class.activa]="seleccionada() === i" (click)="seleccionada.set(i)">
-              <span class="num">{{ i + 1 }}</span> {{ z.nombre }}
+            <button type="button" [class.activa]="seleccionada() === i" (click)="elegirZona(i)"
+                    [attr.aria-current]="seleccionada() === i">
+              <span class="num">{{ i + 1 }}</span>
+              <span class="nombre">{{ z.nombre }}</span>
             </button>
           </li>
         }
       </ol>
+
+      @if (zonaAbierta() !== null) {
+        <div class="visor-zona" (click)="zonaAbierta.set(null)">
+          <div class="marco" (click)="$event.stopPropagation()">
+            <div class="marco-interior">
+            @for (clave of [zonaAbierta()]; track clave) {
+              <app-carrusel-laminas [laminas]="laminasZonaAbierta()" [alt]="nombreZonaAbierta()" [enMarco]="true"
+                                    [etiqueta]="'Imágenes de ' + nombreZonaAbierta()" />
+            }
+            </div>
+            <p class="visor-zona-titulo">{{ nombreZonaAbierta() }}</p>
+          </div>
+          <button type="button" class="visor-zona-cerrar" (click)="zonaAbierta.set(null)" aria-label="Cerrar imágenes">&times;</button>
+        </div>
+      }
     </section>
   }
 }

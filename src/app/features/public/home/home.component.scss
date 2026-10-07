@@ -21,7 +21,7 @@ body {
 }
 
 .landing-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
   color: $color-light;
   background-color: $color-dark;
   min-height: 100vh;
@@ -78,7 +78,7 @@ body {
       color: #4a5554;
       border: 1px solid #d8e0df;
       padding: 0.4rem 1.2rem;
-      border-radius: 20px;
+      border-radius: 999px;
       font-size: 0.88rem;
       font-weight: 500;
       transition: all 0.25s ease;
@@ -133,7 +133,7 @@ body {
       .italic-text {
         font-style: italic;
         color: #79a8a3;
-        font-family: Georgia, serif;
+        font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
       }
     }
 
@@ -152,7 +152,7 @@ body {
         background-color: $color-primary;
         color: $color-light;
         padding: 0.8rem 2rem;
-        border-radius: 25px;
+        border-radius: 999px;
         text-decoration: none;
         font-weight: 500;
         transition: background-color 0.3s ease;
@@ -166,7 +166,7 @@ body {
         border: 1px solid rgba(255, 255, 255, 0.4);
         color: $color-light;
         padding: 0.8rem 2rem;
-        border-radius: 25px;
+        border-radius: 999px;
         text-decoration: none;
         font-weight: 500;
         transition: all 0.3s ease;
@@ -201,7 +201,7 @@ body {
       font-weight: 400;
       color: #8bb3ae;
       margin: 0;
-      font-family: Georgia, serif;
+      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
     }
 
     p {
@@ -228,7 +228,7 @@ body {
 
   h2 {
     font-size: 2.5rem;
-    font-family: Georgia, serif;
+    font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
     font-weight: 400;
     margin: 0.5rem 0 1rem 0;
     color: #ffffff;
@@ -261,8 +261,8 @@ body {
     width: 100%;
 
     .project-card {
-      background: #ffffff;
-      border: 1px solid #e0e6e5;
+      background: #eaf0ee; // gris verdoso claro
+      border: 1px solid #d3dfdc;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0,0,0,0.03);
@@ -304,7 +304,7 @@ body {
 
         h3 {
           font-size: 1.6rem;
-          font-family: Georgia, serif;
+          font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
           margin: 0.4rem 0 0.8rem 0;
           color: #253533;
         }
@@ -324,8 +324,8 @@ body {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           padding: 1rem 0;
-          border-top: 1px solid #eee;
-          border-bottom: 1px solid #eee;
+          border-top: 1px solid #d3dfdc;
+          border-bottom: 1px solid #d3dfdc;
           text-align: center;
           margin-bottom: 1.5rem;
 
@@ -333,7 +333,7 @@ body {
             display: block;
             font-size: 1.1rem;
             color: #2c6360;
-            font-family: Georgia, serif;
+            font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
           }
 
           span {
@@ -365,7 +365,13 @@ body {
 /* 3. RESPALDO SECTION */
 .trust-section {
   padding: 7rem 4rem;
-  background-color: $color-dark;
+  background-color: #f8faf9; // Fondo claro limpio que contrasta bien con las tarjetas blancas
+  color: #333333;
+
+  .section-header {
+    h2 { color: #2c3e3b; }
+    p { color: #666666; }
+  }
 
   .trust-grid {
     display: grid;
@@ -376,17 +382,20 @@ body {
     width: 100%;
 
     .trust-card {
-      background: $color-card-dark;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #ffffff;
+      border: 1px solid #e0e6e5;
       padding: 2rem;
       border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
       display: flex;
       gap: 1.2rem;
       align-items: flex-start;
 
+      .icon-container { color: $color-primary; }
+
       .trust-icon {
         font-size: 1.8rem;
-        background: rgba(44, 99, 96, 0.3);
+        background: rgba(44, 99, 96, 0.1);
         padding: 0.8rem;
         border-radius: 8px;
       }
@@ -395,12 +404,12 @@ body {
         font-size: 1.1rem;
         font-weight: 600;
         margin: 0 0 0.4rem 0;
-        color: #ffffff;
+        color: #253533;
       }
 
       p {
         font-size: 0.88rem;
-        color: $color-muted;
+        color: #555555;
         margin: 0;
         line-height: 1.5;
       }
@@ -411,13 +420,8 @@ body {
 /* 5. BENEFICIOS SECTION */
 .benefits-section {
   padding: 7rem 4rem;
-  background-color: #f8faf9; // Fondo claro limpio que contrasta bien con las tarjetas blancas
-  color: #333333;
-
-  .section-header {
-    h2 { color: #2c3e3b; }
-    p { color: #666666; }
-  }
+  background-color: $color-dark;
+  color: $color-light;
 
   .benefits-grid {
     display: grid;
@@ -428,23 +432,22 @@ body {
     width: 100%;
 
     .benefit-card {
-      background: #ffffff;
-      border: 1px solid #e0e6e5;
+      background: $color-card-dark;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
       padding: 2rem 1.5rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
 
       &:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
       }
 
       .icon-container {
         width: 45px;
         height: 45px;
-        background: rgba(44, 99, 96, 0.1);
-        color: $color-primary;
+        background: rgba(44, 99, 96, 0.3);
+        color: #ffffff;
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -455,14 +458,14 @@ body {
 
       h3 {
         font-size: 1.15rem;
-        font-family: Georgia, serif;
+        font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
         margin: 0 0 0.6rem 0;
-        color: #253533;
+        color: #ffffff;
       }
 
       p {
         font-size: 0.85rem;
-        color: #555555;
+        color: $color-muted;
         line-height: 1.5;
         margin: 0;
       }
@@ -488,7 +491,7 @@ body {
     width: 100%;
 
     .contact-info {
-      h2 { font-size: 2.5rem; font-family: Georgia, serif; margin: 0.5rem 0 1rem 0; }
+      h2 { font-size: 2.5rem; font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif; margin: 0.5rem 0 1rem 0; }
       p { color: $color-muted; line-height: 1.6; margin-bottom: 2rem; }
 
       .contact-details-list {
@@ -558,7 +561,7 @@ body {
 
       h3 {
         font-size: 1.4rem;
-        font-family: Georgia, serif;
+        font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
         margin-top: 0;
         margin-bottom: 1.5rem;
       }
@@ -611,7 +614,7 @@ body {
         color: #fff;
         border: none;
         padding: 0.9rem;
-        border-radius: 8px;
+        border-radius: 999px;
         font-weight: 600;
         cursor: pointer;
         transition: background-color 0.2s;
@@ -662,7 +665,7 @@ body {
 
       h4 {
         font-size: 1.1rem;
-        font-family: Georgia, serif;
+        font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
         margin-bottom: 1.2rem;
         color: #ffffff;
       }

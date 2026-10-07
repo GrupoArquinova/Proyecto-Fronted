@@ -47,7 +47,7 @@ $color-input-bg: #ececec;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
 
   .modal-header {
     background-color: $color-primary;
@@ -89,7 +89,7 @@ $color-input-bg: #ececec;
     padding: 1.5rem;
 
     .modal-title {
-      font-family: 'Georgia', serif;
+      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
       font-size: 1.5rem;
       color: #2c3e50;
       text-align: center;
@@ -155,7 +155,7 @@ $color-input-bg: #ececec;
       background-color: $color-primary;
       color: #ffffff;
       border: none;
-      border-radius: 12px;
+      border-radius: 999px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;

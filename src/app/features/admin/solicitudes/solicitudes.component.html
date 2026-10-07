@@ -71,7 +71,7 @@
       <!-- Info de atención, si ya fue atendida -->
       <div class="atencion-info" *ngIf="item.atendidaPorNombre || item.atendidaEn">
         <small>
-          Atendida por <strong>{{ item.atendidaPorNombre || 'N/D' }}</strong>
+          Atendida por <strong>{{ item.atendidaPorNombre || 'Sin registrar' }}</strong>
           <span *ngIf="item.atendidaEn"> el {{ item.atendidaEn | date:'yyyy-MM-dd HH:mm' }}</span>
         </small>
       </div>

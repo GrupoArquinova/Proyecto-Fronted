@@ -23,9 +23,26 @@
     <p>No hay proyectos registrados aún.</p>
   </div>
 
+  <!-- Filtro por estado del proyecto -->
+  <nav class="filtros" *ngIf="!loading && proyectos.length > 0" aria-label="Filtrar proyectos">
+    <button type="button" [class.activo]="filtro === 'activos'" (click)="filtro = 'activos'">
+      Activos <span class="contador">{{ totalActivos }}</span>
+    </button>
+    <button type="button" [class.activo]="filtro === 'inactivos'" (click)="filtro = 'inactivos'">
+      Inactivos <span class="contador">{{ totalInactivos }}</span>
+    </button>
+    <button type="button" [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">
+      Todos <span class="contador">{{ proyectos.length }}</span>
+    </button>
+  </nav>
+
+  <div *ngIf="!loading && proyectos.length > 0 && proyectosVisibles.length === 0" class="empty-state">
+    <p>No hay proyectos {{ filtro === 'activos' ? 'activos' : 'inactivos' }}.</p>
+  </div>
+
   <!-- Lista Dinámica de Tarjetas -->
-  <div class="proyectos-list" *ngIf="!loading && proyectos.length > 0">
-    <div class="proyecto-card" *ngFor="let proyecto of proyectos">
+  <div class="proyectos-list" *ngIf="!loading && proyectosVisibles.length > 0">
+    <div class="proyecto-card" *ngFor="let proyecto of proyectosVisibles" [class.inactivo]="!esActivo(proyecto)">
       <div class="proyecto-main">
        <img
   *ngIf="proyecto.imagenUrl"
@@ -59,8 +76,9 @@
                 'badge-agotado':      proyecto.estadoProyecto === 'FINALIZADO'
               }"
             >
-              {{ proyecto.estadoProyecto }}
+              {{ etiquetaEstado(proyecto.estadoProyecto) }}
             </span>
+            <span class="status-badge badge-inactivo" *ngIf="!esActivo(proyecto)">Inactivo</span>
           </div>
 
           <p class="proyecto-meta">

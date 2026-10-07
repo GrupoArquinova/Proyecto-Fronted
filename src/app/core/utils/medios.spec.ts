@@ -1,4 +1,4 @@
-import { clasificarMedio, urlMapaOpenStreetMap } from './medios';
+import { clasificarMedio, coordenadasDeGoogleMaps, urlGoogleMapsSatelite, urlMapaOpenStreetMap } from './medios';
 
 describe('clasificarMedio', () => {
   it('reconoce imagenes, videos y pdf por extension', () => {
@@ -53,5 +53,39 @@ describe('urlMapaOpenStreetMap', () => {
     const url = urlMapaOpenStreetMap(5.5, -73.3);
     expect(url).toContain('marker=5.5,-73.3');
     expect(url.startsWith('https://www.openstreetmap.org/')).toBe(true);
+  });
+});
+
+describe('coordenadasDeGoogleMaps', () => {
+  const casos: [string, { latitud: number; longitud: number } | null][] = [
+    ['https://maps.google.com/?q=4.5388890,-75.6727780', { latitud: 4.538889, longitud: -75.672778 }],
+    ['https://www.google.com/maps?ll=6.2,-75.5&z=12', { latitud: 6.2, longitud: -75.5 }],
+    ['https://www.google.com/maps/place/Haras/@6.1234,-75.7654,15z/data=!3m1', { latitud: 6.1234, longitud: -75.7654 }],
+    ['https://www.google.com/maps/place/Haras/data=!3d6.5!4d-75.9', { latitud: 6.5, longitud: -75.9 }],
+    ['https://maps.app.goo.gl/abc123', null],
+    ['https://www.google.com/maps?q=Haras+Puente+Iglesias', null],
+    ['https://www.google.com/maps?q=95,-75', null],
+    ['https://sitio-raro.com/?q=4.5,-75.6', null],
+    ['no es una url', null]
+  ];
+
+  it.each(casos)('lee las coordenadas de %s', (url, esperado) => {
+    expect(coordenadasDeGoogleMaps(url)).toEqual(esperado);
+  });
+
+  it('sin enlace no hay coordenadas', () => {
+    expect(coordenadasDeGoogleMaps(null)).toBeNull();
+    expect(coordenadasDeGoogleMaps('')).toBeNull();
+  });
+});
+
+describe('urlGoogleMapsSatelite', () => {
+  it('arma el mapa satelital con el marcador y el nombre codificado', () => {
+    expect(urlGoogleMapsSatelite(4.538889, -75.672778, 'Los Andes (fase 1)')).toBe(
+      'https://www.google.com/maps?q=4.538889,-75.672778(Los%20Andes%20fase%201)&t=k&z=15&output=embed');
+  });
+
+  it('sin nombre solo lleva las coordenadas', () => {
+    expect(urlGoogleMapsSatelite(1, 2)).toBe('https://www.google.com/maps?q=1.000000,2.000000&t=k&z=15&output=embed');
   });
 });

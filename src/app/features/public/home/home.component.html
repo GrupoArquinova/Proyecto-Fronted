@@ -107,7 +107,7 @@
 
       <!-- Botón para ver el catálogo completo si hay más proyectos -->
       <div class="text-center mt-5" style="margin-top: 40px; text-align: center;">
-        <a routerLink="/proyectos" class="btn btn-primary" style="padding: 12px 30px; background: #2c6360; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600;">
+        <a routerLink="/proyectos" class="btn btn-primary" style="padding: 12px 30px; background: #2c6360; color: #fff; border-radius: 999px; text-decoration: none; font-weight: 600;">
           Ver todos los proyectos ({{ totalProyectos }})
         </a>
       </div>
@@ -341,7 +341,7 @@
     <input type="checkbox" formControlName="consentimientoDatos" />
     <span>
       Acepto el tratamiento de mis datos personales conforme a la
-      <a href="#" target="_blank">Política de Privacidad</a> de Arquinova. *
+      <a routerLink="/legal/politica-datos" target="_blank">Política de tratamiento de datos</a> de Arquinova. *
     </span>
   </label>
 </div>
@@ -376,18 +376,18 @@
       <div class="footer-col">
         <h4>Legal</h4>
         <ul>
-          <li><a href="#">NIT: 900.123.456-7</a></li>
-          <li><a href="#">Términos y Condiciones</a></li>
-          <li><a href="#">Política de Privacidad</a></li>
-          <li><a href="#">Superintendencia de Sociedades</a></li>
+          <li><a routerLink="/legal/terminos">Términos y Condiciones</a></li>
+          <li><a routerLink="/legal/politica-datos">Política de tratamiento de datos</a></li>
+          <li><a routerLink="/legal/cookies">Política de cookies</a></li>
+          <li><a routerLink="/legal/aviso-privacidad">Aviso de privacidad</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <p>&copy; 2026 Arquinova Grupo Empresarial S.A.S. Todos los derechos reservados.</p>
       <div class="legal-links">
-        <a href="#">Privacidad</a>
-        <a href="#">Aviso Legal</a>
+        <a routerLink="/legal/politica-datos">Privacidad</a>
+        <a routerLink="/legal/aviso-legal">Aviso Legal</a>
       </div>
     </div>
   </footer>

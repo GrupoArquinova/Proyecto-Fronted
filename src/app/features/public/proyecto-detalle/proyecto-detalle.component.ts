@@ -4,6 +4,7 @@ import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from 
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { ProyectoDetalleService } from '../../../core/services/proyecto-detalle.service';
+import { SECCIONES_CON_PORTADA } from '../../../core/models/proyecto-detalle.models';
 
 /**
  * Micrositio de un proyecto: menú lateral con las secciones que el administrador ya llenó
@@ -96,14 +97,14 @@ export class ProyectoDetalleComponent {
 
   /**
    * Vista activa de una sección: la pedida en la URL si existe o, si no, la primera.
-   * Bienvenida es la excepción: sin vista elegida muestra la portada y ninguna vista queda marcada.
+   * Bienvenida y Zonas comunes son la excepción: sin vista elegida muestran su portada y ninguna vista queda marcada.
    */
   vistaDe(seccionId: string): string | null {
     if (seccionId !== this.seccionActiva()) return null;
     const subs = this.datos.secciones().find(s => s.id === seccionId)?.subsecciones ?? [];
     const pedida = this.vistaActiva();
     if (subs.some(v => v.id === pedida)) return pedida ?? null;
-    return seccionId === 'bienvenida' ? null : (subs[0]?.id ?? null);
+    return SECCIONES_CON_PORTADA.includes(seccionId) ? null : (subs[0]?.id ?? null);
   }
 
   reintentar(): void {

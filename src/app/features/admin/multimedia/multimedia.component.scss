@@ -13,7 +13,7 @@ $card-bg: #eef1f0;
   background-color: t.$bg-page;
   min-height: 100vh;
   box-sizing: border-box;
-  font-family: t.$font-sans;
+  font-family: t.$font-ui;
 }
 
 .header-section {
@@ -23,7 +23,7 @@ $card-bg: #eef1f0;
   margin-bottom: 1.5rem;
 
   .page-title {
-    font-family: 'Georgia', serif;
+    font-family: t.$font-ui;
     font-size: 2.25rem;
     color: $text-dark;
     margin: 0;
@@ -192,7 +192,7 @@ $card-bg: #eef1f0;
       font-size: 1.08rem;
       color: $text-dark;
       margin: 0 0 0.3rem 0;
-      font-family: 'Georgia', serif;
+      font-family: t.$font-ui;
       font-weight: 500;
     }
 
@@ -297,7 +297,7 @@ $card-bg: #eef1f0;
       color: $text-dark;
       margin: 0;
       font-weight: 600;
-      font-family: 'Georgia', serif;
+      font-family: t.$font-ui;
     }
 
     .btn-close {

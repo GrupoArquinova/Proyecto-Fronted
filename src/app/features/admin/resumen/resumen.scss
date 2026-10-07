@@ -1,3 +1,4 @@
+@use '../../../shared/styles/admin-tokens' as t;
 .resumen {
   padding: 2.5rem 3rem;
   font-family: inherit;
@@ -5,7 +6,7 @@
 }
 
 .titulo {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: t.$font-ui;
   font-size: 2.25rem;
   font-weight: 400;
   color: #1f2b28;
@@ -39,7 +40,7 @@
 }
 
 .stat-numero {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: t.$font-ui;
   font-size: 2.5rem;
   font-weight: 400;
   color: #1f2b28;
@@ -70,7 +71,7 @@
 }
 
 .panel-titulo {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: t.$font-ui;
   font-size: 1.35rem;
   font-weight: 400;
   color: #1f2b28;

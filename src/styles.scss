@@ -97,7 +97,7 @@ app-root {
     }
 
     h2 {
-      font-family: Georgia, serif;
+      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
       color: #ffffff;
       font-size: 1.6rem;
       font-weight: 400;
@@ -139,3 +139,13 @@ app-root {
 /* En el micrositio de proyecto el botón de pantalla completa va debajo de WhatsApp */
 body.micrositio .whatsapp-btn-float { bottom: 80px; }
 body.micrositio .whatsapp-modal-container { bottom: 150px; }
+
+/* ===== Panel de administración: tipografía (Bahnschrift, estilo DIN) =====
+   La pila de fuentes vive en shared/styles/admin-tokens.scss ($font-ui). Aquí solo se reparte a los controles de
+   formulario, que no la heredan, y se afinan títulos y números. No toca el micrositio público. */
+.admin-layout {
+  button, input, select, textarea { font-family: inherit; }
+  h1, h2, h3, h4 { font-weight: 600; letter-spacing: 0.01em; }
+  th { letter-spacing: 0.04em; }
+  table, td, th { font-variant-numeric: tabular-nums; }
+}

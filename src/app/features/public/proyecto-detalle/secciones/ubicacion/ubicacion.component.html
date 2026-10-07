@@ -21,6 +21,17 @@
         }
       }
 
+      @case ('google-maps') {
+        <div class="lienzo">
+          <iframe [src]="googleMaps()!" [title]="'Mapa de Google de ' + (u.proyectoNombre || 'el proyecto')" loading="lazy" allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      }
+
+      @case ('mapa') {
+        <app-carrusel-laminas [laminas]="mapas()" [alt]="'Mapa de ubicación de ' + (u.proyectoNombre || 'el proyecto')" etiqueta="Mapa de ubicación" />
+      }
+
       @case ('urbanismo') {
         <app-plano-puntos [completo]="true" [url]="u.urbanismoUrl!" [puntos]="puntosPlano()"
                           (puntoElegido)="abrirPunto($event)" />
