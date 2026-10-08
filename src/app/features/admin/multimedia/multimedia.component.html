@@ -85,7 +85,7 @@
           {{ item.proyectoNombre ? 'Proyecto: ' + item.proyectoNombre : 
              item.loteCodigo ? 'Lote: ' + item.loteCodigo : 
              item.zonaComunNombre ? 'Zona común: ' + item.zonaComunNombre : 
-             item.casaModeloNombre ? 'Casa modelo: ' + item.casaModeloNombre : 'Sin vínculo' }}
+             item.casaModeloNombre ? 'Tipología: ' + item.casaModeloNombre : 'Sin vínculo' }}
         </p>
         <p class="media-desc">{{ item.descripcion || 'Sin descripción' }}</p>
 
@@ -211,7 +211,7 @@
                 <option value="proyecto">Proyecto</option>
                 <option value="lote">Lote</option>
                 <option value="zonaComun">Zona Común</option>
-                <option value="casaModelo">Casa Modelo</option>
+                <option value="casaModelo">Tipología</option>
               </select>
             </div>
 
@@ -249,9 +249,9 @@
               </div>
 
               <div class="form-group full-width" *ngIf="tipoPadre === 'casaModelo'">
-                <label for="casaModeloId">Casa Modelo *</label>
+                <label for="casaModeloId">Tipología *</label>
                 <select id="casaModeloId" name="casaModeloId" [(ngModel)]="formData.casaModeloId" required [disabled]="!proyectoReferenciaId">
-                  <option [ngValue]="null" disabled>Selecciona una casa modelo</option>
+                  <option [ngValue]="null" disabled>Selecciona una tipología</option>
                   <option *ngFor="let c of casasModelosDisponibles" [value]="c.id">{{ c.nombre }}</option>
                 </select>
               </div>

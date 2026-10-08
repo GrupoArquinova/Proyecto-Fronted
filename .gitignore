@@ -46,3 +46,7 @@ Thumbs.db
 .playwright-cli/
 .claude/
 .vercel
+
+# Playwright
+/test-results/
+/playwright-report/

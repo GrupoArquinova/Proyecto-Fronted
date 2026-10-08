@@ -46,7 +46,7 @@
 
       @if (zonaActiva(); as zona) {
         <div class="portada-texto">
-          <h2>Zonas comunes</h2>
+          <h2>Amenidades</h2>
           <h3>{{ zona.nombre }}</h3>
           @if (zona.descripcion) {
             <p>{{ zona.descripcion }}</p>
@@ -54,7 +54,7 @@
         </div>
       }
 
-      <ol class="portada-lista" aria-label="Zonas comunes">
+      <ol class="portada-lista" aria-label="Amenidades">
         @for (z of zonas(); track z.id; let i = $index) {
           <li>
             <button type="button" [class.activa]="seleccionada() === i" (click)="elegirZona(i)"
@@ -71,7 +71,7 @@
           <div class="marco" (click)="$event.stopPropagation()">
             <div class="marco-interior">
             @for (clave of [zonaAbierta()]; track clave) {
-              <app-carrusel-laminas [laminas]="laminasZonaAbierta()" [alt]="nombreZonaAbierta()" [enMarco]="true"
+              <app-carrusel-laminas [laminas]="laminasZonaAbierta()" [alt]="nombreZonaAbierta()" [enMarco]="true" [ampliable]="true"
                                     [etiqueta]="'Imágenes de ' + nombreZonaAbierta()" />
             }
             </div>

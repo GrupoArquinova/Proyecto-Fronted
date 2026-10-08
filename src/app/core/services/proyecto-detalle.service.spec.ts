@@ -11,6 +11,8 @@ const detalleVacio = (): ProyectoDetalle => ({
   casasModelo: [],
   lotes: [],
   multimedia: [],
+  multimediaCasas: [],
+  multimediaZonas: [],
   contenido: [],
   puntos: []
 });
@@ -336,6 +338,21 @@ describe('ProyectoDetalleService', () => {
       expect(service.detalle()!.zonasComunes).toEqual([]);
       expect(service.detalle()!.ubicacion).toBeNull();
       expect(service.detalle()!.lotes.map(l => l.codigo)).toEqual(['L1']);
+    });
+  });
+
+  describe('laminas de beneficios', () => {
+    const lamina = (id: number, orden: number, tipo = 'BENEFICIOS') =>
+      ({ id, tipo, url: `https://x.com/${id}.png`, orden, portada: false, publicado: true, activo: true }) as never;
+
+    it('junta todas las laminas BENEFICIOS del proyecto en el orden del administrador', () => {
+      service.detalle.set({ ...detalleVacio(), multimedia: [lamina(1, 2), lamina(2, 1), lamina(3, 1, 'IMAGEN')] });
+      expect(service.laminasBeneficios().map(l => l.id)).toEqual([2, 1]);
+    });
+
+    it('sin laminas la lista queda vacia', () => {
+      service.detalle.set(detalleVacio());
+      expect(service.laminasBeneficios()).toEqual([]);
     });
   });
 });

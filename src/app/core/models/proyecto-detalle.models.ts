@@ -15,6 +15,10 @@ export interface ProyectoDetalle {
   casasModelo: CasaModelo[];
   lotes: Lote[];
   multimedia: Multimedia[];
+  /** Imágenes (renders) y planos de cada tipología. */
+  multimediaCasas: Multimedia[];
+  /** Imágenes subidas desde Multimedia a cada amenidad (la portada es la imagen principal de la zona). */
+  multimediaZonas: Multimedia[];
   contenido: ContenidoInstitucional[];
   /** Botones sobre el entorno 360°, la vista aérea y el plano de urbanismo. */
   puntos: Punto360[];

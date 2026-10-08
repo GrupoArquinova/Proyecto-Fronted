@@ -71,5 +71,28 @@
   white-space: pre-line;
 }
 
+// Ventana con marco para el carrusel de imágenes o planos (el carrusel se ajusta a esta caja)
+.visor {
+  --menu-offset: 0px;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-bottom: 1.4rem;
+  overflow: hidden;
+  border: 2px solid t.$borde;
+  border-radius: 14px;
+  box-shadow: t.$sombra;
+}
+
+.documentos {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.4rem;
+  display: grid;
+  gap: 0.5rem;
+
+  a { color: t.$verde; font-weight: 600; }
+}
+
 // Los controles de formulario no heredan la tipografía por defecto
 button, input, textarea { font-family: inherit; }

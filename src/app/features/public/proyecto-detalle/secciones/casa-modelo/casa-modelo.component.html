@@ -2,7 +2,7 @@
   <section class="seccion">
 
     @if (casas().length > 1) {
-      <div class="selector" role="group" aria-label="Elegir casa modelo">
+      <div class="selector" role="group" aria-label="Elegir tipología">
         @for (item of casas(); track item.id; let i = $index) {
           <button type="button" [class.activo]="seleccionada() === i" (click)="seleccionada.set(i)">
             {{ item.nombre }}
@@ -22,9 +22,31 @@
     }
 
     @switch (vista()) {
+      @case ('imagenes') {
+        @if (imagenes().length > 0) {
+          <div class="visor">
+            @for (clave of [c.id]; track clave) {
+              <app-carrusel-laminas [laminas]="imagenes()" [alt]="c.nombre" [enMarco]="true" [ampliable]="true"
+                                    [etiqueta]="'Imágenes de ' + c.nombre" />
+            }
+          </div>
+        }
+      }
       @case ('planos') {
-        @if (c.planoUrl) {
-          <app-medio [url]="c.planoUrl" titulo="el plano de la casa" />
+        @if (planosImagen().length > 0) {
+          <div class="visor">
+            @for (clave of [c.id]; track clave) {
+              <app-carrusel-laminas [laminas]="planosImagen()" [alt]="'Plano de ' + c.nombre" [enMarco]="true" [ampliable]="true" [leyenda]="true"
+                                    [etiqueta]="'Planos de ' + c.nombre" />
+            }
+          </div>
+        }
+        @if (planosDocumento().length > 0) {
+          <ul class="documentos">
+            @for (doc of planosDocumento(); track doc.url) {
+              <li><a [href]="doc.url" target="_blank" rel="noopener">{{ doc.titulo }} (abrir)</a></li>
+            }
+          </ul>
         }
       }
       @default {

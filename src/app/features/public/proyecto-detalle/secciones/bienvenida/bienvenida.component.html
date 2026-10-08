@@ -8,7 +8,9 @@
     }
 
     @case ('beneficios') {
-      @if (imagenBeneficios(); as lamina) {
+      @if (laminasBeneficios().length > 1) {
+        <app-carrusel-laminas [laminas]="laminasBeneficios()" [alt]="'Beneficios de ' + p.nombre" etiqueta="Beneficios del proyecto" />
+      } @else if (imagenBeneficios(); as lamina) {
         <section class="lamina" aria-label="Beneficios del proyecto">
           <div class="lamina-fondo" [style.backgroundImage]="'url(' + lamina + ')'"></div>
           <div class="lamina-imagen">

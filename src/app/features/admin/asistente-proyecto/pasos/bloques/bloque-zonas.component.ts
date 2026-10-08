@@ -16,8 +16,8 @@ import { ZonaComunImagen } from '../../../../../core/models/zona-comun-imagen.mo
   imports: [ReactiveFormsModule, SubidaArchivoComponent],
   styleUrl: '../paso.scss',
   template: `
-    <section class="bloque" aria-label="Zonas comunes">
-      <h3>Zonas comunes</h3>
+    <section class="bloque" aria-label="Amenidades">
+      <h3>Amenidades</h3>
       <p class="nota">Piscina, salón social, senderos… Cada zona puede tener varias fotos; la primera queda como principal.</p>
 
       <form [formGroup]="form" (ngSubmit)="agregar()" class="agregar" novalidate>

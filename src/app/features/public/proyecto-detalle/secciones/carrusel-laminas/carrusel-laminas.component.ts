@@ -1,4 +1,5 @@
-import { Component, HostListener, OnDestroy, computed, effect, input, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, ElementRef, HostListener, OnDestroy, computed, effect, inject, input, signal } from '@angular/core';
 
 export interface Lamina {
   id?: number;
@@ -16,7 +17,7 @@ export interface Lamina {
   standalone: true,
   templateUrl: './carrusel-laminas.component.html',
   styleUrl: './carrusel-laminas.component.scss',
-  host: { '[class.en-marco]': 'enMarco()' }
+  host: { '[class.en-marco]': 'enMarco()', '[class.ampliada]': 'ampliada()' }
 })
 export class CarruselLaminasComponent implements OnDestroy {
   readonly laminas = input.required<Lamina[]>();
@@ -31,6 +32,18 @@ export class CarruselLaminasComponent implements OnDestroy {
    * las miniaturas aparecen un par de segundos al abrir o cambiar de imagen y luego se esconden.
    */
   readonly enMarco = input(false);
+
+  /** Muestra un botón para ver la imagen en toda la pantalla (se sale pulsando el mismo botón o con Esc). */
+  readonly ampliable = input(false);
+  readonly ampliada = signal(false);
+
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private doc = inject(DOCUMENT);
+  /** true si la ampliación usa la pantalla completa del navegador; si no, es una capa fija sobre la página. */
+  private pantallaNativa = false;
+
+  /** Mano con flechas sobre la imagen: se muestra hasta que el cliente toca el carrusel por primera vez. */
+  readonly pista = signal(true);
 
   private indice = signal(0);
   private temporizador: ReturnType<typeof setTimeout> | null = null;
@@ -47,6 +60,38 @@ export class CarruselLaminasComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     if (this.temporizador) clearTimeout(this.temporizador);
+    if (this.pantallaNativa && this.doc.fullscreenElement === this.host.nativeElement) void this.doc.exitFullscreen();
+  }
+
+  /** Amplía la imagen a toda la pantalla y, con el mismo botón, vuelve a su tamaño. */
+  alternarAmpliada(): void {
+    const el = this.host.nativeElement;
+    if (this.ampliada()) {
+      this.ampliada.set(false);
+      if (this.pantallaNativa && this.doc.fullscreenElement) void this.doc.exitFullscreen().catch(() => undefined);
+      this.pantallaNativa = false;
+      return;
+    }
+
+    this.ampliada.set(true);
+    // Pantalla completa del navegador; si no se puede (por ejemplo en iPhone) queda la capa fija por CSS
+    if (el.requestFullscreen) {
+      el.requestFullscreen().then(() => (this.pantallaNativa = true)).catch(() => (this.pantallaNativa = false));
+    }
+  }
+
+  /** El navegador salió de la pantalla completa (por ejemplo con Esc): se quita la ampliación. */
+  @HostListener('document:fullscreenchange')
+  alCambiarPantallaCompleta(): void {
+    if (this.pantallaNativa && !this.doc.fullscreenElement) {
+      this.pantallaNativa = false;
+      this.ampliada.set(false);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  teclaEscape(): void {
+    if (this.ampliada() && !this.pantallaNativa) this.ampliada.set(false);
   }
   /** Las miniaturas se pueden esconder para ver la imagen más grande. */
   readonly miniaturasVisibles = signal(true);
@@ -55,16 +100,19 @@ export class CarruselLaminasComponent implements OnDestroy {
   readonly actual = computed(() => this.laminas()[this.indiceActual()] ?? null);
 
   irA(i: number): void {
+    this.pista.set(false);
     this.indice.set(i);
   }
 
   siguiente(): void {
     const total = this.laminas().length;
+    this.pista.set(false);
     if (total > 0) this.indice.set((this.indiceActual() + 1) % total);
   }
 
   anterior(): void {
     const total = this.laminas().length;
+    this.pista.set(false);
     if (total > 0) this.indice.set((this.indiceActual() - 1 + total) % total);
   }
 
@@ -79,6 +127,7 @@ export class CarruselLaminasComponent implements OnDestroy {
   private toqueInicioX: number | null = null;
 
   inicioToque(evento: TouchEvent): void {
+    this.pista.set(false);
     this.toqueInicioX = evento.touches[0]?.clientX ?? null;
   }
 

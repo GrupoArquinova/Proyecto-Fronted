@@ -11,6 +11,7 @@ import { ContenidoService } from './contenido.service';
 import { Punto360Service } from './punto-360.service';
 import { EscenaPunto } from '../models/punto-360.models';
 import { ZonaComun } from '../models/zona-comun.models';
+import { Multimedia } from '../models/multimedia.models';
 import { clasificarMedio, coordenadasDeGoogleMaps, urlGoogleMapsSatelite } from '../utils/medios';
 import { formatoArea, ordenarLotes } from '../utils/lotes';
 import {
@@ -70,6 +71,13 @@ export class ProyectoDetalleService {
   readonly imagenBeneficios = computed<string | null>(() =>
     this.detalle()?.multimedia.find(m => m.tipo === 'BENEFICIOS')?.url ?? null);
 
+  /** Todas las láminas de beneficios del proyecto, en el orden del administrador (con varias se muestran en un carrusel). */
+  readonly laminasBeneficios = computed(() =>
+    (this.detalle()?.multimedia ?? [])
+      .filter(m => m.tipo === 'BENEFICIOS')
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))
+      .map(m => ({ id: m.id, url: m.url, titulo: m.titulo })));
+
   /** Fotos del carrusel de Bienvenida: las imágenes del proyecto, en el orden definido por el administrador. */
   readonly galeria = computed(() =>
     (this.detalle()?.multimedia ?? [])
@@ -114,19 +122,32 @@ export class ProyectoDetalleService {
       .filter(m => m.tipo === 'ZONAS_DESTACADAS')
       .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))[0]?.url ?? null);
 
-  /** Todas las imágenes de las zonas comunes (galería), en el orden de las zonas. */
-  readonly imagenesZonas = computed<ImagenZona[]>(() =>
-    (this.detalle()?.zonasComunes ?? []).flatMap(z =>
-      (z.imagenes ?? []).map(i => ({
-        url: i.imagenUrl,
-        titulo: i.titulo || z.nombre,
-        zonaId: z.id as number,
-        zonaNombre: z.nombre
-      }))));
+  /**
+   * Todas las imágenes de las zonas comunes (galería), en el orden de las zonas. De cada zona van primero las imágenes
+   * subidas desde Multimedia (la portada primero) y después las de su galería, sin repetir.
+   */
+  readonly imagenesZonas = computed<ImagenZona[]>(() => {
+    const d = this.detalle();
+    if (!d) return [];
+    return d.zonasComunes.flatMap(z => {
+      const deMultimedia = (d.multimediaZonas ?? [])
+        .filter(m => m.zonaComunId === z.id && m.tipo === 'IMAGEN')
+        .sort((a, b) => Number(b.portada) - Number(a.portada) || (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))
+        .map(m => ({ url: m.url, titulo: m.titulo || z.nombre }));
+      const deGaleria = (z.imagenes ?? []).map(i => ({ url: i.imagenUrl, titulo: i.titulo || z.nombre }));
+      const vistas = new Set<string>();
+      return [...deMultimedia, ...deGaleria]
+        .filter(i => !vistas.has(i.url) && !!vistas.add(i.url))
+        .map(i => ({ ...i, zonaId: z.id as number, zonaNombre: z.nombre }));
+    });
+  });
 
-  /** Foto con la que se presenta una zona: la principal, la primera de su galería o, en último caso, la del proyecto. */
+  /** Foto con la que se presenta una zona: su primera imagen (la portada de Multimedia, si la hay), la principal de la galería o, en último caso, la del proyecto. */
   fotoDeZona(zona: ZonaComun | null | undefined): string | null {
-    return zona?.imagenPrincipalUrl ?? zona?.imagenes?.[0]?.imagenUrl ?? this.detalle()?.proyecto.imagenUrl ?? null;
+    const subida = (this.detalle()?.multimediaZonas ?? [])
+      .filter(m => m.zonaComunId === zona?.id && m.tipo === 'IMAGEN')
+      .sort((x, y) => Number(y.portada) - Number(x.portada) || (x.orden ?? 0) - (y.orden ?? 0) || (x.id ?? 0) - (y.id ?? 0))[0]?.url;
+    return subida ?? zona?.imagenPrincipalUrl ?? zona?.imagenes?.[0]?.imagenUrl ?? this.detalle()?.proyecto.imagenUrl ?? null;
   }
 
   /** Botones de una imagen (entorno, vista aérea o plano de urbanismo). */
@@ -185,7 +206,23 @@ export class ProyectoDetalleService {
         multimedia: this.multimediaService.listarPublicadosPorEntidad('proyecto', proyectoId).pipe(opcional([])),
         contenido: this.contenidoService.obtenerPublicadosPorEmpresa(proyecto.empresaId).pipe(opcional([])),
         puntos: this.puntoService.listarPorProyecto(proyectoId).pipe(opcional([]))
-      }).pipe(map(datos => ({ proyecto, ...datos }))))
+      }).pipe(
+        // Imágenes y planos de cada tipología (se piden aparte porque dependen de las tipologías publicadas)
+        switchMap(datos => {
+          const pedidos = datos.casasModelo
+            .filter(casa => casa.id != null)
+            .map(casa => this.multimediaService.listarPublicadosPorEntidad('casaModelo', casa.id as number).pipe(opcional([])));
+          const pedidosZonas = datos.zonasComunes
+            .filter(zona => zona.id != null)
+            .map(zona => this.multimediaService.listarPublicadosPorEntidad('zonaComun', zona.id as number).pipe(opcional([])));
+          return forkJoin({
+            casas: pedidos.length > 0 ? forkJoin(pedidos) : of([] as Multimedia[][]),
+            zonas: pedidosZonas.length > 0 ? forkJoin(pedidosZonas) : of([] as Multimedia[][])
+          }).pipe(
+            map(listas => ({ proyecto, ...datos, multimediaCasas: listas.casas.flat(), multimediaZonas: listas.zonas.flat() }))
+          );
+        })
+      ))
     ).subscribe({
       next: detalle => {
         this.detalle.set(detalle);
@@ -236,7 +273,7 @@ export class ProyectoDetalleService {
     if (d.zonasComunes.length > 0) {
       secciones.push({
         id: 'zonas-comunes',
-        titulo: 'Zonas Comunes',
+        titulo: 'Amenidades',
         subsecciones: this.vistas([
           ['destacadas', 'Zonas Destacadas', d.multimedia.some(m => m.tipo === 'ZONAS_DESTACADAS')],
           ['galeria', 'Galería', d.zonasComunes.some(z => (z.imagenes?.length ?? 0) > 0)]
@@ -256,10 +293,11 @@ export class ProyectoDetalleService {
     if (d.casasModelo.length > 0) {
       secciones.push({
         id: 'casa-modelo',
-        titulo: 'Casa Modelo',
+        titulo: 'Tipologías',
         subsecciones: this.vistas([
-          ['tour-virtual', 'Tour Virtual', d.casasModelo.some(c => !!c.tourVirtualUrl)],
-          ['planos', 'Planos', d.casasModelo.some(c => !!c.planoUrl)]
+          ['imagenes', 'Imágenes', d.multimediaCasas.some(m => m.tipo === 'IMAGEN')],
+          ['planos', 'Planos', d.casasModelo.some(c => !!c.planoUrl) || d.multimediaCasas.some(m => m.tipo === 'PLANO')],
+          ['tour-virtual', 'Tour Virtual', d.casasModelo.some(c => !!c.tourVirtualUrl)]
         ])
       });
     }

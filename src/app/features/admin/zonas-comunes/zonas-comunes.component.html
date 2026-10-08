@@ -4,7 +4,7 @@
   <div class="header-section">
     <div>
       <span class="sub-title">GESTIÓN DE INFRAESTRUCTURA</span>
-      <h2>Zonas Comunes</h2>
+      <h2>Amenidades</h2>
     </div>
     <div class="header-actions">
       <select [(ngModel)]="proyectoIdSeleccionado" (change)="cargarZonas()" class="select-proyecto">
@@ -12,7 +12,7 @@
         <option *ngFor="let p of listaProyectos" [value]="p.id">{{ p.nombre }}</option>
       </select>
       <button class="btn-primary" (click)="abrirModalCrear()">
-        <span>+</span> Nueva Zona Común
+        <span>+</span> Nueva amenidad
       </button>
     </div>
   </div>
@@ -70,7 +70,7 @@
   <div class="modal-overlay" *ngIf="mostrarModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>{{ esEdicion ? 'Editar Zona Común' : 'Nueva Zona Común' }}</h3>
+        <h3>{{ esEdicion ? 'Editar amenidad' : 'Nueva amenidad' }}</h3>
         <button class="close-btn" (click)="cerrarModal()">×</button>
       </div>
 

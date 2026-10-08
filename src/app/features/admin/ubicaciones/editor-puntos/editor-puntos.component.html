@@ -59,7 +59,7 @@
         @if (esZonas()) {
           <div class="zonas-imagen">
             <p>
-              Imagen de fondo de <strong>Zonas Comunes → Zonas destacadas</strong> (una vista aérea o un plano del proyecto).
+              Imagen de fondo de <strong>Amenidades → Zonas destacadas</strong> (una vista aérea o un plano del proyecto).
               Sobre ella pones un botón por cada zona.
             </p>
             <label class="primario subir-mapa" [class.ocupado]="subiendoImagenZonas()">
@@ -76,7 +76,7 @@
               <app-plano-puntos [url]="actual.url" [puntos]="puntosDeEscena()" [pendiente]="pendientePlano()"
                                 (clicEnPlano)="clicEnPlano($event)" />
             } @else {
-              <app-visor-360 [url]="actual.url" [titulo]="actual.titulo" [puntos]="puntosDeEscena()"
+              <app-visor-360 [pista360]="false" [url]="actual.url" [titulo]="actual.titulo" [puntos]="puntosDeEscena()"
                              [pendiente]="pendiente360()" (clicEnImagen)="clicEn360($event)" />
             }
           }

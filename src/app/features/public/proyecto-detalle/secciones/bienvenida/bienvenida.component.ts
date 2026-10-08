@@ -27,6 +27,8 @@ export class BienvenidaComponent {
 
   /** Lámina de beneficios (imagen). Si no hay, se usa el texto institucional con clave BENEFICIOS. */
   readonly imagenBeneficios = this.seccion.datos.imagenBeneficios;
+  /** Con más de una lámina de beneficios se pasan en un carrusel. */
+  readonly laminasBeneficios = this.seccion.datos.laminasBeneficios;
   readonly beneficios = computed(() =>
     this.detalle()?.contenido.find(c => c.seccion.toUpperCase() === SECCION_BENEFICIOS) ?? null);
 

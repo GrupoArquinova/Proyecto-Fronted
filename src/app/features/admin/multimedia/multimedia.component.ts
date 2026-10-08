@@ -348,7 +348,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     if (item.proyectoNombre) return `Proyecto: ${item.proyectoNombre}`;
     if (item.loteCodigo) return `Lote: ${item.loteCodigo}`;
     if (item.zonaComunNombre) return `Zona común: ${item.zonaComunNombre}`;
-    if (item.casaModeloNombre) return `Casa modelo: ${item.casaModeloNombre}`;
+    if (item.casaModeloNombre) return `Tipología: ${item.casaModeloNombre}`;
     return 'Sin vínculo';
   }
 
