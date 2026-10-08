@@ -2,7 +2,7 @@
 @use "sass:color";
 
 // Paleta de colores oficial de Arquinova
-$color-primary: rgb(44, 99, 96);      // Verde turquesa corporativo
+$color-primary: rgb(42, 102, 101);      // Verde turquesa corporativo
 $color-btn: rgb(60, 112, 110);        // Verde boton
 $color-dark-text: rgb(66, 66, 66);    // Gris texto principal
 $color-muted-text: #718096;           // Gris claro subtitulos
@@ -41,7 +41,7 @@ $color-card-bg: #ffffff;
 
   &:hover {
     background-color: #e0e6e5;
-    color: #2c6360;           // Resalta con el verde corporativo al pasar el cursor
+    color: #2a6665;           // Resalta con el verde corporativo al pasar el cursor
     transform: translateX(-3px);
   }
 }

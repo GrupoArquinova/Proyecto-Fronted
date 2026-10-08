@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map } from 'rxjs';
-import { Proyecto, CrearProyectoDTO, CatalogoPublico } from '../models/proyecto.models';
+import { Observable, forkJoin, map, of, catchError } from 'rxjs';
+import { Proyecto, CrearProyectoDTO, CatalogoPublico, etiquetaEtapa } from '../models/proyecto.models';
+import { Ubicacion } from '../models/ubicacion.models';
+import { UbicacionService } from './ubicacion.service';
 import { Lote } from '../models/lote.models';
 import { LoteService } from './lote.service';
 import { environment } from '../../../environments/environment';
@@ -12,6 +14,7 @@ import { environment } from '../../../environments/environment';
 export class ProyectoService {
   private http = inject(HttpClient);
   private loteService = inject(LoteService);
+  private ubicacionService = inject(UbicacionService);
   
   // URL base de tu backend en Spring Boot
   private apiUrl = `${environment.apiUrl}/proyectos`;
@@ -35,22 +38,28 @@ export class ProyectoService {
   obtenerCatalogoPublico(): Observable<CatalogoPublico> {
     return forkJoin({
       proyectos: this.getProyectosPublicos(),
-      lotes: this.loteService.obtenerLotesPublicos()
+      lotes: this.loteService.obtenerLotesPublicos(),
+      // Si falla la consulta de ubicaciones, el catálogo se muestra igual, sin municipio
+      ubicaciones: this.ubicacionService.obtenerUbicaciones().pipe(catchError(() => of([] as Ubicacion[])))
     }).pipe(
-      map(({ proyectos, lotes }) => ({
+      map(({ proyectos, lotes, ubicaciones }) => ({
         totalLotes: lotes.length,
-        proyectos: proyectos.map(p => {
+        // El proyecto destacado va primero
+        proyectos: [...proyectos].sort((a, b) => Number(!!b.destacado) - Number(!!a.destacado)).map(p => {
           const delProyecto = lotes.filter(l => this.perteneceAProyecto(l, p));
+          const sitio = ubicaciones.find(u => u.proyectoId === p.id);
+          const lugar = [sitio?.ciudad, sitio?.departamento].filter(Boolean).join(', ');
           return {
             ...p,
             id: p.id as number,
             totalLotes: delProyecto.length,
             lotesDisponibles: delProyecto.filter(l => this.estaDisponible(l)).length,
             imagenUrl: p.imagenUrl || 'assets/images/default-project.svg',
-            estado: p.estado || 'EN VENTA',
-            ubicacion: p.ubicacion || 'Colombia',
-            descripcion: p.descripcion
-              || 'Proyecto campestre diseñado para quienes buscan tranquilidad, naturaleza y alta plusvalía.'
+            // Etapa real del proyecto (antes se mostraba "EN VENTA" para todos)
+            estado: etiquetaEtapa(p.estadoProyecto) || p.estado || '',
+            ubicacion: lugar || p.ubicacion || 'Colombia',
+            municipio: sitio?.ciudad ?? '',
+            descripcion: p.descripcion || ''
           };
         })
       }))

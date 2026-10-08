@@ -26,7 +26,7 @@ import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes
   `,
   styles: [`
     :host { display: block; }
-    .plano { position: relative; border-radius: 16px; overflow: hidden; background: rgba(44, 99, 96, 0.03); box-shadow: 0 6px 24px rgba(44, 99, 96, 0.1); }
+    .plano { position: relative; border-radius: 16px; overflow: hidden; background: rgba(42, 102, 101, 0.03); box-shadow: 0 6px 24px rgba(42, 102, 101, 0.1); }
     img { display: block; width: 100%; height: auto; }
     .marca {
       position: absolute;
@@ -44,7 +44,7 @@ import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes
       transition: transform 0.15s;
     }
     .marca:hover, .marca.activa { transform: translate(-50%, -50%) scale(1.25); z-index: 2; }
-    .marca.activa { outline: 3px solid #2c6360; }
+    .marca.activa { outline: 3px solid #2a6665; }
     .disponible { background: #2f9e63; }
     .reservado { background: #d9951a; }
     .vendido { background: #c94a4a; }

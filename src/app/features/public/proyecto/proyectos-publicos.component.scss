@@ -161,7 +161,7 @@
     a {
       display: inline-block;
       color: #fff;
-      background: #2c6360;
+      background: #2a6665;
       padding: 0.6rem 1.4rem;
       border-radius: 999px;
       text-decoration: none;
@@ -172,5 +172,48 @@
         background: #357774;
       }
     }
+  }
+}
+
+.all-projects-container {
+  .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+
+    select {
+      padding: 0.55rem 1rem;
+      background: #202e2c;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.9rem;
+    }
+
+    .limpiar {
+      padding: 0.55rem 1.1rem;
+      background: transparent;
+      color: #79a8a3;
+      border: 1px solid #79a8a3;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  }
+
+  .sin-resultados {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .project-card .card-body .participacion {
+    margin: 0 0 1.5rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
   }
 }

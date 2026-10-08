@@ -6,10 +6,10 @@ import { environment } from '../../../../environments/environment';
  * Completar estos datos con los reales de la empresa (Cámara de Comercio / RUT) antes de producción.
  */
 export const EMPRESA_LEGAL: Record<string, string> = {
-  razonSocial: 'Arquinova Grupo Empresarial S.A.S.', // confirmar con el certificado de Cámara de Comercio
-  nit: '',
+  razonSocial: 'Grupo Arquinova S.A.S.',
+  nit: '901.397.504-2',
   domicilio: 'Armenia, Quindío, Colombia',
-  direccion: '',
+  direccion: '', // pendiente: domicilio legal (la Carrera 14 #48N-58 es la oficina de atención comercial)
   correoDatos: environment.contacto.correo,           // confirmar: correo para asuntos de datos personales
   telefono: environment.contacto.telefonoTexto,
   sitioWeb: '',

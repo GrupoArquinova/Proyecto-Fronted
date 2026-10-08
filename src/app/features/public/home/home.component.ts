@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -9,6 +9,7 @@ import { SolicitudPublicaRequest } from '../../../core/models/solicitud.models';
 import { SolicitudService } from '../../../core/services/solicitud.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { environment } from '../../../../environments/environment';
+import { EMPRESA_INFO, SERVICIOS } from './empresa-contenido';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +18,7 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit {
 
   private proyectoService = inject(ProyectoService);
   private fb = inject(FormBuilder);
@@ -27,25 +28,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   readonly contacto = environment.contacto;
   readonly whatsappUrl = `https://wa.me/${environment.contacto.whatsapp}`;
+  readonly empresa = EMPRESA_INFO;
+  readonly servicios = SERVICIOS;
 
   proyectosList: ProyectoPublico[] = [];
   contactoForm: FormGroup;
 
-  // Variables dinámicas para el contador (arrancan en 0, se animan hasta su valor real)
-  anosExperiencia: number = 0;
   totalProyectos: number = 0;
-  totalLotes: number = 0;
-  infraestructuraPorcentaje: number = 0;
   proyectosDestacados: ProyectoPublico[] = [];
-
-  // Valores finales hacia los que debe animarse cada contador
-  private anosExperienciaFinal: number = 15;
-  private infraestructuraPorcentajeFinal: number = 100;
-
-  // --- Control de la animación del contador ---
-  private animacionEjecutada = false;
-  private statsVisibles = false;
-  private datosListos = false;
+  /** Proyecto marcado como destacado en el panel (se muestra arriba, con botón al asesor). */
+  destacado: ProyectoPublico | null = null;
+  whatsappDestacado = '';
 
   constructor() {
     this.contactoForm = this.fb.group({
@@ -62,34 +55,26 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.cargarCatalogo();
   }
 
-  /** Una sola consulta: alimenta el select del formulario, las tarjetas destacadas y los contadores. */
+  /** Una sola consulta: alimenta el select del formulario y las tarjetas destacadas. */
   cargarCatalogo(): void {
     this.proyectoService.obtenerCatalogoPublico().subscribe({
-      next: ({ proyectos, totalLotes }) => {
+      next: ({ proyectos }) => {
         this.proyectosList = proyectos;
         this.proyectosDestacados = proyectos.slice(0, 3);
+        this.destacado = proyectos.find(p => p.destacado) ?? null;
+        this.whatsappDestacado = this.destacado ? this.enlaceWhatsapp(this.destacado) : '';
         this.totalProyectos = proyectos.length;
-        this.totalLotes = totalLotes;
-
-        this.datosListos = true;
-        this.intentarIniciarConteo();
       },
       error: (err) => {
-        console.error('Error al cargar las estadísticas de proyectos y lotes:', err);
-        this.totalProyectos = 3;
-        this.totalLotes = 108;
-
-        this.datosListos = true;
-        this.intentarIniciarConteo();
+        console.error('Error al cargar los proyectos:', err);
       }
     });
   }
 
-  ngAfterViewInit(): void {
-    // IntersectionObserver y requestAnimationFrame solo existen en el navegador (la pagina se renderiza en servidor)
-    if (isPlatformBrowser(this.platformId)) {
-      this.configurarObserverAnimacion();
-    }
+  /** WhatsApp con el mensaje ya escrito sobre el proyecto; no se envía nada hasta que la persona lo envíe. */
+  private enlaceWhatsapp(proyecto: ProyectoPublico): string {
+    const mensaje = `Hola, estoy interesado en ${proyecto.nombre} y quisiera información sobre sus tipologías, precios y disponibilidad.`;
+    return `${this.whatsappUrl}?text=${encodeURIComponent(mensaje)}`;
   }
 
   enviarFormulario(): void {
@@ -114,67 +99,5 @@ export class HomeComponent implements OnInit, AfterViewInit {
     } else {
       this.contactoForm.markAllAsTouched();
     }
-  }
-
-  configurarObserverAnimacion(): void {
-    const bannerElement = document.querySelector('.stats-banner');
-    if (!bannerElement) return;
-
-    const observer = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          this.statsVisibles = true;
-          this.intentarIniciarConteo();
-          observer.disconnect();
-        }
-      });
-    }, { threshold: 0.3 });
-
-    observer.observe(bannerElement);
-  }
-
-  /**
-   * Solo inicia la animación cuando el banner ya es visible EN PANTALLA
-   * y los datos del backend YA llegaron. No importa cuál de las dos
-   * condiciones se cumpla primero: la animación espera a la que falte.
-   */
-  private intentarIniciarConteo(): void {
-    if (this.statsVisibles && this.datosListos && !this.animacionEjecutada) {
-      this.animacionEjecutada = true;
-      this.iniciarConteoAnimado();
-    }
-  }
-
-  iniciarConteoAnimado(): void {
-    this.animarValor('anosExperiencia', 0, this.anosExperienciaFinal, 1500);
-    this.animarValor('totalProyectos', 0, this.totalProyectos, 1500);
-    this.animarValor('totalLotes', 0, this.totalLotes, 2000);
-    this.animarValor('infraestructuraPorcentaje', 0, this.infraestructuraPorcentajeFinal, 1800);
-  }
-
-  animarValor(propiedad: string, inicio: number, fin: number, duracion: number): void {
-    let tiempoInicio: number | null = null;
-
-    const paso = (tiempoActual: number) => {
-      if (!tiempoInicio) tiempoInicio = tiempoActual;
-      const progreso = Math.min((tiempoActual - tiempoInicio) / duracion, 1);
-      const valorActual = Math.floor(progreso * (fin - inicio) + inicio);
-
-      if (propiedad === 'anosExperiencia') this.anosExperiencia = valorActual;
-      if (propiedad === 'totalProyectos') this.totalProyectos = valorActual;
-      if (propiedad === 'totalLotes') this.totalLotes = valorActual;
-      if (propiedad === 'infraestructuraPorcentaje') this.infraestructuraPorcentaje = valorActual;
-
-      if (progreso < 1) {
-        window.requestAnimationFrame(paso);
-      } else {
-        if (propiedad === 'anosExperiencia') this.anosExperiencia = fin;
-        if (propiedad === 'totalProyectos') this.totalProyectos = fin;
-        if (propiedad === 'totalLotes') this.totalLotes = fin;
-        if (propiedad === 'infraestructuraPorcentaje') this.infraestructuraPorcentaje = fin;
-      }
-    };
-
-    window.requestAnimationFrame(paso);
   }
 }

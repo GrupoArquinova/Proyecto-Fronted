@@ -1,5 +1,5 @@
 // Variables de Paleta Arquinova
-$color-primary: rgb(44, 99, 96);       // #2C6360
+$color-primary: rgb(42, 102, 101);       // #2a6665
 $color-secondary: rgb(60, 112, 110);    // #3C706E
 $color-dark: rgb(25, 35, 34);           // Fondo oscuro general
 $color-card-dark: rgb(32, 46, 44);      // Fondo para tarjetas oscuras
@@ -68,7 +68,7 @@ body {
 
       &:hover {
         color: #ffffff;
-        background-color: #2c6360;
+        background-color: #2a6665;
       }
     }
 
@@ -176,38 +176,6 @@ body {
           border-color: $color-light;
         }
       }
-    }
-  }
-}
-
-/* STATS BANNER */
-.stats-banner {
-  background-color: rgb(22, 38, 36);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 2.2rem 4rem;
-  text-align: center;
-
-  .stat-item {
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-
-    &:last-child {
-      border-right: none;
-    }
-
-    h2 {
-      font-size: 1.8rem;
-      font-weight: 400;
-      color: #8bb3ae;
-      margin: 0;
-      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
-    }
-
-    p {
-      margin: 0.2rem 0 0;
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.5);
     }
   }
 }
@@ -332,7 +300,7 @@ body {
           strong {
             display: block;
             font-size: 1.1rem;
-            color: #2c6360;
+            color: #2a6665;
             font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
           }
 
@@ -345,7 +313,7 @@ body {
 
         .card-link {
           text-decoration: none;
-          color: #2c6360;
+          color: #2a6665;
           font-weight: 600;
           font-size: 0.95rem;
           display: inline-flex;
@@ -362,76 +330,45 @@ body {
   }
 }
 
-/* 3. RESPALDO SECTION */
-.trust-section {
+/* 3. EMPRESA SECTION */
+.about-section {
   padding: 7rem 4rem;
-  background-color: #f8faf9; // Fondo claro limpio que contrasta bien con las tarjetas blancas
+  background-color: #f8faf9;
   color: #333333;
 
   .section-header {
     h2 { color: #2c3e3b; }
-    p { color: #666666; }
   }
 
-  .trust-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    max-width: 1200px;
+  .about-body {
+    max-width: 820px;
     margin: 0 auto;
-    width: 100%;
+    text-align: center;
 
-    .trust-card {
-      background: #ffffff;
-      border: 1px solid #e0e6e5;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-      display: flex;
-      gap: 1.2rem;
-      align-items: flex-start;
-
-      .icon-container { color: $color-primary; }
-
-      .trust-icon {
-        font-size: 1.8rem;
-        background: rgba(44, 99, 96, 0.1);
-        padding: 0.8rem;
-        border-radius: 8px;
-      }
-
-      h3 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin: 0 0 0.4rem 0;
-        color: #253533;
-      }
-
-      p {
-        font-size: 0.88rem;
-        color: #555555;
-        margin: 0;
-        line-height: 1.5;
-      }
+    p {
+      margin: 0 0 1.2rem;
+      font-size: 1.08rem;
+      line-height: 1.8;
+      color: #4a5554;
     }
   }
 }
 
-/* 5. BENEFICIOS SECTION */
-.benefits-section {
+/* 4. SERVICIOS SECTION */
+.services-section {
   padding: 7rem 4rem;
   background-color: $color-dark;
   color: $color-light;
 
-  .benefits-grid {
+  .services-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); // 4 columnas como en tu imagen
+    grid-template-columns: repeat(4, 1fr); // 4 columnas
     gap: 1.8rem;
     max-width: 1300px;
     margin: 0 auto;
     width: 100%;
 
-    .benefit-card {
+    .service-card {
       background: $color-card-dark;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
@@ -446,13 +383,15 @@ body {
       .icon-container {
         width: 45px;
         height: 45px;
-        background: rgba(44, 99, 96, 0.3);
+        background: rgba(42, 102, 101, 0.3);
         color: #ffffff;
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
         margin-bottom: 1.2rem;
       }
 
@@ -759,7 +698,7 @@ body {
 
 /* RESPONSIVE DESIGN */
 @media (max-width: 1024px) {
-  .benefits-section .benefits-grid {
+  .services-section .services-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -769,8 +708,7 @@ body {
 }
 
 @media (max-width: 968px) {
-  .projects-section .projects-grid,
-  .trust-section .trust-grid {
+  .projects-section .projects-grid {
     grid-template-columns: 1fr;
   }
 
@@ -778,11 +716,7 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .stats-banner {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .benefits-section .benefits-grid {
+  .services-section .services-grid {
     grid-template-columns: 1fr;
   }
 
@@ -822,4 +756,88 @@ body {
       text-decoration: underline;
     }
   }
+}
+.footer-arquinova .footer-dato { color: rgba(255, 255, 255, 0.7); }
+
+/* PROYECTO DESTACADO */
+.featured-section {
+  padding: 5rem 4rem;
+  background-color: #eaf0ee;
+
+  .featured-card {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #d3dfdc;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .featured-image {
+    min-height: 340px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .featured-body {
+    padding: 2.5rem;
+    color: #333333;
+
+    .section-tag { display: block; margin-bottom: 0.4rem; }
+
+    h2 {
+      margin: 0 0 0.6rem;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #253533;
+    }
+
+    .featured-meta {
+      margin: 0 0 1rem;
+      color: #7a8a88;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.8rem;
+    }
+
+    .featured-text {
+      margin: 0 0 1.6rem;
+      line-height: 1.7;
+      color: #555555;
+    }
+  }
+
+  .featured-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+
+    .btn-primary,
+    .btn-outline {
+      display: inline-block;
+      padding: 0.8rem 1.6rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .btn-primary { background: #2a6665; color: #ffffff; }
+    .btn-outline { border: 1px solid #2a6665; color: #2a6665; }
+    .btn-outline:hover { background: rgba(42, 102, 101, 0.08); }
+  }
+}
+
+@media (max-width: 968px) {
+  .featured-section { padding: 3rem 1.5rem; }
+  .featured-section .featured-card { grid-template-columns: 1fr; }
+  .featured-section .featured-body { padding: 1.6rem; }
+}
+
+.projects-section .project-card .card-body .participacion {
+  margin: 0 0 1.5rem;
+  font-size: 0.85rem;
+  color: #555555;
 }

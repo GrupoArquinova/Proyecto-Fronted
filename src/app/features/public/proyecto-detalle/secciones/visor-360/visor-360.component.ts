@@ -37,7 +37,7 @@ interface PluginMarcadores {
   styles: [`
     app-visor-360 { display: block; }
     app-visor-360.completo { position: absolute; inset: 0; }
-    app-visor-360 .visor-360 { width: 100%; height: min(70vh, 640px); border-radius: 16px; overflow: hidden; background: rgba(44, 99, 96, 0.03); box-shadow: 0 6px 24px rgba(44, 99, 96, 0.1); }
+    app-visor-360 .visor-360 { width: 100%; height: min(70vh, 640px); border-radius: 16px; overflow: hidden; background: rgba(42, 102, 101, 0.03); box-shadow: 0 6px 24px rgba(42, 102, 101, 0.1); }
     app-visor-360.completo .visor-360 { height: 100%; border-radius: 0; box-shadow: none; background: #0b1413; }
 
     /* Botón de un lote sobre la imagen: etiqueta oscura translúcida con su área */
@@ -60,7 +60,7 @@ interface PluginMarcadores {
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     }
     .psv-container .pin-lugar::after { content: ''; width: 2px; height: 34px; background: rgba(18, 26, 26, 0.88); }
-    .psv-container .psv-marker:hover .pin-360 { background: #2c6360; transform: scale(1.08); }
+    .psv-container .psv-marker:hover .pin-360 { background: #2a6665; transform: scale(1.08); }
     .psv-container .pin-360-pendiente { width: 18px; height: 18px; border-radius: 50%; background: #ffd23f; border: 3px solid #ffffff; box-shadow: 0 0 0 4px rgba(255, 210, 63, 0.45); }
   `],
   host: { '[class.completo]': 'completo()' }

@@ -5,7 +5,7 @@ import { AsistenteProyectoService } from '../asistente-proyecto.service';
 import { ProyectoService } from '../../../../core/services/proyecto.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { SubidaArchivoComponent } from '../../../../shared/components/subida-archivo/subida-archivo.component';
-import { CrearProyectoDTO, EstadoProyecto } from '../../../../core/models/proyecto.models';
+import { CrearProyectoDTO, EstadoProyecto, TipoRegistroProyecto, TipoProyecto, ETAPAS_PROYECTO, TIPOS_REGISTRO, TIPOS_PROYECTO } from '../../../../core/models/proyecto.models';
 import { PATRON_SLUG, generarSlug } from '../../../../core/utils/slug';
 
 const EMPRESA_ID = 1;
@@ -41,7 +41,7 @@ const EMPRESA_ID = 1;
       </label>
 
       <div class="fila">
-        <label>Estado
+        <label>Etapa
           <select formControlName="estadoProyecto">
             @for (e of estados; track e.valor) { <option [value]="e.valor">{{ e.etiqueta }}</option> }
           </select>
@@ -50,6 +50,30 @@ const EMPRESA_ID = 1;
           <input type="date" formControlName="fechaLanzamiento" />
         </label>
       </div>
+
+      <div class="fila">
+        <label>Tipo de registro
+          <select formControlName="tipoRegistro">
+            @for (t of tiposRegistro; track t.valor) { <option [value]="t.valor">{{ t.etiqueta }}</option> }
+          </select>
+        </label>
+        <label>Tipo de proyecto <span class="opcional">(opcional)</span>
+          <select formControlName="tipoProyecto">
+            <option value="">Sin definir</option>
+            @for (t of tiposProyecto; track t.valor) { <option [value]="t.valor">{{ t.etiqueta }}</option> }
+          </select>
+        </label>
+      </div>
+
+      <label>Participación de Arquinova <span class="opcional">(opcional)</span>
+        <input type="text" formControlName="participacion" maxlength="255"
+               placeholder="Ej: Diseño arquitectónico y gestión de licencias" />
+      </label>
+
+      <label class="casilla">
+        <input type="checkbox" formControlName="destacado" />
+        Proyecto destacado en el inicio (solo uno; al marcarlo se quita a los demás)
+      </label>
 
       <app-subida-archivo etiqueta="Foto de portada" [tipos]="['imagen']" [(url)]="imagenUrl"
                           ayuda="Se muestra en el listado de proyectos y en la bienvenida." />
@@ -69,12 +93,9 @@ export class PasoProyectoComponent {
   private toast = inject(ToastService);
   private fb = inject(FormBuilder);
 
-  readonly estados: { valor: EstadoProyecto; etiqueta: string }[] = [
-    { valor: 'PLANIFICACION', etiqueta: 'En planificación' },
-    { valor: 'EN_CONSTRUCCION', etiqueta: 'En construcción' },
-    { valor: 'ENTREGADO', etiqueta: 'Entregado' },
-    { valor: 'FINALIZADO', etiqueta: 'Finalizado' }
-  ];
+  readonly estados = ETAPAS_PROYECTO;
+  readonly tiposRegistro = TIPOS_REGISTRO;
+  readonly tiposProyecto = TIPOS_PROYECTO;
 
   readonly guardando = signal(false);
   readonly slugRepetido = signal(false);
@@ -87,7 +108,11 @@ export class PasoProyectoComponent {
     nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(180)]],
     slug: ['', [Validators.required, Validators.maxLength(200), Validators.pattern(PATRON_SLUG)]],
     descripcion: [''],
-    estadoProyecto: ['PLANIFICACION' as EstadoProyecto, Validators.required],
+    estadoProyecto: ['EN_DISENO' as EstadoProyecto, Validators.required],
+    tipoRegistro: ['OFERTA_COMERCIAL' as TipoRegistroProyecto, Validators.required],
+    tipoProyecto: ['' as TipoProyecto | ''],
+    participacion: [''],
+    destacado: [false],
     fechaLanzamiento: ['']
   });
 
@@ -99,7 +124,11 @@ export class PasoProyectoComponent {
         nombre: existente.nombre,
         slug: existente.slug ?? '',
         descripcion: existente.descripcion ?? '',
-        estadoProyecto: existente.estadoProyecto ?? 'PLANIFICACION',
+        estadoProyecto: existente.estadoProyecto ?? 'EN_DISENO',
+        tipoRegistro: existente.tipoRegistro ?? 'OFERTA_COMERCIAL',
+        tipoProyecto: existente.tipoProyecto ?? '',
+        participacion: existente.participacion ?? '',
+        destacado: existente.destacado ?? false,
         fechaLanzamiento: existente.fechaLanzamiento ?? ''
       });
       this.imagenUrl.set(existente.imagenUrl ?? '');
@@ -131,6 +160,10 @@ export class PasoProyectoComponent {
       slug: v.slug,
       descripcion: v.descripcion.trim() || undefined,
       estadoProyecto: v.estadoProyecto,
+      tipoRegistro: v.tipoRegistro,
+      tipoProyecto: v.tipoProyecto || null,
+      participacion: v.participacion.trim(),
+      destacado: v.destacado,
       // Un proyecto nuevo nace sin publicar; se publica al final del asistente
       publicado: this.asistente.proyecto()?.publicado ?? false,
       imagenUrl: this.imagenUrl() || undefined,

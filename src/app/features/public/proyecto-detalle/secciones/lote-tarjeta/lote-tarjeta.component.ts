@@ -36,17 +36,17 @@ import { estadoDeLote, formatoArea, formatoPrecio } from '../../../../../core/ut
     .tarjeta {
       padding: 1.6rem 1.7rem;
       background: #ffffff;
-      border: 1px solid rgba(44, 99, 96, 0.16);
-      border-top: 5px solid #2c6360;
+      border: 1px solid rgba(42, 102, 101, 0.16);
+      border-top: 5px solid #2a6665;
       border-radius: 18px;
-      box-shadow: 0 14px 40px rgba(44, 99, 96, 0.18);
+      box-shadow: 0 14px 40px rgba(42, 102, 101, 0.18);
       color: #424242;
     }
     .etiqueta { color: #3c706e; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }
-    h3 { margin: 0.4rem 0 0.2rem; font-size: 2.3rem; font-weight: 800; color: #2c6360; line-height: 1.1; }
+    h3 { margin: 0.4rem 0 0.2rem; font-size: 2.3rem; font-weight: 800; color: #2a6665; line-height: 1.1; }
     .nombre { color: #6a6a6a; margin-bottom: 0.4rem; }
     dl { display: grid; gap: 0.2rem; margin: 1.1rem 0; }
-    dl div { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.55rem 0; border-bottom: 1px solid rgba(44, 99, 96, 0.1); }
+    dl div { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.55rem 0; border-bottom: 1px solid rgba(42, 102, 101, 0.1); }
     dt { color: #6a6a6a; font-size: 0.92rem; }
     dd { margin: 0; font-weight: 600; text-align: right; }
     .texto { color: #6a6a6a; line-height: 1.7; margin-bottom: 0.6rem; white-space: pre-line; }
@@ -57,8 +57,8 @@ import { estadoDeLote, formatoArea, formatoPrecio } from '../../../../../core/ut
     .otro { background: #8a8a8a; }
     .boton {
       display: block; margin-top: 1.2rem; padding: 0.9rem; text-align: center;
-      background: #2c6360; color: #ffffff; border-radius: 12px; font-weight: 700; text-decoration: none;
-      box-shadow: 0 8px 20px rgba(44, 99, 96, 0.28); transition: background 0.2s, transform 0.2s;
+      background: #2a6665; color: #ffffff; border-radius: 12px; font-weight: 700; text-decoration: none;
+      box-shadow: 0 8px 20px rgba(42, 102, 101, 0.28); transition: background 0.2s, transform 0.2s;
     }
     .boton:hover { background: #3c706e; transform: translateY(-1px); }
   `]

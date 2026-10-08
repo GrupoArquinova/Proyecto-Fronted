@@ -7,7 +7,7 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { Proyecto, CrearProyectoDTO } from '../../../core/models/proyecto.models';
+import { Proyecto, CrearProyectoDTO, ETAPAS_PROYECTO, TIPOS_REGISTRO, TIPOS_PROYECTO, etiquetaEtapa } from '../../../core/models/proyecto.models';
 
 export type FiltroProyectos = 'activos' | 'inactivos' | 'todos';
 
@@ -52,7 +52,11 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     nombre:           ['', [Validators.required, Validators.minLength(3)]],
     slug:             [''],
     descripcion:      [''],
-    estadoProyecto:   ['PLANIFICACION', Validators.required],
+    estadoProyecto:   ['EN_DISENO', Validators.required],
+    tipoRegistro:     ['OFERTA_COMERCIAL', Validators.required],
+    tipoProyecto:     [''],
+    participacion:    [''],
+    destacado:        [false],
     publicado:        [false],
     imagenUrl:        [''],
     fechaLanzamiento: ['']
@@ -84,9 +88,12 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   }
 
   /** "EN_CONSTRUCCION" se muestra como "En construccion" en la tarjeta. */
+  readonly etapas = ETAPAS_PROYECTO;
+  readonly tiposRegistro = TIPOS_REGISTRO;
+  readonly tiposProyecto = TIPOS_PROYECTO;
+
   etiquetaEstado(estado?: string): string {
-    const texto = (estado ?? '').replace(/_/g, ' ').toLowerCase();
-    return texto.charAt(0).toUpperCase() + texto.slice(1);
+    return etiquetaEtapa(estado);
   }
 
   ngOnDestroy(): void {
@@ -207,7 +214,11 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       nombre: '',
       slug: '',
       descripcion: '',
-      estadoProyecto: 'PLANIFICACION',
+      estadoProyecto: 'EN_DISENO',
+      tipoRegistro: 'OFERTA_COMERCIAL',
+      tipoProyecto: '',
+      participacion: '',
+      destacado: false,
       publicado: false,
       imagenUrl: '',
       fechaLanzamiento: ''
@@ -226,7 +237,11 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       nombre:           proyecto.nombre,
       slug:             proyecto.slug ?? '',
       descripcion:      proyecto.descripcion ?? '',
-      estadoProyecto:   proyecto.estadoProyecto ?? 'PLANIFICACION',
+      estadoProyecto:   proyecto.estadoProyecto ?? 'EN_DISENO',
+      tipoRegistro:     proyecto.tipoRegistro ?? 'OFERTA_COMERCIAL',
+      tipoProyecto:     proyecto.tipoProyecto ?? '',
+      participacion:    proyecto.participacion ?? '',
+      destacado:        proyecto.destacado ?? false,
       publicado:        proyecto.publicado ?? false,
       imagenUrl:        proyecto.imagenUrl ?? '',
       fechaLanzamiento: proyecto.fechaLanzamiento ?? ''
@@ -244,7 +259,10 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue = this.proyectoForm.value;
+    const formValue = {
+      ...this.proyectoForm.value,
+      tipoProyecto: this.proyectoForm.value.tipoProyecto || null
+    };
 
     if (this.modoEdicion && this.proyectoEditandoId !== null) {
       this.proyectoService.actualizarProyecto(this.proyectoEditandoId, formValue).subscribe({

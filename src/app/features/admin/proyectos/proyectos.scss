@@ -633,3 +633,13 @@ $text-muted: t.$text-muted;
     .proyecto-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 }
+
+.check-destacado {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 500;
+  cursor: pointer;
+
+  input { width: auto; margin: 0; }
+}

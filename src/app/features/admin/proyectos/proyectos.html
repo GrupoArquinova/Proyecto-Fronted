@@ -70,14 +70,16 @@
             <span
               class="status-badge"
               [ngClass]="{
-                'badge-activo':      proyecto.estadoProyecto === 'PLANIFICACION',
-                'badge-proximamente': proyecto.estadoProyecto === 'EN_CONSTRUCCION',
-                'badge-entregado':    proyecto.estadoProyecto === 'ENTREGADO',
+                'badge-activo':      proyecto.estadoProyecto === 'EN_DISENO',
+                'badge-proximamente': proyecto.estadoProyecto === 'EN_TRAMITE',
+                'badge-entregado':    proyecto.estadoProyecto === 'EN_CONSTRUCCION',
                 'badge-agotado':      proyecto.estadoProyecto === 'FINALIZADO'
               }"
             >
               {{ etiquetaEstado(proyecto.estadoProyecto) }}
             </span>
+            <span class="status-badge badge-proximamente" *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO'">Portafolio</span>
+            <span class="status-badge badge-activo" *ngIf="proyecto.destacado">Destacado</span>
             <span class="status-badge badge-inactivo" *ngIf="!esActivo(proyecto)">Inactivo</span>
           </div>
 
@@ -149,13 +151,38 @@
         </div>
 
         <div class="form-group">
-          <label>Estado del Proyecto *</label>
+          <label>Etapa del Proyecto *</label>
           <select formControlName="estadoProyecto">
-            <option value="PLANIFICACION">Planificación</option>
-            <option value="EN_CONSTRUCCION">En Construcción</option>
-            <option value="ENTREGADO">Entregado</option>
-            <option value="FINALIZADO">Finalizado</option>
+            <option *ngFor="let e of etapas" [value]="e.valor">{{ e.etiqueta }}</option>
           </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de registro *</label>
+          <select formControlName="tipoRegistro">
+            <option *ngFor="let t of tiposRegistro" [value]="t.valor">{{ t.etiqueta }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de proyecto</label>
+          <select formControlName="tipoProyecto">
+            <option value="">Sin definir</option>
+            <option *ngFor="let t of tiposProyecto" [value]="t.valor">{{ t.etiqueta }}</option>
+          </select>
+        </div>
+
+        <div class="form-group form-group--full">
+          <label>Participación de Arquinova</label>
+          <input type="text" formControlName="participacion" maxlength="255"
+                 placeholder="Ej: Diseño arquitectónico y gestión de licencias" />
+        </div>
+
+        <div class="form-group form-group--full">
+          <label class="check-destacado">
+            <input type="checkbox" formControlName="destacado" />
+            Proyecto destacado en el inicio (solo uno; al marcarlo se quita a los demás)
+          </label>
         </div>
 
         <div class="form-group">
