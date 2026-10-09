@@ -3,18 +3,18 @@
 
     @case ('galeria') {
       @if (galeria().length > 0) {
-        <app-carrusel-laminas [laminas]="galeria()" [alt]="p.nombre" etiqueta="Imágenes del proyecto" />
+        <app-carrusel-laminas [laminas]="galeria()" [alt]="p.nombre" [etiqueta]="'proyecto.bienvenida.imagenes' | transloco" />
       }
     }
 
     @case ('beneficios') {
       @if (laminasBeneficios().length > 1) {
-        <app-carrusel-laminas [laminas]="laminasBeneficios()" [alt]="'Beneficios de ' + p.nombre" etiqueta="Beneficios del proyecto" />
+        <app-carrusel-laminas [laminas]="laminasBeneficios()" [alt]="'proyecto.bienvenida.beneficiosDe' | transloco: { nombre: p.nombre }" [etiqueta]="'proyecto.bienvenida.beneficiosAria' | transloco" />
       } @else if (imagenBeneficios(); as lamina) {
-        <section class="lamina" aria-label="Beneficios del proyecto">
+        <section class="lamina" [attr.aria-label]="'proyecto.bienvenida.beneficiosAria' | transloco">
           <div class="lamina-fondo" [style.backgroundImage]="'url(' + lamina + ')'"></div>
           <div class="lamina-imagen">
-            <img [src]="lamina" [alt]="'Beneficios de ' + p.nombre" />
+            <img [src]="lamina" [alt]="'proyecto.bienvenida.beneficiosDe' | transloco: { nombre: p.nombre }" />
           </div>
         </section>
       } @else if (beneficios(); as b) {
@@ -28,7 +28,7 @@
     @case ('video') {
       @if (video(); as v) {
         <section class="pantalla-video" [style.backgroundImage]="p.imagenUrl ? 'url(' + p.imagenUrl + ')' : null">
-          <app-medio [completo]="true" [url]="v.url" [titulo]="v.titulo || 'video del proyecto'" />
+          <app-medio [completo]="true" [url]="v.url" [titulo]="v.titulo || ('proyecto.bienvenida.videoTitulo' | transloco)" />
         </section>
       }
     }

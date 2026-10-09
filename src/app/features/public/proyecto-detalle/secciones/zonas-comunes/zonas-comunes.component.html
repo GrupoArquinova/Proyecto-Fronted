@@ -3,7 +3,7 @@
   <!-- Zonas destacadas: una imagen con un botón por zona; cada botón abre el 360° de esa zona -->
   @case ('destacadas') {
     @if (imagenFondo(); as url) {
-      <app-plano-puntos [completo]="true" [url]="url" titulo="las zonas destacadas" [puntos]="puntos()"
+      <app-plano-puntos [completo]="true" [url]="url" [titulo]="'proyecto.zonas.tDestacadas' | transloco" [puntos]="puntos()"
                         (puntoElegido)="abrirPunto($event)" />
     }
 
@@ -16,8 +16,8 @@
   <!-- Galería: todas las imágenes de las zonas en un carrusel, con filtro por zona -->
   @case ('galeria') {
     @if (zonasConImagenes().length > 1) {
-      <div class="filtros" role="group" aria-label="Filtrar por zona">
-        <button type="button" [class.activo]="filtroZona() === null" (click)="filtroZona.set(null)">Todas</button>
+      <div class="filtros" role="group" [attr.aria-label]="'proyecto.zonas.filtrar' | transloco">
+        <button type="button" [class.activo]="filtroZona() === null" (click)="filtroZona.set(null)">{{ 'proyecto.zonas.todas' | transloco }}</button>
         @for (z of zonasConImagenes(); track z.id) {
           <button type="button" [class.activo]="filtroZona() === z.id" (click)="filtroZona.set(z.id!)">
             {{ z.nombre }}
@@ -28,8 +28,8 @@
 
     <!-- Se vuelve a crear al cambiar el filtro para que el carrusel empiece en la primera imagen -->
     @for (clave of [filtroZona()]; track clave) {
-      <app-carrusel-laminas [laminas]="laminas()" alt="Galería de las zonas comunes"
-                            etiqueta="Galería de las zonas comunes" [leyenda]="true" />
+      <app-carrusel-laminas [laminas]="laminas()" [alt]="'proyecto.zonas.galeria' | transloco"
+                            [etiqueta]="'proyecto.zonas.galeria' | transloco" [leyenda]="true" />
     }
   }
 
@@ -46,7 +46,7 @@
 
       @if (zonaActiva(); as zona) {
         <div class="portada-texto">
-          <h2>Amenidades</h2>
+          <h2>{{ 'proyecto.zonas.titulo' | transloco }}</h2>
           <h3>{{ zona.nombre }}</h3>
           @if (zona.descripcion) {
             <p>{{ zona.descripcion }}</p>
@@ -54,7 +54,7 @@
         </div>
       }
 
-      <ol class="portada-lista" aria-label="Amenidades">
+      <ol class="portada-lista" [attr.aria-label]="'proyecto.zonas.titulo' | transloco">
         @for (z of zonas(); track z.id; let i = $index) {
           <li>
             <button type="button" [class.activa]="seleccionada() === i" (click)="elegirZona(i)"
@@ -72,12 +72,12 @@
             <div class="marco-interior">
             @for (clave of [zonaAbierta()]; track clave) {
               <app-carrusel-laminas [laminas]="laminasZonaAbierta()" [alt]="nombreZonaAbierta()" [enMarco]="true" [ampliable]="true"
-                                    [etiqueta]="'Imágenes de ' + nombreZonaAbierta()" />
+                                    [etiqueta]="'proyecto.zonas.imagenesDe' | transloco: { nombre: nombreZonaAbierta() }" />
             }
             </div>
             <p class="visor-zona-titulo">{{ nombreZonaAbierta() }}</p>
           </div>
-          <button type="button" class="visor-zona-cerrar" (click)="zonaAbierta.set(null)" aria-label="Cerrar imágenes">&times;</button>
+          <button type="button" class="visor-zona-cerrar" (click)="zonaAbierta.set(null)" [attr.aria-label]="'proyecto.zonas.cerrarImagenes' | transloco">&times;</button>
         </div>
       }
     </section>

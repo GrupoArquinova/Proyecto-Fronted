@@ -54,6 +54,39 @@ test.describe('tipologías', () => {
     await expect(pista).toHaveClass(/oculta/);
   });
 
+  test('el botón de WhatsApp abre el chat con el mensaje de la villa que se está viendo', async ({ page }) => {
+    await page.goto(`${base}/casa-modelo?vista=imagenes`);
+    const boton = page.getByRole('link', { name: /Consultar por/ });
+
+    await expect(boton).toHaveText(/Consultar por Villa Samán/);
+    const enlace = await boton.getAttribute('href');
+    expect(enlace).toContain('https://wa.me/573168653715?text=');
+    expect(decodeURIComponent(enlace!.split('?text=')[1]))
+      .toBe('Hola, estoy interesado en la tipología Villa Samán de El Encanto (293 m², 3 habitaciones, 4 baños). ¿Me pueden dar más información sobre esta villa?');
+
+    await page.getByRole('group', { name: 'Elegir tipología' }).getByRole('button', { name: 'Villa Colibrí' }).click();
+    await expect(boton).toHaveText(/Consultar por Villa Colibrí/);
+    expect(decodeURIComponent((await boton.getAttribute('href'))!.split('?text=')[1])).toContain('Villa Colibrí de El Encanto (192 m², 4 habitaciones, 5 baños)');
+  });
+
+  test('si la persona esconde la tira de imágenes, no vuelve a salir sola al cambiar de imagen', async ({ page }) => {
+    await page.goto(`${base}/casa-modelo?vista=imagenes`);
+    const tira = page.getByRole('list', { name: 'Elegir imagen' });
+    await expect(tira).toBeVisible();
+
+    await page.getByRole('button', { name: 'Ocultar imágenes' }).click();
+    await expect(tira).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Imagen siguiente' }).click();
+    await page.getByRole('button', { name: 'Imagen anterior' }).click();
+    await page.waitForTimeout(500);
+    await expect(tira).toHaveCount(0);
+
+    // Solo vuelve cuando la persona pulsa la flecha
+    await page.getByRole('button', { name: 'Ver imágenes' }).click();
+    await expect(tira).toBeVisible();
+  });
+
   test('el botón de ampliar entra y sale de la pantalla completa', async ({ page }) => {
     await page.goto(`${base}/casa-modelo?vista=planos`);
     const carrusel = page.locator('app-carrusel-laminas');

@@ -5,7 +5,9 @@ export interface ZonaComun {
   proyectoId: number;
   proyectoNombre?: string;
   nombre: string;
+  nombreEn?: string | null;
   descripcion: string;
+  descripcionEn?: string | null;
   publicado: boolean;
   activo: boolean;
   creadoEn?: string;

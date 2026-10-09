@@ -150,6 +150,11 @@
           <textarea formControlName="descripcion" rows="3" placeholder="Descripción del proyecto..."></textarea>
         </div>
 
+        <div class="form-group form-group--full">
+          <label>Descripción en inglés (opcional)</label>
+          <textarea formControlName="descripcionEn" rows="3" placeholder="Description in English. If empty, the site shows the Spanish text."></textarea>
+        </div>
+
         <div class="form-group">
           <label>Etapa del Proyecto *</label>
           <select formControlName="estadoProyecto">
@@ -176,6 +181,11 @@
           <label>Participación de Arquinova</label>
           <input type="text" formControlName="participacion" maxlength="255"
                  placeholder="Ej: Diseño arquitectónico y gestión de licencias" />
+        </div>
+
+        <div class="form-group form-group--full">
+          <label>Participación de Arquinova en inglés (opcional)</label>
+          <input type="text" formControlName="participacionEn" maxlength="255" placeholder="e.g. Architectural design and licensing" />
         </div>
 
         <div class="form-group form-group--full">

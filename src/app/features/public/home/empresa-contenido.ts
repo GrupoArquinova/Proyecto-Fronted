@@ -7,51 +7,26 @@
  * apruebe, por eso todavía no se muestran.
  */
 export interface Servicio {
+  /** Clave del texto en las traducciones (home.servicios.lista.<clave>). */
+  clave: string;
+  /** Nombre en español: es lo que se guarda en la solicitud, para que el equipo siempre lo lea en el mismo idioma. */
   titulo: string;
-  descripcion: string;
 }
 
+/** Datos que no cambian con el idioma. Los textos ("Quiénes somos", etc.) están en i18n/es.json y i18n/en.json. */
 export const EMPRESA_INFO = {
   nombre: 'Grupo Arquinova S.A.S.',
   nit: '901.397.504-2',
   ciudad: 'Armenia, Quindío, Colombia',
-  oficina: 'Carrera 14 #48N-58, Armenia, Quindío',
-  /** Texto "Quiénes somos" propuesto por la empresa como texto institucional. */
-  quienesSomos: [
-    'Somos una empresa con sede en Armenia que coordina servicios de arquitectura, ingeniería y gestión de proyectos. '
-      + 'Acompañamos la estructuración de desarrollos mediante estudios técnicos, diseños urbanísticos, arquitectónicos '
-      + 'y estructurales, y la preparación y gestión de trámites ante las entidades competentes.',
-    'Nuestro trabajo incluye proyectos residenciales, rurales y turísticos en el Quindío.'
-  ]
+  oficina: 'Carrera 14 #48N-58, Armenia, Quindío'
 };
 
 export const SERVICIOS: Servicio[] = [
-  {
-    titulo: 'Estudios de viabilidad',
-    descripcion: 'Estudios de viabilidad e implantación de proyectos y revisión de condiciones urbanísticas.'
-  },
-  {
-    titulo: 'Diseño urbanístico y arquitectónico',
-    descripcion: 'Diseño urbanístico y arquitectónico de parcelaciones, villas y edificaciones.'
-  },
-  {
-    titulo: 'Diseño estructural y estudios técnicos',
-    descripcion: 'Diseño estructural y coordinación de estudios de suelos y levantamientos topográficos.'
-  },
-  {
-    titulo: 'Licencias y permisos',
-    descripcion: 'Preparación de expedientes y gestión de licencias urbanísticas y permisos ambientales dentro del alcance contratado.'
-  },
-  {
-    titulo: 'Servicios públicos y aguas residuales',
-    descripcion: 'Gestión de disponibilidades de servicios públicos y diseño de soluciones de tratamiento de aguas residuales.'
-  },
-  {
-    titulo: 'Planos y propiedad horizontal',
-    descripcion: 'Elaboración de planos y coordinación del reglamento de propiedad horizontal.'
-  },
-  {
-    titulo: 'Estructuración técnica y presupuesto',
-    descripcion: 'Estructuración técnica y presupuestación de proyectos.'
-  }
+  { clave: 'viabilidad', titulo: 'Estudios de viabilidad' },
+  { clave: 'diseno', titulo: 'Diseño urbanístico y arquitectónico' },
+  { clave: 'estructural', titulo: 'Diseño estructural y estudios técnicos' },
+  { clave: 'licencias', titulo: 'Licencias y permisos' },
+  { clave: 'servicios-publicos', titulo: 'Servicios públicos y aguas residuales' },
+  { clave: 'planos', titulo: 'Planos y propiedad horizontal' },
+  { clave: 'presupuesto', titulo: 'Estructuración técnica y presupuesto' }
 ];

@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import {
   Component, DestroyRef, ElementRef, ViewEncapsulation, afterNextRender, effect, inject, input, output, signal, viewChild
 } from '@angular/core';
@@ -31,10 +32,11 @@ interface PluginMarcadores {
 @Component({
   selector: 'app-visor-360',
   standalone: true,
+  imports: [TranslocoPipe],
   // Los botones se crean como HTML dentro del visor: sus estilos deben ser globales a este componente
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div #contenedor class="visor-360" role="img" [attr.aria-label]="'Recorrido 360: ' + titulo()"></div>
+    <div #contenedor class="visor-360" role="img" [attr.aria-label]="'proyecto.visor.recorrido' | transloco: { titulo: titulo() }"></div>
     @if (pista360() && pista()) {
       <div class="pista-360" aria-hidden="true">
         <span class="etiqueta-360">360°</span>

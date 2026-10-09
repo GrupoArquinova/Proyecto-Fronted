@@ -67,6 +67,15 @@ export class EditorPuntosComponent {
   readonly subiendoZona = signal<number | null>(null);
   readonly zonaId = signal<number | null>(null);
 
+  /** Imágenes de cada etapa (id de la etapa → recursos), las que se ven en la tarjeta al pulsar su botón del plano. */
+  readonly imagenesEtapa = signal<Map<number, Multimedia[]>>(new Map());
+  /** Imagen 360° de cada etapa (id de la etapa → recurso). */
+  readonly panoramasEtapa = signal<Map<number, Multimedia>>(new Map());
+  /** Etapa a la que se le están subiendo imágenes en este momento. */
+  readonly subiendoEtapa = signal<number | null>(null);
+  /** Etapa cuyas imágenes se están mostrando desplegadas en la lista. */
+  readonly etapaAbierta = signal<number | null>(null);
+
   /** Pestaña "Mapa": las imágenes del mapa de ubicación (multimedia de tipo MAPA) se gestionan aquí mismo. */
   readonly mapaActivo = signal(false);
   readonly imagenesMapa = signal<Multimedia[]>([]);
@@ -143,6 +152,13 @@ export class EditorPuntosComponent {
       next: lista => {
         this.panoramas.set(new Map(
           lista.filter(m => m.tipo === 'PANORAMICA_360' && m.loteId != null && m.activo).map(m => [m.loteId!, m])));
+        const porEtapa = new Map<number, Multimedia[]>();
+        lista.filter(m => m.etapaId != null && m.activo !== false && (m.tipo === 'IMAGEN' || m.tipo === 'PLANO'))
+          .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))
+          .forEach(m => porEtapa.set(m.etapaId!, [...(porEtapa.get(m.etapaId!) ?? []), m]));
+        this.imagenesEtapa.set(porEtapa);
+        this.panoramasEtapa.set(new Map(
+          lista.filter(m => m.tipo === 'PANORAMICA_360' && m.etapaId != null && m.activo !== false).map(m => [m.etapaId!, m])));
         this.panoramasZona.set(new Map(
           lista.filter(m => m.tipo === 'PANORAMICA_360' && m.zonaComunId != null && m.activo).map(m => [m.zonaComunId!, m])));
       },
@@ -359,6 +375,123 @@ export class EditorPuntosComponent {
       next: () => this.imagenesMapa.update(lista => lista.filter(m => m.id !== imagen.id)),
       error: () => this.toast.showError('No se pudo quitar la imagen.')
     });
+  }
+
+  /** Imágenes de la etapa a la que apunta el botón. */
+  imagenesDe(punto: Punto360): Multimedia[] {
+    return punto.etapaId != null ? (this.imagenesEtapa().get(punto.etapaId) ?? []) : [];
+  }
+
+  /** Sube una o varias imágenes de la etapa; cada una queda en Multimedia asociada a la etapa y se ve en la tarjeta pública. */
+  async subirEtapa(punto: Punto360, evento: Event): Promise<void> {
+    const input = evento.target as HTMLInputElement;
+    const archivos = Array.from(input.files ?? []);
+    input.value = '';
+    const etapaId = punto.etapaId;
+    if (archivos.length === 0 || etapaId == null || this.subiendoEtapa() !== null) return;
+
+    for (const archivo of archivos) {
+      const problema = validarArchivo(archivo, ['imagen']);
+      if (problema) {
+        this.toast.showError(`${archivo.name}: ${problema}`);
+        return;
+      }
+    }
+
+    this.subiendoEtapa.set(etapaId);
+    let subidas = 0;
+    try {
+      for (const archivo of archivos) {
+        const resultado = await lastValueFrom(this.cloudinary.subirArchivo(archivo));
+        const orden = Math.max(0, ...(this.imagenesEtapa().get(etapaId) ?? []).map(m => m.orden ?? 0)) + 1;
+        const creado = await lastValueFrom(this.multimediaService.crearMultimedia({
+          etapaId,
+          tipo: 'IMAGEN',
+          titulo: `${punto.etiqueta} ${orden}`,
+          url: resultado.url,
+          nombreArchivo: archivo.name,
+          orden,
+          portada: false,
+          publicado: true,
+          activo: true
+        }));
+        this.imagenesEtapa.update(mapa => new Map(mapa).set(etapaId, [...(mapa.get(etapaId) ?? []), creado]));
+        subidas++;
+      }
+      this.etapaAbierta.set(etapaId);
+      this.toast.showSuccess(subidas === 1 ? 'Imagen de la etapa guardada' : `${subidas} imágenes de la etapa guardadas`);
+    } catch (err) {
+      console.error('Error al subir la imagen de la etapa:', err);
+      this.toast.showError('No se pudo subir la imagen de la etapa. Inténtalo de nuevo.');
+    } finally {
+      this.subiendoEtapa.set(null);
+    }
+  }
+
+  tienePanoramaEtapa(punto: Punto360): boolean {
+    return punto.etapaId != null && this.panoramasEtapa().has(punto.etapaId);
+  }
+
+  /** Sube la imagen 360° de la etapa y la deja en su multimedia (reemplaza la anterior si ya tenía una). */
+  async subirEtapa360(punto: Punto360, evento: Event): Promise<void> {
+    const input = evento.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    input.value = '';
+    const etapaId = punto.etapaId;
+    if (!archivo || etapaId == null || this.subiendoEtapa() !== null) return;
+
+    const problema = validarArchivo(archivo, ['imagen']);
+    if (problema) {
+      this.toast.showError(problema);
+      return;
+    }
+
+    this.subiendoEtapa.set(etapaId);
+    try {
+      const resultado = await lastValueFrom(this.cloudinary.subirArchivo(archivo));
+      const anterior = this.panoramasEtapa().get(etapaId);
+      const creado = await lastValueFrom(this.multimediaService.crearMultimedia({
+        etapaId,
+        tipo: 'PANORAMICA_360',
+        titulo: `Imagen 360° de ${punto.etapaNombre ?? punto.etiqueta}`,
+        url: resultado.url,
+        nombreArchivo: archivo.name,
+        orden: 1,
+        portada: false,
+        publicado: true,
+        activo: true
+      }));
+      this.panoramasEtapa.update(mapa => new Map(mapa).set(etapaId, creado));
+      this.toast.showSuccess('Imagen 360° de la etapa guardada');
+      if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
+    } catch (err) {
+      console.error('Error al subir la imagen 360° de la etapa:', err);
+      this.toast.showError('No se pudo guardar la imagen 360° de la etapa.');
+    } finally {
+      this.subiendoEtapa.set(null);
+    }
+  }
+
+  async quitarImagenEtapa(imagen: Multimedia): Promise<void> {
+    if (imagen.id == null || imagen.etapaId == null) return;
+    const ok = await this.confirm.open({
+      title: 'Quitar imagen de la etapa',
+      message: `¿Quitar "${imagen.titulo || 'esta imagen'}"? También se elimina de Multimedia.`,
+      confirmText: 'Sí, quitar',
+      type: 'danger'
+    });
+    if (!ok) return;
+
+    const etapaId = imagen.etapaId;
+    this.multimediaService.eliminarMultimedia(imagen.id).subscribe({
+      next: () => this.imagenesEtapa.update(mapa =>
+        new Map(mapa).set(etapaId, (mapa.get(etapaId) ?? []).filter(m => m.id !== imagen.id))),
+      error: () => this.toast.showError('No se pudo quitar la imagen.')
+    });
+  }
+
+  alternarEtapa(punto: Punto360): void {
+    this.etapaAbierta.update(actual => (actual === punto.etapaId ? null : punto.etapaId ?? null));
   }
 
   clicEn360(posicion: PosicionPanorama): void {

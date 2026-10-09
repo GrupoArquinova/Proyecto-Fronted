@@ -1,33 +1,33 @@
 <div class="all-projects-container">
   <div class="back-home">
-    <a routerLink="/">&larr; Volver al Inicio</a>
+    <a routerLink="/">&larr; {{ 'proyectos.volver' | transloco }}</a>
   </div>
 
   <div class="header-seccion">
-    <span class="section-tag">PORTAFOLIO COMPLETO</span>
-    <h2>Todos Nuestros Proyectos</h2>
-    <p>Explora la totalidad de nuestros desarrollos inmobiliarios y encuentra el espacio ideal para ti.</p>
+    <span class="section-tag">{{ 'proyectos.etiqueta' | transloco }}</span>
+    <h2>{{ 'proyectos.titulo' | transloco }}</h2>
+    <p>{{ 'proyectos.subtitulo' | transloco }}</p>
   </div>
 
   <!-- Filtros: solo aparecen los que tienen más de una opción -->
   <div class="filtros" *ngIf="hayFiltros">
-    <select *ngIf="municipios.length > 1" (change)="filtroMunicipio = valorDe($event)" aria-label="Municipio">
-      <option value="">Todos los municipios</option>
+    <select *ngIf="municipios.length > 1" (change)="filtroMunicipio = valorDe($event)" [attr.aria-label]="'proyectos.municipio' | transloco">
+      <option value="">{{ 'proyectos.todosMunicipios' | transloco }}</option>
       <option *ngFor="let m of municipios" [value]="m" [selected]="m === filtroMunicipio">{{ m }}</option>
     </select>
-    <select *ngIf="tipos.length > 1" (change)="filtroTipo = valorDe($event)" aria-label="Tipo de proyecto">
-      <option value="">Todos los tipos</option>
-      <option *ngFor="let t of tipos" [value]="t.valor" [selected]="t.valor === filtroTipo">{{ t.etiqueta }}</option>
+    <select *ngIf="tipos.length > 1" (change)="filtroTipo = valorDe($event)" [attr.aria-label]="'proyectos.tipo' | transloco">
+      <option value="">{{ 'proyectos.todosTipos' | transloco }}</option>
+      <option *ngFor="let t of tipos" [value]="t.valor" [selected]="t.valor === filtroTipo">{{ 'tipoProyecto.' + t.valor | transloco }}</option>
     </select>
-    <select *ngIf="etapas.length > 1" (change)="filtroEtapa = valorDe($event)" aria-label="Etapa">
-      <option value="">Todas las etapas</option>
-      <option *ngFor="let e of etapas" [value]="e.valor" [selected]="e.valor === filtroEtapa">{{ e.etiqueta }}</option>
+    <select *ngIf="etapas.length > 1" (change)="filtroEtapa = valorDe($event)" [attr.aria-label]="'proyectos.etapa' | transloco">
+      <option value="">{{ 'proyectos.todasEtapas' | transloco }}</option>
+      <option *ngFor="let e of etapas" [value]="e.valor" [selected]="e.valor === filtroEtapa">{{ 'etapaProyecto.' + e.valor | transloco }}</option>
     </select>
-    <button type="button" class="limpiar" *ngIf="filtrando" (click)="limpiarFiltros()">Quitar filtros</button>
+    <button type="button" class="limpiar" *ngIf="filtrando" (click)="limpiarFiltros()">{{ 'proyectos.quitarFiltros' | transloco }}</button>
   </div>
 
   <p class="sin-resultados" *ngIf="listaProyectos.length > 0 && proyectosFiltrados.length === 0">
-    No hay proyectos con esos filtros.
+    {{ 'proyectos.sinResultados' | transloco }}
   </p>
 
   <div class="projects-grid">
@@ -35,37 +35,37 @@
       
       <!-- Imagen y Estado -->
       <div class="card-image" [style.backgroundImage]="'url(' + (proyecto.imagenUrl || 'assets/images/default-project.svg') + ')'">
-        <span class="badge-status" *ngIf="proyecto.estado">{{ proyecto.estado }}</span>
+        <span class="badge-status" *ngIf="proyecto.estado">{{ proyecto.estadoProyecto ? ('etapaProyecto.' + proyecto.estadoProyecto | transloco) : proyecto.estado }}</span>
       </div>
 
       <!-- Cuerpo de la Tarjeta -->
       <div class="card-body">
-        <span class="location">{{ proyecto.ubicacion || 'Colombia' }}<span *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO'"> · Portafolio</span></span>
+        <span class="location">{{ proyecto.ubicacion || 'Colombia' }}<span *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO'"> · {{ 'home.proyectos.portafolio' | transloco }}</span></span>
         <h3>{{ proyecto.nombre }}</h3>
-        <p *ngIf="proyecto.descripcion">{{ proyecto.descripcion }}</p>
+        <p *ngIf="proyecto.descripcion">{{ proyecto.descripcion | localizado: proyecto.descripcionEn }}</p>
         <p class="participacion" *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO' && proyecto.participacion">
-          <strong>Participación de Arquinova:</strong> {{ proyecto.participacion }}
+          <strong>{{ 'home.proyectos.participacion' | transloco }}</strong> {{ proyecto.participacion | localizado: proyecto.participacionEn }}
         </p>
 
         <!-- Métricas (solo proyectos con oferta comercial) -->
         <div class="card-metrics" *ngIf="proyecto.tipoRegistro !== 'PORTAFOLIO'">
           <div class="metric">
             <strong>{{ proyecto.totalLotes || 0 }}</strong>
-            <span>LOTES</span>
+            <span>{{ 'home.proyectos.lotes' | transloco }}</span>
           </div>
           <div class="metric">
             <strong>{{ proyecto.lotesDisponibles || 0 }}</strong>
-            <span>DISPONIBLES</span>
+            <span>{{ 'home.proyectos.disponibles' | transloco }}</span>
           </div>
           <div class="metric">
             <strong>360°</strong>
-            <span>EXPERIENCIA</span>
+            <span>{{ 'home.proyectos.experiencia' | transloco }}</span>
           </div>
         </div>
 
         <!-- Enlace de Exploración -->
         <a [routerLink]="['/proyectos', proyecto.id]" class="card-link">
-          Explorar proyecto &rarr;
+          {{ 'home.proyectos.explorar' | transloco }} &rarr;
         </a>
       </div>
 

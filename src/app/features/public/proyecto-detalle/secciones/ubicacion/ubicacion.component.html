@@ -5,31 +5,31 @@
     @switch (vista()) {
       @case ('entorno-360') {
         @if (tipoEntorno() === 'imagen') {
-          <app-visor-360 [completo]="true" [url]="u.recorrido360Url!" titulo="entorno del proyecto"
+          <app-visor-360 [completo]="true" [url]="u.recorrido360Url!" [titulo]="'proyecto.ubicacion.tEntorno' | transloco"
                          [puntos]="puntosEntorno()" (puntoElegido)="abrirPunto($event)" />
         } @else {
-          <div class="lienzo"><app-medio [completo]="true" [url]="u.recorrido360Url!" titulo="el recorrido 360°" /></div>
+          <div class="lienzo"><app-medio [completo]="true" [url]="u.recorrido360Url!" [titulo]="'proyecto.ubicacion.tRecorrido' | transloco" /></div>
         }
       }
 
       @case ('vista-aerea') {
         @if (tipoAerea() === 'imagen') {
-          <app-visor-360 [completo]="true" [url]="u.vistaAereaUrl!" titulo="vista aérea del proyecto"
+          <app-visor-360 [completo]="true" [url]="u.vistaAereaUrl!" [titulo]="'proyecto.ubicacion.tVistaAerea' | transloco"
                          [puntos]="puntosAerea()" (puntoElegido)="abrirPunto($event)" />
         } @else {
-          <div class="lienzo"><app-medio [completo]="true" [url]="u.vistaAereaUrl!" titulo="la vista aérea" /></div>
+          <div class="lienzo"><app-medio [completo]="true" [url]="u.vistaAereaUrl!" [titulo]="'proyecto.ubicacion.tLaVistaAerea' | transloco" /></div>
         }
       }
 
       @case ('google-maps') {
         <div class="lienzo">
-          <iframe [src]="googleMaps()!" [title]="'Mapa de Google de ' + (u.proyectoNombre || 'el proyecto')" loading="lazy" allowfullscreen
+          <iframe [src]="googleMaps()!" [title]="'proyecto.ubicacion.mapaGoogleDe' | transloco: { nombre: u.proyectoNombre || ('proyecto.ubicacion.elProyecto' | transloco) }" loading="lazy" allowfullscreen
                   referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       }
 
       @case ('mapa') {
-        <app-carrusel-laminas [laminas]="mapas()" [alt]="'Mapa de ubicación de ' + (u.proyectoNombre || 'el proyecto')" etiqueta="Mapa de ubicación" />
+        <app-carrusel-laminas [laminas]="mapas()" [alt]="'proyecto.ubicacion.mapaUbicacionDe' | transloco: { nombre: u.proyectoNombre || ('proyecto.ubicacion.elProyecto' | transloco) }" [etiqueta]="'proyecto.ubicacion.mapaEtiqueta' | transloco" />
       }
 
       @case ('urbanismo') {
@@ -47,44 +47,44 @@
 
       @switch (vista()) {
         @case ('entorno-360') {
-          <h2>Entorno 360°</h2>
-          <app-medio [url]="u.recorrido360Url!" titulo="el recorrido 360°" />
+          <h2>{{ 'proyecto.ubicacion.entorno' | transloco }}</h2>
+          <app-medio [url]="u.recorrido360Url!" [titulo]="'proyecto.ubicacion.tRecorrido' | transloco" />
         }
 
         @case ('vista-aerea') {
-          <h2>Vista aérea</h2>
-          <app-medio [url]="u.vistaAereaUrl!" titulo="la vista aérea" />
+          <h2>{{ 'proyecto.ubicacion.vistaAerea' | transloco }}</h2>
+          <app-medio [url]="u.vistaAereaUrl!" [titulo]="'proyecto.ubicacion.tLaVistaAerea' | transloco" />
         }
 
         @case ('urbanismo') {
-          <h2>Urbanismo</h2>
-          <app-medio [url]="u.urbanismoUrl!" titulo="el plano de urbanismo" />
+          <h2>{{ 'proyecto.ubicacion.urbanismo' | transloco }}</h2>
+          <app-medio [url]="u.urbanismoUrl!" [titulo]="'proyecto.ubicacion.tPlano' | transloco" />
         }
 
         @case ('mapa') {
-          <h2>Mapa</h2>
+          <h2>{{ 'proyecto.ubicacion.mapa' | transloco }}</h2>
           @if (mapaUrl(); as mapa) {
-            <iframe [src]="mapa" title="Mapa de ubicación del proyecto" loading="lazy"></iframe>
+            <iframe [src]="mapa" [title]="'proyecto.ubicacion.mapaTitulo' | transloco" loading="lazy"></iframe>
           }
         }
 
         @case ('google-maps') {
-          <h2>Google Maps</h2>
-          <app-medio [url]="u.googleMapsUrl!" titulo="la ubicación en Google Maps" />
+          <h2>{{ 'proyecto.ubicacion.googleMaps' | transloco }}</h2>
+          <app-medio [url]="u.googleMapsUrl!" [titulo]="'proyecto.ubicacion.tGoogleMaps' | transloco" />
         }
 
         @default {
-          <h2>Ubicación</h2>
+          <h2>{{ 'proyecto.ubicacion.titulo' | transloco }}</h2>
         }
       }
 
       @if (lugar() || u.referencias) {
         <aside class="datos">
           @if (lugar()) {
-            <p><strong>Dirección:</strong> {{ lugar() }}</p>
+            <p><strong>{{ 'proyecto.ubicacion.direccion' | transloco }}</strong> {{ lugar() }}</p>
           }
           @if (u.referencias) {
-            <p><strong>Cómo llegar:</strong> {{ u.referencias }}</p>
+            <p><strong>{{ 'proyecto.ubicacion.comoLlegar' | transloco }}</strong> {{ u.referencias }}</p>
           }
         </aside>
       }

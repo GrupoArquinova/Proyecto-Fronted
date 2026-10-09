@@ -10,6 +10,8 @@ export interface Multimedia {
   zonaComunNombre?: string;
   casaModeloId?: number | null;
   casaModeloNombre?: string;
+  etapaId?: number | null;
+  etapaNombre?: string;
   tipo: TipoMultimedia;
   titulo?: string;
   descripcion?: string;

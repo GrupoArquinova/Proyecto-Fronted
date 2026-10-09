@@ -180,3 +180,11 @@ label {
   margin-bottom: 0.9rem; padding: 0.8rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
   p { margin: 0; flex: 1 1 320px; color: #64748b; font-size: 0.88rem; line-height: 1.5; }
 }
+
+.chip-imagenes { border: none; cursor: pointer; background: #e8f0ef; color: #2c5953; }
+.lista li.imagenes-etapa {
+  display: flex; flex-wrap: wrap; gap: 0.6rem; background: #f8fafc; border-style: dashed;
+  figure { margin: 0; display: grid; gap: 0.2rem; justify-items: center; }
+  img { width: 84px; height: 62px; object-fit: cover; border-radius: 8px; }
+  span { color: #94a3b8; font-size: 0.85rem; }
+}

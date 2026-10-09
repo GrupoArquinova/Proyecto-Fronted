@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ProyectoDetalleService } from './proyecto-detalle.service';
+import { provideI18nPruebas } from '../../i18n/pruebas';
 import { ProyectoDetalle } from '../models/proyecto-detalle.models';
 
 const detalleVacio = (): ProyectoDetalle => ({
@@ -23,7 +24,7 @@ describe('ProyectoDetalleService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ProyectoDetalleService, provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideI18nPruebas(), ProyectoDetalleService, provideHttpClient(), provideHttpClientTesting()]
     });
     service = TestBed.inject(ProyectoDetalleService);
     http = TestBed.inject(HttpTestingController);

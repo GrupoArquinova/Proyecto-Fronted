@@ -2,7 +2,7 @@
   <section class="seccion">
 
     @if (casas().length > 1) {
-      <div class="selector" role="group" aria-label="Elegir tipología">
+      <div class="selector" role="group" [attr.aria-label]="'proyecto.tipologias.elegir' | transloco">
         @for (item of casas(); track item.id; let i = $index) {
           <button type="button" [class.activo]="seleccionada() === i" (click)="seleccionada.set(i)">
             {{ item.nombre }}
@@ -15,9 +15,9 @@
 
     @if (c.areaConstruidaM2 || c.numeroHabitaciones || c.numeroBanos) {
       <ul class="datos">
-        @if (c.areaConstruidaM2) { <li><strong>{{ c.areaConstruidaM2 }} m²</strong> construidos</li> }
-        @if (c.numeroHabitaciones) { <li><strong>{{ c.numeroHabitaciones }}</strong> habitaciones</li> }
-        @if (c.numeroBanos) { <li><strong>{{ c.numeroBanos }}</strong> baños</li> }
+        @if (c.areaConstruidaM2) { <li><strong>{{ c.areaConstruidaM2 }} m²</strong> {{ 'proyecto.tipologias.construidos' | transloco }}</li> }
+        @if (c.numeroHabitaciones) { <li><strong>{{ c.numeroHabitaciones }}</strong> {{ (c.numeroHabitaciones === 1 ? 'proyecto.tipologias.habitacion' : 'proyecto.tipologias.habitaciones') | transloco }}</li> }
+        @if (c.numeroBanos) { <li><strong>{{ c.numeroBanos }}</strong> {{ (c.numeroBanos === 1 ? 'proyecto.tipologias.bano' : 'proyecto.tipologias.banos') | transloco }}</li> }
       </ul>
     }
 
@@ -27,7 +27,7 @@
           <div class="visor">
             @for (clave of [c.id]; track clave) {
               <app-carrusel-laminas [laminas]="imagenes()" [alt]="c.nombre" [enMarco]="true" [ampliable]="true"
-                                    [etiqueta]="'Imágenes de ' + c.nombre" />
+                                    [etiqueta]="'proyecto.tipologias.imagenesDe' | transloco: { nombre: c.nombre }" />
             }
           </div>
         }
@@ -36,22 +36,22 @@
         @if (planosImagen().length > 0) {
           <div class="visor">
             @for (clave of [c.id]; track clave) {
-              <app-carrusel-laminas [laminas]="planosImagen()" [alt]="'Plano de ' + c.nombre" [enMarco]="true" [ampliable]="true" [leyenda]="true"
-                                    [etiqueta]="'Planos de ' + c.nombre" />
+              <app-carrusel-laminas [laminas]="planosImagen()" [alt]="'proyecto.tipologias.planoDe' | transloco: { nombre: c.nombre }" [enMarco]="true" [ampliable]="true" [leyenda]="true"
+                                    [etiqueta]="'proyecto.tipologias.planosDe' | transloco: { nombre: c.nombre }" />
             }
           </div>
         }
         @if (planosDocumento().length > 0) {
           <ul class="documentos">
             @for (doc of planosDocumento(); track doc.url) {
-              <li><a [href]="doc.url" target="_blank" rel="noopener">{{ doc.titulo }} (abrir)</a></li>
+              <li><a [href]="doc.url" target="_blank" rel="noopener">{{ doc.titulo }} ({{ 'proyecto.tipologias.abrir' | transloco }})</a></li>
             }
           </ul>
         }
       }
       @default {
         @if (c.tourVirtualUrl) {
-          <app-medio [url]="c.tourVirtualUrl" titulo="el tour virtual" />
+          <app-medio [url]="c.tourVirtualUrl" [titulo]="'proyecto.tipologias.tour' | transloco" />
         }
       }
     }
@@ -59,5 +59,12 @@
     @if (c.descripcion) {
       <p class="descripcion">{{ c.descripcion }}</p>
     }
+
+    <a class="consultar" [href]="whatsappUrl()" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+      </svg>
+      {{ 'proyecto.tipologias.consultar' | transloco: { nombre: c.nombre } }}
+    </a>
   </section>
 }

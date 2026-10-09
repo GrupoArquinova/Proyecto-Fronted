@@ -85,7 +85,8 @@
           {{ item.proyectoNombre ? 'Proyecto: ' + item.proyectoNombre : 
              item.loteCodigo ? 'Lote: ' + item.loteCodigo : 
              item.zonaComunNombre ? 'Zona común: ' + item.zonaComunNombre : 
-             item.casaModeloNombre ? 'Tipología: ' + item.casaModeloNombre : 'Sin vínculo' }}
+             item.casaModeloNombre ? 'Tipología: ' + item.casaModeloNombre : 
+             item.etapaNombre ? 'Etapa: ' + item.etapaNombre : 'Sin vínculo' }}
         </p>
         <p class="media-desc">{{ item.descripcion || 'Sin descripción' }}</p>
 
@@ -212,6 +213,7 @@
                 <option value="lote">Lote</option>
                 <option value="zonaComun">Zona Común</option>
                 <option value="casaModelo">Tipología</option>
+                <option value="etapa">Etapa</option>
               </select>
             </div>
 
@@ -231,7 +233,7 @@
               </select>
             </div>
 
-            <ng-container *ngIf="tipoPadre === 'zonaComun' || tipoPadre === 'casaModelo'">
+            <ng-container *ngIf="tipoPadre === 'zonaComun' || tipoPadre === 'casaModelo' || tipoPadre === 'etapa'">
               <div class="form-group full-width">
                 <label>Proyecto de referencia *</label>
                 <select name="proyectoReferenciaId" [(ngModel)]="proyectoReferenciaId" (change)="onCambioProyectoReferencia()" required>
@@ -253,6 +255,14 @@
                 <select id="casaModeloId" name="casaModeloId" [(ngModel)]="formData.casaModeloId" required [disabled]="!proyectoReferenciaId">
                   <option [ngValue]="null" disabled>Selecciona una tipología</option>
                   <option *ngFor="let c of casasModelosDisponibles" [value]="c.id">{{ c.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width" *ngIf="tipoPadre === 'etapa'">
+                <label for="etapaId">Etapa *</label>
+                <select id="etapaId" name="etapaId" [(ngModel)]="formData.etapaId" required [disabled]="!proyectoReferenciaId">
+                  <option [ngValue]="null" disabled>Selecciona una etapa</option>
+                  <option *ngFor="let e of etapasDisponibles" [value]="e.id">{{ e.nombre }}</option>
                 </select>
               </div>
             </ng-container>

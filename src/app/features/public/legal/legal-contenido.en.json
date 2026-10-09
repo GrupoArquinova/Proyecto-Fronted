@@ -1,0 +1,348 @@
+{
+  "politica-datos": {
+    "titulo": "Personal data processing policy",
+    "corto": "Personal data processing policy",
+    "resumen": "How we collect, use, protect and delete your personal data, and how to exercise your rights as a data subject.",
+    "secciones": [
+      {
+        "titulo": "1. Data controller",
+        "parrafos": [
+          "{{razonSocial}}, identified with NIT {{nit}}, domiciled in {{domicilio}} (hereinafter, \"Arquinova\" or \"the Company\"), is the controller of the personal data collected through this website and its contact channels."
+        ],
+        "items": [
+          "Address: {{direccion}}",
+          "Email for personal data matters: {{correoDatos}}",
+          "Phone: {{telefono}}",
+          "Website: {{sitioWeb}}",
+          "Department or person in charge of handling queries and complaints: {{areaResponsable}}"
+        ]
+      },
+      {
+        "titulo": "2. Legal framework",
+        "parrafos": [
+          "This policy is adopted in compliance with Article 15 of the Political Constitution of Colombia, Law 1581 of 2012, Decree 1074 of 2015 (which compiles Decree 1377 of 2013) and any other rules that amend, supplement or regulate them, as well as the instructions of the Superintendence of Industry and Commerce (SIC)."
+        ]
+      },
+      {
+        "titulo": "3. Definitions",
+        "items": [
+          "Data subject: the natural person whose personal data is processed.",
+          "Personal data: any information linked to, or that can be associated with, one or more specific or identifiable natural persons.",
+          "Sensitive data: data that affects the data subject's privacy or whose improper use may lead to discrimination (for example, health, racial origin, political orientation or biometric data).",
+          "Processing: any operation performed on personal data, such as collection, storage, use, circulation or deletion.",
+          "Controller: the party that decides on the database and the processing of the data.",
+          "Processor: the party that processes personal data on behalf of the controller.",
+          "Authorization: the data subject's prior, express and informed consent to the processing of their data.",
+          "Privacy notice: a verbal or written communication addressed to the data subject, informing them of the existence of this policy and how to access it."
+        ]
+      },
+      {
+        "titulo": "4. Applicable principles",
+        "parrafos": [
+          "The processing of personal data is governed by the principles of legality, purpose, freedom, accuracy or quality, transparency, restricted access and circulation, security and confidentiality, set out in Article 4 of Law 1581 of 2012."
+        ]
+      },
+      {
+        "titulo": "5. Data we collect",
+        "parrafos": [
+          "We collect only the data necessary for the purposes described in this policy:"
+        ],
+        "items": [
+          "Contact details you give us in the forms: name, email, phone, message, project or lot of interest.",
+          "Technical details of the request: IP address, browser type, and date and time, which are kept as proof of the authorization and for security.",
+          "Data of the people who manage the site (internal users): name, email, role and activity records within the panel.",
+          "If you write to us on WhatsApp, the data you share in the conversation, which is also governed by the terms of that service."
+        ],
+        "parrafos2": [
+          "We do not request sensitive data or data of children and adolescents. If we receive any by mistake, we will delete it."
+        ]
+      },
+      {
+        "titulo": "6. Purposes of the processing",
+        "items": [
+          "To answer your queries and requests for information and contact about our projects, lots and model houses.",
+          "To contact you by phone, email or WhatsApp to give you commercial information, availability and conditions of the projects.",
+          "To follow up on your request commercially and manage the relationship with prospective buyers.",
+          "To send you information about new projects, construction progress or news, provided you have authorized it, with the option to stop receiving it at any time.",
+          "To prepare internal statistics and improve the website and our services.",
+          "To ensure the security of the site and prevent fraud or misuse.",
+          "To comply with legal obligations and respond to requests from competent authorities."
+        ]
+      },
+      {
+        "titulo": "7. Authorization",
+        "parrafos": [
+          "We collect your data only with your prior, express and informed authorization, which you give by ticking the acceptance box in our forms. We keep a record of the authorization (date, time and IP address). You may revoke it or request the deletion of your data at any time, except where there is a legal or contractual duty to keep it."
+        ]
+      },
+      {
+        "titulo": "8. Rights of the data subject",
+        "parrafos": [
+          "In accordance with Article 8 of Law 1581 of 2012, as a data subject you have the right to:"
+        ],
+        "items": [
+          "Know, update and rectify your personal data.",
+          "Request proof of the authorization given, except where the law does not require it.",
+          "Be informed, upon request, of the use that has been made of your data.",
+          "File complaints with the Superintendence of Industry and Commerce for violations of the law.",
+          "Revoke the authorization and/or request the deletion of your data when the legal principles, rights and guarantees are not respected.",
+          "Access, free of charge, your personal data that has been processed."
+        ]
+      },
+      {
+        "titulo": "9. Procedure for queries and complaints",
+        "parrafos": [
+          "You can exercise your rights by writing to {{correoDatos}} or to the address {{direccion}}, stating your full name, identification number, contact details and a clear description of your request."
+        ],
+        "items": [
+          "Queries: will be answered within a maximum of ten (10) business days from the date of receipt. If that is not possible, we will tell you the reasons and the new date, which may not exceed five (5) additional business days.",
+          "Complaints (correction, update, deletion or notice of non-compliance): must include the identification of the data subject, a description of the facts, the contact address and any documents you wish to submit. If the complaint is incomplete, we will ask you to complete it within the following five (5) days; if two (2) months pass without a response, it will be understood that you have withdrawn it.",
+          "A complete complaint will be handled within a maximum of fifteen (15) business days, extendable by eight (8) more business days, and we will tell you the reasons.",
+          "You may only go to the Superintendence of Industry and Commerce after you have exhausted this procedure with us."
+        ]
+      },
+      {
+        "titulo": "10. Transmission and transfer of data",
+        "parrafos": [
+          "We do not sell your personal data. To operate the site we may share it with providers acting as processors, such as web hosting, database, image storage, email and messaging services. Some of these providers may be located outside Colombia; in those cases we require security and confidentiality measures equivalent to those of this policy and, where the law requires it, we have your authorization or the corresponding data transmission contracts.",
+          "We may also hand over data to authorities that request it in the exercise of their legal functions."
+        ]
+      },
+      {
+        "titulo": "11. Security measures",
+        "parrafos": [
+          "We apply reasonable technical, human and administrative measures to protect the data: encrypted connection (HTTPS), panel access restricted by user and role, passwords stored in encrypted form, a limit on login attempts and activity logs. No system is completely infallible; if an incident affecting your data occurs, we will handle it in accordance with the law, including reporting it to the Superintendence of Industry and Commerce when applicable."
+        ]
+      },
+      {
+        "titulo": "12. Data retention",
+        "parrafos": [
+          "We keep your data for as long as it is necessary for the purposes described and for the periods required by law. When it is no longer needed, we will securely delete or anonymize it."
+        ]
+      },
+      {
+        "titulo": "13. Cookies and similar technologies",
+        "parrafos": [
+          "The site uses the technical storage necessary for its operation. See our Cookie policy for more details."
+        ]
+      },
+      {
+        "titulo": "14. National Database Registry",
+        "parrafos": [
+          "Where the law requires it, Arquinova's databases are registered in the National Database Registry (RNBD) administered by the Superintendence of Industry and Commerce."
+        ]
+      },
+      {
+        "titulo": "15. Effective date and changes",
+        "parrafos": [
+          "This policy is effective from {{fechaVigencia}}. We may amend it to adapt it to legal changes or changes in our services; we will publish the current version on this site and, if the change is substantial, we will notify you by an effective means."
+        ]
+      }
+    ]
+  },
+  "terminos": {
+    "titulo": "Terms and conditions of use",
+    "corto": "Terms and conditions",
+    "resumen": "Rules for using this website and the scope of the information we publish about our projects.",
+    "secciones": [
+      {
+        "titulo": "1. Acceptance",
+        "parrafos": [
+          "By browsing or using this website, owned by {{razonSocial}} (NIT {{nit}}), you accept these terms and conditions. If you do not agree, please do not use the site."
+        ]
+      },
+      {
+        "titulo": "2. What this site offers",
+        "parrafos": [
+          "The site presents information about Arquinova's real estate projects (location, lots, model houses, common areas, images, videos and virtual tours) and lets you contact us to receive commercial advice. It is not an online store: no payments are made and no properties are purchased on this site."
+        ]
+      },
+      {
+        "titulo": "3. Commercial information: informational nature",
+        "items": [
+          "The information, prices, areas, measurements, availability and commercial conditions shown are informational, may change without notice and do not constitute a binding offer.",
+          "Images, renders, floor plans, 360° tours and videos are illustrative and may differ from the final result of the construction. Finishes, furniture, vegetation and surroundings may vary.",
+          "The availability of a lot or property is only confirmed by the sales department. The sale is formalized only through the written documents signed with the Company (for example, a purchase promise agreement and a public deed).",
+          "The final areas, boundaries and specifications are those stated in the legal documents and in the approved licenses and plans."
+        ]
+      },
+      {
+        "titulo": "4. Permitted use",
+        "parrafos": [
+          "You agree to use the site lawfully and in good faith. The following is prohibited:"
+        ],
+        "items": [
+          "Attempting to gain unauthorized access to the administration panel, the databases or other people's accounts.",
+          "Introducing viruses or malicious code, or carrying out actions that affect the operation or security of the site.",
+          "Mass data extraction (scraping) or copying the content for commercial purposes without authorization.",
+          "Impersonating another person or submitting false information in the forms.",
+          "Using the site to send unsolicited advertising or illegal or offensive content."
+        ]
+      },
+      {
+        "titulo": "5. Forms and communications",
+        "parrafos": [
+          "By submitting a form or writing to us on WhatsApp, you authorize us to contact you through those means to respond to your request, in accordance with the Personal data processing policy. We will make commercial contacts respecting the hours and conditions set by Law 2300 of 2023 and the rules that supplement it. You may ask us at any time to stop contacting you."
+        ]
+      },
+      {
+        "titulo": "6. Intellectual property",
+        "parrafos": [
+          "The texts, images, logos, trademarks, designs, floor plans, videos, code and other contents of the site belong to {{razonSocial}} or to third parties that have authorized their use, and are protected by intellectual property rules (Law 23 of 1982, Andean Decision 351 of 1993 and other applicable rules). You may not reproduce, distribute, modify or use them commercially without prior written authorization."
+        ]
+      },
+      {
+        "titulo": "7. Third-party content and services",
+        "parrafos": [
+          "The site may include maps, videos, links or third-party services (for example, Google Maps, YouTube or WhatsApp). Those services are governed by their own terms and privacy policies, and Arquinova is not responsible for their content or availability."
+        ]
+      },
+      {
+        "titulo": "8. Availability and limitation of liability",
+        "parrafos": [
+          "We make reasonable efforts to keep the site available and the information up to date, but we do not guarantee that it will work without interruptions or errors. To the extent permitted by law, Arquinova is not liable for damages arising from the use of the site, from the inability to access it, or from decisions made solely on the basis of the published information, without prejudice to the rights that the law grants to consumers."
+        ]
+      },
+      {
+        "titulo": "9. Consumer rights",
+        "parrafos": [
+          "You have the right to receive clear, truthful and sufficient information, and to submit petitions, complaints and claims through the channels indicated on this site. If you do not receive a satisfactory response, you may go to the Superintendence of Industry and Commerce, in accordance with Law 1480 of 2011 (Consumer Statute)."
+        ]
+      },
+      {
+        "titulo": "10. Personal data protection",
+        "parrafos": [
+          "The processing of your personal data is governed by our Personal data processing policy, which forms part of these terms."
+        ]
+      },
+      {
+        "titulo": "11. Changes",
+        "parrafos": [
+          "We may modify these terms at any time. The current version is the one published on the site. Use of the site after a change implies acceptance of it."
+        ]
+      },
+      {
+        "titulo": "12. Governing law and jurisdiction",
+        "parrafos": [
+          "These terms are governed by the laws of the Republic of Colombia. Any dispute will be resolved by the competent judges of {{domicilio}}, without prejudice to the powers of the consumer protection authorities."
+        ]
+      },
+      {
+        "titulo": "13. Contact",
+        "parrafos": [
+          "For questions about these terms, write to us at {{correoDatos}} or call us at {{telefono}}."
+        ]
+      }
+    ]
+  },
+  "cookies": {
+    "titulo": "Cookie policy",
+    "corto": "Cookie policy",
+    "resumen": "What storage and cookies this site uses and how you can control them.",
+    "secciones": [
+      {
+        "titulo": "1. What cookies are",
+        "parrafos": [
+          "Cookies and similar technologies (such as the browser's local storage) are small files or pieces of data that a site saves on your device to remember information about your visit."
+        ]
+      },
+      {
+        "titulo": "2. What we use on this site",
+        "items": [
+          "Necessary technical storage: it lets the site work, for example keeping the session of the people who manage the site and remembering interface preferences. It does not require consent because it is essential for the service.",
+          "Embedded third-party content: Google Maps maps, YouTube videos and other resources may set their own cookies when they are loaded on a page. They are governed by the policies of those providers.",
+          "Analytics and advertising: this site currently does not use analytics or advertising cookies. If we enable them in the future, we will tell you and ask for your consent before using them."
+        ]
+      },
+      {
+        "titulo": "3. How to control them",
+        "parrafos": [
+          "You can delete or block cookies from your browser settings. Note that blocking the necessary ones may affect how some parts of the site work, such as the administration panel login."
+        ]
+      },
+      {
+        "titulo": "4. Changes and contact",
+        "parrafos": [
+          "We may update this policy when the technologies we use change. If you have questions, write to us at {{correoDatos}}. Effective from {{fechaVigencia}}."
+        ]
+      }
+    ]
+  },
+  "aviso-privacidad": {
+    "titulo": "Privacy notice",
+    "corto": "Privacy notice",
+    "resumen": "A summary of how we handle your data when you contact us.",
+    "secciones": [
+      {
+        "titulo": "Controller",
+        "parrafos": [
+          "{{razonSocial}}, NIT {{nit}}, domiciled in {{domicilio}}, is the controller of your personal data. Contact: {{correoDatos}} · {{telefono}}."
+        ]
+      },
+      {
+        "titulo": "What we use your data for",
+        "parrafos": [
+          "We will use your name, email, phone and message to respond to your request, contact you with commercial information about our projects (by phone, email or WhatsApp), follow up on your interest and, if you authorize it, send you news. We also keep technical data (IP and browser) as proof of your authorization and for security."
+        ]
+      },
+      {
+        "titulo": "Your rights",
+        "parrafos": [
+          "You have the right to know, update, rectify and delete your data, to revoke your authorization, to request proof of it and to file complaints with the Superintendence of Industry and Commerce. You are not obliged to answer questions about sensitive data or about minors."
+        ]
+      },
+      {
+        "titulo": "Where to find the full policy",
+        "parrafos": [
+          "You can read the full Personal data processing policy, including the procedure for exercising your rights, on this website. You can also request it by writing to {{correoDatos}}."
+        ]
+      }
+    ]
+  },
+  "aviso-legal": {
+    "titulo": "Legal notice",
+    "corto": "Legal notice",
+    "resumen": "Identification of the site owner and warnings about the published information.",
+    "secciones": [
+      {
+        "titulo": "Site owner",
+        "items": [
+          "Company name: {{razonSocial}}",
+          "NIT: {{nit}}",
+          "Domicile: {{domicilio}}",
+          "Address: {{direccion}}",
+          "Email: {{correoDatos}}",
+          "Phone: {{telefono}}",
+          "Website: {{sitioWeb}}"
+        ]
+      },
+      {
+        "titulo": "Project information",
+        "parrafos": [
+          "The information published about projects, lots, prices, areas and availability is informational and may change without notice. Images, renders, floor plans and tours are illustrative and may differ from the final result. No content on this site constitutes a binding offer; the final conditions will be set out in the documents signed with the Company."
+        ],
+        "items": [
+          "Licenses, permits and registrations of the project: {{licenciasProyecto}}"
+        ]
+      },
+      {
+        "titulo": "Intellectual property",
+        "parrafos": [
+          "The trademarks, logos, texts, images, videos and other contents belong to {{razonSocial}} or its licensors and may not be used without written authorization."
+        ]
+      },
+      {
+        "titulo": "Third-party links and services",
+        "parrafos": [
+          "This site may link to third-party pages or use third-party services. Arquinova does not control, and is not responsible for, their contents or policies."
+        ]
+      },
+      {
+        "titulo": "Governing law",
+        "parrafos": [
+          "This notice is governed by the laws of the Republic of Colombia. See also the Terms and conditions and the Personal data processing policy."
+        ]
+      }
+    ]
+  }
+}

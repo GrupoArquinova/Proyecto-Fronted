@@ -28,6 +28,8 @@ export class ContenidoInstitucionalComponent implements OnInit {
     seccion: '',
     titulo: '',
     contenido: '',
+    tituloEn: '',
+    contenidoEn: '',
     publicado: true
   };
 
@@ -53,7 +55,7 @@ export class ContenidoInstitucionalComponent implements OnInit {
   toggleFormularioNuevo(): void {
     this.mostrarFormularioNuevo = !this.mostrarFormularioNuevo;
     if (this.mostrarFormularioNuevo) {
-      this.nuevaSeccion = { seccion: '', titulo: '', contenido: '', publicado: true };
+      this.nuevaSeccion = { seccion: '', titulo: '', contenido: '', tituloEn: '', contenidoEn: '', publicado: true };
     }
   }
 
@@ -69,6 +71,8 @@ export class ContenidoInstitucionalComponent implements OnInit {
       seccion: this.nuevaSeccion.seccion.trim().toUpperCase(),
       titulo: this.nuevaSeccion.titulo.trim(),
       contenido: this.nuevaSeccion.contenido.trim(),
+      tituloEn: this.nuevaSeccion.tituloEn.trim(),
+      contenidoEn: this.nuevaSeccion.contenidoEn.trim(),
       publicado: this.nuevaSeccion.publicado
     };
 
@@ -96,6 +100,8 @@ export class ContenidoInstitucionalComponent implements OnInit {
       seccion: seccion.seccion,
       titulo: seccion.titulo,
       contenido: seccion.contenido,
+      tituloEn: seccion.tituloEn ?? '',
+      contenidoEn: seccion.contenidoEn ?? '',
       publicado: seccion.publicado
     }).subscribe({
       next: (resp) => {

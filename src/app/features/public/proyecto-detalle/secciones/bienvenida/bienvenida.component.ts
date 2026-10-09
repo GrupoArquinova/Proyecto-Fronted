@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { MedioComponent } from '../medio/medio.component';
@@ -7,7 +8,7 @@ import { SECCION_BENEFICIOS } from '../../../../../core/models/proyecto-detalle.
 @Component({
   selector: 'app-bienvenida',
   standalone: true,
-  imports: [MedioComponent, CarruselLaminasComponent],
+  imports: [TranslocoPipe, MedioComponent, CarruselLaminasComponent],
   templateUrl: './bienvenida.component.html',
   styleUrl: './bienvenida.component.scss'
 })

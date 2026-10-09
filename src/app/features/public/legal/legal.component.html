@@ -1,11 +1,14 @@
 <div class="legal">
   <div class="legal-contenedor">
-    <a routerLink="/" class="volver">&larr; Volver al Inicio</a>
+    <a routerLink="/" class="volver">&larr; {{ 'legal.volver' | transloco }}</a>
 
     @if (documento(); as doc) {
       <header>
         <h1>{{ doc.titulo }}</h1>
         <p class="resumen">{{ doc.resumen }}</p>
+        @if (idioma.esIngles()) {
+          <p class="cortesia">{{ 'legal.cortesiaTexto' | transloco }}</p>
+        }
       </header>
 
       @for (s of doc.secciones; track s.titulo) {
@@ -27,16 +30,16 @@
         </section>
       }
 
-      <nav class="otros" aria-label="Otros documentos legales">
-        <span>Otros documentos:</span>
+      <nav class="otros" [attr.aria-label]="'legal.otrosAria' | transloco">
+        <span>{{ 'legal.otros' | transloco }}</span>
         @for (o of otros(); track o.clave) {
           <a [routerLink]="['/legal', o.clave]">{{ o.corto }}</a>
         }
       </nav>
     } @else {
       <header>
-        <h1>Documento no encontrado</h1>
-        <p class="resumen">El documento que buscas no existe. Elige uno de la lista.</p>
+        <h1>{{ 'legal.noEncontradoTitulo' | transloco }}</h1>
+        <p class="resumen">{{ 'legal.noEncontradoTexto' | transloco }}</p>
       </header>
       <nav class="otros">
         @for (o of otros(); track o.clave) {

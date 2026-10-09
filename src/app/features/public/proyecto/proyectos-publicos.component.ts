@@ -1,13 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { LocalizadoPipe } from '../../../shared/pipes/localizado.pipe';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ProyectoPublico, ETAPAS_PROYECTO, TIPOS_PROYECTO } from '../../../core/models/proyecto.models';
 
 @Component({
   selector: 'app-proyectos-publicos',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslocoPipe, LocalizadoPipe],
   templateUrl: './proyectos-publicos.component.html',
   styleUrl: './proyectos-publicos.component.scss'
 })

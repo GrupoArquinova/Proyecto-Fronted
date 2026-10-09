@@ -37,11 +37,14 @@ export interface Proyecto {
   nombre: string;
   slug?: string;
   descripcion?: string;
+  /** Texto en inglés (opcional): si está vacío, el sitio muestra el español. */
+  descripcionEn?: string | null;
   estadoProyecto?: EstadoProyecto;
   tipoRegistro?: TipoRegistroProyecto;
   tipoProyecto?: TipoProyecto | null;
   /** Papel de Arquinova (diseño, estudios, licencias, estructuración, construcción, comercialización). */
   participacion?: string | null;
+  participacionEn?: string | null;
   destacado?: boolean;
   publicado?: boolean;
   activo?: boolean;
@@ -59,10 +62,13 @@ export interface CrearProyectoDTO {
   empresaId: number;
   slug?: string;
   descripcion?: string;
+  /** Texto en inglés (opcional): si está vacío, el sitio muestra el español. */
+  descripcionEn?: string | null;
   estadoProyecto?: EstadoProyecto;
   tipoRegistro?: TipoRegistroProyecto;
   tipoProyecto?: TipoProyecto | null;
   participacion?: string | null;
+  participacionEn?: string | null;
   destacado?: boolean;
   publicado?: boolean;
   imagenUrl?: string;

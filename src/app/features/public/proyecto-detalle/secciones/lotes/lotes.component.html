@@ -1,10 +1,10 @@
 @if (proyecto(); as p) {
   <section class="seccion">
     <header>
-      <h2>Lotes</h2>
+      <h2>{{ 'proyecto.lotes.titulo' | transloco }}</h2>
       <p class="resumen">
-        {{ lotes().length }} {{ lotes().length === 1 ? 'lote' : 'lotes' }} · {{ disponibles() }}
-        {{ disponibles() === 1 ? 'disponible' : 'disponibles' }}
+        {{ lotes().length }} {{ (lotes().length === 1 ? 'proyecto.lotes.lote' : 'proyecto.lotes.lotes') | transloco }} · {{ disponibles() }}
+        {{ (disponibles() === 1 ? 'proyecto.lotes.disponible' : 'proyecto.lotes.disponibles') | transloco }}
       </p>
     </header>
 
@@ -13,7 +13,7 @@
         <app-plano-lotes [imagenUrl]="plano()" [lotes]="lotes()" [seleccionadoId]="seleccionado()?.id ?? null"
                          (seleccionar)="elegir($event)" />
 
-        <ul class="chips" aria-label="Lotes del proyecto">
+        <ul class="chips" [attr.aria-label]="'proyecto.lotes.aria' | transloco">
           @for (l of lotes(); track l.id) {
             <li>
               <a [routerLink]="[]" [queryParams]="{ vista: l.id }" [class]="clave(l)"

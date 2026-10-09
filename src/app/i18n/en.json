@@ -1,0 +1,392 @@
+{
+  "comun": {
+    "idioma": {
+      "etiqueta": "Language",
+      "es": "Español",
+      "en": "English"
+    },
+    "pantallaCompleta": "Full screen",
+    "salirPantallaCompleta": "Exit full screen",
+    "cerrar": "Close"
+  },
+  "etapaProyecto": {
+    "EN_DISENO": "In design",
+    "EN_TRAMITE": "In permitting",
+    "EN_CONSTRUCCION": "Under construction",
+    "FINALIZADO": "Completed"
+  },
+  "home": {
+    "titulo": "Architecture, engineering and project management in Quindío",
+    "logoAlt": "Arquinova Grupo Empresarial",
+    "nav": {
+      "inicio": "Home",
+      "servicios": "Services",
+      "proyectos": "Projects",
+      "empresa": "Company",
+      "contacto": "Contact",
+      "admin": "Admin"
+    },
+    "hero": {
+      "categoria": "ARCHITECTURE & ENGINEERING · QUINDÍO",
+      "linea1": "Studies, designs and management",
+      "linea2": "for projects",
+      "linea3": "in Quindío",
+      "descripcion": "We coordinate architecture, engineering and project management services: technical studies, designs and procedures before the competent authorities.",
+      "verProyectos": "View Projects",
+      "servicios": "Our services"
+    },
+    "destacado": {
+      "etiqueta": "FEATURED PROJECT",
+      "conocer": "Discover the project",
+      "asesor": "Talk to an advisor",
+      "whatsapp": "Hello, I am interested in {{nombre}} and would like information about its house types, prices and availability."
+    },
+    "servicios": {
+      "etiqueta": "WHAT WE DO",
+      "titulo": "Services",
+      "subtitulo": "We support landowners and developers in structuring their projects.",
+      "lista": {
+        "viabilidad": {
+          "titulo": "Feasibility studies",
+          "descripcion": "Feasibility and site-planning studies for projects, and review of urban planning conditions."
+        },
+        "diseno": {
+          "titulo": "Urban and architectural design",
+          "descripcion": "Urban and architectural design of subdivisions, villas and buildings."
+        },
+        "estructural": {
+          "titulo": "Structural design and technical studies",
+          "descripcion": "Structural design and coordination of soil studies and topographic surveys."
+        },
+        "licencias": {
+          "titulo": "Licenses and permits",
+          "descripcion": "Preparation of files and handling of urban planning licenses and environmental permits within the contracted scope."
+        },
+        "servicios-publicos": {
+          "titulo": "Utilities and wastewater",
+          "descripcion": "Management of utility availability and design of wastewater treatment solutions."
+        },
+        "planos": {
+          "titulo": "Drawings and condominium regulations",
+          "descripcion": "Preparation of drawings and coordination of the condominium (horizontal property) regulations."
+        },
+        "presupuesto": {
+          "titulo": "Technical structuring and budgeting",
+          "descripcion": "Technical structuring and budgeting of projects."
+        }
+      }
+    },
+    "proyectos": {
+      "etiqueta": "PORTFOLIO",
+      "titulo": "Our Projects",
+      "subtitulo": "Explore each project as a complete experience: learn its story, walk through its spaces, check availability and discover the stages that make it up.",
+      "portafolio": "Portfolio",
+      "participacion": "Arquinova's role:",
+      "lotes": "LOTS",
+      "disponibles": "AVAILABLE",
+      "experiencia": "EXPERIENCE",
+      "explorar": "Explore project",
+      "verTodos": "View all projects ({{total}})"
+    },
+    "empresa": {
+      "etiqueta": "COMPANY",
+      "titulo": "About us",
+      "parrafo1": "We are a company based in Armenia that coordinates architecture, engineering and project management services. We support the structuring of developments through technical studies, urban, architectural and structural designs, and the preparation and handling of procedures before the competent authorities.",
+      "parrafo2": "Our work includes residential, rural and tourism projects in Quindío.",
+      "identidad": {
+        "MISION": "Mission",
+        "VISION": "Vision",
+        "VALORES": "Values"
+      }
+    },
+    "contacto": {
+      "etiqueta": "LET'S TALK",
+      "titulo": "Contact us",
+      "texto": "Tell us which project or service you are interested in and our team will get in touch with you.",
+      "telefono": "Phone",
+      "correo": "Email",
+      "oficina": "Service office",
+      "whatsapp": "WhatsApp",
+      "escribanos": "Write to us now"
+    },
+    "formulario": {
+      "titulo": "Request information",
+      "nombre": "Name *",
+      "nombreEjemplo": "John Smith",
+      "telefono": "Phone",
+      "telefonoEjemplo": "e.g. +57 300 123 4567",
+      "correo": "Email",
+      "correoEjemplo": "email@example.com",
+      "servicio": "Service of interest",
+      "seleccioneServicio": "Select a service",
+      "avisoMedio": "Please leave at least a phone number or an email so we can reply.",
+      "proyecto": "Project of interest",
+      "seleccioneProyecto": "Select a project",
+      "mensaje": "Message",
+      "mensajeEjemplo": "Tell us how we can help you...",
+      "consentimientoAntes": "I agree to the processing of my personal data in accordance with Arquinova's",
+      "consentimientoEnlace": "Personal data processing policy",
+      "consentimientoDespues": ". *",
+      "enviar": "Send request",
+      "exito": "Request sent successfully! We will be in touch soon.",
+      "error": "There was an error sending your message. Please try again."
+    },
+    "pie": {
+      "logoAlt": "Arquinova Logo",
+      "descripcion": "Architecture, engineering and project management services in Quindío.",
+      "enlaces": "Quick Links",
+      "legal": "Legal",
+      "terminos": "Terms and Conditions",
+      "politicaDatos": "Personal data processing policy",
+      "cookies": "Cookie policy",
+      "avisoPrivacidad": "Privacy notice",
+      "derechos": "All rights reserved.",
+      "privacidad": "Privacy",
+      "avisoLegal": "Legal Notice"
+    }
+  },
+  "tipoProyecto": {
+    "RESIDENCIAL": "Residential",
+    "RURAL": "Rural",
+    "TURISTICO": "Tourism",
+    "OTRO": "Other"
+  },
+  "estadoLote": {
+    "disponible": "Available",
+    "reservado": "Reserved",
+    "vendido": "Sold",
+    "otro": "No status"
+  },
+  "proyecto": {
+    "estado": {
+      "cargando": "Loading project...",
+      "noEncontradoTitulo": "Project not found",
+      "noEncontradoTexto": "The project you are looking for does not exist or is not available yet.",
+      "verTodos": "View all projects",
+      "errorTitulo": "We could not load the project",
+      "errorTexto": "Check your connection and try again.",
+      "reintentar": "Try again"
+    },
+    "armazon": {
+      "abrirMenu": "Open menu",
+      "secciones": "Project sections",
+      "mostrarMenu": "Show menu",
+      "ocultarMenu": "Hide menu",
+      "todosProyectos": "All projects",
+      "informacionLegal": "Legal information",
+      "datos": "Personal data",
+      "terminos": "Terms",
+      "cookies": "Cookies",
+      "noEncontradoSeo": "Project not found",
+      "enLugar": "in {{lugar}}",
+      "descripcionSeo": "{{nombre}}{{lugar}}: a Grupo Arquinova project."
+    },
+    "menu": {
+      "bienvenida": "Welcome",
+      "respaldo": "Backing",
+      "ubicacion": "Location",
+      "zonas-comunes": "Amenities",
+      "lotes": "Lots",
+      "casa-modelo": "House types",
+      "disponibilidad": "Availability",
+      "videos": "Videos",
+      "contacto": "Contact"
+    },
+    "vista": {
+      "beneficios": "Benefits",
+      "video": "Video",
+      "entorno-360": "360° surroundings",
+      "vista-aerea": "Aerial view",
+      "urbanismo": "Site plan",
+      "mapa": "Map",
+      "google-maps": "Google Maps",
+      "destacadas": "Featured areas",
+      "galeria": "Gallery",
+      "imagenes": "Images",
+      "planos": "Floor plans",
+      "tour-virtual": "Virtual tour",
+      "proyecto": "Project",
+      "como-llegar": "How to get there?"
+    },
+    "bienvenida": {
+      "imagenes": "Project images",
+      "beneficiosAria": "Project benefits",
+      "beneficiosDe": "Benefits of {{nombre}}",
+      "videoTitulo": "project video"
+    },
+    "respaldo": {
+      "etiqueta": "Project backing",
+      "alt": "Backing of {{nombre}}",
+      "elProyecto": "the project"
+    },
+    "carrusel": {
+      "salirPantalla": "Exit full screen",
+      "verPantalla": "View the image full screen",
+      "ocultarImagenes": "Hide images",
+      "verImagenes": "Show images",
+      "anterior": "Previous image",
+      "siguiente": "Next image",
+      "elegir": "Choose image",
+      "verN": "View image {{n}} of {{total}}"
+    },
+    "tipologias": {
+      "elegir": "Choose house type",
+      "construidos": "built",
+      "habitacion": "bedroom",
+      "habitaciones": "bedrooms",
+      "bano": "bathroom",
+      "banos": "bathrooms",
+      "imagenesDe": "Images of {{nombre}}",
+      "planoDe": "Floor plan of {{nombre}}",
+      "planosDe": "Floor plans of {{nombre}}",
+      "plano": "Floor plan",
+      "abrir": "open",
+      "tour": "the virtual tour",
+      "consultar": "Enquire about {{nombre}}",
+      "elProyecto": "the project",
+      "whatsapp": "Hello, I am interested in the {{nombre}} house type at {{proyecto}}{{ficha}}. Could you give me more information about this villa?"
+    },
+    "contacto": {
+      "titulo": "Contact us",
+      "sub": "Leave us your details and we will tell you all about {{nombre}}.",
+      "consultandoLote": "Enquiring about lot",
+      "nombre": "Name",
+      "nombreEjemplo": "Your full name",
+      "errorNombre": "Please enter your name.",
+      "telefono": "Phone / WhatsApp",
+      "telefonoEjemplo": "e.g. +57 300 123 4567",
+      "correo": "Email",
+      "errorCorreo": "Enter a valid email.",
+      "faltaMedio": "Leave us a phone number or an email so we can reply.",
+      "ayuda": "A phone number or an email is enough.",
+      "mensaje": "Message",
+      "mensajeEjemplo": "How can we help you?",
+      "errorMensaje": "Tell us what you need.",
+      "consentimientoAntes": "I authorize the processing of my personal data so that you can contact me, in accordance with the",
+      "consentimientoEnlace": "Personal data processing policy",
+      "errorConsentimiento": "You must authorize the processing of your data.",
+      "enviar": "Send message",
+      "enviando": "Sending...",
+      "whatsapp": "WhatsApp",
+      "mensajeLote": "Hello, I am interested in lot {{codigo}}. Could you give me more information?"
+    },
+    "disponibilidad": {
+      "estados": "Lot statuses",
+      "elige": "Choose a lot to see its details."
+    },
+    "lotes": {
+      "titulo": "Lots",
+      "lote": "lot",
+      "lotes": "lots",
+      "disponible": "available",
+      "disponibles": "available",
+      "aria": "Project lots"
+    },
+    "planoLotes": {
+      "alt": "Project plan showing the location of the lots",
+      "marca": "Lot {{codigo}}, {{estado}}"
+    },
+    "loteTarjeta": {
+      "etiqueta": "Selected lot",
+      "area": "Area",
+      "estado": "Status",
+      "precio": "Price",
+      "etapa": "Stage",
+      "solicitar": "Request information"
+    },
+    "ubicacion": {
+      "titulo": "Location",
+      "entorno": "360° surroundings",
+      "vistaAerea": "Aerial view",
+      "urbanismo": "Site plan",
+      "mapa": "Map",
+      "googleMaps": "Google Maps",
+      "direccion": "Address:",
+      "comoLlegar": "How to get there:",
+      "tEntorno": "project surroundings",
+      "tVistaAerea": "aerial view of the project",
+      "tRecorrido": "the 360° tour",
+      "tLaVistaAerea": "the aerial view",
+      "tPlano": "the site plan",
+      "tGoogleMaps": "the location on Google Maps",
+      "mapaGoogleDe": "Google map of {{nombre}}",
+      "mapaUbicacionDe": "Location map of {{nombre}}",
+      "mapaEtiqueta": "Location map",
+      "mapaTitulo": "Project location map",
+      "elProyecto": "the project"
+    },
+    "videos": {
+      "comoLlegar": "How to get there?",
+      "tComoLlegar": "the how-to-get-there video",
+      "pieComoLlegar": "How-to-get-there video · {{nombre}}",
+      "tituloDefecto": "Project video",
+      "tVideo": "project video",
+      "pie": "Project video · {{nombre}}",
+      "mas": "More project videos",
+      "itemDefecto": "Video {{n}}"
+    },
+    "zonas": {
+      "titulo": "Amenities",
+      "tDestacadas": "the featured areas",
+      "filtrar": "Filter by area",
+      "todas": "All",
+      "galeria": "Common areas gallery",
+      "imagenesDe": "Images of {{nombre}}",
+      "cerrarImagenes": "Close images"
+    },
+    "tarjeta": {
+      "zona": "Common area",
+      "lote": "Lot",
+      "etapa": "Stage",
+      "zonaSin360": "This area does not have a 360° image yet.",
+      "loteSin360": "This lot does not have a 360° image yet.",
+      "buscando360": "Looking for the 360° image...",
+      "area": "Area:",
+      "estado": "Status:",
+      "etapaEtiqueta": "Stage:",
+      "etapaSinImagenes": "This stage does not have images yet.",
+      "buscandoImagenes": "Looking for images...",
+      "tZona": "area {{nombre}}",
+      "tLote": "lot {{nombre}}",
+      "tEtapa": "stage {{nombre}}",
+      "imagenesDe": "Images of {{nombre}}"
+    },
+    "medio": {
+      "abrirNueva": "Open {{titulo}} in a new tab",
+      "abrir": "Open {{titulo}}"
+    },
+    "visor": {
+      "recorrido": "360° tour: {{titulo}}"
+    }
+  },
+  "proyectos": {
+    "volver": "Back to Home",
+    "etiqueta": "FULL PORTFOLIO",
+    "titulo": "All Our Projects",
+    "subtitulo": "Explore all of our real estate developments and find the ideal space for you.",
+    "municipio": "Municipality",
+    "todosMunicipios": "All municipalities",
+    "tipo": "Project type",
+    "todosTipos": "All types",
+    "etapa": "Stage",
+    "todasEtapas": "All stages",
+    "quitarFiltros": "Clear filters",
+    "sinResultados": "No projects match those filters.",
+    "pais": "Colombia"
+  },
+  "legal": {
+    "volver": "Back to Home",
+    "otros": "Other documents:",
+    "otrosAria": "Other legal documents",
+    "noEncontradoTitulo": "Document not found",
+    "noEncontradoTexto": "The document you are looking for does not exist. Choose one from the list.",
+    "cortesia": "Courtesy translation.",
+    "cortesiaTexto": "Courtesy translation. In case of any discrepancy, the Spanish version prevails."
+  },
+  "seo": {
+    "descripcionDefecto": "Grupo Arquinova S.A.S.: architecture, engineering and management of residential, rural and tourism projects in Quindío.",
+    "paginaNoEncontrada": "Page not found",
+    "proyectosTitulo": "Projects",
+    "proyectosDescripcion": "Grupo Arquinova projects in Quindío: El Encanto and the cases in our architecture, engineering and management portfolio."
+  }
+}

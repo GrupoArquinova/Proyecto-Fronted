@@ -332,8 +332,8 @@ body {
 
 /* 3. EMPRESA SECTION */
 .about-section {
-  padding: 7rem 4rem;
-  background-color: #f8faf9;
+  padding: 6rem 4rem;
+  background-color: #eaf0ee;
   color: #333333;
 
   .section-header {
@@ -350,6 +350,38 @@ body {
       font-size: 1.08rem;
       line-height: 1.8;
       color: #4a5554;
+    }
+  }
+
+  // Misión, visión y valores: tarjetas sobrias debajo de "Quiénes somos"
+  .identity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.4rem;
+    max-width: 1000px;
+    margin: 3rem auto 0;
+  }
+
+  .identity-card {
+    padding: 1.6rem 1.7rem;
+    background: #ffffff;
+    border: 1px solid rgba(42, 102, 101, 0.14);
+    border-top: 4px solid $color-primary;
+    border-radius: 14px;
+
+    h3 {
+      margin: 0 0 0.7rem;
+      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+      font-size: 1.15rem;
+      color: #2c3e3b;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.7;
+      color: #4a5554;
+      white-space: pre-line;
     }
   }
 }
@@ -414,7 +446,11 @@ body {
 
 /* 4. CONTACTO SECTION */
 .contact-section {
-  padding: 7rem 4rem;
+  // Ocupa la ventana completa y deja la caja en el centro, debajo del menú fijo, para verla entera sin scroll
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 6rem 4rem 2.5rem;
   background-color: rgb(20, 30, 29);
 
   .contact-container-box {
@@ -422,11 +458,11 @@ body {
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1.2fr;
-    gap: 4rem;
+    gap: 3rem;
     background: $color-card-dark;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
-    padding: 3rem;
+    padding: 2.2rem 2.4rem;
     width: 100%;
 
     .contact-info {
@@ -494,7 +530,7 @@ body {
 
     .contact-form-card {
       background: rgb(25, 35, 34);
-      padding: 2.5rem;
+      padding: 1.8rem 2rem;
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.05);
 
@@ -502,7 +538,7 @@ body {
         font-size: 1.4rem;
         font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
         margin-top: 0;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
       }
 
       .form-row {
@@ -512,7 +548,7 @@ body {
       }
 
       .form-group {
-        margin-bottom: 1.2rem;
+        margin-bottom: 0.85rem;
 
         label {
           display: block;
@@ -525,7 +561,7 @@ body {
           width: 100%;
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.15);
-          padding: 0.75rem 1rem;
+          padding: 0.65rem 0.9rem;
           border-radius: 8px;
           color: #fff;
           font-size: 0.9rem;
@@ -545,6 +581,24 @@ body {
           background: #253533;
           color: #fff;
         }
+
+        // La casilla no debe heredar el ancho completo de los campos de texto
+        input[type='checkbox'] {
+          width: 16px;
+          height: 16px;
+          padding: 0;
+          flex-shrink: 0;
+          accent-color: #5eead4;
+        }
+      }
+
+      // Aviso de que basta con teléfono o correo; se pone rojo si se intentó enviar sin ninguno
+      .aviso-medio {
+        margin: -0.35rem 0 0.8rem;
+        font-size: 0.78rem;
+        color: $color-muted;
+
+        &.error { color: #fca5a5; }
       }
 
       .btn-submit {
@@ -697,6 +751,24 @@ body {
 }
 
 /* RESPONSIVE DESIGN */
+/* Barra superior en pantallas medianas y celulares horizontales: más compacta, para que quepan todos los enlaces y el selector de idioma */
+.navbar .nav-links .nav-item { white-space: nowrap; }
+
+@media (max-width: 1180px) {
+  .navbar { padding: 0.8rem 1.5rem; }
+  .navbar .nav-links { gap: 0.3rem; }
+  .navbar .nav-links .nav-item { padding: 0.4rem 0.75rem; font-size: 0.88rem; }
+}
+
+@media (max-width: 760px) {
+  .navbar { padding: 0.6rem 1rem; }
+  .navbar .logo { height: 32px; }
+  .navbar .nav-links { gap: 0.15rem; }
+  .navbar .nav-links .nav-item { padding: 0.35rem 0.5rem; font-size: 0.8rem; }
+  /* El acceso del panel es para el equipo interno: en el celular se oculta para dejar sitio al selector de idioma */
+  .navbar .nav-links .btn-admin { display: none; }
+}
+
 @media (max-width: 1024px) {
   .services-section .services-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -745,9 +817,6 @@ body {
 
     input[type="checkbox"] {
       margin-top: 0.2rem;
-      flex-shrink: 0;
-      width: 16px;
-      height: 16px;
       cursor: pointer;
     }
 

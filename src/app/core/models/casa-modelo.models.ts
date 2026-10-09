@@ -3,6 +3,7 @@ export interface CasaModelo {
   proyectoId: number;
   nombre: string;
   descripcion?: string;
+  descripcionEn?: string | null;
   areaConstruidaM2?: number;
   numeroHabitaciones?: number;
   numeroBanos?: number;

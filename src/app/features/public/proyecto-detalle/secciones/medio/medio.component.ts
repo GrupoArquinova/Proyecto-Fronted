@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed, inject, input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { clasificarMedio } from '../../../../../core/utils/medios';
@@ -9,6 +10,7 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
 @Component({
   selector: 'app-medio',
   standalone: true,
+  imports: [TranslocoPipe],
   host: { '[class.completo]': 'completo()' },
   template: `
     @switch (clasificado().tipo) {
@@ -25,10 +27,10 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
       }
       @case ('pdf') {
         <iframe [src]="pdfSeguro()" [title]="titulo()" loading="lazy"></iframe>
-        <a class="enlace" [href]="url()" target="_blank" rel="noopener">Abrir {{ titulo() }} en una pestaña nueva</a>
+        <a class="enlace" [href]="url()" target="_blank" rel="noopener">{{ 'proyecto.medio.abrirNueva' | transloco: { titulo: titulo() } }}</a>
       }
       @default {
-        <a class="enlace" [href]="url()" target="_blank" rel="noopener noreferrer">Abrir {{ titulo() }} &rarr;</a>
+        <a class="enlace" [href]="url()" target="_blank" rel="noopener noreferrer">{{ 'proyecto.medio.abrir' | transloco: { titulo: titulo() } }} &rarr;</a>
       }
     }
   `,
@@ -77,7 +79,7 @@ export class MedioComponent {
   private sanitizer = inject(DomSanitizer);
 
   readonly url = input.required<string>();
-  readonly titulo = input<string>('el recurso');
+  readonly titulo = input<string>('');
   /** Llena todo el espacio disponible, sin bordes redondeados (video a pantalla completa). */
   readonly completo = input(false);
 

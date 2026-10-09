@@ -2,12 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { App } from './app';
+import { provideI18nPruebas } from './i18n/pruebas';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([]), provideHttpClient()]
+      providers: [provideRouter([]), provideHttpClient(), provideI18nPruebas()]
     }).compileComponents();
   });
 

@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed, input, output } from '@angular/core';
 import { Lote } from '../../../../../core/models/lote.models';
 import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes';
@@ -9,14 +10,15 @@ import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes
 @Component({
   selector: 'app-plano-lotes',
   standalone: true,
+  imports: [TranslocoPipe],
   template: `
     @if (imagenUrl() && marcadores().length > 0) {
       <div class="plano">
-        <img [src]="imagenUrl()" alt="Plano del proyecto con la ubicación de los lotes" />
+        <img [src]="imagenUrl()" [alt]="'proyecto.planoLotes.alt' | transloco" />
         @for (m of marcadores(); track m.lote.id) {
           <button type="button" class="marca" [class]="m.estado" [class.activa]="m.lote.id === seleccionadoId()"
                   [style.left.%]="m.x" [style.top.%]="m.y"
-                  [attr.aria-label]="'Lote ' + m.lote.codigo + ', ' + m.estado"
+                  [attr.aria-label]="'proyecto.planoLotes.marca' | transloco: { codigo: m.lote.codigo, estado: ('estadoLote.' + m.estado | transloco) }"
                   (click)="seleccionar.emit(m.lote)">
             {{ m.lote.codigo }}
           </button>

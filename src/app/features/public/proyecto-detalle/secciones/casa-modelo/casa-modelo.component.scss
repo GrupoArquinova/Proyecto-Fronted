@@ -60,6 +60,30 @@
   strong { color: t.$verde; font-size: 1.15rem; margin-right: 0.2rem; }
 }
 
+// Botón para consultar por la villa: abre WhatsApp con el mensaje ya escrito
+.consultar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+  padding: 0.75rem 1.5rem;
+  background: t.$verde;
+  color: t.$blanco;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(t.$verde, 0.25);
+  transition: background 160ms cubic-bezier(0.23, 1, 0.32, 1), transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  svg { width: 20px; height: 20px; }
+  &:active { transform: scale(0.97); }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { background: t.$verde-claro; }
+  }
+}
+
 .descripcion {
   margin-top: 1.6rem;
   padding: 1.3rem 1.6rem;
@@ -80,7 +104,7 @@
   margin-bottom: 1.4rem;
   overflow: hidden;
   border: 2px solid t.$borde;
-  border-radius: 14px;
+  border-radius: t.$radio;
   box-shadow: t.$sombra;
 }
 

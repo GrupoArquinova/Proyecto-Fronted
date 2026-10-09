@@ -1,24 +1,26 @@
-import { Component, computed, input } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Lote } from '../../../../../core/models/lote.models';
 import { estadoDeLote, formatoArea, formatoPrecio } from '../../../../../core/utils/lotes';
+import { IdiomaService } from '../../../../../core/services/idioma.service';
 
 /** Ficha de un lote con su estado y el botón para pedir información (lleva el lote al formulario). */
 @Component({
   selector: 'app-lote-tarjeta',
   standalone: true,
-  imports: [RouterLink],
+  imports: [TranslocoPipe, RouterLink],
   template: `
     <article class="tarjeta">
-      <span class="etiqueta">Lote seleccionado</span>
+      <span class="etiqueta">{{ 'proyecto.loteTarjeta.etiqueta' | transloco }}</span>
       <h3>{{ lote().codigo }}</h3>
       @if (lote().nombre) { <p class="nombre">{{ lote().nombre }}</p> }
 
       <dl>
-        <div><dt>Área</dt><dd>{{ area() }}</dd></div>
-        <div><dt>Estado</dt><dd><span class="estado" [class]="estado().clave">{{ estado().etiqueta }}</span></dd></div>
-        @if (precio()) { <div><dt>Precio</dt><dd>{{ precio() }}</dd></div> }
-        @if (lote().etapaNombre) { <div><dt>Etapa</dt><dd>{{ lote().etapaNombre }}</dd></div> }
+        <div><dt>{{ 'proyecto.loteTarjeta.area' | transloco }}</dt><dd>{{ area() }}</dd></div>
+        <div><dt>{{ 'proyecto.loteTarjeta.estado' | transloco }}</dt><dd><span class="estado" [class]="estado().clave">{{ estado().clave === 'otro' ? estado().etiqueta : ('estadoLote.' + estado().clave | transloco) }}</span></dd></div>
+        @if (precio()) { <div><dt>{{ 'proyecto.loteTarjeta.precio' | transloco }}</dt><dd>{{ precio() }}</dd></div> }
+        @if (lote().etapaNombre) { <div><dt>{{ 'proyecto.loteTarjeta.etapa' | transloco }}</dt><dd>{{ lote().etapaNombre }}</dd></div> }
       </dl>
 
       @if (lote().descripcion) { <p class="texto">{{ lote().descripcion }}</p> }
@@ -26,7 +28,7 @@ import { estadoDeLote, formatoArea, formatoPrecio } from '../../../../../core/ut
 
       @if (estado().clave !== 'vendido') {
         <a class="boton" [routerLink]="['/proyectos', proyectoId(), 'contacto']" [queryParams]="{ lote: lote().id }">
-          Solicitar información
+          {{ 'proyecto.loteTarjeta.solicitar' | transloco }}
         </a>
       }
     </article>
@@ -64,10 +66,11 @@ import { estadoDeLote, formatoArea, formatoPrecio } from '../../../../../core/ut
   `]
 })
 export class LoteTarjetaComponent {
+  private idioma = inject(IdiomaService);
   readonly lote = input.required<Lote>();
   readonly proyectoId = input.required<number>();
 
   readonly estado = computed(() => estadoDeLote(this.lote()));
-  readonly area = computed(() => formatoArea(this.lote().areaM2));
+  readonly area = computed(() => formatoArea(this.lote().areaM2, this.idioma.idioma()));
   readonly precio = computed(() => formatoPrecio(this.lote().precio));
 }

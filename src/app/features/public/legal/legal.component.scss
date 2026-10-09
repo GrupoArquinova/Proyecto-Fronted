@@ -98,3 +98,11 @@ mark {
     &:hover { background: #eaf0ee; }
   }
 }
+
+/* Aviso de que el texto en inglés es una traducción de cortesía */
+.cortesia {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #6a6a6a;
+}

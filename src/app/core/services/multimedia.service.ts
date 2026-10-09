@@ -22,7 +22,7 @@ export class MultimediaService {
 
   /** Todos los recursos activos de una entidad. Para el administrador incluye los no publicados. */
   listarPorEntidad(
-    tipoEntidad: 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo',
+    tipoEntidad: 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo' | 'etapa',
     entidadId: number
   ): Observable<Multimedia[]> {
     return this.http.get<Multimedia[]>(`${this.apiUrl}/${tipoEntidad}/${entidadId}`);
@@ -30,7 +30,7 @@ export class MultimediaService {
 
   /** Recursos publicados de un proyecto, lote, zona común o casa modelo (sitio público). */
   listarPublicadosPorEntidad(
-    tipoEntidad: 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo',
+    tipoEntidad: 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo' | 'etapa',
     entidadId: number
   ): Observable<Multimedia[]> {
     return this.http.get<Multimedia[]>(`${this.apiUrl}/${tipoEntidad}/${entidadId}`, {

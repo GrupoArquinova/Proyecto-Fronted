@@ -164,6 +164,23 @@
                     <input type="file" accept="image/*" hidden [disabled]="subiendoZona() !== null"
                            (change)="subirZona360(punto, $event)" />
                   </label>
+                } @else if (esPlano() && punto.etapaId != null) {
+                  <button type="button" class="con-360 chip-imagenes" (click)="alternarEtapa(punto)"
+                          [attr.aria-expanded]="etapaAbierta() === punto.etapaId"
+                          title="Imágenes que se ven en la tarjeta de esta etapa">
+                    {{ imagenesDe(punto).length }} {{ imagenesDe(punto).length === 1 ? 'imagen' : 'imágenes' }}
+                  </button>
+                  <label class="enlace subir" [class.ocupado]="subiendoEtapa() === punto.etapaId">
+                    {{ subiendoEtapa() === punto.etapaId ? 'Subiendo...' : 'Subir imágenes' }}
+                    <input type="file" accept="image/*" multiple hidden [disabled]="subiendoEtapa() !== null"
+                           (change)="subirEtapa(punto, $event)" />
+                  </label>
+                  @if (tienePanoramaEtapa(punto)) { <span class="con-360" title="Esta etapa ya tiene su imagen 360°">360° ✓</span> }
+                  <label class="enlace subir" [class.ocupado]="subiendoEtapa() === punto.etapaId">
+                    {{ tienePanoramaEtapa(punto) ? 'Cambiar 360°' : 'Subir 360°' }}
+                    <input type="file" accept="image/*" hidden [disabled]="subiendoEtapa() !== null"
+                           (change)="subirEtapa360(punto, $event)" />
+                  </label>
                 } @else if (!esPlano() && punto.loteId == null) {
                   <span class="etiqueta-lugar">Lugar</span>
                   <button type="button" class="enlace" (click)="verEnLaImagen(punto)">Ver</button>
@@ -178,6 +195,18 @@
                 }
                 <button type="button" class="enlace peligro" (click)="quitar(punto)">Quitar</button>
               </li>
+              @if (esPlano() && punto.etapaId != null && etapaAbierta() === punto.etapaId) {
+                <li class="imagenes-etapa">
+                  @for (imagen of imagenesDe(punto); track imagen.id) {
+                    <figure>
+                      <img [src]="imagen.url" [alt]="imagen.titulo || 'Imagen de la etapa'" loading="lazy" />
+                      <button type="button" class="enlace peligro" (click)="quitarImagenEtapa(imagen)">Quitar</button>
+                    </figure>
+                  } @empty {
+                    <span>Esta etapa todavía no tiene imágenes. Pulsa «Subir imágenes».</span>
+                  }
+                </li>
+              }
             } @empty {
               <li class="sin-puntos">Todavía no hay botones en esta imagen.</li>
             }

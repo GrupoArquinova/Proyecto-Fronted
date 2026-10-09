@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { inicializarSeccion } from '../seccion.utils';
@@ -13,7 +14,7 @@ import { esLugarCercano } from '../../../../../core/utils/puntos';
 @Component({
   selector: 'app-ubicacion',
   standalone: true,
-  imports: [MedioComponent, Visor360Component, PlanoPuntosComponent, TarjetaPuntoComponent, CarruselLaminasComponent],
+  imports: [TranslocoPipe, MedioComponent, Visor360Component, PlanoPuntosComponent, TarjetaPuntoComponent, CarruselLaminasComponent],
   templateUrl: './ubicacion.component.html',
   styleUrl: './ubicacion.component.scss'
 })

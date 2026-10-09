@@ -1,7 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Solicitud } from '../../../core/models/solicitud.models';
+import { EstadoSolicitud, Solicitud } from '../../../core/models/solicitud.models';
+import {
+  claseEstadoSolicitud, etiquetaEstadoSolicitud, etiquetaEstadoSolicitudPlural
+} from '../../../core/utils/solicitudes';
 import { SolicitudService } from '../../../core/services/solicitud.service';
 import { ToastService } from '../../../core/services/toast.service';
 
@@ -17,6 +20,11 @@ export class SolicitudesComponent implements OnInit {
   private toastService = inject(ToastService);
 
   listaSolicitudes: Solicitud[] = [];
+  /** Estados de atención (NUEVO, EN_GESTION, CERRADO): salen del servidor, no están escritos aquí. */
+  estados: EstadoSolicitud[] = [];
+  readonly etiquetaEstado = etiquetaEstadoSolicitud;
+  readonly etiquetaEstadoPlural = etiquetaEstadoSolicitudPlural;
+  readonly claseEstado = claseEstadoSolicitud;
   cargando = false;
   filtroEstado: number | null = null;
 
@@ -25,7 +33,25 @@ export class SolicitudesComponent implements OnInit {
   observacionTemporal = '';
 
   ngOnInit(): void {
+    this.cargarEstados();
     this.cargarSolicitudes();
+  }
+
+  cargarEstados(): void {
+    this.solicitudService.obtenerEstados().subscribe({
+      next: (data) => this.estados = data.filter(e => e.activo).sort((a, b) => a.orden - b.orden),
+      error: (err) => {
+        console.error('Error al cargar los estados:', err);
+        this.toastService.showError('No se pudieron cargar los estados de las solicitudes');
+      }
+    });
+  }
+
+  /** Enlace de WhatsApp con el teléfono de la persona (solo dígitos; 57 por defecto si es un celular colombiano de 10). */
+  enlaceWhatsapp(telefono: string | null | undefined): string | null {
+    const digitos = (telefono ?? '').replace(/\D/g, '');
+    if (digitos.length < 7) return null;
+    return `https://wa.me/${digitos.length === 10 ? '57' + digitos : digitos}`;
   }
 
   cargarSolicitudes(): void {
@@ -70,16 +96,6 @@ export class SolicitudesComponent implements OnInit {
     });
   }
 
-  obtenerClaseEstado(estadoId: number): string {
-    switch (estadoId) {
-      case 1: return 'badge-nueva';
-      case 2: return 'badge-contactada';
-      case 3: return 'badge-seguimiento';
-      case 4: return 'badge-atendida';
-      case 6: return 'badge-cerrada';
-      default: return 'badge-nueva';
-    }
-  }
 
   abrirModalNotas(solicitud: Solicitud): void {
     this.solicitudSeleccionada = solicitud;

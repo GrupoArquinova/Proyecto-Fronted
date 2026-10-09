@@ -2,21 +2,21 @@
   @case ('cargando') {
     <div class="estado-pantalla" role="status">
       <div class="spinner"></div>
-      <p>Cargando proyecto...</p>
+      <p>{{ 'proyecto.estado.cargando' | transloco }}</p>
     </div>
   }
   @case ('no-encontrado') {
     <div class="estado-pantalla">
-      <h2>Proyecto no encontrado</h2>
-      <p>El proyecto que buscas no existe o aún no está disponible.</p>
-      <a routerLink="/proyectos" class="btn-estado">&larr; Ver todos los proyectos</a>
+      <h2>{{ 'proyecto.estado.noEncontradoTitulo' | transloco }}</h2>
+      <p>{{ 'proyecto.estado.noEncontradoTexto' | transloco }}</p>
+      <a routerLink="/proyectos" class="btn-estado">&larr; {{ 'proyecto.estado.verTodos' | transloco }}</a>
     </div>
   }
   @case ('error') {
     <div class="estado-pantalla">
-      <h2>No pudimos cargar el proyecto</h2>
-      <p>Revisa tu conexión e inténtalo de nuevo.</p>
-      <button type="button" class="btn-estado" (click)="reintentar()">Reintentar</button>
+      <h2>{{ 'proyecto.estado.errorTitulo' | transloco }}</h2>
+      <p>{{ 'proyecto.estado.errorTexto' | transloco }}</p>
+      <button type="button" class="btn-estado" (click)="reintentar()">{{ 'proyecto.estado.reintentar' | transloco }}</button>
     </div>
   }
   @case ('listo') {
@@ -26,12 +26,12 @@
       <div class="fondo" aria-hidden="true"
            [style.backgroundImage]="proyecto()?.imagenUrl ? 'url(' + proyecto()?.imagenUrl + ')' : null"></div>
 
-      <button type="button" class="btn-menu-movil" (click)="menuMovilAbierto.set(true)" aria-label="Abrir menú">
+      <button type="button" class="btn-menu-movil" (click)="menuMovilAbierto.set(true)" [attr.aria-label]="'proyecto.armazon.abrirMenu' | transloco">
         &#9776;
       </button>
       <div class="velo" (click)="cerrarMenuMovil()"></div>
 
-      <aside class="menu" aria-label="Secciones del proyecto">
+      <aside class="menu" [attr.aria-label]="'proyecto.armazon.secciones' | transloco">
         <header class="menu-marca">
           <span class="sello">Arquinova</span>
           <h1>{{ proyecto()?.nombre }}</h1>
@@ -74,29 +74,23 @@
         </nav>
 
         <footer class="menu-pie">
-          <a routerLink="/proyectos">&larr; Todos los proyectos</a>
+          <a routerLink="/proyectos">&larr; {{ 'proyecto.armazon.todosProyectos' | transloco }}</a>
+          <!-- Se abren en otra pestaña para no sacar a la persona del proyecto que está viendo -->
+          <nav class="enlaces-legales" [attr.aria-label]="'proyecto.armazon.informacionLegal' | transloco">
+            <a routerLink="/legal/politica-datos" target="_blank">{{ 'proyecto.armazon.datos' | transloco }}</a>
+            <a routerLink="/legal/terminos" target="_blank">{{ 'proyecto.armazon.terminos' | transloco }}</a>
+            <a routerLink="/legal/cookies" target="_blank">{{ 'proyecto.armazon.cookies' | transloco }}</a>
+          </nav>
+          <app-selector-idioma variante="cristal" />
         </footer>
       </aside>
 
       <button type="button" class="btn-colapsar" (click)="menuColapsado.set(!menuColapsado())"
-              [attr.aria-label]="menuColapsado() ? 'Mostrar menú' : 'Ocultar menú'">
+              [attr.aria-label]="(menuColapsado() ? 'proyecto.armazon.mostrarMenu' : 'proyecto.armazon.ocultarMenu') | transloco">
         {{ menuColapsado() ? '›' : '‹' }}
       </button>
 
-      @if (pantallaCompletaDisponible()) {
-        <button type="button" class="btn-pantalla" (click)="alternarPantallaCompleta()"
-                [attr.aria-label]="pantallaCompleta() ? 'Salir de pantalla completa' : 'Pantalla completa'"
-                [title]="pantallaCompleta() ? 'Salir de pantalla completa' : 'Pantalla completa'">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-               stroke-linejoin="round" aria-hidden="true">
-            @if (pantallaCompleta()) {
-              <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
-            } @else {
-              <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
-            }
-          </svg>
-        </button>
-      }
+      <app-boton-pantalla-completa />
 
       <main class="contenido">
         <div class="barra">

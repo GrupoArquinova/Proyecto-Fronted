@@ -136,9 +136,9 @@ app-root {
     display: none !important;
   }
 }
-/* En el micrositio de proyecto el botón de pantalla completa va debajo de WhatsApp */
-body.micrositio .whatsapp-btn-float { bottom: 80px; }
-body.micrositio .whatsapp-modal-container { bottom: 150px; }
+/* Donde hay botón de pantalla completa (home y micrositio de proyecto), va debajo de WhatsApp */
+body.con-pantalla-completa .whatsapp-btn-float { bottom: 80px; }
+body.con-pantalla-completa .whatsapp-modal-container { bottom: 150px; }
 
 /* ===== Panel de administración: tipografía (Bahnschrift, estilo DIN) =====
    La pila de fuentes vive en shared/styles/admin-tokens.scss ($font-ui). Aquí solo se reparte a los controles de
@@ -148,4 +148,18 @@ body.micrositio .whatsapp-modal-container { bottom: 150px; }
   h1, h2, h3, h4 { font-weight: 600; letter-spacing: 0.01em; }
   th { letter-spacing: 0.04em; }
   table, td, th { font-variant-numeric: tabular-nums; }
+}
+
+/* ===== Micrositio: entrada suave de cada vista =====
+   La sección que se abre aparece con un desvanecimiento corto y un desplazamiento de 8 px (ease-out fuerte, 220 ms).
+   Solo opacidad y transform; "backwards" para que al terminar no quede ningún transform aplicado (rompería los
+   elementos con position: fixed de dentro). No se aplica a las vistas a pantalla completa. */
+@keyframes entrada-vista {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.visor:not(.inmersivo) .pagina > :not(router-outlet) {
+  animation: entrada-vista 220ms cubic-bezier(0.23, 1, 0.32, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .visor:not(.inmersivo) .pagina > :not(router-outlet) { animation: none; }
 }

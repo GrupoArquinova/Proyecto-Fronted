@@ -1,5 +1,5 @@
 @if (actual(); as lamina) {
-  <section class="carrusel" [attr.aria-label]="etiqueta()" [class.sin-miniaturas]="!miniaturasVisibles()">
+  <section class="carrusel" [attr.aria-label]="etiqueta() || ('proyecto.bienvenida.imagenes' | transloco)" [class.sin-miniaturas]="!miniaturasVisibles()">
     <!-- Clic en la mitad izquierda: imagen anterior; en la derecha: siguiente (también se desliza en táctil) -->
     <div class="imagen" (click)="clicEnImagen($event)" (pointerdown)="pista.set(false)" (touchstart)="inicioToque($event)" (touchend)="finToque($event)">
       <img [src]="lamina.url" [alt]="lamina.titulo || alt()" draggable="false" />
@@ -7,8 +7,8 @@
 
     @if (ampliable()) {
       <button type="button" class="ampliar" (click)="alternarAmpliada()"
-              [attr.aria-label]="ampliada() ? 'Salir de pantalla completa' : 'Ver la imagen en pantalla completa'"
-              [title]="ampliada() ? 'Salir de pantalla completa' : 'Pantalla completa'">
+              [attr.aria-label]="(ampliada() ? 'proyecto.carrusel.salirPantalla' : 'proyecto.carrusel.verPantalla') | transloco"
+              [title]="(ampliada() ? 'proyecto.carrusel.salirPantalla' : 'comun.pantallaCompleta') | transloco">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
              stroke-linejoin="round" aria-hidden="true">
           @if (ampliada()) {
@@ -32,10 +32,10 @@
     }
 
     @if (laminas().length > 1) {
-      <button type="button" class="ver-miniaturas" (click)="miniaturasVisibles.set(!miniaturasVisibles())"
+      <button type="button" class="ver-miniaturas" (click)="alternarMiniaturas()"
               [attr.aria-expanded]="miniaturasVisibles()"
-              [attr.aria-label]="miniaturasVisibles() ? 'Ocultar imágenes' : 'Ver imágenes'"
-              [title]="miniaturasVisibles() ? 'Ocultar imágenes' : 'Ver imágenes'">
+              [attr.aria-label]="(miniaturasVisibles() ? 'proyecto.carrusel.ocultarImagenes' : 'proyecto.carrusel.verImagenes') | transloco"
+              [title]="(miniaturasVisibles() ? 'proyecto.carrusel.ocultarImagenes' : 'proyecto.carrusel.verImagenes') | transloco">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path [attr.d]="miniaturasVisibles() ? 'M5 9l7 7 7-7' : 'M5 15l7-7 7 7'" />
         </svg>
@@ -43,16 +43,16 @@
 
       <!-- Flechas sueltas a los lados de la tira de imágenes; quedan visibles aunque la tira se esconda -->
       <div class="barra">
-        <button type="button" class="flecha" (click)="anterior()" aria-label="Imagen anterior">
+        <button type="button" class="flecha" (click)="anterior()" [attr.aria-label]="'proyecto.carrusel.anterior' | transloco">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4l-8 8 8 8" /></svg>
         </button>
 
         @if (miniaturasVisibles()) {
-          <ul class="miniaturas" aria-label="Elegir imagen">
+          <ul class="miniaturas" [attr.aria-label]="'proyecto.carrusel.elegir' | transloco">
             @for (item of laminas(); track item.url; let i = $index) {
               <li>
                 <button type="button" [class.activa]="i === indiceActual()" (click)="irA(i)"
-                        [attr.aria-label]="'Ver imagen ' + (i + 1) + ' de ' + laminas().length"
+                        [attr.aria-label]="'proyecto.carrusel.verN' | transloco: { n: i + 1, total: laminas().length }"
                         [attr.aria-current]="i === indiceActual()">
                   <img [src]="item.url" alt="" loading="lazy" />
                 </button>
@@ -63,7 +63,7 @@
           <span class="espacio"></span>
         }
 
-        <button type="button" class="flecha" (click)="siguiente()" aria-label="Imagen siguiente">
+        <button type="button" class="flecha" (click)="siguiente()" [attr.aria-label]="'proyecto.carrusel.siguiente' | transloco">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4l8 8-8 8" /></svg>
         </button>
       </div>

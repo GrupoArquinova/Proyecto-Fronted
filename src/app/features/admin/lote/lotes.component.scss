@@ -222,6 +222,22 @@ $bg-main: t.$bg-page;
   }
 }
 
+.btn-eliminar {
+  background: transparent;
+  border: none;
+  color: $text-muted;
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+
+  &:hover {
+    color: #dc2626;
+    background-color: #fef2f2;
+  }
+}
+
 /* Modal Overlay & Card */
 .modal-overlay {
   position: fixed;

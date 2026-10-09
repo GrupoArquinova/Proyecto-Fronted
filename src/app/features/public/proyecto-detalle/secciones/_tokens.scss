@@ -18,6 +18,13 @@ $sombra: 0 6px 24px rgba($verde, 0.1);
 $sombra-fuerte: 0 14px 40px rgba($verde, 0.18);
 $radio: 16px;
 
+// Panel de contenido del micrositio: marfil con un matiz verde (no blanco puro, que contrasta demasiado con el menú
+// translúcido) y una sombra tintada del mismo verde oscuro del fondo en vez de negra.
+$superficie: #f8faf8;
+// Vidrio claro del panel: lo bastante opaco (86 %) para que el texto verde y gris mantenga buen contraste sobre la foto.
+$superficie-vidrio: rgba(248, 250, 248, 0.86);
+$sombra-panel: 0 16px 48px rgba(8, 30, 28, 0.34);
+
 // Estados de los lotes: único lugar donde se usan colores fuera de la marca,
 // porque el significado (libre / apartado / vendido) debe entenderse de un vistazo.
 $disponible: #2f9e63;

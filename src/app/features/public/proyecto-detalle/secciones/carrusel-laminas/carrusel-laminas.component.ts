@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { DOCUMENT } from '@angular/common';
 import { Component, ElementRef, HostListener, OnDestroy, computed, effect, inject, input, signal } from '@angular/core';
 
@@ -15,6 +16,7 @@ export interface Lamina {
 @Component({
   selector: 'app-carrusel-laminas',
   standalone: true,
+  imports: [TranslocoPipe],
   templateUrl: './carrusel-laminas.component.html',
   styleUrl: './carrusel-laminas.component.scss',
   host: { '[class.en-marco]': 'enMarco()', '[class.ampliada]': 'ampliada()' }
@@ -22,8 +24,8 @@ export interface Lamina {
 export class CarruselLaminasComponent implements OnDestroy {
   readonly laminas = input.required<Lamina[]>();
   /** Texto alternativo cuando la lámina no tiene título. */
-  readonly alt = input('Imagen del proyecto');
-  readonly etiqueta = input('Imágenes del proyecto');
+  readonly alt = input('');
+  readonly etiqueta = input('');
   /** Muestra el título de la imagen sobre las miniaturas (por ejemplo, la zona a la que pertenece). */
   readonly leyenda = input(false);
 
@@ -45,13 +47,16 @@ export class CarruselLaminasComponent implements OnDestroy {
   /** Mano con flechas sobre la imagen: se muestra hasta que el cliente toca el carrusel por primera vez. */
   readonly pista = signal(true);
 
+  /** La persona escondió la tira con la flecha de abajo: al cambiar de imagen no vuelve a aparecer sola. */
+  private escondidaPorLaPersona = false;
+
   private indice = signal(0);
   private temporizador: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
     effect(() => {
       this.indiceActual();
-      if (!this.enMarco()) return;
+      if (!this.enMarco() || this.escondidaPorLaPersona) return;
       this.miniaturasVisibles.set(true);
       if (this.temporizador) clearTimeout(this.temporizador);
       this.temporizador = setTimeout(() => this.miniaturasVisibles.set(false), 2000);
@@ -98,6 +103,14 @@ export class CarruselLaminasComponent implements OnDestroy {
 
   readonly indiceActual = computed(() => Math.min(this.indice(), Math.max(0, this.laminas().length - 1)));
   readonly actual = computed(() => this.laminas()[this.indiceActual()] ?? null);
+
+  /** La flecha de abajo: esconde o muestra la tira, y recuerda que fue decisión de la persona. */
+  alternarMiniaturas(): void {
+    if (this.temporizador) clearTimeout(this.temporizador);
+    const visibles = this.miniaturasVisibles();
+    this.escondidaPorLaPersona = visibles;
+    this.miniaturasVisibles.set(!visibles);
+  }
 
   irA(i: number): void {
     this.pista.set(false);

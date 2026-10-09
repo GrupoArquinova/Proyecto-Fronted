@@ -31,6 +31,14 @@
           <label>Contenido</label>
           <textarea [(ngModel)]="nuevaSeccion.contenido" name="contenido" rows="3" placeholder="Escribe el contenido institucional..." required></textarea>
         </div>
+        <div class="form-group">
+          <label>Título en inglés (opcional)</label>
+          <input type="text" [(ngModel)]="nuevaSeccion.tituloEn" name="tituloEn" placeholder="e.g. Our Vision">
+        </div>
+        <div class="form-group">
+          <label>Contenido en inglés (opcional)</label>
+          <textarea [(ngModel)]="nuevaSeccion.contenidoEn" name="contenidoEn" rows="3" placeholder="English text. If empty, the site shows the Spanish text."></textarea>
+        </div>
         <div class="form-actions">
           <div class="switch-container">
             <span>{{ nuevaSeccion.publicado ? 'Publicado' : 'Oculto' }}</span>
@@ -73,6 +81,8 @@
       <!-- Cuerpo de la tarjeta -->
       <div class="card-body">
         <textarea [(ngModel)]="item.contenido" rows="4" placeholder="Escribe el contenido institucional..."></textarea>
+        <label class="etiqueta-ingles">Texto en inglés (opcional)</label>
+        <textarea [(ngModel)]="item.contenidoEn" rows="4" placeholder="English text. If empty, the site shows the Spanish text."></textarea>
       </div>
 
       <!-- Pie con botón de Eliminar mejorado, auditoría y botón de actualizar -->

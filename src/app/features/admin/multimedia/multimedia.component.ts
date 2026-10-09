@@ -7,6 +7,8 @@ import { Proyecto } from '../../../core/models/proyecto.models';
 import { Lote } from '../../../core/models/lote.models';
 import { ZonaComun } from '../../../core/models/zona-comun.models';
 import { CasaModelo } from '../../../core/models/casa-modelo.models';
+import { Etapa } from '../../../core/models/etapa.models';
+import { EtapaService } from '../../../core/services/etapa.service';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { LoteService } from '../../../core/services/lote.service';
 import { MultimediaService } from '../../../core/services/multimedia.service';
@@ -14,7 +16,7 @@ import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
-type TipoPadre = 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo';
+type TipoPadre = 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo' | 'etapa';
 
 @Component({
   selector: 'app-multimedia',
@@ -25,6 +27,7 @@ type TipoPadre = 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo';
 })
 export class MultimediaComponent implements OnInit, OnDestroy {
   private multimediaService = inject(MultimediaService);
+  private etapaService = inject(EtapaService);
   private proyectoService = inject(ProyectoService);
   private loteService = inject(LoteService);
   private cloudinaryService = inject(CloudinaryService);
@@ -37,6 +40,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
   lotesDisponibles: Lote[] = [];
   zonasComunesDisponibles: ZonaComun[] = [];
   casasModelosDisponibles: CasaModelo[] = [];
+  etapasDisponibles: Etapa[] = [];
 
   cargando = false;
   mostrarModal = false;
@@ -66,6 +70,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     loteId: null as number | null,
     zonaComunId: null as number | null,
     casaModeloId: null as number | null,
+    etapaId: null as number | null,
     tipo: 'IMAGEN' as TipoMultimedia,
     titulo: '',
     descripcion: '',
@@ -142,15 +147,18 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     this.formData.loteId = null;
     this.formData.zonaComunId = null;
     this.formData.casaModeloId = null;
+    this.formData.etapaId = null;
     this.proyectoReferenciaId = null;
     this.zonasComunesDisponibles = [];
     this.casasModelosDisponibles = [];
+    this.etapasDisponibles = [];
   }
 
   onCambioProyectoReferencia(): void {
     if (!this.proyectoReferenciaId) {
       this.zonasComunesDisponibles = [];
       this.casasModelosDisponibles = [];
+      this.etapasDisponibles = [];
       return;
     }
 
@@ -160,6 +168,14 @@ export class MultimediaComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Error cargando zonas comunes:', err);
           this.toastService.showError('Error cargando zonas comunes');
+        }
+      });
+    } else if (this.tipoPadre === 'etapa') {
+      this.etapaService.listarPorProyecto(this.proyectoReferenciaId).subscribe({
+        next: (res) => this.etapasDisponibles = res,
+        error: (err) => {
+          console.error('Error cargando etapas:', err);
+          this.toastService.showError('Error cargando etapas');
         }
       });
     } else if (this.tipoPadre === 'casaModelo') {
@@ -216,6 +232,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     this.proyectoReferenciaId = null;
     this.zonasComunesDisponibles = [];
     this.casasModelosDisponibles = [];
+    this.etapasDisponibles = [];
     this.errorArchivo = '';
     this.nombreArchivoSeleccionado = '';
     this.formData = {
@@ -223,6 +240,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       loteId: null,
       zonaComunId: null,
       casaModeloId: null,
+      etapaId: null,
       tipo: 'IMAGEN',
       titulo: '',
       descripcion: '',
@@ -246,6 +264,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     if (item.proyectoId) this.tipoPadre = 'proyecto';
     else if (item.loteId) this.tipoPadre = 'lote';
     else if (item.zonaComunId) this.tipoPadre = 'zonaComun';
+    else if (item.etapaId) this.tipoPadre = 'etapa';
     else this.tipoPadre = 'casaModelo';
 
     this.formData = {
@@ -253,6 +272,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       loteId: item.loteId ?? null,
       zonaComunId: item.zonaComunId ?? null,
       casaModeloId: item.casaModeloId ?? null,
+      etapaId: item.etapaId ?? null,
       tipo: item.tipo,
       titulo: item.titulo ?? '',
       descripcion: item.descripcion ?? '',
@@ -287,7 +307,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error al guardar multimedia:', err);
-        this.toastService.showError('Error al guardar archivo multimedia');
+        this.toastService.showError(err?.error?.mensaje || 'Error al guardar archivo multimedia');
         this.guardando = false;
       }
     });
@@ -349,6 +369,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     if (item.loteCodigo) return `Lote: ${item.loteCodigo}`;
     if (item.zonaComunNombre) return `Zona común: ${item.zonaComunNombre}`;
     if (item.casaModeloNombre) return `Tipología: ${item.casaModeloNombre}`;
+    if (item.etapaNombre) return `Etapa: ${item.etapaNombre}`;
     return 'Sin vínculo';
   }
 

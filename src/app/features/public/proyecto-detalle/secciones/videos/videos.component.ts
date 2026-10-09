@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed, signal } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { MedioComponent } from '../medio/medio.component';
@@ -5,7 +6,7 @@ import { MedioComponent } from '../medio/medio.component';
 @Component({
   selector: 'app-videos-publico',
   standalone: true,
-  imports: [MedioComponent],
+  imports: [TranslocoPipe, MedioComponent],
   templateUrl: './videos.component.html',
   styleUrl: './videos.component.scss'
 })

@@ -25,6 +25,7 @@ export interface Lote {
   areaM2: number;
   precio?: number;
   descripcion?: string;
+  descripcionEn?: string | null;
   caracteristicas?: string;
   posicionX?: number;
   posicionY?: number;

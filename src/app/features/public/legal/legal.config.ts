@@ -18,6 +18,23 @@ export const EMPRESA_LEGAL: Record<string, string> = {
   licenciasProyecto: ''
 };
 
+/** Datos que cambian de forma según el idioma (la fecha). */
+export const EMPRESA_LEGAL_EN: Record<string, string> = { fechaVigencia: 'October 7, 2026' };
+
+/** Nombre de cada campo en inglés, para el aviso "[to be completed: …]". */
+export const ETIQUETA_CAMPO_EN: Record<string, string> = {
+  razonSocial: 'company name',
+  nit: 'NIT',
+  domicilio: 'domicile',
+  direccion: 'address',
+  correoDatos: 'email for personal data matters',
+  telefono: 'phone',
+  sitioWeb: 'website',
+  areaResponsable: 'department or person responsible for personal data',
+  fechaVigencia: 'effective date',
+  licenciasProyecto: 'licenses, permits and developer registration of the project'
+};
+
 /** Nombre legible de cada campo, para el aviso "[por completar: …]". */
 export const ETIQUETA_CAMPO: Record<string, string> = {
   razonSocial: 'razón social',
@@ -38,7 +55,10 @@ export interface ParteTexto {
 }
 
 /** Reemplaza {{campo}} por su valor; si el campo está vacío devuelve una parte marcada como pendiente. */
-export function partesDeTexto(texto: string, datos: Record<string, string> = EMPRESA_LEGAL): ParteTexto[] {
+export function partesDeTexto(texto: string, idioma: string = 'es'): ParteTexto[] {
+  const ingles = idioma === 'en';
+  const datos = ingles ? { ...EMPRESA_LEGAL, ...EMPRESA_LEGAL_EN } : EMPRESA_LEGAL;
+  const etiquetas = ingles ? ETIQUETA_CAMPO_EN : ETIQUETA_CAMPO;
   const partes: ParteTexto[] = [];
   let resto = texto;
   const re = /\{\{(\w+)\}\}/;
@@ -49,7 +69,7 @@ export function partesDeTexto(texto: string, datos: Record<string, string> = EMP
     const valor = (datos[m[1]] ?? '').trim();
     partes.push(valor
       ? { texto: valor, pendiente: false }
-      : { texto: `[por completar: ${ETIQUETA_CAMPO[m[1]] ?? m[1]}]`, pendiente: true });
+      : { texto: `[${ingles ? 'to be completed' : 'por completar'}: ${etiquetas[m[1]] ?? m[1]}]`, pendiente: true });
     resto = resto.slice(m.index + m[0].length);
   }
   if (resto) partes.push({ texto: resto, pendiente: false });
