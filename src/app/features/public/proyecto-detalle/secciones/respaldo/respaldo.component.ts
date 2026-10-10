@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { CarruselLaminasComponent } from '../carrusel-laminas/carrusel-laminas.component';
@@ -9,10 +10,10 @@ import { CarruselLaminasComponent } from '../carrusel-laminas/carrusel-laminas.c
 @Component({
   selector: 'app-respaldo-publico',
   standalone: true,
-  imports: [CarruselLaminasComponent],
+  imports: [TranslocoPipe, CarruselLaminasComponent],
   template: `
     @if (laminas().length > 0) {
-      <app-carrusel-laminas [laminas]="laminas()" [alt]="'Respaldo de ' + nombre()" etiqueta="Respaldo del proyecto" />
+      <app-carrusel-laminas [laminas]="laminas()" [alt]="'proyecto.respaldo.alt' | transloco: { nombre: nombre() }" [etiqueta]="'proyecto.respaldo.etiqueta' | transloco" />
     }
   `
 })
@@ -20,5 +21,5 @@ export class RespaldoPublicoComponent {
   private seccion = inicializarSeccion('respaldo');
 
   readonly laminas = this.seccion.datos.respaldo;
-  readonly nombre = computed(() => this.seccion.detalle()?.proyecto.nombre ?? 'el proyecto');
+  readonly nombre = computed(() => this.seccion.detalle()?.proyecto.nombre ?? '');
 }

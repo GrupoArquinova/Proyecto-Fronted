@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, input, output } from '@angular/core';
 import { Punto360 } from '../../../../../core/models/punto-360.models';
 
@@ -14,13 +15,14 @@ export interface PosicionPlano360 {
 @Component({
   selector: 'app-plano-puntos',
   standalone: true,
+  imports: [TranslocoPipe],
   templateUrl: './plano-puntos.component.html',
   styleUrl: './plano-puntos.component.scss',
   host: { '[class.completo]': 'completo()' }
 })
 export class PlanoPuntosComponent {
   readonly url = input.required<string>();
-  readonly titulo = input('el plano de urbanismo');
+  readonly titulo = input('');
   readonly completo = input(false);
   readonly puntos = input<Punto360[]>([]);
   /** Marca temporal del editor: dónde se va a colocar un botón nuevo. */

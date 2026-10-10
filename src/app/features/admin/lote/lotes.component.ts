@@ -6,6 +6,7 @@ import { Proyecto } from '../../../core/models/proyecto.models';
 import { LoteService } from '../../../core/services/lote.service';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-lotes',
@@ -18,6 +19,7 @@ export class LotesComponent implements OnInit {
   private loteService = inject(LoteService);
   private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   lotes: Lote[] = [];
   lotesFiltrados: Lote[] = []; // Lista que se renderiza en la tabla
@@ -48,13 +50,35 @@ export class LotesComponent implements OnInit {
     proyectoId: null as number | null,
     etapaId: null as number | null,
     estadoId: 1,
-    descripcion: ''
+    descripcion: '',
+    descripcionEn: ''
   };
 
   ngOnInit(): void {
     this.cargarLotes();
     this.cargarProyectos();
     this.cargarEtapas();
+  }
+
+  async eliminarLote(lote: Lote): Promise<void> {
+    if (lote.id == null) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar lote',
+      message: `¿Eliminar el lote "${lote.codigo}"? Se borra de forma permanente, junto con su historial y sus imágenes. Si solo quieres ocultarlo, desactívalo.`,
+      confirmText: 'Sí, eliminar',
+      type: 'danger'
+    });
+    if (!ok) return;
+    this.loteService.eliminarLote(lote.id).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Lote eliminado correctamente');
+        this.cargarLotes();
+      },
+      error: (err) => {
+        console.error('Error al eliminar el lote:', err);
+        this.toastService.showError(err?.error?.mensaje || 'Error al eliminar el lote');
+      }
+    });
   }
 
   cargarLotes(): void {
@@ -166,7 +190,8 @@ export class LotesComponent implements OnInit {
       proyectoId: null,
       etapaId: null,
       estadoId: 1,
-      descripcion: ''
+      descripcion: '',
+      descripcionEn: ''
     };
     this.etapasFiltradas = [];
     this.mostrarModal = true;
@@ -186,6 +211,7 @@ export class LotesComponent implements OnInit {
       nombre: this.nuevoLote.nombre,
       areaM2: Number(this.nuevoLote.areaM2),
       descripcion: this.nuevoLote.descripcion,
+      descripcionEn: this.nuevoLote.descripcionEn,
       etapaId: Number(this.nuevoLote.etapaId),
       estadoId: Number(this.nuevoLote.estadoId),
       activo: true,
@@ -274,7 +300,8 @@ export class LotesComponent implements OnInit {
       proyectoId: proyectoId,
       etapaId: etapaId ?? null,
       estadoId: lote.estadoId || 1,
-      descripcion: lote.descripcion || ''
+      descripcion: lote.descripcion || '',
+      descripcionEn: lote.descripcionEn || ''
     };
     
     if (proyectoId) {

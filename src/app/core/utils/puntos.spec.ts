@@ -24,6 +24,7 @@ describe('puntos', () => {
     expect(esLugarCercano({ loteId: null, etapaId: undefined })).toBe(true);
     expect(esLugarCercano({ loteId: 5 })).toBe(false);
     expect(esLugarCercano({ etapaId: 2 })).toBe(false);
+    expect(esLugarCercano({ zonaComunId: 3 })).toBe(false);
 
     const html = htmlDePin({ etiqueta: 'Jericó <script>', loteId: null, etapaId: null });
     expect(html).toContain('class="pin-lugar"');
@@ -31,8 +32,9 @@ describe('puntos', () => {
     expect(html).not.toContain('<small>');
   });
 
-  it('solo los puntos de urbanismo se ubican por porcentaje', () => {
+  it('los puntos de urbanismo y de zonas destacadas se ubican por porcentaje', () => {
     expect(esPuntoDePlano({ escena: 'URBANISMO' })).toBe(true);
+    expect(esPuntoDePlano({ escena: 'ZONAS' })).toBe(true);
     expect(esPuntoDePlano({ escena: 'ENTORNO' })).toBe(false);
     expect(esPuntoDePlano({ escena: 'AEREA' })).toBe(false);
   });

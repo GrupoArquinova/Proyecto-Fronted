@@ -1,3 +1,4 @@
+@use '../../../shared/styles/admin-tokens' as t;
 .resumen {
   padding: 2.5rem 3rem;
   font-family: inherit;
@@ -5,7 +6,7 @@
 }
 
 .titulo {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: t.$font-ui;
   font-size: 2.25rem;
   font-weight: 400;
   color: #1f2b28;
@@ -39,7 +40,7 @@
 }
 
 .stat-numero {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: t.$font-ui;
   font-size: 2.5rem;
   font-weight: 400;
   color: #1f2b28;
@@ -70,7 +71,7 @@
 }
 
 .panel-titulo {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: t.$font-ui;
   font-size: 1.35rem;
   font-weight: 400;
   color: #1f2b28;
@@ -223,10 +224,10 @@
     font-size: 0.75rem;
     font-weight: 600;
 
-    &.pill-planificacion { background: #e0f2fe; color: #0369a1; }
+    &.pill-en_diseno { background: #e0f2fe; color: #0369a1; }
+    &.pill-en_tramite { background: #ede9fe; color: #5b21b6; }
     &.pill-en_construccion { background: #fef3c7; color: #b45309; }
-    &.pill-entregado { background: #d1fae5; color: #065f46; }
-    &.pill-finalizado { background: #f1f5f9; color: #475569; }
+    &.pill-finalizado { background: #d1fae5; color: #065f46; }
   }
 
   .visibility-badge {

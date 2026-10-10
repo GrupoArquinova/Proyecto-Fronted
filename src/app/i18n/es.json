@@ -1,0 +1,392 @@
+{
+  "comun": {
+    "idioma": {
+      "etiqueta": "Idioma",
+      "es": "Español",
+      "en": "English"
+    },
+    "pantallaCompleta": "Pantalla completa",
+    "salirPantallaCompleta": "Salir de pantalla completa",
+    "cerrar": "Cerrar"
+  },
+  "etapaProyecto": {
+    "EN_DISENO": "En diseño",
+    "EN_TRAMITE": "En trámite",
+    "EN_CONSTRUCCION": "En construcción",
+    "FINALIZADO": "Finalizado"
+  },
+  "home": {
+    "titulo": "Arquitectura, ingeniería y gestión de proyectos en el Quindío",
+    "logoAlt": "Arquinova Grupo Empresarial",
+    "nav": {
+      "inicio": "Inicio",
+      "servicios": "Servicios",
+      "proyectos": "Proyectos",
+      "empresa": "Empresa",
+      "contacto": "Contacto",
+      "admin": "Admin"
+    },
+    "hero": {
+      "categoria": "ARQUITECTURA E INGENIERÍA · QUINDÍO",
+      "linea1": "Estudios, diseños y gestión",
+      "linea2": "para proyectos",
+      "linea3": "del Quindío",
+      "descripcion": "Coordinamos servicios de arquitectura, ingeniería y gestión de proyectos: estudios técnicos, diseños y trámites ante las entidades competentes.",
+      "verProyectos": "Ver Proyectos",
+      "servicios": "Nuestros servicios"
+    },
+    "destacado": {
+      "etiqueta": "PROYECTO DESTACADO",
+      "conocer": "Conocer el proyecto",
+      "asesor": "Consultar a un asesor",
+      "whatsapp": "Hola, estoy interesado en {{nombre}} y quisiera información sobre sus tipologías, precios y disponibilidad."
+    },
+    "servicios": {
+      "etiqueta": "LO QUE HACEMOS",
+      "titulo": "Servicios",
+      "subtitulo": "Acompañamos a propietarios y promotores en la estructuración de sus proyectos.",
+      "lista": {
+        "viabilidad": {
+          "titulo": "Estudios de viabilidad",
+          "descripcion": "Estudios de viabilidad e implantación de proyectos y revisión de condiciones urbanísticas."
+        },
+        "diseno": {
+          "titulo": "Diseño urbanístico y arquitectónico",
+          "descripcion": "Diseño urbanístico y arquitectónico de parcelaciones, villas y edificaciones."
+        },
+        "estructural": {
+          "titulo": "Diseño estructural y estudios técnicos",
+          "descripcion": "Diseño estructural y coordinación de estudios de suelos y levantamientos topográficos."
+        },
+        "licencias": {
+          "titulo": "Licencias y permisos",
+          "descripcion": "Preparación de expedientes y gestión de licencias urbanísticas y permisos ambientales dentro del alcance contratado."
+        },
+        "servicios-publicos": {
+          "titulo": "Servicios públicos y aguas residuales",
+          "descripcion": "Gestión de disponibilidades de servicios públicos y diseño de soluciones de tratamiento de aguas residuales."
+        },
+        "planos": {
+          "titulo": "Planos y propiedad horizontal",
+          "descripcion": "Elaboración de planos y coordinación del reglamento de propiedad horizontal."
+        },
+        "presupuesto": {
+          "titulo": "Estructuración técnica y presupuesto",
+          "descripcion": "Estructuración técnica y presupuestación de proyectos."
+        }
+      }
+    },
+    "proyectos": {
+      "etiqueta": "PORTAFOLIO",
+      "titulo": "Nuestros Proyectos",
+      "subtitulo": "Explora cada proyecto como una experiencia completa: conoce su historia, recorre sus espacios, consulta la disponibilidad y descubre las etapas que lo componen.",
+      "portafolio": "Portafolio",
+      "participacion": "Participación de Arquinova:",
+      "lotes": "LOTES",
+      "disponibles": "DISPONIBLES",
+      "experiencia": "EXPERIENCIA",
+      "explorar": "Explorar proyecto",
+      "verTodos": "Ver todos los proyectos ({{total}})"
+    },
+    "empresa": {
+      "etiqueta": "EMPRESA",
+      "titulo": "Quiénes somos",
+      "parrafo1": "Somos una empresa con sede en Armenia que coordina servicios de arquitectura, ingeniería y gestión de proyectos. Acompañamos la estructuración de desarrollos mediante estudios técnicos, diseños urbanísticos, arquitectónicos y estructurales, y la preparación y gestión de trámites ante las entidades competentes.",
+      "parrafo2": "Nuestro trabajo incluye proyectos residenciales, rurales y turísticos en el Quindío.",
+      "identidad": {
+        "MISION": "Misión",
+        "VISION": "Visión",
+        "VALORES": "Valores"
+      }
+    },
+    "contacto": {
+      "etiqueta": "HABLEMOS",
+      "titulo": "Contáctanos",
+      "texto": "Cuéntenos qué proyecto o servicio le interesa y nuestro equipo se pondrá en contacto con usted.",
+      "telefono": "Teléfono",
+      "correo": "Correo",
+      "oficina": "Oficina de atención",
+      "whatsapp": "WhatsApp",
+      "escribanos": "Escríbanos ahora"
+    },
+    "formulario": {
+      "titulo": "Solicitar información",
+      "nombre": "Nombre *",
+      "nombreEjemplo": "Juan Pérez",
+      "telefono": "Teléfono",
+      "telefonoEjemplo": "Ej: 300 123 4567",
+      "correo": "Correo",
+      "correoEjemplo": "correo@ejemplo.com",
+      "servicio": "Servicio de interés",
+      "seleccioneServicio": "Seleccione un servicio",
+      "avisoMedio": "Déjenos al menos un teléfono o un correo para poder responderle.",
+      "proyecto": "Proyecto de interés",
+      "seleccioneProyecto": "Seleccione un proyecto",
+      "mensaje": "Mensaje",
+      "mensajeEjemplo": "Cuéntenos en qué podemos ayudarle...",
+      "consentimientoAntes": "Acepto el tratamiento de mis datos personales conforme a la",
+      "consentimientoEnlace": "Política de tratamiento de datos",
+      "consentimientoDespues": "de Arquinova. *",
+      "enviar": "Enviar solicitud",
+      "exito": "¡Solicitud enviada con éxito! Nos pondremos en contacto pronto.",
+      "error": "Hubo un error al enviar el mensaje. Inténtalo de nuevo."
+    },
+    "pie": {
+      "logoAlt": "Arquinova Logo",
+      "descripcion": "Servicios de arquitectura, ingeniería y gestión de proyectos en el Quindío.",
+      "enlaces": "Enlaces Rápidos",
+      "legal": "Legal",
+      "terminos": "Términos y Condiciones",
+      "politicaDatos": "Política de tratamiento de datos",
+      "cookies": "Política de cookies",
+      "avisoPrivacidad": "Aviso de privacidad",
+      "derechos": "Todos los derechos reservados.",
+      "privacidad": "Privacidad",
+      "avisoLegal": "Aviso Legal"
+    }
+  },
+  "tipoProyecto": {
+    "RESIDENCIAL": "Residencial",
+    "RURAL": "Rural",
+    "TURISTICO": "Turístico",
+    "OTRO": "Otro"
+  },
+  "estadoLote": {
+    "disponible": "Disponible",
+    "reservado": "Reservado",
+    "vendido": "Vendido",
+    "otro": "Sin estado"
+  },
+  "proyecto": {
+    "estado": {
+      "cargando": "Cargando proyecto...",
+      "noEncontradoTitulo": "Proyecto no encontrado",
+      "noEncontradoTexto": "El proyecto que buscas no existe o aún no está disponible.",
+      "verTodos": "Ver todos los proyectos",
+      "errorTitulo": "No pudimos cargar el proyecto",
+      "errorTexto": "Revisa tu conexión e inténtalo de nuevo.",
+      "reintentar": "Reintentar"
+    },
+    "armazon": {
+      "abrirMenu": "Abrir menú",
+      "secciones": "Secciones del proyecto",
+      "mostrarMenu": "Mostrar menú",
+      "ocultarMenu": "Ocultar menú",
+      "todosProyectos": "Todos los proyectos",
+      "informacionLegal": "Información legal",
+      "datos": "Datos personales",
+      "terminos": "Términos",
+      "cookies": "Cookies",
+      "noEncontradoSeo": "Proyecto no encontrado",
+      "enLugar": "en {{lugar}}",
+      "descripcionSeo": "{{nombre}}{{lugar}}: proyecto de Grupo Arquinova."
+    },
+    "menu": {
+      "bienvenida": "Bienvenida",
+      "respaldo": "Respaldo",
+      "ubicacion": "Ubicación",
+      "zonas-comunes": "Amenidades",
+      "lotes": "Lotes",
+      "casa-modelo": "Tipologías",
+      "disponibilidad": "Disponibilidad",
+      "videos": "Videos",
+      "contacto": "Contacto"
+    },
+    "vista": {
+      "beneficios": "Beneficios",
+      "video": "Video",
+      "entorno-360": "Entorno 360",
+      "vista-aerea": "Vista Aérea",
+      "urbanismo": "Urbanismo",
+      "mapa": "Mapa",
+      "google-maps": "Google Maps",
+      "destacadas": "Zonas Destacadas",
+      "galeria": "Galería",
+      "imagenes": "Imágenes",
+      "planos": "Planos",
+      "tour-virtual": "Tour Virtual",
+      "proyecto": "Proyecto",
+      "como-llegar": "¿Cómo llegar?"
+    },
+    "bienvenida": {
+      "imagenes": "Imágenes del proyecto",
+      "beneficiosAria": "Beneficios del proyecto",
+      "beneficiosDe": "Beneficios de {{nombre}}",
+      "videoTitulo": "video del proyecto"
+    },
+    "respaldo": {
+      "etiqueta": "Respaldo del proyecto",
+      "alt": "Respaldo de {{nombre}}",
+      "elProyecto": "el proyecto"
+    },
+    "carrusel": {
+      "salirPantalla": "Salir de pantalla completa",
+      "verPantalla": "Ver la imagen en pantalla completa",
+      "ocultarImagenes": "Ocultar imágenes",
+      "verImagenes": "Ver imágenes",
+      "anterior": "Imagen anterior",
+      "siguiente": "Imagen siguiente",
+      "elegir": "Elegir imagen",
+      "verN": "Ver imagen {{n}} de {{total}}"
+    },
+    "tipologias": {
+      "elegir": "Elegir tipología",
+      "construidos": "construidos",
+      "habitacion": "habitación",
+      "habitaciones": "habitaciones",
+      "bano": "baño",
+      "banos": "baños",
+      "imagenesDe": "Imágenes de {{nombre}}",
+      "planoDe": "Plano de {{nombre}}",
+      "planosDe": "Planos de {{nombre}}",
+      "plano": "Plano",
+      "abrir": "abrir",
+      "tour": "el tour virtual",
+      "consultar": "Consultar por {{nombre}}",
+      "elProyecto": "el proyecto",
+      "whatsapp": "Hola, estoy interesado en la tipología {{nombre}} de {{proyecto}}{{ficha}}. ¿Me pueden dar más información sobre esta villa?"
+    },
+    "contacto": {
+      "titulo": "Contáctanos",
+      "sub": "Déjanos tus datos y te contamos todo sobre {{nombre}}.",
+      "consultandoLote": "Consultando por el lote",
+      "nombre": "Nombre",
+      "nombreEjemplo": "Tu nombre completo",
+      "errorNombre": "Escribe tu nombre.",
+      "telefono": "Teléfono / WhatsApp",
+      "telefonoEjemplo": "Ej: 300 123 4567",
+      "correo": "Correo",
+      "errorCorreo": "Escribe un correo válido.",
+      "faltaMedio": "Déjanos un teléfono o un correo para poder responderte.",
+      "ayuda": "Con teléfono o correo es suficiente.",
+      "mensaje": "Mensaje",
+      "mensajeEjemplo": "¿En qué podemos ayudarte?",
+      "errorMensaje": "Cuéntanos qué necesitas.",
+      "consentimientoAntes": "Autorizo el tratamiento de mis datos personales para que me contacten, conforme a la",
+      "consentimientoEnlace": "Política de tratamiento de datos",
+      "errorConsentimiento": "Debes autorizar el tratamiento de tus datos.",
+      "enviar": "Enviar mensaje",
+      "enviando": "Enviando...",
+      "whatsapp": "WhatsApp",
+      "mensajeLote": "Hola, me interesa el lote {{codigo}}. ¿Me pueden dar más información?"
+    },
+    "disponibilidad": {
+      "estados": "Estados de los lotes",
+      "elige": "Elige un lote para ver su ficha."
+    },
+    "lotes": {
+      "titulo": "Lotes",
+      "lote": "lote",
+      "lotes": "lotes",
+      "disponible": "disponible",
+      "disponibles": "disponibles",
+      "aria": "Lotes del proyecto"
+    },
+    "planoLotes": {
+      "alt": "Plano del proyecto con la ubicación de los lotes",
+      "marca": "Lote {{codigo}}, {{estado}}"
+    },
+    "loteTarjeta": {
+      "etiqueta": "Lote seleccionado",
+      "area": "Área",
+      "estado": "Estado",
+      "precio": "Precio",
+      "etapa": "Etapa",
+      "solicitar": "Solicitar información"
+    },
+    "ubicacion": {
+      "titulo": "Ubicación",
+      "entorno": "Entorno 360°",
+      "vistaAerea": "Vista aérea",
+      "urbanismo": "Urbanismo",
+      "mapa": "Mapa",
+      "googleMaps": "Google Maps",
+      "direccion": "Dirección:",
+      "comoLlegar": "Cómo llegar:",
+      "tEntorno": "entorno del proyecto",
+      "tVistaAerea": "vista aérea del proyecto",
+      "tRecorrido": "el recorrido 360°",
+      "tLaVistaAerea": "la vista aérea",
+      "tPlano": "el plano de urbanismo",
+      "tGoogleMaps": "la ubicación en Google Maps",
+      "mapaGoogleDe": "Mapa de Google de {{nombre}}",
+      "mapaUbicacionDe": "Mapa de ubicación de {{nombre}}",
+      "mapaEtiqueta": "Mapa de ubicación",
+      "mapaTitulo": "Mapa de ubicación del proyecto",
+      "elProyecto": "el proyecto"
+    },
+    "videos": {
+      "comoLlegar": "¿Cómo llegar?",
+      "tComoLlegar": "el video de cómo llegar",
+      "pieComoLlegar": "Video de cómo llegar · {{nombre}}",
+      "tituloDefecto": "Video del proyecto",
+      "tVideo": "video del proyecto",
+      "pie": "Video del proyecto · {{nombre}}",
+      "mas": "Más videos del proyecto",
+      "itemDefecto": "Video {{n}}"
+    },
+    "zonas": {
+      "titulo": "Amenidades",
+      "tDestacadas": "las zonas destacadas",
+      "filtrar": "Filtrar por zona",
+      "todas": "Todas",
+      "galeria": "Galería de las zonas comunes",
+      "imagenesDe": "Imágenes de {{nombre}}",
+      "cerrarImagenes": "Cerrar imágenes"
+    },
+    "tarjeta": {
+      "zona": "Zona común",
+      "lote": "Lote",
+      "etapa": "Etapa",
+      "zonaSin360": "Esta zona aún no tiene imagen 360°.",
+      "loteSin360": "Este lote aún no tiene imagen 360°.",
+      "buscando360": "Buscando imagen 360°...",
+      "area": "Área:",
+      "estado": "Estado:",
+      "etapaEtiqueta": "Etapa:",
+      "etapaSinImagenes": "Esta etapa aún no tiene imágenes.",
+      "buscandoImagenes": "Buscando imágenes...",
+      "tZona": "zona {{nombre}}",
+      "tLote": "lote {{nombre}}",
+      "tEtapa": "etapa {{nombre}}",
+      "imagenesDe": "Imágenes de {{nombre}}"
+    },
+    "medio": {
+      "abrirNueva": "Abrir {{titulo}} en una pestaña nueva",
+      "abrir": "Abrir {{titulo}}"
+    },
+    "visor": {
+      "recorrido": "Recorrido 360: {{titulo}}"
+    }
+  },
+  "proyectos": {
+    "volver": "Volver al Inicio",
+    "etiqueta": "PORTAFOLIO COMPLETO",
+    "titulo": "Todos Nuestros Proyectos",
+    "subtitulo": "Explora la totalidad de nuestros desarrollos inmobiliarios y encuentra el espacio ideal para ti.",
+    "municipio": "Municipio",
+    "todosMunicipios": "Todos los municipios",
+    "tipo": "Tipo de proyecto",
+    "todosTipos": "Todos los tipos",
+    "etapa": "Etapa",
+    "todasEtapas": "Todas las etapas",
+    "quitarFiltros": "Quitar filtros",
+    "sinResultados": "No hay proyectos con esos filtros.",
+    "pais": "Colombia"
+  },
+  "legal": {
+    "volver": "Volver al Inicio",
+    "otros": "Otros documentos:",
+    "otrosAria": "Otros documentos legales",
+    "noEncontradoTitulo": "Documento no encontrado",
+    "noEncontradoTexto": "El documento que buscas no existe. Elige uno de la lista.",
+    "cortesia": "Traducción de cortesía.",
+    "cortesiaTexto": "Traducción de cortesía. Ante cualquier diferencia prevalece la versión en español."
+  },
+  "seo": {
+    "descripcionDefecto": "Grupo Arquinova S.A.S.: arquitectura, ingeniería y gestión de proyectos residenciales, rurales y turísticos en el Quindío.",
+    "paginaNoEncontrada": "Página no encontrada",
+    "proyectosTitulo": "Proyectos",
+    "proyectosDescripcion": "Proyectos de Grupo Arquinova en el Quindío: El Encanto y los casos de nuestro portafolio de arquitectura, ingeniería y gestión."
+  }
+}

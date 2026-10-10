@@ -1,11 +1,14 @@
 @use '../tokens' as t;
 
-:host { display: block; }
+:host {
+  display: block;
+  margin-block: auto;
+}
 
 .tarjeta {
-  max-width: 580px;
-  margin: 0.5rem auto;
-  padding: 2.4rem 2.2rem;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 1.7rem 2.2rem 1.4rem;
   background: t.$blanco;
   border: 1px solid t.$borde;
   border-top: 5px solid t.$verde;
@@ -14,15 +17,15 @@
 
   h2 {
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: t.$verde;
   }
 
-  .sub { text-align: center; color: t.$texto-suave; margin: 0.5rem 0 1.8rem; line-height: 1.6; }
+  .sub { text-align: center; color: t.$texto-suave; margin: 0.3rem 0 1.3rem; line-height: 1.5; }
 
   .lote {
-    margin: -0.8rem auto 1.6rem;
+    margin: -0.6rem auto 1.1rem;
     padding: 0.45rem 1.2rem;
     width: fit-content;
     background: t.$fondo-suave-2;
@@ -32,7 +35,34 @@
   }
 }
 
-form { display: grid; gap: 1.1rem; }
+// Dos columnas: datos de contacto a la izquierda y el mensaje a la derecha, para que todo quepa sin hacer scroll
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'nombre   mensaje'
+    'telefono mensaje'
+    'correo   mensaje'
+    'consentimiento consentimiento'
+    'aviso    aviso'
+    'enviar   enviar';
+  gap: 0.9rem 1.5rem;
+}
+
+.campo-nombre { grid-area: nombre; }
+.campo-telefono { grid-area: telefono; }
+.campo-correo { grid-area: correo; }
+.consentimiento { grid-area: consentimiento; }
+.aviso { grid-area: aviso; }
+.enviar { grid-area: enviar; }
+
+// El mensaje ocupa todo el alto de los tres campos de la izquierda
+.campo-mensaje {
+  grid-area: mensaje;
+  grid-template-rows: auto 1fr auto;
+
+  textarea { height: 100%; }
+}
 
 label {
   display: grid;
@@ -45,7 +75,7 @@ label {
 }
 
 input[type='text'], input[type='tel'], input[type='email'], textarea {
-  padding: 0.85rem 1rem;
+  padding: 0.72rem 0.95rem;
   background: t.$blanco;
   color: t.$texto;
   border: 1.5px solid t.$borde;
@@ -62,10 +92,12 @@ input[type='text'], input[type='tel'], input[type='email'], textarea {
   &.error { border-color: t.$vendido; box-shadow: 0 0 0 4px rgba(t.$vendido, 0.1); }
 }
 
-textarea { resize: vertical; min-height: 110px; }
+textarea { resize: none; min-height: 110px; }
+
+.ayuda { color: t.$texto-suave; text-transform: none; letter-spacing: normal; font-weight: 400; font-size: 0.8rem; }
 
 small { color: t.$vendido; text-transform: none; letter-spacing: normal; font-weight: 500; font-size: 0.82rem; }
-.aviso { margin-top: -0.5rem; }
+.aviso { margin-top: -0.4rem; }
 
 .consentimiento {
   display: flex;
@@ -79,14 +111,17 @@ small { color: t.$vendido; text-transform: none; letter-spacing: normal; font-we
   line-height: 1.5;
 
   input { margin-top: 0.25rem; width: 1.05rem; height: 1.05rem; accent-color: t.$verde; }
+  a { color: t.$verde; font-weight: 600; }
 }
 
 .enviar {
-  padding: 1rem;
+  justify-self: center;
+  width: min(100%, 360px);
+  padding: 0.85rem 1rem;
   background: t.$verde;
   color: t.$blanco;
   border: none;
-  border-radius: 12px;
+  border-radius: 999px;
   font-size: 1.02rem;
   font-weight: 700;
   cursor: pointer;
@@ -102,8 +137,8 @@ small { color: t.$vendido; text-transform: none; letter-spacing: normal; font-we
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.6rem 1.8rem;
-  margin-top: 1.8rem;
-  padding-top: 1.3rem;
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
   border-top: 1px solid t.$borde;
   color: t.$texto-suave;
   font-size: 0.92rem;
@@ -111,8 +146,18 @@ small { color: t.$vendido; text-transform: none; letter-spacing: normal; font-we
   a { color: t.$verde; font-weight: 600; text-decoration: none; &:hover { text-decoration: underline; } }
 }
 
+// En pantallas angostas vuelve a una sola columna, en el orden natural
+@media (max-width: 760px) {
+  form {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'nombre' 'telefono' 'correo' 'mensaje' 'consentimiento' 'aviso' 'enviar';
+  }
+
+  .campo-mensaje textarea { height: auto; }
+}
+
 @media (max-width: 600px) {
-  .tarjeta { padding: 1.8rem 1.3rem; }
+  .tarjeta { padding: 1.5rem 1.2rem; }
 }
 
 // Los controles de formulario no heredan la tipografía por defecto

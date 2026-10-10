@@ -1,13 +1,16 @@
 import { Component, computed, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { lastValueFrom } from 'rxjs';
 import { Ubicacion } from '../../../../core/models/ubicacion.models';
 import { Lote } from '../../../../core/models/lote.models';
 import { Etapa } from '../../../../core/models/etapa.models';
 import { Multimedia } from '../../../../core/models/multimedia.models';
+import { ZonaComun } from '../../../../core/models/zona-comun.models';
 import { ESCENAS_PUNTO, EscenaPunto, Punto360, Punto360Request } from '../../../../core/models/punto-360.models';
 import { Punto360Service } from '../../../../core/services/punto-360.service';
 import { LoteService } from '../../../../core/services/lote.service';
 import { EtapaService } from '../../../../core/services/etapa.service';
+import { ZonaComunService } from '../../../../core/services/zona-comun.service';
 import { MultimediaService } from '../../../../core/services/multimedia.service';
 import { CloudinaryService } from '../../../../core/services/cloudinary.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -34,6 +37,7 @@ export class EditorPuntosComponent {
   private puntoService = inject(Punto360Service);
   private loteService = inject(LoteService);
   private etapaService = inject(EtapaService);
+  private zonaService = inject(ZonaComunService);
   private multimediaService = inject(MultimediaService);
   private cloudinary = inject(CloudinaryService);
   private toast = inject(ToastService);
@@ -55,6 +59,28 @@ export class EditorPuntosComponent {
   /** Lote al que se le está subiendo su imagen 360° en este momento. */
   readonly subiendoLote = signal<number | null>(null);
 
+  /** Zonas destacadas: zonas comunes del proyecto, imagen de fondo y el 360° de cada zona. */
+  readonly zonas = signal<ZonaComun[]>([]);
+  readonly imagenZonas = signal<Multimedia | null>(null);
+  readonly subiendoImagenZonas = signal(false);
+  readonly panoramasZona = signal<Map<number, Multimedia>>(new Map());
+  readonly subiendoZona = signal<number | null>(null);
+  readonly zonaId = signal<number | null>(null);
+
+  /** Imágenes de cada etapa (id de la etapa → recursos), las que se ven en la tarjeta al pulsar su botón del plano. */
+  readonly imagenesEtapa = signal<Map<number, Multimedia[]>>(new Map());
+  /** Imagen 360° de cada etapa (id de la etapa → recurso). */
+  readonly panoramasEtapa = signal<Map<number, Multimedia>>(new Map());
+  /** Etapa a la que se le están subiendo imágenes en este momento. */
+  readonly subiendoEtapa = signal<number | null>(null);
+  /** Etapa cuyas imágenes se están mostrando desplegadas en la lista. */
+  readonly etapaAbierta = signal<number | null>(null);
+
+  /** Pestaña "Mapa": las imágenes del mapa de ubicación (multimedia de tipo MAPA) se gestionan aquí mismo. */
+  readonly mapaActivo = signal(false);
+  readonly imagenesMapa = signal<Multimedia[]>([]);
+  readonly subiendoMapa = signal(false);
+
   /** Dónde se va a colocar el botón nuevo (aún sin guardar). */
   readonly pendiente360 = signal<PosicionPanorama | null>(null);
   readonly pendientePlano = signal<PosicionPlano360 | null>(null);
@@ -69,20 +95,34 @@ export class EditorPuntosComponent {
   /** Solo se pueden editar las imágenes que el administrador ya cargó en la ubicación y que son imagen. */
   readonly escenas = computed(() => {
     const u = this.ubicacion();
-    const url: Record<EscenaPunto, string | undefined> = {
+    const url: Record<Exclude<EscenaPunto, 'ZONAS'>, string | undefined> = {
       ENTORNO: u.recorrido360Url, AEREA: u.vistaAereaUrl, URBANISMO: u.urbanismoUrl
     };
     return ESCENAS_PUNTO
-      .filter(e => clasificarMedio(url[e.id]).tipo === 'imagen')
-      .map(e => ({ ...e, url: url[e.id]! }));
+      .filter(e => e.id !== 'ZONAS' && clasificarMedio(url[e.id as Exclude<EscenaPunto, 'ZONAS'>]).tipo === 'imagen')
+      .map(e => ({ ...e, url: url[e.id as Exclude<EscenaPunto, 'ZONAS'>]! }));
   });
 
-  readonly escenaActual = computed(() => this.escenas().find(e => e.id === this.escena()) ?? null);
+  readonly esZonas = computed(() => this.escena() === 'ZONAS');
+
+  readonly escenaActual = computed(() => {
+    if (this.esZonas()) {
+      const url = this.imagenZonas()?.url;
+      return url ? { id: 'ZONAS' as EscenaPunto, titulo: 'Zonas destacadas', url } : null;
+    }
+    return this.escenas().find(e => e.id === this.escena()) ?? null;
+  });
   readonly esPlano = computed(() => this.escena() != null && esPuntoDePlano({ escena: this.escena()! }));
 
   readonly puntosDeEscena = computed(() => this.puntos().filter(p => p.escena === this.escena()
-    && (this.escena() === 'URBANISMO' || esLugarCercano(p) === this.esLugar())));
+    && (this.esPlano() || esLugarCercano(p) === this.esLugar())));
   readonly hayPendiente = computed(() => this.esPlano() ? this.pendientePlano() != null : this.pendiente360() != null);
+
+  /** Zonas que todavía no tienen botón en las zonas destacadas. */
+  readonly zonasLibres = computed(() => {
+    const usadas = new Set(this.puntosDeEscena().map(p => p.zonaComunId));
+    return this.zonas().filter(z => z.id != null && !usadas.has(z.id));
+  });
 
   /** Lotes ya usados en esta imagen no se vuelven a ofrecer. */
   readonly lotesLibres = computed(() => {
@@ -109,8 +149,34 @@ export class EditorPuntosComponent {
       error: () => this.toast.showError('No se pudieron cargar los lotes.')
     });
     this.multimediaService.obtenerMultimedia().subscribe({
-      next: lista => this.panoramas.set(new Map(
-        lista.filter(m => m.tipo === 'PANORAMICA_360' && m.loteId != null && m.activo).map(m => [m.loteId!, m]))),
+      next: lista => {
+        this.panoramas.set(new Map(
+          lista.filter(m => m.tipo === 'PANORAMICA_360' && m.loteId != null && m.activo).map(m => [m.loteId!, m])));
+        const porEtapa = new Map<number, Multimedia[]>();
+        lista.filter(m => m.etapaId != null && m.activo !== false && (m.tipo === 'IMAGEN' || m.tipo === 'PLANO'))
+          .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))
+          .forEach(m => porEtapa.set(m.etapaId!, [...(porEtapa.get(m.etapaId!) ?? []), m]));
+        this.imagenesEtapa.set(porEtapa);
+        this.panoramasEtapa.set(new Map(
+          lista.filter(m => m.tipo === 'PANORAMICA_360' && m.etapaId != null && m.activo !== false).map(m => [m.etapaId!, m])));
+        this.panoramasZona.set(new Map(
+          lista.filter(m => m.tipo === 'PANORAMICA_360' && m.zonaComunId != null && m.activo).map(m => [m.zonaComunId!, m])));
+      },
+      error: () => undefined
+    });
+    this.multimediaService.listarPorEntidad('proyecto', proyectoId).subscribe({
+      next: lista => {
+        this.imagenZonas.set(lista
+          .filter(m => m.tipo === 'ZONAS_DESTACADAS' && m.activo !== false)
+          .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))[0] ?? null);
+        this.imagenesMapa.set(
+          lista.filter(m => m.tipo === 'MAPA' && m.activo !== false)
+            .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0)));
+      },
+      error: () => undefined
+    });
+    this.zonaService.listarPorProyecto(proyectoId).subscribe({
+      next: lista => this.zonas.set(lista.filter(z => z.activo !== false)),
       error: () => undefined
     });
     this.etapaService.listarPorProyecto(proyectoId).subscribe({
@@ -120,8 +186,312 @@ export class EditorPuntosComponent {
   }
 
   elegirEscena(escena: EscenaPunto): void {
+    this.mapaActivo.set(false);
     this.escena.set(escena);
     this.limpiarFormulario();
+  }
+
+  /** Abre la pestaña de zonas destacadas: botones sobre la imagen de fondo, uno por zona común. */
+  elegirZonas(): void {
+    this.limpiarFormulario();
+    this.mapaActivo.set(false);
+    this.escena.set('ZONAS');
+  }
+
+  /** Al elegir una zona, el texto del botón se rellena con su nombre (se puede cambiar). */
+  elegirZona(id: number | null): void {
+    this.zonaId.set(id);
+    const zona = this.zonas().find(z => z.id === id);
+    if (zona) this.etiqueta.set(zona.nombre);
+  }
+
+  /** Sube (o reemplaza) la imagen de fondo de las zonas destacadas; queda en multimedia con tipo ZONAS_DESTACADAS. */
+  async subirImagenZonas(evento: Event): Promise<void> {
+    const input = evento.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    input.value = '';
+    if (!archivo || this.subiendoImagenZonas()) return;
+
+    const problema = validarArchivo(archivo, ['imagen']);
+    if (problema) {
+      this.toast.showError(problema);
+      return;
+    }
+
+    this.subiendoImagenZonas.set(true);
+    try {
+      const resultado = await lastValueFrom(this.cloudinary.subirArchivo(archivo));
+      const anterior = this.imagenZonas();
+      const creado = await lastValueFrom(this.multimediaService.crearMultimedia({
+        proyectoId: this.ubicacion().proyectoId,
+        tipo: 'ZONAS_DESTACADAS',
+        titulo: 'Imagen de zonas destacadas',
+        url: resultado.url,
+        nombreArchivo: archivo.name,
+        orden: 1,
+        portada: false,
+        publicado: true,
+        activo: true
+      }));
+      this.imagenZonas.set(creado);
+      this.toast.showSuccess('Imagen de las zonas destacadas guardada');
+      if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
+    } catch (err) {
+      console.error('Error al subir la imagen de zonas destacadas:', err);
+      this.toast.showError('No se pudo subir la imagen. Inténtalo de nuevo.');
+    } finally {
+      this.subiendoImagenZonas.set(false);
+    }
+  }
+
+  tienePanoramaZona(punto: Punto360): boolean {
+    return punto.zonaComunId != null && this.panoramasZona().has(punto.zonaComunId);
+  }
+
+  /** Sube la imagen 360° de la zona a la que apunta el botón y la deja en su multimedia (la reemplaza si ya tenía una). */
+  async subirZona360(punto: Punto360, evento: Event): Promise<void> {
+    const input = evento.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    input.value = '';
+    const zonaId = punto.zonaComunId;
+    if (!archivo || zonaId == null || this.subiendoZona() !== null) return;
+
+    const problema = validarArchivo(archivo, ['imagen']);
+    if (problema) {
+      this.toast.showError(problema);
+      return;
+    }
+
+    this.subiendoZona.set(zonaId);
+    try {
+      const resultado = await lastValueFrom(this.cloudinary.subirArchivo(archivo));
+      const anterior = this.panoramasZona().get(zonaId);
+      const creado = await lastValueFrom(this.multimediaService.crearMultimedia({
+        zonaComunId: zonaId,
+        tipo: 'PANORAMICA_360',
+        titulo: `Imagen 360° de ${punto.zonaComunNombre ?? punto.etiqueta}`,
+        url: resultado.url,
+        nombreArchivo: archivo.name,
+        orden: 1,
+        portada: false,
+        publicado: true,
+        activo: true
+      }));
+      this.panoramasZona.update(mapa => new Map(mapa).set(zonaId, creado));
+      this.toast.showSuccess('Imagen 360° de la zona guardada');
+      if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
+    } catch (err) {
+      console.error('Error al subir la imagen 360° de la zona:', err);
+      this.toast.showError('No se pudo guardar la imagen 360° de la zona.');
+    } finally {
+      this.subiendoZona.set(null);
+    }
+  }
+
+  elegirMapa(): void {
+    this.limpiarFormulario();
+    this.mapaActivo.set(true);
+  }
+
+  /** Sube una o varias imágenes del mapa; cada una queda guardada en multimedia (tipo MAPA) al final de la lista. */
+  async subirMapa(evento: Event): Promise<void> {
+    const input = evento.target as HTMLInputElement;
+    const archivos = Array.from(input.files ?? []);
+    input.value = '';
+    if (archivos.length === 0 || this.subiendoMapa()) return;
+
+    for (const archivo of archivos) {
+      const problema = validarArchivo(archivo, ['imagen']);
+      if (problema) {
+        this.toast.showError(`${archivo.name}: ${problema}`);
+        return;
+      }
+    }
+
+    this.subiendoMapa.set(true);
+    const proyectoId = this.ubicacion().proyectoId;
+    let subidas = 0;
+    try {
+      for (const archivo of archivos) {
+        const resultado = await lastValueFrom(this.cloudinary.subirArchivo(archivo));
+        const orden = Math.max(0, ...this.imagenesMapa().map(m => m.orden ?? 0)) + 1;
+        const creado = await lastValueFrom(this.multimediaService.crearMultimedia({
+          proyectoId,
+          tipo: 'MAPA',
+          titulo: `Mapa ${orden}`,
+          url: resultado.url,
+          nombreArchivo: archivo.name,
+          orden,
+          portada: false,
+          publicado: true,
+          activo: true
+        }));
+        this.imagenesMapa.update(lista => [...lista, creado]);
+        subidas++;
+      }
+      this.toast.showSuccess(subidas === 1 ? 'Imagen del mapa guardada' : `${subidas} imágenes del mapa guardadas`);
+    } catch (err) {
+      console.error('Error al subir la imagen del mapa:', err);
+      this.toast.showError('No se pudo subir la imagen del mapa. Inténtalo de nuevo.');
+    } finally {
+      this.subiendoMapa.set(false);
+    }
+  }
+
+  /** Sube o baja una imagen en el carrusel intercambiando su número de orden con la vecina. */
+  async moverMapa(imagen: Multimedia, delta: -1 | 1): Promise<void> {
+    const lista = [...this.imagenesMapa()];
+    const i = lista.findIndex(m => m.id === imagen.id);
+    const j = i + delta;
+    if (i < 0 || j < 0 || j >= lista.length) return;
+
+    // Los números de orden pueden repetirse: se reasignan 1..n según el orden que se ve
+    [lista[i], lista[j]] = [lista[j], lista[i]];
+    const reordenada = lista.map((m, k) => ({ ...m, orden: k + 1 }));
+    const anterior = this.imagenesMapa();
+    const cambiadas = reordenada.filter(m => anterior.find(x => x.id === m.id)?.orden !== m.orden);
+    this.imagenesMapa.set(reordenada);
+
+    try {
+      await Promise.all(cambiadas.map(m => lastValueFrom(this.multimediaService.actualizarMultimedia(m.id!, m))));
+    } catch (err) {
+      console.error('Error al reordenar las imágenes del mapa:', err);
+      this.imagenesMapa.set(anterior);
+      this.toast.showError('No se pudo cambiar el orden. Inténtalo de nuevo.');
+    }
+  }
+
+  async quitarMapa(imagen: Multimedia): Promise<void> {
+    if (imagen.id == null) return;
+    const ok = await this.confirm.open({
+      title: 'Quitar imagen del mapa',
+      message: `¿Quitar "${imagen.titulo || 'esta imagen'}" del mapa? También se elimina de Multimedia.`,
+      confirmText: 'Sí, quitar',
+      type: 'danger'
+    });
+    if (!ok) return;
+
+    this.multimediaService.eliminarMultimedia(imagen.id).subscribe({
+      next: () => this.imagenesMapa.update(lista => lista.filter(m => m.id !== imagen.id)),
+      error: () => this.toast.showError('No se pudo quitar la imagen.')
+    });
+  }
+
+  /** Imágenes de la etapa a la que apunta el botón. */
+  imagenesDe(punto: Punto360): Multimedia[] {
+    return punto.etapaId != null ? (this.imagenesEtapa().get(punto.etapaId) ?? []) : [];
+  }
+
+  /** Sube una o varias imágenes de la etapa; cada una queda en Multimedia asociada a la etapa y se ve en la tarjeta pública. */
+  async subirEtapa(punto: Punto360, evento: Event): Promise<void> {
+    const input = evento.target as HTMLInputElement;
+    const archivos = Array.from(input.files ?? []);
+    input.value = '';
+    const etapaId = punto.etapaId;
+    if (archivos.length === 0 || etapaId == null || this.subiendoEtapa() !== null) return;
+
+    for (const archivo of archivos) {
+      const problema = validarArchivo(archivo, ['imagen']);
+      if (problema) {
+        this.toast.showError(`${archivo.name}: ${problema}`);
+        return;
+      }
+    }
+
+    this.subiendoEtapa.set(etapaId);
+    let subidas = 0;
+    try {
+      for (const archivo of archivos) {
+        const resultado = await lastValueFrom(this.cloudinary.subirArchivo(archivo));
+        const orden = Math.max(0, ...(this.imagenesEtapa().get(etapaId) ?? []).map(m => m.orden ?? 0)) + 1;
+        const creado = await lastValueFrom(this.multimediaService.crearMultimedia({
+          etapaId,
+          tipo: 'IMAGEN',
+          titulo: `${punto.etiqueta} ${orden}`,
+          url: resultado.url,
+          nombreArchivo: archivo.name,
+          orden,
+          portada: false,
+          publicado: true,
+          activo: true
+        }));
+        this.imagenesEtapa.update(mapa => new Map(mapa).set(etapaId, [...(mapa.get(etapaId) ?? []), creado]));
+        subidas++;
+      }
+      this.etapaAbierta.set(etapaId);
+      this.toast.showSuccess(subidas === 1 ? 'Imagen de la etapa guardada' : `${subidas} imágenes de la etapa guardadas`);
+    } catch (err) {
+      console.error('Error al subir la imagen de la etapa:', err);
+      this.toast.showError('No se pudo subir la imagen de la etapa. Inténtalo de nuevo.');
+    } finally {
+      this.subiendoEtapa.set(null);
+    }
+  }
+
+  tienePanoramaEtapa(punto: Punto360): boolean {
+    return punto.etapaId != null && this.panoramasEtapa().has(punto.etapaId);
+  }
+
+  /** Sube la imagen 360° de la etapa y la deja en su multimedia (reemplaza la anterior si ya tenía una). */
+  async subirEtapa360(punto: Punto360, evento: Event): Promise<void> {
+    const input = evento.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    input.value = '';
+    const etapaId = punto.etapaId;
+    if (!archivo || etapaId == null || this.subiendoEtapa() !== null) return;
+
+    const problema = validarArchivo(archivo, ['imagen']);
+    if (problema) {
+      this.toast.showError(problema);
+      return;
+    }
+
+    this.subiendoEtapa.set(etapaId);
+    try {
+      const resultado = await lastValueFrom(this.cloudinary.subirArchivo(archivo));
+      const anterior = this.panoramasEtapa().get(etapaId);
+      const creado = await lastValueFrom(this.multimediaService.crearMultimedia({
+        etapaId,
+        tipo: 'PANORAMICA_360',
+        titulo: `Imagen 360° de ${punto.etapaNombre ?? punto.etiqueta}`,
+        url: resultado.url,
+        nombreArchivo: archivo.name,
+        orden: 1,
+        portada: false,
+        publicado: true,
+        activo: true
+      }));
+      this.panoramasEtapa.update(mapa => new Map(mapa).set(etapaId, creado));
+      this.toast.showSuccess('Imagen 360° de la etapa guardada');
+      if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
+    } catch (err) {
+      console.error('Error al subir la imagen 360° de la etapa:', err);
+      this.toast.showError('No se pudo guardar la imagen 360° de la etapa.');
+    } finally {
+      this.subiendoEtapa.set(null);
+    }
+  }
+
+  async quitarImagenEtapa(imagen: Multimedia): Promise<void> {
+    if (imagen.id == null || imagen.etapaId == null) return;
+    const ok = await this.confirm.open({
+      title: 'Quitar imagen de la etapa',
+      message: `¿Quitar "${imagen.titulo || 'esta imagen'}"? También se elimina de Multimedia.`,
+      confirmText: 'Sí, quitar',
+      type: 'danger'
+    });
+    if (!ok) return;
+
+    const etapaId = imagen.etapaId;
+    this.multimediaService.eliminarMultimedia(imagen.id).subscribe({
+      next: () => this.imagenesEtapa.update(mapa =>
+        new Map(mapa).set(etapaId, (mapa.get(etapaId) ?? []).filter(m => m.id !== imagen.id))),
+      error: () => this.toast.showError('No se pudo quitar la imagen.')
+    });
+  }
+
+  alternarEtapa(punto: Punto360): void {
+    this.etapaAbierta.update(actual => (actual === punto.etapaId ? null : punto.etapaId ?? null));
   }
 
   clicEn360(posicion: PosicionPanorama): void {
@@ -146,7 +516,9 @@ export class EditorPuntosComponent {
   }
 
   puedeGuardar(): boolean {
-    const tieneDestino = this.esPlano() ? this.etapaId() != null : (this.esLugar() || this.loteId() != null);
+    const tieneDestino = this.esZonas()
+      ? this.zonaId() != null
+      : this.esPlano() ? this.etapaId() != null : (this.esLugar() || this.loteId() != null);
     return this.hayPendiente() && tieneDestino && this.etiqueta().trim().length > 0 && !this.guardando();
   }
 
@@ -159,7 +531,8 @@ export class EditorPuntosComponent {
       escena,
       etiqueta: this.etiqueta().trim(),
       loteId: this.esPlano() || this.esLugar() ? null : this.loteId(),
-      etapaId: this.esPlano() ? this.etapaId() : null
+      etapaId: this.esPlano() && !this.esZonas() ? this.etapaId() : null,
+      zonaComunId: this.esZonas() ? this.zonaId() : null
     };
     const pendiente360 = this.pendiente360();
     const pendientePlano = this.pendientePlano();
@@ -268,6 +641,7 @@ export class EditorPuntosComponent {
     this.pendientePlano.set(null);
     this.loteId.set(null);
     this.etapaId.set(null);
+    this.zonaId.set(null);
     this.etiqueta.set('');
   }
 }

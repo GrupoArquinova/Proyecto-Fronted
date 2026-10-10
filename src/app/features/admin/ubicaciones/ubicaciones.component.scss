@@ -54,14 +54,14 @@
       color: t.$text-dark;
       margin: 0 0 0.4rem 0;
       font-weight: 600;
-      font-family: t.$font-sans;
+      font-family: t.$font-ui;
     }
 
     .ubicacion-sub {
       color: t.$text-muted;
       font-size: 0.9rem;
       margin: 0 0 t.$space-lg 0;
-      font-family: t.$font-sans;
+      font-family: t.$font-ui;
     }
   }
 
@@ -128,7 +128,7 @@
       font-weight: 600;
       color: t.$text-dark;
       margin: 0;
-      font-family: t.$font-sans;
+      font-family: t.$font-ui;
     }
 
     .btn-close {
@@ -231,7 +231,7 @@
 }
 :host .u-7 {
   margin: 0;
-  font-family: serif;
+  font-family: t.$font-ui;
 }
 :host .u-8 {
   background: none;

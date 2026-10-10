@@ -35,7 +35,9 @@ export class EtapasComponent implements OnInit {
   // Formulario temporal adaptado a EtapaRequestDTO
   nuevaEtapa = {
     nombre: '',
+    nombreEn: '',
     descripcion: '',
+    descripcionEn: '',
     orden: 1,
     activo: true,
     proyectoId: null as number | null
@@ -54,9 +56,12 @@ export class EtapasComponent implements OnInit {
     return this.etapas.filter(etapa => String(etapa.proyectoId) === String(this.filtroProyectoId));
   }
 
-  // Lista única de proyectos presentes en las etapas para llenar el select del filtro
-  get proyectosParaFiltro() {
-    const unicos = new Map();
+  // Proyectos presentes en las etapas, para el select del filtro. Se calcula una sola vez al cargar:
+  // como getter devolvía objetos nuevos en cada revisión y Angular entraba en un ciclo infinito (NG0103).
+  proyectosParaFiltro: { id: number; nombre: string }[] = [];
+
+  private calcularProyectosParaFiltro(): void {
+    const unicos = new Map<number, string>();
     this.etapas.forEach(etapa => {
       const id = etapa.proyectoId || etapa.proyecto?.id;
       const nombre = etapa.proyectoNombre || etapa.proyecto?.nombre;
@@ -64,7 +69,7 @@ export class EtapasComponent implements OnInit {
         unicos.set(id, nombre);
       }
     });
-    return Array.from(unicos, ([id, nombre]) => ({ id, nombre }));
+    this.proyectosParaFiltro = Array.from(unicos, ([id, nombre]) => ({ id, nombre }));
   }
 
   cargarEtapas(): void {
@@ -78,6 +83,7 @@ export class EtapasComponent implements OnInit {
             nombre: etapa.proyectoNombre || 'Sin asignación'
           }
         }));
+        this.calcularProyectosParaFiltro();
         this.cargando = false;
       },
       error: (err) => {
@@ -103,7 +109,9 @@ export class EtapasComponent implements OnInit {
     this.etapaEditandoId = null;
     this.nuevaEtapa = {
       nombre: '',
+      nombreEn: '',
       descripcion: '',
+      descripcionEn: '',
       orden: 1,
       activo: true,
       proyectoId: this.proyectosDisponibles.length > 0 ? (this.proyectosDisponibles[0].id ?? null) : null
@@ -117,7 +125,9 @@ export class EtapasComponent implements OnInit {
     this.etapaEditandoId = etapa.id;
     this.nuevaEtapa = {
       nombre: etapa.nombre,
+      nombreEn: etapa.nombreEn || '',
       descripcion: etapa.descripcion || '',
+      descripcionEn: etapa.descripcionEn || '',
       orden: etapa.orden || 1,
       activo: etapa.activo ?? true,
       proyectoId: etapa.proyectoId || etapa.proyecto?.id || null
@@ -138,6 +148,8 @@ export class EtapasComponent implements OnInit {
       proyectoId: Number(this.nuevaEtapa.proyectoId),
       nombre: this.nuevaEtapa.nombre,
       descripcion: this.nuevaEtapa.descripcion || undefined,
+      nombreEn: this.nuevaEtapa.nombreEn,
+      descripcionEn: this.nuevaEtapa.descripcionEn,
       orden: Number(this.nuevaEtapa.orden) || 1,
       activo: this.nuevaEtapa.activo
     };
@@ -189,7 +201,7 @@ export class EtapasComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al eliminar etapa:', err);
-        this.toastService.showError('Error al eliminar la etapa');
+        this.toastService.showError(err?.error?.mensaje || 'Error al eliminar la etapa');
       }
     });
   }

@@ -1,37 +1,72 @@
 @if (actual(); as lamina) {
-  <section class="carrusel" [attr.aria-label]="etiqueta()" [class.sin-miniaturas]="!miniaturasVisibles()">
+  <section class="carrusel" [attr.aria-label]="etiqueta() || ('proyecto.bienvenida.imagenes' | transloco)" [class.sin-miniaturas]="!miniaturasVisibles()">
     <!-- Clic en la mitad izquierda: imagen anterior; en la derecha: siguiente (también se desliza en táctil) -->
-    <div class="imagen" (click)="clicEnImagen($event)" (touchstart)="inicioToque($event)" (touchend)="finToque($event)">
+    <div class="imagen" (click)="clicEnImagen($event)" (pointerdown)="pista.set(false)" (touchstart)="inicioToque($event)" (touchend)="finToque($event)">
       <img [src]="lamina.url" [alt]="lamina.titulo || alt()" draggable="false" />
     </div>
 
-    @if (laminas().length > 1) {
-      <button type="button" class="flecha anterior" (click)="anterior()" aria-label="Imagen anterior">&#8249;</button>
-      <button type="button" class="flecha siguiente" (click)="siguiente()" aria-label="Imagen siguiente">&#8250;</button>
-
-      <button type="button" class="ver-miniaturas" (click)="miniaturasVisibles.set(!miniaturasVisibles())"
-              [attr.aria-expanded]="miniaturasVisibles()"
-              [attr.aria-label]="miniaturasVisibles() ? 'Ocultar imágenes' : 'Ver imágenes'"
-              [title]="miniaturasVisibles() ? 'Ocultar imágenes' : 'Ver imágenes'">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+    @if (ampliable()) {
+      <button type="button" class="ampliar" (click)="alternarAmpliada()"
+              [attr.aria-label]="(ampliada() ? 'proyecto.carrusel.salirPantalla' : 'proyecto.carrusel.verPantalla') | transloco"
+              [title]="(ampliada() ? 'proyecto.carrusel.salirPantalla' : 'comun.pantallaCompleta') | transloco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
              stroke-linejoin="round" aria-hidden="true">
-          <path [attr.d]="miniaturasVisibles() ? 'M6 9l6 6 6-6' : 'M6 15l6-6 6 6'" />
+          @if (ampliada()) {
+            <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+          } @else {
+            <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+          }
+        </svg>
+      </button>
+    }
+
+    <!-- Pista: la mano con las flechas avisa que la imagen se mueve; se quita en cuanto la tocan -->
+    @if (laminas().length > 1) {
+      <div class="pista" [class.oculta]="!pista()" aria-hidden="true">
+        <svg viewBox="0 0 64 74" width="92" height="106"><path d="M6 14 L18 5 V11 H46 V5 L58 14 L46 23 V17 H18 V23 Z" fill="#fff" stroke="#1b2222" stroke-width="1.6" stroke-linejoin="round" /><g transform="translate(15 27) scale(1.85)"><path fill="#fff" stroke="#1b2222" stroke-width="0.9" stroke-linejoin="round" d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z" /></g></svg>
+      </div>
+    }
+
+    @if (leyenda() && lamina.titulo) {
+      <p class="leyenda">{{ lamina.titulo }}</p>
+    }
+
+    @if (laminas().length > 1) {
+      <button type="button" class="ver-miniaturas" (click)="alternarMiniaturas()"
+              [attr.aria-expanded]="miniaturasVisibles()"
+              [attr.aria-label]="(miniaturasVisibles() ? 'proyecto.carrusel.ocultarImagenes' : 'proyecto.carrusel.verImagenes') | transloco"
+              [title]="(miniaturasVisibles() ? 'proyecto.carrusel.ocultarImagenes' : 'proyecto.carrusel.verImagenes') | transloco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path [attr.d]="miniaturasVisibles() ? 'M5 9l7 7 7-7' : 'M5 15l7-7 7 7'" />
         </svg>
       </button>
 
-      @if (miniaturasVisibles()) {
-        <ul class="miniaturas" aria-label="Elegir imagen">
-          @for (item of laminas(); track item.url; let i = $index) {
-            <li>
-              <button type="button" [class.activa]="i === indiceActual()" (click)="irA(i)"
-                      [attr.aria-label]="'Ver imagen ' + (i + 1) + ' de ' + laminas().length"
-                      [attr.aria-current]="i === indiceActual()">
-                <img [src]="item.url" alt="" loading="lazy" />
-              </button>
-            </li>
-          }
-        </ul>
-      }
+      <!-- Flechas sueltas a los lados de la tira de imágenes; quedan visibles aunque la tira se esconda -->
+      <div class="barra">
+        <button type="button" class="flecha" (click)="anterior()" [attr.aria-label]="'proyecto.carrusel.anterior' | transloco">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4l-8 8 8 8" /></svg>
+        </button>
+
+        @if (miniaturasVisibles()) {
+          <ul class="miniaturas" [attr.aria-label]="'proyecto.carrusel.elegir' | transloco">
+            @for (item of laminas(); track item.url; let i = $index) {
+              <li>
+                <button type="button" [class.activa]="i === indiceActual()" (click)="irA(i)"
+                        [attr.aria-label]="'proyecto.carrusel.verN' | transloco: { n: i + 1, total: laminas().length }"
+                        [attr.aria-current]="i === indiceActual()">
+                  <img [src]="item.url" alt="" loading="lazy" />
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <span class="espacio"></span>
+        }
+
+        <button type="button" class="flecha" (click)="siguiente()" [attr.aria-label]="'proyecto.carrusel.siguiente' | transloco">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4l8 8-8 8" /></svg>
+        </button>
+      </div>
     }
   </section>
 }

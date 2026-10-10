@@ -116,7 +116,9 @@ export class PasoRevisarComponent {
     // El PUT del backend recibe el proyecto completo, así que se reenvía lo que ya tiene
     this.proyectoService.actualizarProyecto(p.id, {
       empresaId: p.empresaId, nombre: p.nombre, slug: p.slug, descripcion: p.descripcion,
-      estadoProyecto: p.estadoProyecto, imagenUrl: p.imagenUrl, fechaLanzamiento: p.fechaLanzamiento, publicado: true
+      estadoProyecto: p.estadoProyecto, tipoRegistro: p.tipoRegistro, tipoProyecto: p.tipoProyecto,
+      participacion: p.participacion, destacado: p.destacado,
+      imagenUrl: p.imagenUrl, fechaLanzamiento: p.fechaLanzamiento, publicado: true
     }).subscribe({
       next: actualizado => {
         this.asistente.fijarProyecto(actualizado);

@@ -76,3 +76,42 @@ export function urlMapaOpenStreetMap(latitud: number, longitud: number, delta = 
   const bbox = [longitud - delta, latitud - delta, longitud + delta, latitud + delta].join(',');
   return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${latitud},${longitud}`;
 }
+
+/** Latitud y longitud de un enlace normal de Google Maps (?q=, ?ll=, @lat,lng o !3d..!4d..); null si no se pueden leer. */
+export function coordenadasDeGoogleMaps(url?: string | null): { latitud: number; longitud: number } | null {
+  if (!url) return null;
+
+  let u: URL;
+  try {
+    u = new URL(url.trim());
+  } catch {
+    return null;
+  }
+  if (!['https:', 'http:'].includes(u.protocol) || !/(^|\.)google\.[a-z.]+$/.test(u.hostname)) return null;
+
+  const num = String.raw`(-?\d{1,3}(?:\.\d+)?)`;
+  const par = new RegExp(String.raw`^\s*${num}\s*,\s*${num}`);
+  const candidatos: (RegExpMatchArray | null)[] = [
+    ...['q', 'll', 'query', 'center'].map(clave => u.searchParams.get(clave)?.match(par) ?? null),
+    u.pathname.match(new RegExp(`@${num},${num}`)),
+    u.pathname.match(new RegExp(`!3d${num}!4d${num}`))
+  ];
+
+  for (const m of candidatos) {
+    if (!m) continue;
+    const latitud = Number(m[1]);
+    const longitud = Number(m[2]);
+    if (Math.abs(latitud) <= 90 && Math.abs(longitud) <= 180) return { latitud, longitud };
+  }
+  return null;
+}
+
+/**
+ * Mapa satelital de Google incrustable alrededor de unas coordenadas (no requiere clave de API). La URL se arma solo
+ * con números y el nombre codificado, así que nada del administrador llega al iframe como texto libre.
+ */
+export function urlGoogleMapsSatelite(latitud: number, longitud: number, nombre?: string | null, zoom = 15): string {
+  const etiqueta = nombre?.replace(/[()]/g, '').trim().slice(0, 80);
+  const marca = etiqueta ? `(${encodeURIComponent(etiqueta)})` : '';
+  return `https://www.google.com/maps?q=${latitud.toFixed(6)},${longitud.toFixed(6)}${marca}&t=k&z=${Math.round(zoom)}&output=embed`;
+}

@@ -2,9 +2,9 @@
   <section class="seccion">
     <h2>{{ etapaNombre() }}</h2>
 
-    <ul class="leyenda" aria-label="Estados de los lotes">
+    <ul class="leyenda" [attr.aria-label]="'proyecto.disponibilidad.estados' | transloco">
       @for (item of leyenda(); track item.clave) {
-        <li><span class="punto" [class]="item.clave"></span> {{ item.etiqueta }} <strong>{{ item.total }}</strong></li>
+        <li><span class="punto" [class]="item.clave"></span> {{ 'estadoLote.' + item.clave | transloco }} <strong>{{ item.total }}</strong></li>
       }
     </ul>
 
@@ -29,7 +29,7 @@
       @if (elegido(); as lote) {
         <app-lote-tarjeta [lote]="lote" [proyectoId]="p.id!" />
       } @else {
-        <p class="ayuda">Elige un lote para ver su ficha.</p>
+        <p class="ayuda">{{ 'proyecto.disponibilidad.elige' | transloco }}</p>
       }
     </div>
   </section>

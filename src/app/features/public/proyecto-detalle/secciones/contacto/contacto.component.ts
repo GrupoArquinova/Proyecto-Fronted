@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -8,12 +9,14 @@ import { inicializarSeccion } from '../seccion.utils';
 import { SolicitudService } from '../../../../../core/services/solicitud.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { SolicitudPublicaRequest } from '../../../../../core/models/solicitud.models';
+import { alMenosUnMedioDeContacto } from '../../../../../core/utils/solicitudes';
 import { environment } from '../../../../../../environments/environment';
+import { IdiomaService } from '../../../../../core/services/idioma.service';
 
 @Component({
   selector: 'app-contacto-publico',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [TranslocoPipe, ReactiveFormsModule],
   templateUrl: './contacto.component.html',
   styleUrl: './contacto.component.scss'
 })
@@ -24,6 +27,7 @@ export class ContactoPublicoComponent {
   private toast = inject(ToastService);
   private platformId = inject(PLATFORM_ID);
   private route = inject(ActivatedRoute);
+  private idioma = inject(IdiomaService);
 
   readonly contacto = environment.contacto;
   readonly whatsappUrl = `https://wa.me/${environment.contacto.whatsapp}`;
@@ -46,18 +50,23 @@ export class ContactoPublicoComponent {
 
   readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.maxLength(120)]],
-    telefono: ['', [Validators.required, Validators.maxLength(30)]],
-    correo: ['', [Validators.required, Validators.email]],
+    telefono: ['', [Validators.maxLength(30)]],
+    correo: ['', [Validators.email]],
     mensaje: ['', [Validators.required, Validators.maxLength(1000)]],
     consentimientoDatos: [false, Validators.requiredTrue]
-  });
+  }, { validators: alMenosUnMedioDeContacto });
+
+  /** Falta el medio de contacto y la persona ya tocó alguno de los dos campos. */
+  readonly faltaMedioDeContacto = () =>
+    this.form.hasError('sinMedioDeContacto')
+    && (this.form.controls.telefono.touched || this.form.controls.correo.touched);
 
   constructor() {
     // Si llegan por un lote, el mensaje ya viene escrito (sin pisar lo que la persona haya escrito)
     effect(() => {
       const lote = this.lote();
       if (lote && !untracked(() => this.form.controls.mensaje.value)) {
-        this.form.controls.mensaje.setValue(`Hola, me interesa el lote ${lote.codigo}. ¿Me pueden dar más información?`);
+        this.form.controls.mensaje.setValue(this.idioma.t('proyecto.contacto.mensajeLote', { codigo: lote.codigo }));
       }
     });
   }
@@ -79,13 +88,13 @@ export class ContactoPublicoComponent {
     this.enviando.set(true);
     this.solicitudService.enviarSolicitud(solicitud).subscribe({
       next: () => {
-        this.toast.showSuccess('¡Solicitud enviada con éxito! Nos pondremos en contacto pronto.');
+        this.toast.showSuccess(this.idioma.t('home.formulario.exito'));
         this.form.reset();
         this.enviando.set(false);
       },
       error: err => {
         console.error('Error al enviar la solicitud:', err);
-        this.toast.showError('Hubo un error al enviar el mensaje. Inténtalo de nuevo.');
+        this.toast.showError(this.idioma.t('home.formulario.error'));
         this.enviando.set(false);
       }
     });

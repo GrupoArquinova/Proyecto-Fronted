@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { MedioComponent } from '../medio/medio.component';
@@ -7,7 +8,7 @@ import { SECCION_BENEFICIOS } from '../../../../../core/models/proyecto-detalle.
 @Component({
   selector: 'app-bienvenida',
   standalone: true,
-  imports: [MedioComponent, CarruselLaminasComponent],
+  imports: [TranslocoPipe, MedioComponent, CarruselLaminasComponent],
   templateUrl: './bienvenida.component.html',
   styleUrl: './bienvenida.component.scss'
 })
@@ -27,6 +28,8 @@ export class BienvenidaComponent {
 
   /** Lámina de beneficios (imagen). Si no hay, se usa el texto institucional con clave BENEFICIOS. */
   readonly imagenBeneficios = this.seccion.datos.imagenBeneficios;
+  /** Con más de una lámina de beneficios se pasan en un carrusel. */
+  readonly laminasBeneficios = this.seccion.datos.laminasBeneficios;
   readonly beneficios = computed(() =>
     this.detalle()?.contenido.find(c => c.seccion.toUpperCase() === SECCION_BENEFICIOS) ?? null);
 

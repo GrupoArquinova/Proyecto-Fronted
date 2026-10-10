@@ -10,10 +10,15 @@ import { MultimediaService } from './multimedia.service';
 import { ContenidoService } from './contenido.service';
 import { Punto360Service } from './punto-360.service';
 import { EscenaPunto } from '../models/punto-360.models';
-import { clasificarMedio } from '../utils/medios';
+import { ZonaComun } from '../models/zona-comun.models';
+import { Multimedia } from '../models/multimedia.models';
+import { clasificarMedio, coordenadasDeGoogleMaps, urlGoogleMapsSatelite } from '../utils/medios';
 import { formatoArea, ordenarLotes } from '../utils/lotes';
+import { localizarDetalle } from '../utils/localizar';
+import { IdiomaService } from './idioma.service';
 import {
   EstadoCargaProyecto,
+  ImagenZona,
   SECCION_BENEFICIOS,
   ProyectoDetalle,
   SeccionProyecto,
@@ -37,15 +42,19 @@ export class ProyectoDetalleService {
   private multimediaService = inject(MultimediaService);
   private contenidoService = inject(ContenidoService);
   private puntoService = inject(Punto360Service);
+  private idioma = inject(IdiomaService);
 
   private carga?: Subscription;
 
   readonly estado = signal<EstadoCargaProyecto>('cargando');
+  /** Datos tal como llegan del servidor (español, más los textos en inglés si el panel los tiene). */
   readonly detalle = signal<ProyectoDetalle | null>(null);
+  /** Los mismos datos con los textos en el idioma elegido: es lo que muestran las secciones del sitio. */
+  readonly detalleLocal = computed(() => localizarDetalle(this.detalle(), this.idioma.idioma()));
 
   /** Menú lateral: solo las secciones (y vistas) que el administrador ya llenó. */
   readonly secciones = computed<SeccionProyecto[]>(() => {
-    const d = this.detalle();
+    const d = this.detalleLocal();
     return d ? this.construirSecciones(d) : [];
   });
 
@@ -54,7 +63,7 @@ export class ProyectoDetalleService {
    * urbanismo o la vista aérea cuando son imágenes. null si el administrador no cargó ninguna.
    */
   readonly imagenPlano = computed<string | null>(() => {
-    const d = this.detalle();
+    const d = this.detalleLocal();
     if (!d) return null;
     const candidatas = [
       d.multimedia.find(m => m.tipo === 'PLANO')?.url,
@@ -66,23 +75,90 @@ export class ProyectoDetalleService {
 
   /** Lámina de beneficios (una imagen hecha en Canva): multimedia de tipo BENEFICIOS. */
   readonly imagenBeneficios = computed<string | null>(() =>
-    this.detalle()?.multimedia.find(m => m.tipo === 'BENEFICIOS')?.url ?? null);
+    this.detalleLocal()?.multimedia.find(m => m.tipo === 'BENEFICIOS')?.url ?? null);
+
+  /** Todas las láminas de beneficios del proyecto, en el orden del administrador (con varias se muestran en un carrusel). */
+  readonly laminasBeneficios = computed(() =>
+    (this.detalleLocal()?.multimedia ?? [])
+      .filter(m => m.tipo === 'BENEFICIOS')
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))
+      .map(m => ({ id: m.id, url: m.url, titulo: m.titulo })));
 
   /** Fotos del carrusel de Bienvenida: las imágenes del proyecto, en el orden definido por el administrador. */
   readonly galeria = computed(() =>
-    (this.detalle()?.multimedia ?? [])
+    (this.detalleLocal()?.multimedia ?? [])
       .filter(m => m.tipo === 'IMAGEN')
       .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)));
 
   /** Láminas de respaldo del proyecto (documentos y avales hechos en Canva): multimedia de tipo RESPALDO. */
   readonly respaldo = computed(() =>
-    (this.detalle()?.multimedia ?? [])
+    (this.detalleLocal()?.multimedia ?? [])
       .filter(m => m.tipo === 'RESPALDO')
       .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)));
 
+  /** Imágenes del mapa de ubicación (hechas en Canva): multimedia de tipo MAPA, en el orden del administrador. */
+  readonly mapas = computed(() =>
+    (this.detalleLocal()?.multimedia ?? [])
+      .filter(m => m.tipo === 'MAPA')
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)));
+
+  /**
+   * Mapa de Google para la vista "Google Maps": una URL embed ya lista o, si no, un mapa satelital armado con las
+   * coordenadas del enlace (o las de la ubicación). Con un enlace corto que no se puede leer y sin coordenadas es null
+   * y queda el botón que abre Google Maps.
+   */
+  readonly urlGoogleMaps = computed<string | null>(() => {
+    const d = this.detalleLocal();
+    const u = d?.ubicacion;
+    if (!d || !u) return null;
+
+    const embed = clasificarMedio(u.googleMapsUrl);
+    if (embed.tipo === 'incrustado' && embed.embedUrl?.startsWith('https://www.google.com/maps/embed')) return embed.embedUrl;
+
+    const coordenadas = coordenadasDeGoogleMaps(u.googleMapsUrl)
+      ?? (u.latitud != null && u.longitud != null ? { latitud: Number(u.latitud), longitud: Number(u.longitud) } : null);
+    return coordenadas && Number.isFinite(coordenadas.latitud) && Number.isFinite(coordenadas.longitud)
+      ? urlGoogleMapsSatelite(coordenadas.latitud, coordenadas.longitud, d.proyecto.nombre)
+      : null;
+  });
+
+  /** Imagen de fondo de Zonas destacadas (vista aérea o plano con los botones de cada zona): multimedia ZONAS_DESTACADAS. */
+  readonly imagenZonasDestacadas = computed<string | null>(() =>
+    (this.detalleLocal()?.multimedia ?? [])
+      .filter(m => m.tipo === 'ZONAS_DESTACADAS')
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))[0]?.url ?? null);
+
+  /**
+   * Todas las imágenes de las zonas comunes (galería), en el orden de las zonas. De cada zona van primero las imágenes
+   * subidas desde Multimedia (la portada primero) y después las de su galería, sin repetir.
+   */
+  readonly imagenesZonas = computed<ImagenZona[]>(() => {
+    const d = this.detalleLocal();
+    if (!d) return [];
+    return d.zonasComunes.flatMap(z => {
+      const deMultimedia = (d.multimediaZonas ?? [])
+        .filter(m => m.zonaComunId === z.id && m.tipo === 'IMAGEN')
+        .sort((a, b) => Number(b.portada) - Number(a.portada) || (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))
+        .map(m => ({ url: m.url, titulo: m.titulo || z.nombre }));
+      const deGaleria = (z.imagenes ?? []).map(i => ({ url: i.imagenUrl, titulo: i.titulo || z.nombre }));
+      const vistas = new Set<string>();
+      return [...deMultimedia, ...deGaleria]
+        .filter(i => !vistas.has(i.url) && !!vistas.add(i.url))
+        .map(i => ({ ...i, zonaId: z.id as number, zonaNombre: z.nombre }));
+    });
+  });
+
+  /** Foto con la que se presenta una zona: su primera imagen (la portada de Multimedia, si la hay), la principal de la galería o, en último caso, la del proyecto. */
+  fotoDeZona(zona: ZonaComun | null | undefined): string | null {
+    const subida = (this.detalleLocal()?.multimediaZonas ?? [])
+      .filter(m => m.zonaComunId === zona?.id && m.tipo === 'IMAGEN')
+      .sort((x, y) => Number(y.portada) - Number(x.portada) || (x.orden ?? 0) - (y.orden ?? 0) || (x.id ?? 0) - (y.id ?? 0))[0]?.url;
+    return subida ?? zona?.imagenPrincipalUrl ?? zona?.imagenes?.[0]?.imagenUrl ?? this.detalleLocal()?.proyecto.imagenUrl ?? null;
+  }
+
   /** Botones de una imagen (entorno, vista aérea o plano de urbanismo). */
   puntosDe(escena: EscenaPunto) {
-    return (this.detalle()?.puntos ?? []).filter(p => p.escena === escena);
+    return (this.detalleLocal()?.puntos ?? []).filter(p => p.escena === escena);
   }
 
   /**
@@ -91,7 +167,9 @@ export class ProyectoDetalleService {
    * Si el administrador cargó un enlace que no se puede incrustar, queda la página normal con su botón.
    */
   esInmersiva(seccionId: string, vistaId: string | null): boolean {
-    const u = this.detalle()?.ubicacion;
+    if (seccionId === 'zonas-comunes') return this.zonasInmersiva(vistaId);
+
+    const u = this.detalleLocal()?.ubicacion;
     if (seccionId !== 'ubicacion' || !u) return false;
 
     const tipo = (url?: string | null) => clasificarMedio(url).tipo;
@@ -99,7 +177,21 @@ export class ProyectoDetalleService {
       case 'entorno-360': return ['imagen', 'video', 'incrustado'].includes(tipo(u.recorrido360Url));
       case 'vista-aerea': return ['imagen', 'video', 'incrustado'].includes(tipo(u.vistaAereaUrl));
       case 'urbanismo': return tipo(u.urbanismoUrl) === 'imagen';
+      // Con imágenes de mapa subidas se ve como carrusel a pantalla completa; sin ellas queda el mapa interactivo
+      case 'mapa': return this.mapas().length > 0;
+      // Google Maps se incrusta a pantalla completa cuando hay con qué armar el mapa
+      case 'google-maps': return this.urlGoogleMaps() != null;
       default: return false;
+    }
+  }
+
+  /** Zonas comunes: la portada (sin vista), las zonas destacadas (imagen con botones) y la galería van a pantalla completa. */
+  private zonasInmersiva(vistaId: string | null): boolean {
+    const zonas = this.detalleLocal()?.zonasComunes ?? [];
+    switch (vistaId) {
+      case 'destacadas': return this.imagenZonasDestacadas() != null;
+      case 'galeria': return this.imagenesZonas().length > 0;
+      default: return zonas.length > 0;
     }
   }
 
@@ -120,7 +212,23 @@ export class ProyectoDetalleService {
         multimedia: this.multimediaService.listarPublicadosPorEntidad('proyecto', proyectoId).pipe(opcional([])),
         contenido: this.contenidoService.obtenerPublicadosPorEmpresa(proyecto.empresaId).pipe(opcional([])),
         puntos: this.puntoService.listarPorProyecto(proyectoId).pipe(opcional([]))
-      }).pipe(map(datos => ({ proyecto, ...datos }))))
+      }).pipe(
+        // Imágenes y planos de cada tipología (se piden aparte porque dependen de las tipologías publicadas)
+        switchMap(datos => {
+          const pedidos = datos.casasModelo
+            .filter(casa => casa.id != null)
+            .map(casa => this.multimediaService.listarPublicadosPorEntidad('casaModelo', casa.id as number).pipe(opcional([])));
+          const pedidosZonas = datos.zonasComunes
+            .filter(zona => zona.id != null)
+            .map(zona => this.multimediaService.listarPublicadosPorEntidad('zonaComun', zona.id as number).pipe(opcional([])));
+          return forkJoin({
+            casas: pedidos.length > 0 ? forkJoin(pedidos) : of([] as Multimedia[][]),
+            zonas: pedidosZonas.length > 0 ? forkJoin(pedidosZonas) : of([] as Multimedia[][])
+          }).pipe(
+            map(listas => ({ proyecto, ...datos, multimediaCasas: listas.casas.flat(), multimediaZonas: listas.zonas.flat() }))
+          );
+        })
+      ))
     ).subscribe({
       next: detalle => {
         this.detalle.set(detalle);
@@ -141,29 +249,29 @@ export class ProyectoDetalleService {
     // imágenes del proyecto; Beneficios, de la lámina BENEFICIOS o, si no hay, del contenido institucional.
     secciones.push({
       id: 'bienvenida',
-      titulo: 'Bienvenida',
+      titulo: this.idioma.t('proyecto.menu.bienvenida'),
       subsecciones: this.vistas([
         ['galeria', d.proyecto.nombre, d.multimedia.some(m => m.tipo === 'IMAGEN')],
-        ['beneficios', 'Beneficios', d.multimedia.some(m => m.tipo === 'BENEFICIOS') || d.contenido.some(esBeneficios)],
-        ['video', 'Video', videos.length > 0]
+        ['beneficios', this.idioma.t('proyecto.vista.beneficios'), d.multimedia.some(m => m.tipo === 'BENEFICIOS') || d.contenido.some(esBeneficios)],
+        ['video', this.idioma.t('proyecto.vista.video'), videos.length > 0]
       ])
     });
 
     // Respaldo es propio de cada proyecto (láminas); el de la empresa vive en el inicio del sitio
     if (hayRespaldo) {
-      secciones.push({ id: 'respaldo', titulo: 'Respaldo', subsecciones: [] });
+      secciones.push({ id: 'respaldo', titulo: this.idioma.t('proyecto.menu.respaldo'), subsecciones: [] });
     }
 
     if (u) {
       secciones.push({
         id: 'ubicacion',
-        titulo: 'Ubicación',
+        titulo: this.idioma.t('proyecto.menu.ubicacion'),
         subsecciones: this.vistas([
-          ['entorno-360', 'Entorno 360', !!u.recorrido360Url],
-          ['vista-aerea', 'Vista Aérea', !!u.vistaAereaUrl],
-          ['urbanismo', 'Urbanismo', !!u.urbanismoUrl],
-          ['mapa', 'Mapa', u.latitud != null && u.longitud != null],
-          ['google-maps', 'Google Maps', !!u.googleMapsUrl]
+          ['entorno-360', this.idioma.t('proyecto.vista.entorno-360'), !!u.recorrido360Url],
+          ['vista-aerea', this.idioma.t('proyecto.vista.vista-aerea'), !!u.vistaAereaUrl],
+          ['urbanismo', this.idioma.t('proyecto.vista.urbanismo'), !!u.urbanismoUrl],
+          ['mapa', this.idioma.t('proyecto.vista.mapa'), d.multimedia.some(m => m.tipo === 'MAPA') || (u.latitud != null && u.longitud != null)],
+          ['google-maps', this.idioma.t('proyecto.vista.google-maps'), !!u.googleMapsUrl]
         ])
       });
     }
@@ -171,10 +279,10 @@ export class ProyectoDetalleService {
     if (d.zonasComunes.length > 0) {
       secciones.push({
         id: 'zonas-comunes',
-        titulo: 'Zonas Comunes',
+        titulo: this.idioma.t('proyecto.menu.zonas-comunes'),
         subsecciones: this.vistas([
-          ['destacadas', 'Zonas Destacadas', true],
-          ['galeria', 'Galería', d.zonasComunes.some(z => (z.imagenes?.length ?? 0) > 0)]
+          ['destacadas', this.idioma.t('proyecto.vista.destacadas'), d.multimedia.some(m => m.tipo === 'ZONAS_DESTACADAS')],
+          ['galeria', this.idioma.t('proyecto.vista.galeria'), d.zonasComunes.some(z => (z.imagenes?.length ?? 0) > 0)]
         ])
       });
     }
@@ -183,18 +291,19 @@ export class ProyectoDetalleService {
     if (d.lotes.length > 0) {
       secciones.push({
         id: 'lotes',
-        titulo: 'Lotes',
-        subsecciones: d.lotes.map(l => ({ id: String(l.id), titulo: `${l.codigo} — ${formatoArea(l.areaM2)}` }))
+        titulo: this.idioma.t('proyecto.menu.lotes'),
+        subsecciones: d.lotes.map(l => ({ id: String(l.id), titulo: `${l.codigo} — ${formatoArea(l.areaM2, this.idioma.idioma())}` }))
       });
     }
 
     if (d.casasModelo.length > 0) {
       secciones.push({
         id: 'casa-modelo',
-        titulo: 'Casa Modelo',
+        titulo: this.idioma.t('proyecto.menu.casa-modelo'),
         subsecciones: this.vistas([
-          ['tour-virtual', 'Tour Virtual', d.casasModelo.some(c => !!c.tourVirtualUrl)],
-          ['planos', 'Planos', d.casasModelo.some(c => !!c.planoUrl)]
+          ['imagenes', this.idioma.t('proyecto.vista.imagenes'), d.multimediaCasas.some(m => m.tipo === 'IMAGEN')],
+          ['planos', this.idioma.t('proyecto.vista.planos'), d.casasModelo.some(c => !!c.planoUrl) || d.multimediaCasas.some(m => m.tipo === 'PLANO')],
+          ['tour-virtual', this.idioma.t('proyecto.vista.tour-virtual'), d.casasModelo.some(c => !!c.tourVirtualUrl)]
         ])
       });
     }
@@ -202,20 +311,20 @@ export class ProyectoDetalleService {
     if (d.lotes.length > 0) {
       secciones.push({
         id: 'disponibilidad',
-        titulo: 'Disponibilidad',
+        titulo: this.idioma.t('proyecto.menu.disponibilidad'),
         subsecciones: this.etapasDeLotes(d)
       });
     }
 
     const vistasVideo = this.vistas([
-      ['proyecto', 'Proyecto', videos.length > 0],
-      ['como-llegar', '¿Cómo llegar?', !!u?.videoComoLlegarUrl]
+      ['proyecto', this.idioma.t('proyecto.vista.proyecto'), videos.length > 0],
+      ['como-llegar', this.idioma.t('proyecto.vista.como-llegar'), !!u?.videoComoLlegarUrl]
     ]);
     if (vistasVideo.length > 0) {
-      secciones.push({ id: 'videos', titulo: 'Videos', subsecciones: vistasVideo });
+      secciones.push({ id: 'videos', titulo: this.idioma.t('proyecto.menu.videos'), subsecciones: vistasVideo });
     }
 
-    secciones.push({ id: 'contacto', titulo: 'Contacto', subsecciones: [] });
+    secciones.push({ id: 'contacto', titulo: this.idioma.t('proyecto.menu.contacto'), subsecciones: [] });
     return secciones;
   }
 
@@ -228,11 +337,11 @@ export class ProyectoDetalleService {
     const etapas = new Map<number, string>();
     for (const lote of d.lotes) {
       if (lote.etapaId != null && !etapas.has(lote.etapaId)) {
-        etapas.set(lote.etapaId, lote.etapaNombre ?? `Etapa ${lote.etapaId}`);
+        etapas.set(lote.etapaId, lote.etapaNombre ?? `${this.idioma.t('proyecto.loteTarjeta.etapa')} ${lote.etapaId}`);
       }
     }
     return [...etapas.entries()]
       .map(([id, titulo]) => ({ id: String(id), titulo }))
-      .sort((a, b) => a.titulo.localeCompare(b.titulo, 'es', { numeric: true }));
+      .sort((a, b) => a.titulo.localeCompare(b.titulo, this.idioma.idioma(), { numeric: true }));
   }
 }

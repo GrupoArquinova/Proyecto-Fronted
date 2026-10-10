@@ -6,13 +6,13 @@
   max-width: 920px;
   margin: 0 auto;
   padding: 2rem 1.5rem 3rem;
-  font-family: t.$font-sans;
+  font-family: t.$font-ui;
 }
 
 .cabecera {
   margin-bottom: 1.4rem;
 
-  h1 { margin: 0.2rem 0 0; font-family: t.$font-serif; font-size: 2rem; color: t.$text-dark; }
+  h1 { margin: 0.2rem 0 0; font-family: t.$font-ui; font-size: 2rem; color: t.$text-dark; }
   .volver { color: t.$text-body; font-size: 0.9rem; text-decoration: none; &:hover { color: t.$primary; } }
 }
 

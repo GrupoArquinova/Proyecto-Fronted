@@ -1,26 +1,57 @@
-<aside class="tarjeta" [class.ancha]="!!panorama()" role="dialog" [attr.aria-label]="punto().etiqueta">
-  <button type="button" class="cerrar" (click)="cerrar.emit()" aria-label="Cerrar">&times;</button>
+<aside class="tarjeta" [class.ancha]="!!panorama() || !!panoramaEtapa() || !!imagenesEtapa()?.length" role="dialog" [attr.aria-label]="punto().etiqueta">
+  <button type="button" class="cerrar" (click)="cerrar.emit()" [attr.aria-label]="'comun.cerrar' | transloco">&times;</button>
 
-  <span class="tipo">{{ esLote() ? 'Lote' : 'Etapa' }}</span>
+  <span class="tipo">{{ (esZona() ? 'proyecto.tarjeta.zona' : esLote() ? 'proyecto.tarjeta.lote' : 'proyecto.tarjeta.etapa') | transloco }}</span>
   <h3>{{ punto().etiqueta }}</h3>
 
-  @if (esLote()) {
+  @if (esZona()) {
+    @if (descripcion()) {
+      <p class="descripcion">{{ descripcion() }}</p>
+    }
+
+    @if (panorama(); as url) {
+      <app-visor-360 [url]="url" [titulo]="'proyecto.tarjeta.tZona' | transloco: { nombre: punto().etiqueta }" />
+    } @else if (panorama() === null) {
+      @if (foto(); as imagen) {
+        <img class="foto" [src]="imagen" [alt]="punto().etiqueta" />
+      }
+      <p class="vacio">{{ 'proyecto.tarjeta.zonaSin360' | transloco }}</p>
+    } @else {
+      <p class="vacio">{{ 'proyecto.tarjeta.buscando360' | transloco }}</p>
+    }
+  } @else if (esLote()) {
     <ul class="datos">
-      @if (area()) { <li><strong>Área:</strong> {{ area() }}</li> }
-      @if (punto().loteEstado) { <li><strong>Estado:</strong> {{ punto().loteEstado }}</li> }
+      @if (area()) { <li><strong>{{ 'proyecto.tarjeta.area' | transloco }}</strong> {{ area() }}</li> }
+      @if (punto().loteEstado) { <li><strong>{{ 'proyecto.tarjeta.estado' | transloco }}</strong> {{ punto().loteEstado }}</li> }
     </ul>
 
     @if (panorama(); as url) {
-      <app-visor-360 [url]="url" [titulo]="'lote ' + punto().etiqueta" />
+      <app-visor-360 [url]="url" [titulo]="'proyecto.tarjeta.tLote' | transloco: { nombre: punto().etiqueta }" />
     } @else if (panorama() === null) {
-      <p class="vacio">Este lote aún no tiene imagen 360°.</p>
+      <p class="vacio">{{ 'proyecto.tarjeta.loteSin360' | transloco }}</p>
     } @else {
-      <p class="vacio">Buscando imagen 360°...</p>
+      <p class="vacio">{{ 'proyecto.tarjeta.buscando360' | transloco }}</p>
     }
   } @else {
     @if (punto().etapaNombre) {
-      <ul class="datos"><li><strong>Etapa:</strong> {{ punto().etapaNombre }}</li></ul>
+      <ul class="datos"><li><strong>{{ 'proyecto.tarjeta.etapaEtiqueta' | transloco }}</strong> {{ punto().etapaNombre }}</li></ul>
     }
-    <p class="vacio">Esta etapa aún no tiene imágenes.</p>
+    @if (panoramaEtapa(); as url) {
+      <app-visor-360 [url]="url" [titulo]="'proyecto.tarjeta.tEtapa' | transloco: { nombre: punto().etiqueta }" />
+    }
+    @if (imagenesEtapa(); as imagenes) {
+      @if (imagenes.length) {
+        <div class="visor-etapa">
+          @for (clave of [punto().etapaId]; track clave) {
+            <app-carrusel-laminas [laminas]="imagenes" [alt]="punto().etiqueta" [enMarco]="true" [ampliable]="true"
+                                  [etiqueta]="'proyecto.tarjeta.imagenesDe' | transloco: { nombre: punto().etiqueta }" />
+          }
+        </div>
+      } @else if (panoramaEtapa() === null) {
+        <p class="vacio">{{ 'proyecto.tarjeta.etapaSinImagenes' | transloco }}</p>
+      }
+    } @else {
+      <p class="vacio">{{ 'proyecto.tarjeta.buscandoImagenes' | transloco }}</p>
+    }
   }
 </aside>

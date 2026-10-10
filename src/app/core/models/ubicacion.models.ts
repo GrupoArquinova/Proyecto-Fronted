@@ -6,6 +6,7 @@ export interface Ubicacion {
   ciudad: string;
   departamento: string;
   referencias?: string;
+  referenciasEn?: string | null;
   latitud?: number;
   longitud?: number;
   googleMapsUrl?: string;

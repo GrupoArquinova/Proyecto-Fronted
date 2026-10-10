@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed, inject, input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { clasificarMedio } from '../../../../../core/utils/medios';
@@ -9,6 +10,7 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
 @Component({
   selector: 'app-medio',
   standalone: true,
+  imports: [TranslocoPipe],
   host: { '[class.completo]': 'completo()' },
   template: `
     @switch (clasificado().tipo) {
@@ -25,10 +27,10 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
       }
       @case ('pdf') {
         <iframe [src]="pdfSeguro()" [title]="titulo()" loading="lazy"></iframe>
-        <a class="enlace" [href]="url()" target="_blank" rel="noopener">Abrir {{ titulo() }} en una pestaña nueva</a>
+        <a class="enlace" [href]="url()" target="_blank" rel="noopener">{{ 'proyecto.medio.abrirNueva' | transloco: { titulo: titulo() } }}</a>
       }
       @default {
-        <a class="enlace" [href]="url()" target="_blank" rel="noopener noreferrer">Abrir {{ titulo() }} &rarr;</a>
+        <a class="enlace" [href]="url()" target="_blank" rel="noopener noreferrer">{{ 'proyecto.medio.abrir' | transloco: { titulo: titulo() } }} &rarr;</a>
       }
     }
   `,
@@ -39,8 +41,8 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
       width: 100%;
       border: 0;
       border-radius: 16px;
-      background: rgba(44, 99, 96, 0.03);
-      box-shadow: 0 6px 24px rgba(44, 99, 96, 0.1);
+      background: rgba(42, 102, 101, 0.03);
+      box-shadow: 0 6px 24px rgba(42, 102, 101, 0.1);
     }
     img { height: auto; max-height: 78vh; object-fit: contain; }
     video { max-height: 78vh; }
@@ -62,12 +64,12 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
       display: inline-block;
       margin-top: 0.9rem;
       padding: 0.8rem 1.6rem;
-      background: #2c6360;
+      background: #2a6665;
       color: #ffffff;
       border-radius: 999px;
       font-weight: 600;
       text-decoration: none;
-      box-shadow: 0 6px 18px rgba(44, 99, 96, 0.25);
+      box-shadow: 0 6px 18px rgba(42, 102, 101, 0.25);
       transition: background 0.2s, transform 0.2s;
     }
     .enlace:hover { background: #3c706e; transform: translateY(-1px); }
@@ -77,7 +79,7 @@ export class MedioComponent {
   private sanitizer = inject(DomSanitizer);
 
   readonly url = input.required<string>();
-  readonly titulo = input<string>('el recurso');
+  readonly titulo = input<string>('');
   /** Llena todo el espacio disponible, sin bordes redondeados (video a pantalla completa). */
   readonly completo = input(false);
 

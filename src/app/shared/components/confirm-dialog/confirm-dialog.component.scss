@@ -1,3 +1,4 @@
+@use '../../styles/admin-tokens' as t;
 .cd-backdrop {
   position: fixed;
   inset: 0;
@@ -51,7 +52,7 @@
 }
 
 .cd-title {
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: t.$font-ui;
   font-size: 1.15rem;
   font-weight: 600;
   color: #1e293b;
@@ -79,7 +80,7 @@
   border: none;
   font-size: 0.9rem;
   font-weight: 500;
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: t.$font-ui;
   cursor: pointer;
   transition: all 0.18s ease;
 
@@ -117,3 +118,6 @@
   from { opacity: 0; transform: translateY(16px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+// Los controles de formulario no heredan la letra de la página: se la pasamos
+button, input, select, textarea { font-family: inherit; }

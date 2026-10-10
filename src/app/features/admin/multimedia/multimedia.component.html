@@ -34,6 +34,8 @@
         <option value="PANORAMICA_360">Panorámica 360</option>
         <option value="BENEFICIOS">Beneficios (lámina del proyecto)</option>
         <option value="RESPALDO">Respaldo (láminas del proyecto)</option>
+        <option value="MAPA">Mapa de ubicación (imágenes)</option>
+        <option value="ZONAS_DESTACADAS">Zonas destacadas (imagen de fondo)</option>
         <option value="OTRO">Otro</option>
       </select>
     </div>
@@ -48,7 +50,7 @@
            [style.cursor]="item.tipo === 'PANORAMICA_360' || item.tipo === 'IMAGEN' ? 'pointer' : 'default'">
         
         <img
-          *ngIf="item.tipo === 'IMAGEN' || item.tipo === 'PANORAMICA_360' || item.tipo === 'BENEFICIOS' || item.tipo === 'RESPALDO'"
+          *ngIf="item.tipo === 'IMAGEN' || item.tipo === 'PANORAMICA_360' || item.tipo === 'BENEFICIOS' || item.tipo === 'RESPALDO' || item.tipo === 'MAPA' || item.tipo === 'ZONAS_DESTACADAS'"
           [src]="item.url"
           [alt]="item.titulo || 'Multimedia'"
           loading="lazy"
@@ -60,7 +62,7 @@
           Tu navegador no soporta la reproducción de videos.
         </video>
 
-        <a *ngIf="item.tipo !== 'IMAGEN' && item.tipo !== 'PANORAMICA_360' && item.tipo !== 'BENEFICIOS' && item.tipo !== 'RESPALDO' && item.tipo !== 'VIDEO'" 
+        <a *ngIf="item.tipo !== 'IMAGEN' && item.tipo !== 'PANORAMICA_360' && item.tipo !== 'BENEFICIOS' && item.tipo !== 'RESPALDO' && item.tipo !== 'MAPA' && item.tipo !== 'ZONAS_DESTACADAS' && item.tipo !== 'VIDEO'" 
            [href]="item.url" 
            target="_blank" 
            rel="noopener noreferrer" 
@@ -83,7 +85,8 @@
           {{ item.proyectoNombre ? 'Proyecto: ' + item.proyectoNombre : 
              item.loteCodigo ? 'Lote: ' + item.loteCodigo : 
              item.zonaComunNombre ? 'Zona común: ' + item.zonaComunNombre : 
-             item.casaModeloNombre ? 'Casa modelo: ' + item.casaModeloNombre : 'Sin vínculo' }}
+             item.casaModeloNombre ? 'Tipología: ' + item.casaModeloNombre : 
+             item.etapaNombre ? 'Etapa: ' + item.etapaNombre : 'Sin vínculo' }}
         </p>
         <p class="media-desc">{{ item.descripcion || 'Sin descripción' }}</p>
 
@@ -129,9 +132,9 @@
             <div class="form-group full-width">
               <label>Archivo *</label>
               <div class="archivo-preview" *ngIf="formData.url">
-                <img *ngIf="formData.tipo === 'IMAGEN' || formData.tipo === 'PANORAMICA_360' || formData.tipo === 'BENEFICIOS' || formData.tipo === 'RESPALDO'" [src]="formData.url" alt="Vista previa" class="preview-img" />
+                <img *ngIf="formData.tipo === 'IMAGEN' || formData.tipo === 'PANORAMICA_360' || formData.tipo === 'BENEFICIOS' || formData.tipo === 'RESPALDO' || formData.tipo === 'MAPA' || formData.tipo === 'ZONAS_DESTACADAS'" [src]="formData.url" alt="Vista previa" class="preview-img" />
                 <video *ngIf="formData.tipo === 'VIDEO'" [src]="formData.url" class="preview-img" controls muted></video>
-                <div *ngIf="formData.tipo !== 'IMAGEN' && formData.tipo !== 'PANORAMICA_360' && formData.tipo !== 'BENEFICIOS' && formData.tipo !== 'RESPALDO' && formData.tipo !== 'VIDEO'" class="preview-file">{{ nombreArchivoSeleccionado || formData.url }}</div>
+                <div *ngIf="formData.tipo !== 'IMAGEN' && formData.tipo !== 'PANORAMICA_360' && formData.tipo !== 'BENEFICIOS' && formData.tipo !== 'RESPALDO' && formData.tipo !== 'MAPA' && formData.tipo !== 'ZONAS_DESTACADAS' && formData.tipo !== 'VIDEO'" class="preview-file">{{ nombreArchivoSeleccionado || formData.url }}</div>
                 <button type="button" class="btn-quitar-archivo" (click)="quitarArchivo()">Quitar</button>
               </div>
 
@@ -182,6 +185,8 @@
                 <option value="PANORAMICA_360">Panorámica 360</option>
         <option value="BENEFICIOS">Beneficios (lámina del proyecto)</option>
         <option value="RESPALDO">Respaldo (láminas del proyecto)</option>
+        <option value="MAPA">Mapa de ubicación (imágenes)</option>
+        <option value="ZONAS_DESTACADAS">Zonas destacadas (imagen de fondo)</option>
                 <option value="OTRO">Otro</option>
               </select>
             </div>
@@ -207,7 +212,8 @@
                 <option value="proyecto">Proyecto</option>
                 <option value="lote">Lote</option>
                 <option value="zonaComun">Zona Común</option>
-                <option value="casaModelo">Casa Modelo</option>
+                <option value="casaModelo">Tipología</option>
+                <option value="etapa">Etapa</option>
               </select>
             </div>
 
@@ -227,7 +233,7 @@
               </select>
             </div>
 
-            <ng-container *ngIf="tipoPadre === 'zonaComun' || tipoPadre === 'casaModelo'">
+            <ng-container *ngIf="tipoPadre === 'zonaComun' || tipoPadre === 'casaModelo' || tipoPadre === 'etapa'">
               <div class="form-group full-width">
                 <label>Proyecto de referencia *</label>
                 <select name="proyectoReferenciaId" [(ngModel)]="proyectoReferenciaId" (change)="onCambioProyectoReferencia()" required>
@@ -245,10 +251,18 @@
               </div>
 
               <div class="form-group full-width" *ngIf="tipoPadre === 'casaModelo'">
-                <label for="casaModeloId">Casa Modelo *</label>
+                <label for="casaModeloId">Tipología *</label>
                 <select id="casaModeloId" name="casaModeloId" [(ngModel)]="formData.casaModeloId" required [disabled]="!proyectoReferenciaId">
-                  <option [ngValue]="null" disabled>Selecciona una casa modelo</option>
+                  <option [ngValue]="null" disabled>Selecciona una tipología</option>
                   <option *ngFor="let c of casasModelosDisponibles" [value]="c.id">{{ c.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width" *ngIf="tipoPadre === 'etapa'">
+                <label for="etapaId">Etapa *</label>
+                <select id="etapaId" name="etapaId" [(ngModel)]="formData.etapaId" required [disabled]="!proyectoReferenciaId">
+                  <option [ngValue]="null" disabled>Selecciona una etapa</option>
+                  <option *ngFor="let e of etapasDisponibles" [value]="e.id">{{ e.nombre }}</option>
                 </select>
               </div>
             </ng-container>

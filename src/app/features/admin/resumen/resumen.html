@@ -92,7 +92,7 @@
             </td>
             <td>
               <span class="status-pill" [ngClass]="'pill-' + (p.estadoProyecto | lowercase)">
-                {{ p.estadoProyecto }}
+                {{ etiquetaEtapa(p.estadoProyecto) }}
               </span>
             </td>
             <td class="text-muted">{{ p.slug || 'N/A' }}</td>

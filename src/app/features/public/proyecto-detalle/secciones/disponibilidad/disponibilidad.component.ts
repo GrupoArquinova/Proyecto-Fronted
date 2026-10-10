@@ -1,9 +1,11 @@
-import { Component, computed, signal } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { Component, computed, inject, signal } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { PlanoLotesComponent } from '../plano-lotes/plano-lotes.component';
 import { LoteTarjetaComponent } from '../lote-tarjeta/lote-tarjeta.component';
 import { Lote } from '../../../../../core/models/lote.models';
 import { ClaveEstadoLote, estadoDeLote, formatoArea } from '../../../../../core/utils/lotes';
+import { IdiomaService } from '../../../../../core/services/idioma.service';
 
 const LEYENDA: { clave: ClaveEstadoLote; etiqueta: string }[] = [
   { clave: 'disponible', etiqueta: 'Disponible' },
@@ -14,12 +16,13 @@ const LEYENDA: { clave: ClaveEstadoLote; etiqueta: string }[] = [
 @Component({
   selector: 'app-disponibilidad-publico',
   standalone: true,
-  imports: [PlanoLotesComponent, LoteTarjetaComponent],
+  imports: [TranslocoPipe, PlanoLotesComponent, LoteTarjetaComponent],
   templateUrl: './disponibilidad.component.html',
   styleUrl: './disponibilidad.component.scss'
 })
 export class DisponibilidadPublicoComponent {
   private seccion = inicializarSeccion('disponibilidad');
+  private idioma = inject(IdiomaService);
 
   readonly proyecto = computed(() => this.seccion.detalle()?.proyecto ?? null);
   readonly plano = this.seccion.datos.imagenPlano;
@@ -51,7 +54,7 @@ export class DisponibilidadPublicoComponent {
   }
 
   area(lote: Lote): string {
-    return formatoArea(lote.areaM2);
+    return formatoArea(lote.areaM2, this.idioma.idioma());
   }
 
   elegir(lote: Lote): void {

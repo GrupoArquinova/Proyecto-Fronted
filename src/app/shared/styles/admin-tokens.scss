@@ -21,8 +21,11 @@ $bg-page:       #f4f6f6;
 $bg-card:       #ffffff;
 
 // --- TIPOGRAFÍA ---
-$font-sans:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-$font-serif:  'Georgia', 'Times New Roman', serif;
+// Bahnschrift (estilo DIN) viene con Windows 10/11; DIN Alternate la reemplaza en Mac/iOS y Barlow (Google Fonts,
+// cargada en index.html) en el resto de dispositivos.
+$font-ui:     'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+$font-sans:   $font-ui;
+$font-serif:  $font-ui; // los títulos usaban Georgia; ahora todo el admin comparte la misma letra
 
 // --- ESPACIADO ---
 $space-xs:   0.5rem;

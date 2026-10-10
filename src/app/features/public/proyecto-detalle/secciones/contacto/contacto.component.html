@@ -1,54 +1,55 @@
 @if (proyecto(); as p) {
   <section class="tarjeta">
-    <h2>Contáctanos</h2>
-    <p class="sub">Déjanos tus datos y te contamos todo sobre {{ p.nombre }}.</p>
+    <h2>{{ 'proyecto.contacto.titulo' | transloco }}</h2>
+    <p class="sub">{{ 'proyecto.contacto.sub' | transloco: { nombre: p.nombre } }}</p>
     @if (lote(); as l) {
-      <p class="lote">Consultando por el lote <strong>{{ l.codigo }}</strong></p>
+      <p class="lote">{{ 'proyecto.contacto.consultandoLote' | transloco }} <strong>{{ l.codigo }}</strong></p>
     }
 
     <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
-      <label>
-        Nombre
-        <input type="text" formControlName="nombre" placeholder="Tu nombre completo" autocomplete="name"
+      <label class="campo-nombre">
+        {{ 'proyecto.contacto.nombre' | transloco }}
+        <input type="text" formControlName="nombre" [placeholder]="'proyecto.contacto.nombreEjemplo' | transloco" autocomplete="name"
                [class.error]="invalido('nombre')" />
-        @if (invalido('nombre')) { <small>Escribe tu nombre.</small> }
+        @if (invalido('nombre')) { <small>{{ 'proyecto.contacto.errorNombre' | transloco }}</small> }
       </label>
 
-      <label>
-        Teléfono / WhatsApp
-        <input type="tel" formControlName="telefono" placeholder="Ej: 300 123 4567" autocomplete="tel"
-               [class.error]="invalido('telefono')" />
-        @if (invalido('telefono')) { <small>Escribe un teléfono de contacto.</small> }
+      <label class="campo-telefono">
+        {{ 'proyecto.contacto.telefono' | transloco }}
+        <input type="tel" formControlName="telefono" [placeholder]="'proyecto.contacto.telefonoEjemplo' | transloco" autocomplete="tel"
+               [class.error]="invalido('telefono') || faltaMedioDeContacto()" />
       </label>
 
-      <label>
-        Correo
-        <input type="email" formControlName="correo" placeholder="correo@ejemplo.com" autocomplete="email"
-               [class.error]="invalido('correo')" />
-        @if (invalido('correo')) { <small>Escribe un correo válido.</small> }
+      <label class="campo-correo">
+        {{ 'proyecto.contacto.correo' | transloco }}
+        <input type="email" formControlName="correo" [placeholder]="'home.formulario.correoEjemplo' | transloco" autocomplete="email"
+               [class.error]="invalido('correo') || faltaMedioDeContacto()" />
+        @if (invalido('correo')) { <small>{{ 'proyecto.contacto.errorCorreo' | transloco }}</small> }
+        @else if (faltaMedioDeContacto()) { <small>{{ 'proyecto.contacto.faltaMedio' | transloco }}</small> }
+        @else { <small class="ayuda">{{ 'proyecto.contacto.ayuda' | transloco }}</small> }
       </label>
 
-      <label>
-        Mensaje
-        <textarea formControlName="mensaje" rows="4" placeholder="¿En qué podemos ayudarte?"
+      <label class="campo-mensaje">
+        {{ 'proyecto.contacto.mensaje' | transloco }}
+        <textarea formControlName="mensaje" rows="4" [placeholder]="'proyecto.contacto.mensajeEjemplo' | transloco"
                   [class.error]="invalido('mensaje')"></textarea>
-        @if (invalido('mensaje')) { <small>Cuéntanos qué necesitas.</small> }
+        @if (invalido('mensaje')) { <small>{{ 'proyecto.contacto.errorMensaje' | transloco }}</small> }
       </label>
 
       <label class="consentimiento">
         <input type="checkbox" formControlName="consentimientoDatos" />
-        <span>Autorizo el tratamiento de mis datos personales para que me contacten.</span>
+        <span>{{ 'proyecto.contacto.consentimientoAntes' | transloco }} <a href="/legal/politica-datos" target="_blank" rel="noopener">{{ 'proyecto.contacto.consentimientoEnlace' | transloco }}</a>.</span>
       </label>
-      @if (invalido('consentimientoDatos')) { <small class="aviso">Debes autorizar el tratamiento de tus datos.</small> }
+      @if (invalido('consentimientoDatos')) { <small class="aviso">{{ 'proyecto.contacto.errorConsentimiento' | transloco }}</small> }
 
       <button type="submit" class="enviar" [disabled]="enviando()">
-        {{ enviando() ? 'Enviando...' : 'Enviar mensaje' }}
+        {{ (enviando() ? 'proyecto.contacto.enviando' : 'proyecto.contacto.enviar') | transloco }}
       </button>
     </form>
 
     <footer class="pie">
       <a [href]="'tel:+' + contacto.whatsapp">{{ contacto.telefonoTexto }}</a>
-      <a [href]="whatsappUrl" target="_blank" rel="noopener">WhatsApp</a>
+      <a [href]="whatsappUrl" target="_blank" rel="noopener">{{ 'proyecto.contacto.whatsapp' | transloco }}</a>
       @if (lugar()) { <span>{{ lugar() }}</span> }
     </footer>
   </section>

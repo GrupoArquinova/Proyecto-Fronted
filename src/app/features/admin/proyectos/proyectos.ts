@@ -7,7 +7,9 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { Proyecto, CrearProyectoDTO } from '../../../core/models/proyecto.models';
+import { Proyecto, CrearProyectoDTO, ETAPAS_PROYECTO, TIPOS_REGISTRO, TIPOS_PROYECTO, etiquetaEtapa } from '../../../core/models/proyecto.models';
+
+export type FiltroProyectos = 'activos' | 'inactivos' | 'todos';
 
 @Component({
   selector: 'app-proyectos',
@@ -26,6 +28,8 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   private readonly EMPRESA_ID = 1;
 
   proyectos: Proyecto[] = [];
+  /** Qué proyectos se listan: por defecto los activos; los inactivos se ven con su filtro. */
+  filtro: FiltroProyectos = 'activos';
   loading = false;
   errorMsg = '';
 
@@ -48,7 +52,13 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     nombre:           ['', [Validators.required, Validators.minLength(3)]],
     slug:             [''],
     descripcion:      [''],
-    estadoProyecto:   ['PLANIFICACION', Validators.required],
+    descripcionEn:    [''],
+    estadoProyecto:   ['EN_DISENO', Validators.required],
+    tipoRegistro:     ['OFERTA_COMERCIAL', Validators.required],
+    tipoProyecto:     [''],
+    participacion:    [''],
+    participacionEn:  [''],
+    destacado:        [false],
     publicado:        [false],
     imagenUrl:        [''],
     fechaLanzamiento: ['']
@@ -56,6 +66,36 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarProyectos();
+  }
+
+  /** Un proyecto sin el dato `activo` se considera activo. */
+  esActivo(proyecto: Proyecto): boolean {
+    return proyecto.activo !== false;
+  }
+
+  get totalActivos(): number {
+    return this.proyectos.filter(p => this.esActivo(p)).length;
+  }
+
+  get totalInactivos(): number {
+    return this.proyectos.length - this.totalActivos;
+  }
+
+  get proyectosVisibles(): Proyecto[] {
+    switch (this.filtro) {
+      case 'activos': return this.proyectos.filter(p => this.esActivo(p));
+      case 'inactivos': return this.proyectos.filter(p => !this.esActivo(p));
+      default: return this.proyectos;
+    }
+  }
+
+  /** "EN_CONSTRUCCION" se muestra como "En construccion" en la tarjeta. */
+  readonly etapas = ETAPAS_PROYECTO;
+  readonly tiposRegistro = TIPOS_REGISTRO;
+  readonly tiposProyecto = TIPOS_PROYECTO;
+
+  etiquetaEstado(estado?: string): string {
+    return etiquetaEtapa(estado);
   }
 
   ngOnDestroy(): void {
@@ -176,7 +216,13 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       nombre: '',
       slug: '',
       descripcion: '',
-      estadoProyecto: 'PLANIFICACION',
+      descripcionEn: '',
+      estadoProyecto: 'EN_DISENO',
+      tipoRegistro: 'OFERTA_COMERCIAL',
+      tipoProyecto: '',
+      participacion: '',
+      participacionEn: '',
+      destacado: false,
       publicado: false,
       imagenUrl: '',
       fechaLanzamiento: ''
@@ -195,7 +241,13 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       nombre:           proyecto.nombre,
       slug:             proyecto.slug ?? '',
       descripcion:      proyecto.descripcion ?? '',
-      estadoProyecto:   proyecto.estadoProyecto ?? 'PLANIFICACION',
+      descripcionEn:    proyecto.descripcionEn ?? '',
+      estadoProyecto:   proyecto.estadoProyecto ?? 'EN_DISENO',
+      tipoRegistro:     proyecto.tipoRegistro ?? 'OFERTA_COMERCIAL',
+      tipoProyecto:     proyecto.tipoProyecto ?? '',
+      participacion:    proyecto.participacion ?? '',
+      participacionEn:  proyecto.participacionEn ?? '',
+      destacado:        proyecto.destacado ?? false,
       publicado:        proyecto.publicado ?? false,
       imagenUrl:        proyecto.imagenUrl ?? '',
       fechaLanzamiento: proyecto.fechaLanzamiento ?? ''
@@ -213,7 +265,10 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue = this.proyectoForm.value;
+    const formValue = {
+      ...this.proyectoForm.value,
+      tipoProyecto: this.proyectoForm.value.tipoProyecto || null
+    };
 
     if (this.modoEdicion && this.proyectoEditandoId !== null) {
       this.proyectoService.actualizarProyecto(this.proyectoEditandoId, formValue).subscribe({

@@ -1,0 +1,7 @@
+# Sitio público de Grupo Arquinova. El panel y las pantallas de ingreso no se indexan.
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /recuperar-password
+Disallow: /reset-password

@@ -28,11 +28,11 @@ import { TipoArchivo, atributoAccept, validarArchivo } from '../../../core/utils
         </div>
       } @else {
         <label class="zona" [class.ocupada]="subiendo()">
-          <input type="file" [accept]="accept()" [disabled]="subiendo()" (change)="alElegir($event)" />
+          <input type="file" [accept]="accept()" [multiple]="multiple()" [disabled]="subiendo()" (change)="alElegir($event)" />
           @if (subiendo()) {
             <span class="spinner" aria-hidden="true"></span> Subiendo {{ nombre() }}...
           } @else {
-            <span>Elegir archivo ({{ descripcionTipos() }})</span>
+            <span>{{ multiple() ? 'Elegir archivos' : 'Elegir archivo' }} ({{ descripcionTipos() }})</span>
           }
         </label>
       }
@@ -81,6 +81,8 @@ export class SubidaArchivoComponent {
    * en vez de quedarse mostrando la previa.
    */
   readonly limpiarAlSubir = input(false);
+  /** Permite elegir varios archivos del explorador a la vez; se suben uno tras otro y cada uno emite `subido`. */
+  readonly multiple = input(false);
   readonly subido = output<{ url: string; nombre: string }>();
 
   readonly subiendo = signal(false);
@@ -101,34 +103,44 @@ export class SubidaArchivoComponent {
 
   alElegir(evento: Event): void {
     const input = evento.target as HTMLInputElement;
-    const archivo = input.files?.[0];
+    const elegidos = Array.from(input.files ?? []);
     input.value = '';
-    if (!archivo) return;
+    const archivos = this.multiple() ? elegidos : elegidos.slice(0, 1);
+    if (archivos.length === 0) return;
 
-    const problema = validarArchivo(archivo, this.tipos());
-    if (problema) {
-      this.error.set(problema);
-      return;
+    // Se validan todos antes de subir ninguno
+    for (const archivo of archivos) {
+      const problema = validarArchivo(archivo, this.tipos());
+      if (problema) {
+        this.error.set(archivos.length > 1 ? `${archivo.name}: ${problema}` : problema);
+        return;
+      }
     }
 
     this.error.set('');
-    this.nombre.set(archivo.name);
     this.subiendo.set(true);
+    this.subirSiguiente(archivos, 0);
+  }
+
+  private subirSiguiente(archivos: File[], i: number): void {
+    if (i >= archivos.length) {
+      this.subiendo.set(false);
+      this.nombre.set('');
+      return;
+    }
+    const archivo = archivos[i];
+    this.nombre.set(archivos.length > 1 ? `${archivo.name} (${i + 1} de ${archivos.length})` : archivo.name);
 
     this.cloudinary.subirArchivo(archivo).subscribe({
       next: resultado => {
-        this.subiendo.set(false);
         this.subido.emit({ url: resultado.url, nombre: archivo.name });
-        if (this.limpiarAlSubir()) {
-          this.nombre.set('');
-        } else {
-          this.url.set(resultado.url);
-        }
+        if (!this.limpiarAlSubir()) this.url.set(resultado.url);
+        this.subirSiguiente(archivos, i + 1);
       },
       error: err => {
         console.error('Error al subir el archivo a Cloudinary:', err);
         this.toast.showError('No se pudo subir el archivo');
-        this.error.set('No se pudo subir el archivo. Inténtalo de nuevo.');
+        this.error.set(`No se pudo subir ${archivo.name}. Inténtalo de nuevo.`);
         this.nombre.set('');
         this.subiendo.set(false);
       }

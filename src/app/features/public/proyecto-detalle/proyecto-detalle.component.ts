@@ -1,9 +1,15 @@
-import { Component, DestroyRef, HostListener, PLATFORM_ID, computed, inject, signal } from '@angular/core';
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { ProyectoDetalleService } from '../../../core/services/proyecto-detalle.service';
+import { SECCIONES_CON_PORTADA } from '../../../core/models/proyecto-detalle.models';
+import { BotonPantallaCompletaComponent } from '../../../shared/components/boton-pantalla-completa/boton-pantalla-completa.component';
+import { SeoService } from '../../../core/services/seo.service';
+import { IdiomaService } from '../../../core/services/idioma.service';
+import { SelectorIdiomaComponent } from '../../../shared/components/selector-idioma/selector-idioma.component';
 
 /**
  * Micrositio de un proyecto: menú lateral con las secciones que el administrador ya llenó
@@ -12,7 +18,7 @@ import { ProyectoDetalleService } from '../../../core/services/proyecto-detalle.
 @Component({
   selector: 'app-proyecto-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet],
+  imports: [CommonModule, RouterLink, RouterOutlet, TranslocoPipe, SelectorIdiomaComponent, BotonPantallaCompletaComponent],
   providers: [ProyectoDetalleService],
   templateUrl: './proyecto-detalle.component.html',
   styleUrl: './proyecto-detalle.component.scss'
@@ -20,9 +26,51 @@ import { ProyectoDetalleService } from '../../../core/services/proyecto-detalle.
 export class ProyectoDetalleComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private document = inject(DOCUMENT);
-  private platformId = inject(PLATFORM_ID);
   readonly datos = inject(ProyectoDetalleService);
+  private seo = inject(SeoService);
+  private idioma = inject(IdiomaService);
+
+  /** Título, descripción y datos para buscadores de la página del proyecto y de su sección activa. */
+  private readonly seoDelProyecto = effect(() => {
+    const estado = this.datos.estado();
+    if (estado === 'no-encontrado' || estado === 'error') {
+      this.seo.establecer({ titulo: this.idioma.t('proyecto.armazon.noEncontradoSeo'), noindex: true });
+      return;
+    }
+
+    const detalle = this.datos.detalleLocal();
+    if (!detalle) return;
+
+    const p = detalle.proyecto;
+    const u = detalle.ubicacion;
+    const lugar = [u?.ciudad, u?.departamento].filter(Boolean).join(', ');
+    const seccion = this.seccionTitulo();
+    const prefijo = seccion && this.seccionActiva() !== 'bienvenida' ? `${seccion} · ` : '';
+    const imagen = p.imagenUrl ?? detalle.multimedia.find(m => m.tipo === 'IMAGEN')?.url ?? null;
+    const enLugar = lugar ? ` ${this.idioma.t('proyecto.armazon.enLugar', { lugar })}` : '';
+    const descripcion = p.descripcion || this.idioma.t('proyecto.armazon.descripcionSeo', { nombre: p.nombre, lugar: enLugar });
+    const ruta = `/proyectos/${p.id}/${this.seccionActiva() || 'bienvenida'}`;
+
+    this.seo.establecer({
+      titulo: `${prefijo}${p.nombre}${enLugar}`,
+      descripcion,
+      imagen,
+      ruta,
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'Place',
+        name: p.nombre,
+        description: descripcion,
+        image: imagen ?? undefined,
+        address: u?.ciudad
+          ? { '@type': 'PostalAddress', addressLocality: u.ciudad, addressRegion: u.departamento, addressCountry: 'CO' }
+          : undefined,
+        geo: u?.latitud != null && u?.longitud != null
+          ? { '@type': 'GeoCoordinates', latitude: Number(u.latitud), longitude: Number(u.longitud) }
+          : undefined
+      }
+    });
+  });
 
   private proyectoId = 0;
 
@@ -66,24 +114,13 @@ export class ProyectoDetalleComponent {
     return vista !== 'beneficios' || !!this.datos.imagenBeneficios();
   });
 
-  readonly pantallaCompleta = signal(false);
-  readonly pantallaCompletaDisponible = signal(false);
-
-  readonly proyecto = computed(() => this.datos.detalle()?.proyecto ?? null);
+  readonly proyecto = computed(() => this.datos.detalleLocal()?.proyecto ?? null);
   readonly ubicacionTexto = computed(() => {
-    const u = this.datos.detalle()?.ubicacion;
+    const u = this.datos.detalleLocal()?.ubicacion;
     return u ? [u.ciudad, u.departamento].filter(Boolean).join(', ') : '';
   });
 
   constructor() {
-    if (isPlatformBrowser(this.platformId)) {
-      // iPhone no permite pantalla completa en páginas: en ese caso el botón no se muestra
-      this.pantallaCompletaDisponible.set(!!this.document.documentElement.requestFullscreen);
-      // Sube el botón de WhatsApp para que el de pantalla completa quede debajo (ver styles.scss)
-      this.document.body.classList.add('micrositio');
-      inject(DestroyRef).onDestroy(() => this.document.body.classList.remove('micrositio'));
-    }
-
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe(params => {
       this.proyectoId = Number(params.get('id'));
       if (Number.isInteger(this.proyectoId) && this.proyectoId > 0) {
@@ -96,14 +133,14 @@ export class ProyectoDetalleComponent {
 
   /**
    * Vista activa de una sección: la pedida en la URL si existe o, si no, la primera.
-   * Bienvenida es la excepción: sin vista elegida muestra la portada y ninguna vista queda marcada.
+   * Bienvenida y Zonas comunes son la excepción: sin vista elegida muestran su portada y ninguna vista queda marcada.
    */
   vistaDe(seccionId: string): string | null {
     if (seccionId !== this.seccionActiva()) return null;
     const subs = this.datos.secciones().find(s => s.id === seccionId)?.subsecciones ?? [];
     const pedida = this.vistaActiva();
     if (subs.some(v => v.id === pedida)) return pedida ?? null;
-    return seccionId === 'bienvenida' ? null : (subs[0]?.id ?? null);
+    return SECCIONES_CON_PORTADA.includes(seccionId) ? null : (subs[0]?.id ?? null);
   }
 
   reintentar(): void {
@@ -112,19 +149,5 @@ export class ProyectoDetalleComponent {
 
   cerrarMenuMovil(): void {
     this.menuMovilAbierto.set(false);
-  }
-
-  /** Se pone toda la página (no solo este componente) para que el botón de WhatsApp siga visible. */
-  alternarPantallaCompleta(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const accion = this.document.fullscreenElement
-      ? this.document.exitFullscreen()
-      : this.document.documentElement.requestFullscreen();
-    accion.catch(() => undefined);
-  }
-
-  @HostListener('document:fullscreenchange')
-  sincronizarPantallaCompleta(): void {
-    this.pantallaCompleta.set(!!this.document.fullscreenElement);
   }
 }

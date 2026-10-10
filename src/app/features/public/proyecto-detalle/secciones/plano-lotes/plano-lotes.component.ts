@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, computed, input, output } from '@angular/core';
 import { Lote } from '../../../../../core/models/lote.models';
 import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes';
@@ -9,14 +10,15 @@ import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes
 @Component({
   selector: 'app-plano-lotes',
   standalone: true,
+  imports: [TranslocoPipe],
   template: `
     @if (imagenUrl() && marcadores().length > 0) {
       <div class="plano">
-        <img [src]="imagenUrl()" alt="Plano del proyecto con la ubicación de los lotes" />
+        <img [src]="imagenUrl()" [alt]="'proyecto.planoLotes.alt' | transloco" />
         @for (m of marcadores(); track m.lote.id) {
           <button type="button" class="marca" [class]="m.estado" [class.activa]="m.lote.id === seleccionadoId()"
                   [style.left.%]="m.x" [style.top.%]="m.y"
-                  [attr.aria-label]="'Lote ' + m.lote.codigo + ', ' + m.estado"
+                  [attr.aria-label]="'proyecto.planoLotes.marca' | transloco: { codigo: m.lote.codigo, estado: ('estadoLote.' + m.estado | transloco) }"
                   (click)="seleccionar.emit(m.lote)">
             {{ m.lote.codigo }}
           </button>
@@ -26,7 +28,7 @@ import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes
   `,
   styles: [`
     :host { display: block; }
-    .plano { position: relative; border-radius: 16px; overflow: hidden; background: rgba(44, 99, 96, 0.03); box-shadow: 0 6px 24px rgba(44, 99, 96, 0.1); }
+    .plano { position: relative; border-radius: 16px; overflow: hidden; background: rgba(42, 102, 101, 0.03); box-shadow: 0 6px 24px rgba(42, 102, 101, 0.1); }
     img { display: block; width: 100%; height: auto; }
     .marca {
       position: absolute;
@@ -44,7 +46,7 @@ import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes
       transition: transform 0.15s;
     }
     .marca:hover, .marca.activa { transform: translate(-50%, -50%) scale(1.25); z-index: 2; }
-    .marca.activa { outline: 3px solid #2c6360; }
+    .marca.activa { outline: 3px solid #2a6665; }
     .disponible { background: #2f9e63; }
     .reservado { background: #d9951a; }
     .vendido { background: #c94a4a; }

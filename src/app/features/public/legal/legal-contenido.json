@@ -1,0 +1,348 @@
+{
+  "politica-datos": {
+    "titulo": "Política de tratamiento de datos personales",
+    "corto": "Política de tratamiento de datos",
+    "resumen": "Cómo recolectamos, usamos, protegemos y suprimimos tus datos personales, y cómo ejercer tus derechos como titular.",
+    "secciones": [
+      {
+        "titulo": "1. Responsable del tratamiento",
+        "parrafos": [
+          "{{razonSocial}}, identificada con NIT {{nit}}, con domicilio en {{domicilio}} (en adelante, \"Arquinova\" o \"la Empresa\"), es la responsable del tratamiento de los datos personales que se recolectan a través de este sitio web y de sus canales de contacto."
+        ],
+        "items": [
+          "Dirección: {{direccion}}",
+          "Correo electrónico para asuntos de datos personales: {{correoDatos}}",
+          "Teléfono: {{telefono}}",
+          "Sitio web: {{sitioWeb}}",
+          "Área o persona encargada de atender consultas y reclamos: {{areaResponsable}}"
+        ]
+      },
+      {
+        "titulo": "2. Marco legal",
+        "parrafos": [
+          "Esta política se adopta en cumplimiento del artículo 15 de la Constitución Política de Colombia, la Ley 1581 de 2012, el Decreto 1074 de 2015 (que compila el Decreto 1377 de 2013) y las demás normas que los modifiquen, adicionen o reglamenten, así como las instrucciones de la Superintendencia de Industria y Comercio (SIC)."
+        ]
+      },
+      {
+        "titulo": "3. Definiciones",
+        "items": [
+          "Titular: persona natural cuyos datos personales son objeto de tratamiento.",
+          "Dato personal: cualquier información vinculada o que pueda asociarse a una o varias personas naturales determinadas o determinables.",
+          "Dato sensible: aquel que afecta la intimidad del titular o cuyo uso indebido puede generar discriminación (por ejemplo, salud, origen racial, orientación política o datos biométricos).",
+          "Tratamiento: cualquier operación sobre datos personales, como recolección, almacenamiento, uso, circulación o supresión.",
+          "Responsable: quien decide sobre la base de datos y el tratamiento de los datos.",
+          "Encargado: quien realiza el tratamiento de datos personales por cuenta del responsable.",
+          "Autorización: consentimiento previo, expreso e informado del titular para el tratamiento de sus datos.",
+          "Aviso de privacidad: comunicación verbal o escrita dirigida al titular, en la que se le informa sobre la existencia de esta política y la forma de acceder a ella."
+        ]
+      },
+      {
+        "titulo": "4. Principios aplicables",
+        "parrafos": [
+          "El tratamiento de datos personales se rige por los principios de legalidad, finalidad, libertad, veracidad o calidad, transparencia, acceso y circulación restringida, seguridad y confidencialidad, previstos en el artículo 4 de la Ley 1581 de 2012."
+        ]
+      },
+      {
+        "titulo": "5. Datos que recolectamos",
+        "parrafos": [
+          "Recolectamos únicamente los datos necesarios para las finalidades descritas en esta política:"
+        ],
+        "items": [
+          "Datos de contacto que nos entregas en los formularios: nombre, correo electrónico, teléfono, mensaje, proyecto o lote de interés.",
+          "Datos técnicos de la solicitud: dirección IP, tipo de navegador y fecha y hora, que se guardan como prueba de la autorización y por seguridad.",
+          "Datos de las personas que administran el sitio (usuarios internos): nombre, correo, rol y registros de actividad dentro del panel.",
+          "Si nos escribes por WhatsApp, los datos que compartas en la conversación, que además se rigen por las condiciones de ese servicio."
+        ],
+        "parrafos2": [
+          "No solicitamos datos sensibles ni datos de niños, niñas y adolescentes. Si por error recibimos alguno, lo suprimiremos."
+        ]
+      },
+      {
+        "titulo": "6. Finalidades del tratamiento",
+        "items": [
+          "Responder tus consultas, solicitudes de información y de contacto sobre nuestros proyectos, lotes y casas modelo.",
+          "Contactarte por teléfono, correo electrónico o WhatsApp para brindarte información comercial, disponibilidad y condiciones de los proyectos.",
+          "Hacer seguimiento comercial a tu solicitud y gestionar la relación con posibles compradores.",
+          "Enviarte información sobre nuevos proyectos, avances de obra o novedades, siempre que lo hayas autorizado, con la posibilidad de dejar de recibirla en cualquier momento.",
+          "Elaborar estadísticas internas y mejorar el sitio web y nuestros servicios.",
+          "Garantizar la seguridad del sitio y prevenir fraudes o usos indebidos.",
+          "Cumplir obligaciones legales y atender requerimientos de autoridades competentes."
+        ]
+      },
+      {
+        "titulo": "7. Autorización",
+        "parrafos": [
+          "Recolectamos tus datos solo con tu autorización previa, expresa e informada, que otorgas marcando la casilla de aceptación en nuestros formularios. Guardamos constancia de la autorización (fecha, hora y dirección IP). Puedes revocarla o solicitar la supresión de tus datos en cualquier momento, salvo cuando exista un deber legal o contractual de conservarlos."
+        ]
+      },
+      {
+        "titulo": "8. Derechos del titular",
+        "parrafos": [
+          "De acuerdo con el artículo 8 de la Ley 1581 de 2012, como titular tienes derecho a:"
+        ],
+        "items": [
+          "Conocer, actualizar y rectificar tus datos personales.",
+          "Solicitar prueba de la autorización otorgada, salvo los casos en que la ley no la exija.",
+          "Ser informado, previa solicitud, sobre el uso que se ha dado a tus datos.",
+          "Presentar quejas ante la Superintendencia de Industria y Comercio por infracciones a la ley.",
+          "Revocar la autorización y/o solicitar la supresión de tus datos cuando no se respeten los principios, derechos y garantías legales.",
+          "Acceder en forma gratuita a tus datos personales que hayan sido objeto de tratamiento."
+        ]
+      },
+      {
+        "titulo": "9. Procedimiento para consultas y reclamos",
+        "parrafos": [
+          "Puedes ejercer tus derechos escribiendo a {{correoDatos}} o a la dirección {{direccion}}, indicando tu nombre completo, número de identificación, datos de contacto y la descripción clara de tu solicitud."
+        ],
+        "items": [
+          "Consultas: serán atendidas en un máximo de diez (10) días hábiles contados desde la fecha de recibo. Si no es posible hacerlo en ese término, te informaremos los motivos y la nueva fecha, que no podrá superar cinco (5) días hábiles adicionales.",
+          "Reclamos (corrección, actualización, supresión o advertencia de incumplimiento): deben incluir la identificación del titular, la descripción de los hechos, la dirección de contacto y los documentos que quieras hacer valer. Si el reclamo está incompleto, te pediremos subsanarlo dentro de los cinco (5) días siguientes; pasados dos (2) meses sin respuesta se entenderá que desistes.",
+          "El reclamo completo será atendido en un máximo de quince (15) días hábiles, prorrogables por ocho (8) días hábiles más, informándote los motivos.",
+          "Solo podrás acudir ante la Superintendencia de Industria y Comercio una vez hayas agotado este trámite con nosotros."
+        ]
+      },
+      {
+        "titulo": "10. Transmisión y transferencia de datos",
+        "parrafos": [
+          "No vendemos tus datos personales. Para operar el sitio podemos compartirlos con proveedores que actúan como encargados del tratamiento, tales como servicios de alojamiento web, base de datos, almacenamiento de imágenes, envío de correo electrónico y mensajería. Algunos de estos proveedores pueden estar ubicados fuera de Colombia; en esos casos exigimos medidas de seguridad y confidencialidad equivalentes a las de esta política y, cuando la ley lo requiera, contamos con tu autorización o con los contratos de transmisión correspondientes.",
+          "También podremos entregar datos a autoridades que lo requieran en ejercicio de sus funciones legales."
+        ]
+      },
+      {
+        "titulo": "11. Medidas de seguridad",
+        "parrafos": [
+          "Aplicamos medidas técnicas, humanas y administrativas razonables para proteger los datos: conexión cifrada (HTTPS), acceso al panel restringido por usuario y rol, contraseñas almacenadas de forma cifrada, límite de intentos de ingreso y registros de actividad. Ningún sistema es completamente infalible; si ocurre un incidente que afecte tus datos, lo gestionaremos conforme a la ley, incluyendo el reporte a la Superintendencia de Industria y Comercio cuando corresponda."
+        ]
+      },
+      {
+        "titulo": "12. Conservación de los datos",
+        "parrafos": [
+          "Conservamos tus datos mientras sean necesarios para las finalidades descritas y durante los plazos exigidos por la ley. Cuando dejen de serlo, los suprimiremos o anonimizaremos de forma segura."
+        ]
+      },
+      {
+        "titulo": "13. Cookies y tecnologías similares",
+        "parrafos": [
+          "El sitio utiliza almacenamiento técnico necesario para su funcionamiento. Consulta nuestra Política de cookies para más detalles."
+        ]
+      },
+      {
+        "titulo": "14. Registro Nacional de Bases de Datos",
+        "parrafos": [
+          "Cuando la ley lo exija, las bases de datos de Arquinova se inscriben en el Registro Nacional de Bases de Datos (RNBD) administrado por la Superintendencia de Industria y Comercio."
+        ]
+      },
+      {
+        "titulo": "15. Vigencia y cambios",
+        "parrafos": [
+          "Esta política rige desde el {{fechaVigencia}}. Podemos modificarla para adaptarla a cambios legales o de nuestros servicios; publicaremos la versión vigente en este sitio y, si el cambio es sustancial, te lo comunicaremos por un medio eficaz."
+        ]
+      }
+    ]
+  },
+  "terminos": {
+    "titulo": "Términos y condiciones de uso",
+    "corto": "Términos y condiciones",
+    "resumen": "Reglas para usar este sitio web y alcance de la información que publicamos sobre nuestros proyectos.",
+    "secciones": [
+      {
+        "titulo": "1. Aceptación",
+        "parrafos": [
+          "Al navegar o usar este sitio web, propiedad de {{razonSocial}} (NIT {{nit}}), aceptas estos términos y condiciones. Si no estás de acuerdo, te pedimos no usar el sitio."
+        ]
+      },
+      {
+        "titulo": "2. Qué ofrece este sitio",
+        "parrafos": [
+          "El sitio presenta información de los proyectos inmobiliarios de Arquinova (ubicación, lotes, casas modelo, zonas comunes, imágenes, videos y recorridos virtuales) y permite contactarnos para recibir asesoría comercial. No es una tienda en línea: en este sitio no se realizan pagos ni se compran inmuebles."
+        ]
+      },
+      {
+        "titulo": "3. Información comercial: carácter informativo",
+        "items": [
+          "La información, los precios, las áreas, las medidas, la disponibilidad y las condiciones comerciales mostradas son informativas, pueden cambiar sin previo aviso y no constituyen una oferta vinculante.",
+          "Las imágenes, renders, planos, recorridos 360° y videos son ilustrativos y pueden diferir del resultado final de la construcción. Los acabados, el mobiliario, la vegetación y los entornos pueden variar.",
+          "La disponibilidad de un lote o inmueble solo se confirma con el área comercial. La compraventa se formaliza únicamente mediante los documentos escritos que se firmen con la Empresa (por ejemplo, promesa de compraventa y escritura pública).",
+          "Las áreas, linderos y especificaciones definitivas son las que consten en los documentos legales y en las licencias y planos aprobados."
+        ]
+      },
+      {
+        "titulo": "4. Uso permitido",
+        "parrafos": [
+          "Te comprometes a usar el sitio de forma lícita y de buena fe. Está prohibido:"
+        ],
+        "items": [
+          "Intentar acceder sin autorización al panel de administración, a las bases de datos o a cuentas de otras personas.",
+          "Introducir virus, código malicioso o realizar acciones que afecten el funcionamiento o la seguridad del sitio.",
+          "Extraer datos de forma masiva (scraping) o copiar el contenido con fines comerciales sin autorización.",
+          "Suplantar a otra persona o enviar información falsa en los formularios.",
+          "Usar el sitio para enviar publicidad no solicitada o contenido ilegal u ofensivo."
+        ]
+      },
+      {
+        "titulo": "5. Formularios y comunicaciones",
+        "parrafos": [
+          "Al enviar un formulario o escribirnos por WhatsApp, nos autorizas a contactarte por esos medios para responder tu solicitud, de acuerdo con la Política de tratamiento de datos personales. Realizaremos los contactos comerciales respetando los horarios y condiciones que establece la Ley 2300 de 2023 y las normas que la complementen. Puedes pedir en cualquier momento que dejemos de contactarte."
+        ]
+      },
+      {
+        "titulo": "6. Propiedad intelectual",
+        "parrafos": [
+          "Los textos, imágenes, logotipos, marcas, diseños, planos, videos, el código y demás contenidos del sitio pertenecen a {{razonSocial}} o a terceros que han autorizado su uso, y están protegidos por las normas de propiedad intelectual (Ley 23 de 1982, Decisión Andina 351 de 1993 y demás normas aplicables). No puedes reproducirlos, distribuirlos, modificarlos ni usarlos comercialmente sin autorización previa y escrita."
+        ]
+      },
+      {
+        "titulo": "7. Contenido y servicios de terceros",
+        "parrafos": [
+          "El sitio puede incluir mapas, videos, enlaces o servicios de terceros (por ejemplo, Google Maps, YouTube o WhatsApp). Esos servicios se rigen por sus propios términos y políticas de privacidad, y Arquinova no es responsable por su contenido ni por su disponibilidad."
+        ]
+      },
+      {
+        "titulo": "8. Disponibilidad y limitación de responsabilidad",
+        "parrafos": [
+          "Hacemos esfuerzos razonables para mantener el sitio disponible y la información actualizada, pero no garantizamos que funcione sin interrupciones o errores. En la medida permitida por la ley, Arquinova no responde por daños derivados del uso del sitio, de la imposibilidad de acceder a él o de decisiones tomadas únicamente con base en la información publicada, sin perjuicio de los derechos que la ley reconoce a los consumidores."
+        ]
+      },
+      {
+        "titulo": "9. Derechos del consumidor",
+        "parrafos": [
+          "Tienes derecho a recibir información clara, veraz y suficiente, y a presentar peticiones, quejas y reclamos por los canales indicados en este sitio. Si no obtienes respuesta satisfactoria, puedes acudir a la Superintendencia de Industria y Comercio, de acuerdo con la Ley 1480 de 2011 (Estatuto del Consumidor)."
+        ]
+      },
+      {
+        "titulo": "10. Protección de datos personales",
+        "parrafos": [
+          "El tratamiento de tus datos personales se rige por nuestra Política de tratamiento de datos personales, que forma parte de estos términos."
+        ]
+      },
+      {
+        "titulo": "11. Cambios",
+        "parrafos": [
+          "Podemos modificar estos términos en cualquier momento. La versión vigente es la publicada en el sitio. El uso del sitio después de un cambio implica su aceptación."
+        ]
+      },
+      {
+        "titulo": "12. Ley aplicable y jurisdicción",
+        "parrafos": [
+          "Estos términos se rigen por las leyes de la República de Colombia. Cualquier controversia será resuelta por los jueces competentes de {{domicilio}}, sin perjuicio de las competencias de las autoridades de protección al consumidor."
+        ]
+      },
+      {
+        "titulo": "13. Contacto",
+        "parrafos": [
+          "Para dudas sobre estos términos escríbenos a {{correoDatos}} o llámanos al {{telefono}}."
+        ]
+      }
+    ]
+  },
+  "cookies": {
+    "titulo": "Política de cookies",
+    "corto": "Política de cookies",
+    "resumen": "Qué almacenamiento y cookies usa este sitio y cómo puedes controlarlos.",
+    "secciones": [
+      {
+        "titulo": "1. Qué son las cookies",
+        "parrafos": [
+          "Las cookies y tecnologías similares (como el almacenamiento local del navegador) son pequeños archivos o datos que un sitio guarda en tu dispositivo para recordar información sobre tu visita."
+        ]
+      },
+      {
+        "titulo": "2. Qué usamos en este sitio",
+        "items": [
+          "Almacenamiento técnico necesario: permite que el sitio funcione, por ejemplo mantener la sesión de las personas que administran el sitio y recordar preferencias de la interfaz. No requiere consentimiento porque es indispensable para el servicio.",
+          "Contenido de terceros incrustado: mapas de Google Maps, videos de YouTube y otros recursos pueden establecer sus propias cookies cuando se cargan en una página. Se rigen por las políticas de esos proveedores.",
+          "Analítica y publicidad: actualmente este sitio no usa cookies de analítica ni de publicidad. Si en el futuro las activamos, te lo informaremos y solicitaremos tu consentimiento antes de usarlas."
+        ]
+      },
+      {
+        "titulo": "3. Cómo controlarlas",
+        "parrafos": [
+          "Puedes borrar o bloquear las cookies desde la configuración de tu navegador. Ten en cuenta que bloquear las necesarias puede afectar el funcionamiento de algunas partes del sitio, como el inicio de sesión del panel de administración."
+        ]
+      },
+      {
+        "titulo": "4. Cambios y contacto",
+        "parrafos": [
+          "Podemos actualizar esta política cuando cambien las tecnologías que usamos. Si tienes preguntas, escríbenos a {{correoDatos}}. Vigente desde el {{fechaVigencia}}."
+        ]
+      }
+    ]
+  },
+  "aviso-privacidad": {
+    "titulo": "Aviso de privacidad",
+    "corto": "Aviso de privacidad",
+    "resumen": "Resumen de cómo tratamos tus datos cuando nos contactas.",
+    "secciones": [
+      {
+        "titulo": "Responsable",
+        "parrafos": [
+          "{{razonSocial}}, NIT {{nit}}, domicilio en {{domicilio}}, es la responsable del tratamiento de tus datos personales. Contacto: {{correoDatos}} · {{telefono}}."
+        ]
+      },
+      {
+        "titulo": "Para qué usamos tus datos",
+        "parrafos": [
+          "Usaremos tu nombre, correo, teléfono y mensaje para responder tu solicitud, contactarte con información comercial de nuestros proyectos (por teléfono, correo o WhatsApp), hacer seguimiento a tu interés y, si lo autorizas, enviarte novedades. También guardamos datos técnicos (IP y navegador) como prueba de tu autorización y por seguridad."
+        ]
+      },
+      {
+        "titulo": "Tus derechos",
+        "parrafos": [
+          "Tienes derecho a conocer, actualizar, rectificar y suprimir tus datos, a revocar tu autorización, a solicitar prueba de ella y a presentar quejas ante la Superintendencia de Industria y Comercio. No estás obligado a responder preguntas sobre datos sensibles ni sobre menores de edad."
+        ]
+      },
+      {
+        "titulo": "Dónde consultar la política completa",
+        "parrafos": [
+          "Puedes consultar la Política de tratamiento de datos personales completa, con el procedimiento para ejercer tus derechos, en este sitio web. También puedes pedirla escribiendo a {{correoDatos}}."
+        ]
+      }
+    ]
+  },
+  "aviso-legal": {
+    "titulo": "Aviso legal",
+    "corto": "Aviso legal",
+    "resumen": "Identificación del titular del sitio y advertencias sobre la información publicada.",
+    "secciones": [
+      {
+        "titulo": "Titular del sitio",
+        "items": [
+          "Razón social: {{razonSocial}}",
+          "NIT: {{nit}}",
+          "Domicilio: {{domicilio}}",
+          "Dirección: {{direccion}}",
+          "Correo electrónico: {{correoDatos}}",
+          "Teléfono: {{telefono}}",
+          "Sitio web: {{sitioWeb}}"
+        ]
+      },
+      {
+        "titulo": "Información de los proyectos",
+        "parrafos": [
+          "La información publicada sobre proyectos, lotes, precios, áreas y disponibilidad es de carácter informativo y puede cambiar sin previo aviso. Las imágenes, renders, planos y recorridos son ilustrativos y pueden diferir del resultado final. Ningún contenido de este sitio constituye una oferta vinculante; las condiciones definitivas constarán en los documentos que se firmen con la Empresa."
+        ],
+        "items": [
+          "Licencias, permisos y registros del proyecto: {{licenciasProyecto}}"
+        ]
+      },
+      {
+        "titulo": "Propiedad intelectual",
+        "parrafos": [
+          "Las marcas, logotipos, textos, imágenes, videos y demás contenidos pertenecen a {{razonSocial}} o a sus licenciantes y no pueden usarse sin autorización escrita."
+        ]
+      },
+      {
+        "titulo": "Enlaces y servicios de terceros",
+        "parrafos": [
+          "Este sitio puede enlazar a páginas o usar servicios de terceros. Arquinova no controla ni responde por sus contenidos o políticas."
+        ]
+      },
+      {
+        "titulo": "Ley aplicable",
+        "parrafos": [
+          "Este aviso se rige por las leyes de la República de Colombia. Consulta también los Términos y condiciones y la Política de tratamiento de datos personales."
+        ]
+      }
+    ]
+  }
+}

@@ -14,8 +14,8 @@ import { CasaModelo } from '../../../../../core/models/casa-modelo.models';
   imports: [ReactiveFormsModule, SubidaArchivoComponent],
   styleUrl: '../paso.scss',
   template: `
-    <section class="bloque" aria-label="Casa modelo">
-      <h3>Casa modelo</h3>
+    <section class="bloque" aria-label="Tipologías">
+      <h3>Tipologías</h3>
       <p class="nota">Opcional. Si el proyecto tiene una casa de muestra, agrégala con su plano y su tour virtual.</p>
 
       <form [formGroup]="form" (ngSubmit)="agregar()" novalidate>
@@ -46,7 +46,7 @@ import { CasaModelo } from '../../../../../core/models/casa-modelo.models';
         <app-subida-archivo etiqueta="Plano de la casa" [tipos]="['imagen', 'pdf']" [(url)]="planoUrl" />
 
         <div><button type="submit" class="secundario" [disabled]="guardando()">{{ guardando() ? 'Agregando...' : 'Agregar casa modelo' }}</button></div>
-        @if (duplicada()) { <small class="error">Ya hay una casa modelo con ese nombre en este proyecto.</small> }
+        @if (duplicada()) { <small class="error">Ya hay una tipología con ese nombre en este proyecto.</small> }
       </form>
 
       <ul class="lista">
@@ -61,7 +61,7 @@ import { CasaModelo } from '../../../../../core/models/casa-modelo.models';
             <button type="button" class="quitar" (click)="eliminar(casa)">Eliminar</button>
           </li>
         } @empty {
-          <li class="vacio">Sin casa modelo.</li>
+          <li class="vacio">Sin tipologías.</li>
         }
       </ul>
     </section>
@@ -130,18 +130,18 @@ export class BloqueCasasComponent {
       error: (err: HttpErrorResponse) => {
         this.guardando.set(false);
         if (err.status === 409) this.duplicada.set(true);
-        else this.toast.showError('No se pudo crear la casa modelo. Inténtalo de nuevo.');
+        else this.toast.showError('No se pudo crear la tipología. Inténtalo de nuevo.');
       }
     });
   }
 
   async eliminar(casa: CasaModelo): Promise<void> {
     if (casa.id == null) return;
-    const ok = await this.confirm.open({ title: 'Eliminar casa modelo', message: `¿Eliminar "${casa.nombre}"?`, confirmText: 'Sí, eliminar' });
+    const ok = await this.confirm.open({ title: 'Eliminar tipología', message: `¿Eliminar "${casa.nombre}"?`, confirmText: 'Sí, eliminar' });
     if (!ok) return;
     this.casaService.eliminar(casa.id).subscribe({
       next: () => this.asistente.casas.update(l => l.filter(c => c.id !== casa.id)),
-      error: () => this.toast.showError('No se pudo eliminar la casa modelo.')
+      error: () => this.toast.showError('No se pudo eliminar la tipología.')
     });
   }
 }

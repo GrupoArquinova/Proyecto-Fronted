@@ -23,9 +23,26 @@
     <p>No hay proyectos registrados aún.</p>
   </div>
 
+  <!-- Filtro por estado del proyecto -->
+  <nav class="filtros" *ngIf="!loading && proyectos.length > 0" aria-label="Filtrar proyectos">
+    <button type="button" [class.activo]="filtro === 'activos'" (click)="filtro = 'activos'">
+      Activos <span class="contador">{{ totalActivos }}</span>
+    </button>
+    <button type="button" [class.activo]="filtro === 'inactivos'" (click)="filtro = 'inactivos'">
+      Inactivos <span class="contador">{{ totalInactivos }}</span>
+    </button>
+    <button type="button" [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">
+      Todos <span class="contador">{{ proyectos.length }}</span>
+    </button>
+  </nav>
+
+  <div *ngIf="!loading && proyectos.length > 0 && proyectosVisibles.length === 0" class="empty-state">
+    <p>No hay proyectos {{ filtro === 'activos' ? 'activos' : 'inactivos' }}.</p>
+  </div>
+
   <!-- Lista Dinámica de Tarjetas -->
-  <div class="proyectos-list" *ngIf="!loading && proyectos.length > 0">
-    <div class="proyecto-card" *ngFor="let proyecto of proyectos">
+  <div class="proyectos-list" *ngIf="!loading && proyectosVisibles.length > 0">
+    <div class="proyecto-card" *ngFor="let proyecto of proyectosVisibles" [class.inactivo]="!esActivo(proyecto)">
       <div class="proyecto-main">
        <img
   *ngIf="proyecto.imagenUrl"
@@ -53,14 +70,17 @@
             <span
               class="status-badge"
               [ngClass]="{
-                'badge-activo':      proyecto.estadoProyecto === 'PLANIFICACION',
-                'badge-proximamente': proyecto.estadoProyecto === 'EN_CONSTRUCCION',
-                'badge-entregado':    proyecto.estadoProyecto === 'ENTREGADO',
+                'badge-activo':      proyecto.estadoProyecto === 'EN_DISENO',
+                'badge-proximamente': proyecto.estadoProyecto === 'EN_TRAMITE',
+                'badge-entregado':    proyecto.estadoProyecto === 'EN_CONSTRUCCION',
                 'badge-agotado':      proyecto.estadoProyecto === 'FINALIZADO'
               }"
             >
-              {{ proyecto.estadoProyecto }}
+              {{ etiquetaEstado(proyecto.estadoProyecto) }}
             </span>
+            <span class="status-badge badge-proximamente" *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO'">Portafolio</span>
+            <span class="status-badge badge-activo" *ngIf="proyecto.destacado">Destacado</span>
+            <span class="status-badge badge-inactivo" *ngIf="!esActivo(proyecto)">Inactivo</span>
           </div>
 
           <p class="proyecto-meta">
@@ -130,14 +150,49 @@
           <textarea formControlName="descripcion" rows="3" placeholder="Descripción del proyecto..."></textarea>
         </div>
 
+        <div class="form-group form-group--full">
+          <label>Descripción en inglés (opcional)</label>
+          <textarea formControlName="descripcionEn" rows="3" placeholder="Description in English. If empty, the site shows the Spanish text."></textarea>
+        </div>
+
         <div class="form-group">
-          <label>Estado del Proyecto *</label>
+          <label>Etapa del Proyecto *</label>
           <select formControlName="estadoProyecto">
-            <option value="PLANIFICACION">Planificación</option>
-            <option value="EN_CONSTRUCCION">En Construcción</option>
-            <option value="ENTREGADO">Entregado</option>
-            <option value="FINALIZADO">Finalizado</option>
+            <option *ngFor="let e of etapas" [value]="e.valor">{{ e.etiqueta }}</option>
           </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de registro *</label>
+          <select formControlName="tipoRegistro">
+            <option *ngFor="let t of tiposRegistro" [value]="t.valor">{{ t.etiqueta }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de proyecto</label>
+          <select formControlName="tipoProyecto">
+            <option value="">Sin definir</option>
+            <option *ngFor="let t of tiposProyecto" [value]="t.valor">{{ t.etiqueta }}</option>
+          </select>
+        </div>
+
+        <div class="form-group form-group--full">
+          <label>Participación de Arquinova</label>
+          <input type="text" formControlName="participacion" maxlength="255"
+                 placeholder="Ej: Diseño arquitectónico y gestión de licencias" />
+        </div>
+
+        <div class="form-group form-group--full">
+          <label>Participación de Arquinova en inglés (opcional)</label>
+          <input type="text" formControlName="participacionEn" maxlength="255" placeholder="e.g. Architectural design and licensing" />
+        </div>
+
+        <div class="form-group form-group--full">
+          <label class="check-destacado">
+            <input type="checkbox" formControlName="destacado" />
+            Proyecto destacado en el inicio (solo uno; al marcarlo se quita a los demás)
+          </label>
         </div>
 
         <div class="form-group">

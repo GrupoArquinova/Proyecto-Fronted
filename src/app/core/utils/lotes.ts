@@ -21,10 +21,10 @@ export function ordenarLotes<T extends Pick<Lote, 'codigo'>>(lotes: T[]): T[] {
   return [...lotes].sort((a, b) => a.codigo.localeCompare(b.codigo, 'es', { numeric: true, sensitivity: 'base' }));
 }
 
-/** 800 → "800 m²", 1100 → "1.100 m²", 420.5 → "420,5 m²" (formato colombiano). */
-export function formatoArea(area: number | null | undefined): string {
+/** 800 → "800 m²", 1100 → "1.100 m²", 420.5 → "420,5 m²" (formato colombiano); en inglés, "1,100 m²" y "420.5 m²". */
+export function formatoArea(area: number | null | undefined, idioma: string = 'es'): string {
   if (area == null) return '';
-  return `${Number(area).toLocaleString('es-CO', { maximumFractionDigits: 2 })} m²`;
+  return `${Number(area).toLocaleString(idioma === 'en' ? 'en-US' : 'es-CO', { maximumFractionDigits: 2 })} m²`;
 }
 
 export function formatoPrecio(precio: number | null | undefined): string {

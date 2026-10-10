@@ -9,11 +9,9 @@
     <!-- Filtros Rápidos por Estado -->
     <div class="filtros-estados">
       <button class="btn-filtro" [class.active]="filtroEstado === null" (click)="filtrarPorEstado(null)">Todas</button>
-      <button class="btn-filtro" [class.active]="filtroEstado === 1" (click)="filtrarPorEstado(1)">Nuevas</button>
-      <button class="btn-filtro" [class.active]="filtroEstado === 2" (click)="filtrarPorEstado(2)">Contactadas</button>
-      <button class="btn-filtro" [class.active]="filtroEstado === 3" (click)="filtrarPorEstado(3)">En seguimiento</button>
-      <button class="btn-filtro" [class.active]="filtroEstado === 4" (click)="filtrarPorEstado(4)">Atendidas</button>
-      <button class="btn-filtro" [class.active]="filtroEstado === 6" (click)="filtrarPorEstado(6)">Cerradas</button>
+      <button class="btn-filtro" *ngFor="let e of estados" [class.active]="filtroEstado === e.id" (click)="filtrarPorEstado(e.id)">
+        {{ etiquetaEstadoPlural(e.nombre) }}
+      </button>
     </div>
   </div>
 
@@ -36,24 +34,26 @@
         <div class="cliente-info">
           <h3>{{ item.nombre }}</h3>
           <div class="contacto-links">
-            <a [href]="'mailto:' + item.correo">{{ item.correo }}</a>
-            <span>&bull;</span>
-            <a [href]="'tel:' + item.telefono">{{ item.telefono }}</a>
+            <a *ngIf="item.correo" [href]="'mailto:' + item.correo">{{ item.correo }}</a>
+            <span *ngIf="item.correo && item.telefono">&bull;</span>
+            <a *ngIf="item.telefono" [href]="'tel:' + item.telefono">{{ item.telefono }}</a>
+            <a *ngIf="enlaceWhatsapp(item.telefono) as wa" [href]="wa" target="_blank" rel="noopener" class="wa-link">WhatsApp</a>
           </div>
         </div>
         <div class="card-meta">
-          <span class="badge" [ngClass]="obtenerClaseEstado(item.estadoId)">
-            {{ item.estadoNombre || 'Nueva' }}
+          <span class="badge" [ngClass]="claseEstado(item.estadoNombre)">
+            {{ etiquetaEstado(item.estadoNombre) || 'Nuevo' }}
           </span>
           <span class="fecha">{{ item.creadoEn | date:'yyyy-MM-dd' }}</span>
         </div>
       </div>
 
       <!-- Información del Proyecto / Lote de Interés -->
-      <div class="interes-info" *ngIf="item.proyectoNombre || item.loteCodigo">
+      <div class="interes-info" *ngIf="item.proyectoNombre || item.loteCodigo || item.servicioInteres">
         <p>
           <strong>Interés:</strong>
           <span class="tag-proyecto" *ngIf="item.proyectoNombre">Proyecto: {{ item.proyectoNombre }}</span>
+          <span class="tag-proyecto" *ngIf="item.servicioInteres">Servicio: {{ item.servicioInteres }}</span>
           <span class="tag-lote" *ngIf="item.loteCodigo">Lote: {{ item.loteCodigo }}</span>
         </p>
       </div>
@@ -71,7 +71,7 @@
       <!-- Info de atención, si ya fue atendida -->
       <div class="atencion-info" *ngIf="item.atendidaPorNombre || item.atendidaEn">
         <small>
-          Atendida por <strong>{{ item.atendidaPorNombre || 'N/D' }}</strong>
+          Atendida por <strong>{{ item.atendidaPorNombre || 'Sin registrar' }}</strong>
           <span *ngIf="item.atendidaEn"> el {{ item.atendidaEn | date:'yyyy-MM-dd HH:mm' }}</span>
         </small>
       </div>
@@ -80,11 +80,9 @@
       <div class="card-footer">
         <div class="acciones-estado">
           <span class="label-cambiar">Cambiar estado:</span>
-          <button class="btn-estado nueva" [class.seleccionado]="item.estadoId === 1" (click)="cambiarEstado(item, 1)">Nueva</button>
-          <button class="btn-estado contactada" [class.seleccionado]="item.estadoId === 2" (click)="cambiarEstado(item, 2)">Contactada</button>
-          <button class="btn-estado seguimiento" [class.seleccionado]="item.estadoId === 3" (click)="cambiarEstado(item, 3)">Seguimiento</button>
-          <button class="btn-estado atendida" [class.seleccionado]="item.estadoId === 4" (click)="cambiarEstado(item, 4)">Atendida</button>
-          <button class="btn-estado cerrada" [class.seleccionado]="item.estadoId === 6" (click)="cambiarEstado(item, 6)">Cerrada</button>
+          <button class="btn-estado" *ngFor="let e of estados" [class.seleccionado]="item.estadoId === e.id" (click)="cambiarEstado(item, e.id)">
+            {{ etiquetaEstado(e.nombre) }}
+          </button>
         </div>
 
         <button class="btn-observacion" (click)="abrirModalNotas(item)">

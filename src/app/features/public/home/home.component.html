@@ -3,14 +3,17 @@
   <!-- Navbar Superior Fijo -->
   <header class="navbar">
     <div class="logo-container">
-      <a href="#inicio"><img src="https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg" alt="Arquinova Logo" class="logo" /></a>
+      <a href="#inicio"><img src="https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg" [alt]="'home.logoAlt' | transloco" class="logo" /></a>
     </div>
     <nav class="nav-links">
-      <a href="#inicio" class="nav-item active">Inicio</a>
-      <a href="#proyectos" class="nav-item">Proyectos</a>
-      <a href="#respaldo" class="nav-item">Respaldo</a>
-      <a href="#contacto" class="nav-item">Contáctanos</a>
-      <a routerLink="/login" class="btn-admin">Admin</a>
+      <a href="#inicio" class="nav-item active">{{ 'home.nav.inicio' | transloco }}</a>
+      <a href="#servicios" class="nav-item">{{ 'home.nav.servicios' | transloco }}</a>
+      <a href="#proyectos" class="nav-item">{{ 'home.nav.proyectos' | transloco }}</a>
+      <a href="#empresa" class="nav-item">{{ 'home.nav.empresa' | transloco }}</a>
+      <a *ngIf="destacado" [routerLink]="['/proyectos', destacado.id]" class="nav-item">{{ destacado.nombre }}</a>
+      <a href="#contacto" class="nav-item">{{ 'home.nav.contacto' | transloco }}</a>
+      <app-selector-idioma />
+      <a routerLink="/login" class="btn-admin">{{ 'home.nav.admin' | transloco }}</a>
     </nav>
   </header>
 
@@ -19,53 +22,66 @@
     <div class="hero-overlay"></div>
 
     <div class="hero-content">
-      <span class="sub-category">URBANIZACIONES CAMPESTRES · COLOMBIA</span>
+      <span class="sub-category">{{ 'home.hero.categoria' | transloco }}</span>
 
       <h1 class="hero-title">
-        Tierra para vivir <br />
-        <span class="italic-text">como siempre</span> <br />
-        <span class="italic-text">quisiste</span>
+        {{ 'home.hero.linea1' | transloco }} <br />
+        <span class="italic-text">{{ 'home.hero.linea2' | transloco }}</span> <br />
+        <span class="italic-text">{{ 'home.hero.linea3' | transloco }}</span>
       </h1>
 
       <p class="hero-description">
-        Proyectos inmobiliarios campestres con infraestructura completa, 
-        zonas comunes de excelencia y la tranquilidad que merece tu familia.
+        {{ 'home.hero.descripcion' | transloco }}
       </p>
 
       <div class="hero-buttons">
-        <a href="#proyectos" class="btn-primary">Ver Proyectos</a>
-        <a href="#beneficios" class="btn-secondary">Conocer Beneficios</a>
+        <a href="#proyectos" class="btn-primary">{{ 'home.hero.verProyectos' | transloco }}</a>
+        <a href="#servicios" class="btn-secondary">{{ 'home.hero.servicios' | transloco }}</a>
       </div>
     </div>
   </section>
 
-  <!-- STATS BANNER CONECTADO -->
-  <div class="stats-banner">
-    <div class="stat-item">
-      <h2>+{{ anosExperiencia }} años</h2>
-      <p>de experiencia</p>
+  <!-- Proyecto destacado (el que se marca en el panel) -->
+  <section id="destacado" class="featured-section" *ngIf="destacado as d">
+    <div class="featured-card">
+      <div class="featured-image" [style.backgroundImage]="'url(' + d.imagenUrl + ')'"></div>
+      <div class="featured-body">
+        <span class="section-tag">{{ 'home.destacado.etiqueta' | transloco }}</span>
+        <h2>{{ d.nombre }}</h2>
+        <p class="featured-meta">{{ d.ubicacion }}<span *ngIf="d.estado"> · {{ d.estadoProyecto ? ('etapaProyecto.' + d.estadoProyecto | transloco) : d.estado }}</span></p>
+        <p class="featured-text" *ngIf="d.descripcion">{{ d.descripcion | localizado: d.descripcionEn }}</p>
+        <div class="featured-buttons">
+          <a [routerLink]="['/proyectos', d.id]" class="btn-primary">{{ 'home.destacado.conocer' | transloco }}</a>
+          <a [href]="whatsappDestacado" target="_blank" rel="noopener" class="btn-outline">{{ 'home.destacado.asesor' | transloco }}</a>
+        </div>
+      </div>
     </div>
-    <div class="stat-item">
-      <h2>{{ totalProyectos }} proyectos</h2>
-      <p>activos</p>
+  </section>
+
+  <!-- 3. Servicios -->
+  <section id="servicios" class="services-section">
+    <div class="section-header">
+      <span class="section-tag">{{ 'home.servicios.etiqueta' | transloco }}</span>
+      <h2>{{ 'home.servicios.titulo' | transloco }}</h2>
+      <p>{{ 'home.servicios.subtitulo' | transloco }}</p>
     </div>
-    <div class="stat-item">
-      <h2>+{{ totalLotes }} lotes</h2>
-      <p>entregados</p>
+
+    <div class="services-grid">
+      <div class="service-card" *ngFor="let servicio of servicios; let i = index">
+        <div class="icon-container">0{{ i + 1 }}</div>
+        <h3>{{ 'home.servicios.lista.' + servicio.clave + '.titulo' | transloco }}</h3>
+        <p>{{ 'home.servicios.lista.' + servicio.clave + '.descripcion' | transloco }}</p>
+      </div>
     </div>
-    <div class="stat-item">
-      <h2>{{ infraestructuraPorcentaje }}%</h2>
-      <p>infraestructura incluida</p>
-    </div>
-  </div>
+  </section>
 
   <!-- 2. Sección Portafolio / Proyectos -->
   <section class="projects-section" id="proyectos">
     <div class="container">
       <div class="section-header">
-        <span class="section-tag">PORTAFOLIO</span>
-        <h2>Nuestros Proyectos</h2>
-        <p>Explora cada proyecto como una experiencia completa: conoce su historia, recorre sus espacios, consulta la disponibilidad y descubre las etapas que lo componen.</p>
+        <span class="section-tag">{{ 'home.proyectos.etiqueta' | transloco }}</span>
+        <h2>{{ 'home.proyectos.titulo' | transloco }}</h2>
+        <p>{{ 'home.proyectos.subtitulo' | transloco }}</p>
       </div>
 
       <!-- Contenedor de Tarjetas Dinámicas -->
@@ -73,32 +89,35 @@
         <div class="project-card" *ngFor="let proyecto of proyectosDestacados">
           
           <div class="card-image" [style.backgroundImage]="'url(' + proyecto.imagenUrl + ')'">
-            <span class="badge-status" *ngIf="proyecto.estado">{{ proyecto.estado }}</span>
+            <span class="badge-status" *ngIf="proyecto.estado">{{ proyecto.estadoProyecto ? ('etapaProyecto.' + proyecto.estadoProyecto | transloco) : proyecto.estado }}</span>
           </div>
 
           <div class="card-body">
-            <span class="location">{{ proyecto.ubicacion }}</span>
+            <span class="location">{{ proyecto.ubicacion }}<span *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO'"> · {{ 'home.proyectos.portafolio' | transloco }}</span></span>
             <h3>{{ proyecto.nombre }}</h3>
-            <p>{{ proyecto.descripcion }}</p>
+            <p *ngIf="proyecto.descripcion">{{ proyecto.descripcion | localizado: proyecto.descripcionEn }}</p>
+            <p class="participacion" *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO' && proyecto.participacion">
+              <strong>{{ 'home.proyectos.participacion' | transloco }}</strong> {{ proyecto.participacion | localizado: proyecto.participacionEn }}
+            </p>
 
-            <!-- Métricas dinámicas -->
-            <div class="card-metrics">
+            <!-- Métricas dinámicas (solo proyectos con oferta comercial) -->
+            <div class="card-metrics" *ngIf="proyecto.tipoRegistro !== 'PORTAFOLIO'">
               <div class="metric">
                 <strong>{{ proyecto.totalLotes }}</strong>
-                <span>LOTES</span>
+                <span>{{ 'home.proyectos.lotes' | transloco }}</span>
               </div>
               <div class="metric">
                 <strong>{{ proyecto.lotesDisponibles }}</strong>
-                <span>DISPONIBLES</span>
+                <span>{{ 'home.proyectos.disponibles' | transloco }}</span>
               </div>
               <div class="metric">
                 <strong>360°</strong>
-                <span>EXPERIENCIA</span>
+                <span>{{ 'home.proyectos.experiencia' | transloco }}</span>
               </div>
             </div>
 
             <a [routerLink]="['/proyectos', proyecto.id]" class="card-link">
-              Explorar proyecto &rarr;
+              {{ 'home.proyectos.explorar' | transloco }} &rarr;
             </a>
           </div>
 
@@ -107,156 +126,32 @@
 
       <!-- Botón para ver el catálogo completo si hay más proyectos -->
       <div class="text-center mt-5" style="margin-top: 40px; text-align: center;">
-        <a routerLink="/proyectos" class="btn btn-primary" style="padding: 12px 30px; background: #2c6360; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600;">
-          Ver todos los proyectos ({{ totalProyectos }})
+        <a routerLink="/proyectos" class="btn btn-primary" style="padding: 12px 30px; background: #2a6665; color: #fff; border-radius: 999px; text-decoration: none; font-weight: 600;">
+          {{ 'home.proyectos.verTodos' | transloco: { total: totalProyectos } }}
         </a>
       </div>
 
     </div>
   </section>
 
-  <!-- SECCIÓN BENEFICIOS ARQUINOVA -->
-  <section id="beneficios" class="benefits-section">
+  <!-- Empresa: respalda lo comercial, por eso va después de servicios y proyectos -->
+  <section id="empresa" class="about-section">
     <div class="section-header">
-      <span class="section-tag">¿Por qué elegimos?</span>
-      <h2>Beneficios Arquinova</h2>
-      <p>Descubre todo lo que ofrecemos para garantizar una inversión segura y una experiencia de vida excepcional.</p>
+      <span class="section-tag">{{ 'home.empresa.etiqueta' | transloco }}</span>
+      <h2>{{ 'home.empresa.titulo' | transloco }}</h2>
     </div>
 
-    <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-        </div>
-        <h3>Seguridad 24/7</h3>
-        <p>Portería con control de acceso, CCTV y ronda de vigilancia permanente en todos nuestros proyectos.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-        </div>
-        <h3>Ubicación Estratégica</h3>
-        <p>Proyectos en zonas de alta valorización de Cundinamarca y Antioquia, a menos de 35 minutos de las principales ciudades.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-        </div>
-        <h3>Financiación Flexible</h3>
-        <p>Cuota inicial desde el 30% y saldo a escrituración. Trabajamos con todas las entidades bancarias del país.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"></path><path d="M17 2v20"></path><path d="M7 2v20"></path><path d="M7 12h10"></path></svg>
-        </div>
-        <h3>Infraestructura Completa</h3>
-        <p>Vías internas pavimentadas, redes de acueducto, alcantarillado, energía y gas. Todo listo para construir.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-        </div>
-        <h3>Alta Valorización</h3>
-        <p>Promedio de valorización anual del 12% en nuestros proyectos. Inversión segura y rentable para su familia.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        </div>
-        <h3>Comunidad Exclusiva</h3>
-        <p>Administración profesional, reglamento de propiedad horizontal y comunidad de propietarios seleccionada.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.5 7.5"></path></svg>
-        </div>
-        <h3>Diseño Libre</h3>
-        <p>Cada propietario diseña y construye su casa a su gusto, bajo las normas del reglamento arquitectónico.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
-        </div>
-        <h3>Entorno Natural</h3>
-        <p>Arborización nativa, zonas verdes permanentes y ecosistemas protegidos dentro de cada proyecto.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. Sección Respaldo y Trayectoria -->
-  <section id="respaldo" class="trust-section">
-    <div class="section-header">
-      <span class="section-tag">CONFIANZA Y TRAYECTORIA</span>
-      <h2>Respaldo Arquinova</h2>
+    <div class="about-body">
+      <p>{{ 'home.empresa.parrafo1' | transloco }}</p>
+      <p>{{ 'home.empresa.parrafo2' | transloco }}</p>
     </div>
 
-    <div class="trust-grid">
-      <div class="trust-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        </div>
-        <div>
-          <h3>+15 años en el mercado</h3>
-          <p>Más de 15 años desarrollando proyectos inmobiliarios campestres de alta calidad en Colombia.</p>
-        </div>
-      </div>
-
-      <div class="trust-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M3 7h18"></path><path d="M6 21V10"></path><path d="M18 21V10"></path><path d="M12 21V4"></path><path d="M12 4L3 10h18L12 4z"></path></svg>
-        </div>
-        <div>
-          <h3>Empresa legalmente constituida</h3>
-          <p>Arquinova S.A.S. NIT 900.123.456-7, registrada ante la Superintendencia de Sociedades y la Lonja de Propiedad Raíz.</p>
-        </div>
-      </div>
-
-      <div class="trust-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        </div>
-        <div>
-          <h3>+108 lotes escriturados</h3>
-          <p>Historial comprobable de proyectos finalizados con escrituración exitosa y propietarios satisfechos en todo el país.</p>
-        </div>
-      </div>
-
-      <div class="trust-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        </div>
-        <div>
-          <h3>Proyectos con licencias vigentes</h3>
-          <p>Todos los proyectos cuentan con licencias de urbanización aprobadas por las curadurías urbanas municipales correspondientes.</p>
-        </div>
-      </div>
-
-      <div class="trust-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-        </div>
-        <div>
-          <h3>Fiducia de administración</h3>
-          <p>Los recursos de los compradores se manejan a través de fiducias con entidades bancarias de primer nivel para garantizar la transparencia.</p>
-        </div>
-      </div>
-
-      <div class="trust-card">
-        <div class="icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-        </div>
-        <div>
-          <h3>Avalúos y certificaciones</h3>
-          <p>Todos los lotes cuentan con avalúo comercial certificado por lonjas de propiedad raíz autorizadas. Precio justo garantizado.</p>
-        </div>
-      </div>
+    <!-- Misión, visión y valores: salen solo cuando la empresa los aprueba y se publican en el panel -->
+    <div class="identity-grid" *ngIf="identidad.length > 0">
+      <article class="identity-card" *ngFor="let bloque of identidad">
+        <h3>{{ 'home.empresa.identidad.' + bloque.seccion | transloco }}</h3>
+        <p>{{ bloque.contenido | localizado: bloque.contenidoEn }}</p>
+      </article>
     </div>
   </section>
 
@@ -264,9 +159,9 @@
   <section id="contacto" class="contact-section">
     <div class="contact-container-box">
       <div class="contact-info">
-        <span class="section-tag">HABLEMOS</span>
-        <h2>Contáctanos</h2>
-        <p>Nuestro equipo comercial está listo para atenderle y guiarle en el proceso de compra de su lote.</p>
+        <span class="section-tag">{{ 'home.contacto.etiqueta' | transloco }}</span>
+        <h2>{{ 'home.contacto.titulo' | transloco }}</h2>
+        <p>{{ 'home.contacto.texto' | transloco }}</p>
         
         <div class="contact-details-list">
           <div class="contact-item">
@@ -274,7 +169,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
             </div>
             <div>
-              <span class="label">Teléfono</span>
+              <span class="label">{{ 'home.contacto.telefono' | transloco }}</span>
               <p>{{ contacto.telefonoTexto }}</p>
             </div>
           </div>
@@ -284,8 +179,18 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             </div>
             <div>
-              <span class="label">Correo</span>
+              <span class="label">{{ 'home.contacto.correo' | transloco }}</span>
               <p>{{ contacto.correo }}</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="icon-container">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div>
+              <span class="label">{{ 'home.contacto.oficina' | transloco }}</span>
+              <p>{{ empresa.oficina }}</p>
             </div>
           </div>
 
@@ -294,8 +199,8 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
             </div>
             <div>
-              <span class="label">WhatsApp</span>
-              <a [href]="whatsappUrl" target="_blank" rel="noopener" class="whatsapp-link">Escríbanos ahora &rarr;</a>
+              <span class="label">{{ 'home.contacto.whatsapp' | transloco }}</span>
+              <a [href]="whatsappUrl" target="_blank" rel="noopener" class="whatsapp-link">{{ 'home.contacto.escribanos' | transloco }} &rarr;</a>
             </div>
           </div>
         </div>
@@ -303,28 +208,40 @@
 
       <div class="contact-form-card">
         <form [formGroup]="contactoForm" (ngSubmit)="enviarFormulario()">
-          <h3>Solicitar información</h3>
+          <h3>{{ 'home.formulario.titulo' | transloco }}</h3>
 
           <div class="form-row">
             <div class="form-group">
-              <label>Nombre *</label>
-              <input type="text" formControlName="nombre" placeholder="Juan Pérez" />
+              <label>{{ 'home.formulario.nombre' | transloco }}</label>
+              <input type="text" formControlName="nombre" [placeholder]="'home.formulario.nombreEjemplo' | transloco" />
             </div>
             <div class="form-group">
-              <label>Teléfono *</label>
-              <input type="text" formControlName="telefono" placeholder="Ej: 300 123 4567" />
+              <label>{{ 'home.formulario.telefono' | transloco }}</label>
+              <input type="text" formControlName="telefono" [placeholder]="'home.formulario.telefonoEjemplo' | transloco" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label>Correo *</label>
-            <input type="email" formControlName="correo" placeholder="correo@ejemplo.com" />
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ 'home.formulario.correo' | transloco }}</label>
+              <input type="email" formControlName="correo" [placeholder]="'home.formulario.correoEjemplo' | transloco" />
+            </div>
+            <div class="form-group">
+              <label>{{ 'home.formulario.servicio' | transloco }}</label>
+              <select formControlName="servicioInteres" class="form-control">
+                <option value="">{{ 'home.formulario.seleccioneServicio' | transloco }}</option>
+                <option *ngFor="let s of servicios" [value]="s.titulo">{{ 'home.servicios.lista.' + s.clave + '.titulo' | transloco }}</option>
+              </select>
+            </div>
           </div>
+          <p class="aviso-medio" [class.error]="contactoForm.hasError('sinMedioDeContacto') && contactoForm.touched">
+            {{ 'home.formulario.avisoMedio' | transloco }}
+          </p>
 
           <div class="form-group">
-            <label>Proyecto</label>
+            <label>{{ 'home.formulario.proyecto' | transloco }}</label>
             <select formControlName="proyectoId" class="form-control">
-              <option [value]="null">Seleccione un proyecto</option>
+              <option [value]="null">{{ 'home.formulario.seleccioneProyecto' | transloco }}</option>
               <option *ngFor="let p of proyectosList" [value]="p.id">
                 {{ p.nombre }}
               </option>
@@ -332,21 +249,21 @@
           </div>
 
           <div class="form-group">
-            <label>Mensaje</label>
-            <textarea formControlName="mensaje" rows="3" placeholder="Cuéntenos en qué podemos ayudarle..."></textarea>
+            <label>{{ 'home.formulario.mensaje' | transloco }}</label>
+            <textarea formControlName="mensaje" rows="2" [placeholder]="'home.formulario.mensajeEjemplo' | transloco"></textarea>
           </div>
 
           <div class="form-group form-group-checkbox">
   <label class="checkbox-label">
     <input type="checkbox" formControlName="consentimientoDatos" />
     <span>
-      Acepto el tratamiento de mis datos personales conforme a la
-      <a href="#" target="_blank">Política de Privacidad</a> de Arquinova. *
+      {{ 'home.formulario.consentimientoAntes' | transloco }}
+      <a routerLink="/legal/politica-datos" target="_blank">{{ 'home.formulario.consentimientoEnlace' | transloco }}</a>{{ 'home.formulario.consentimientoDespues' | transloco }}
     </span>
   </label>
 </div>
 
-<button type="submit" class="btn-submit" [disabled]="contactoForm.invalid">Enviar solicitud</button>
+<button type="submit" class="btn-submit" [disabled]="contactoForm.invalid">{{ 'home.formulario.enviar' | transloco }}</button>
         </form>
       </div>
     </div>
@@ -356,39 +273,46 @@
   <footer class="footer-arquinova">
     <div class="footer-container">
       <div class="footer-col">
-        <img src="https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg" alt="Arquinova Logo" class="footer-logo">
-        <p>Desarrollo de proyectos inmobiliarios campestres de alta calidad en Colombia, conectando a las familias con la naturaleza y la tranquilidad.</p>
+        <img src="https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg" [alt]="'home.pie.logoAlt' | transloco" class="footer-logo">
+        <p>{{ 'home.pie.descripcion' | transloco }}</p>
         <div class="footer-contact-info">
-          <span>Armenia, Quindio, Colombia</span>
+          <span>{{ empresa.ciudad }}</span>
+          <span>{{ empresa.oficina }}</span>
           <span>{{ contacto.correo }}</span>
           <span>{{ contacto.telefonoTexto }}</span>
         </div>
       </div>
       <div class="footer-col">
-        <h4>Enlaces Rápidos</h4>
+        <h4>{{ 'home.pie.enlaces' | transloco }}</h4>
         <ul>
-          <li><a href="#inicio">Inicio</a></li>
-          <li><a href="#proyectos">Proyectos</a></li>
-          <li><a href="#beneficios">Beneficios</a></li>
-          <li><a href="#contacto">Contáctanos</a></li>
+          <li><a href="#inicio">{{ 'home.nav.inicio' | transloco }}</a></li>
+          <li><a href="#servicios">{{ 'home.nav.servicios' | transloco }}</a></li>
+          <li><a href="#proyectos">{{ 'home.nav.proyectos' | transloco }}</a></li>
+          <li><a href="#empresa">{{ 'home.nav.empresa' | transloco }}</a></li>
+          <li><a href="#contacto">{{ 'home.nav.contacto' | transloco }}</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Legal</h4>
+        <h4>{{ 'home.pie.legal' | transloco }}</h4>
         <ul>
-          <li><a href="#">NIT: 900.123.456-7</a></li>
-          <li><a href="#">Términos y Condiciones</a></li>
-          <li><a href="#">Política de Privacidad</a></li>
-          <li><a href="#">Superintendencia de Sociedades</a></li>
+          <li><span class="footer-dato">{{ empresa.nombre }}</span></li>
+          <li><span class="footer-dato">NIT {{ empresa.nit }}</span></li>
+          <li><a routerLink="/legal/terminos">{{ 'home.pie.terminos' | transloco }}</a></li>
+          <li><a routerLink="/legal/politica-datos">{{ 'home.pie.politicaDatos' | transloco }}</a></li>
+          <li><a routerLink="/legal/cookies">{{ 'home.pie.cookies' | transloco }}</a></li>
+          <li><a routerLink="/legal/aviso-privacidad">{{ 'home.pie.avisoPrivacidad' | transloco }}</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 Arquinova Grupo Empresarial S.A.S. Todos los derechos reservados.</p>
+      <p>&copy; 2026 {{ empresa.nombre }}. {{ 'home.pie.derechos' | transloco }}</p>
       <div class="legal-links">
-        <a href="#">Privacidad</a>
-        <a href="#">Aviso Legal</a>
+        <a routerLink="/legal/politica-datos">{{ 'home.pie.privacidad' | transloco }}</a>
+        <a routerLink="/legal/aviso-legal">{{ 'home.pie.avisoLegal' | transloco }}</a>
       </div>
     </div>
   </footer>
 </div>
+
+<!-- Pantalla completa (en el celular libera la barra del navegador); va debajo del botón de WhatsApp -->
+<app-boton-pantalla-completa />

@@ -11,7 +11,7 @@ import { BloqueRecursosComponent } from './bloques/bloque-recursos.component';
   imports: [BloqueZonasComponent, BloqueCasasComponent, BloqueRecursosComponent],
   styleUrl: './paso.scss',
   template: `
-    <h2>Zonas comunes, casa modelo y recursos</h2>
+    <h2>Amenidades, tipologías y recursos</h2>
     <p class="intro">Todo es opcional y se guarda al agregarlo. Lo que no llenes simplemente no aparece en el sitio.</p>
 
     <app-bloque-zonas />

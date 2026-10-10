@@ -15,7 +15,7 @@ export function escaparHtml(texto: string): string {
  * HTML del botón sobre la imagen 360°: la etiqueta y, si apunta a un lote, su área.
  * Todo el texto sale escapado: lo escribe el administrador y se inserta como HTML en el visor.
  */
-export function htmlDePin(punto: Pick<Punto360, 'etiqueta' | 'loteAreaM2' | 'loteId' | 'etapaId'>): string {
+export function htmlDePin(punto: Pick<Punto360, 'etiqueta' | 'loteAreaM2' | 'loteId' | 'etapaId' | 'zonaComunId'>): string {
   if (esLugarCercano(punto)) {
     // Etiqueta con un palo hacia el suelo, como los rótulos de lugares sobre una vista aérea
     return `<div class="pin-lugar"><span>${escaparHtml(punto.etiqueta)}</span></div>`;
@@ -24,14 +24,14 @@ export function htmlDePin(punto: Pick<Punto360, 'etiqueta' | 'loteAreaM2' | 'lot
   return `<div class="pin-360"><strong>${escaparHtml(punto.etiqueta)}</strong>${area}</div>`;
 }
 
-/** Un botón que no apunta a un lote ni a una etapa es solo un rótulo: un lugar cercano al proyecto (no abre tarjeta). */
-export function esLugarCercano(punto: Pick<Punto360, 'loteId' | 'etapaId'>): boolean {
-  return punto.loteId == null && punto.etapaId == null;
+/** Un botón que no apunta a un lote, una etapa ni una zona es solo un rótulo: un lugar cercano al proyecto (no abre tarjeta). */
+export function esLugarCercano(punto: Pick<Punto360, 'loteId' | 'etapaId' | 'zonaComunId'>): boolean {
+  return punto.loteId == null && punto.etapaId == null && punto.zonaComunId == null;
 }
 
-/** Un punto del plano se ubica por porcentaje; el resto, por ángulos dentro de la imagen 360°. */
+/** Un punto de una imagen plana (plano o zonas destacadas) se ubica por porcentaje; el resto, por ángulos en la imagen 360°. */
 export function esPuntoDePlano(punto: Pick<Punto360, 'escena'>): boolean {
-  return punto.escena === 'URBANISMO';
+  return punto.escena === 'URBANISMO' || punto.escena === 'ZONAS';
 }
 
 /** Nombre mostrado para un lote al elegirlo en el editor: "C21 — 11.448 m²". */

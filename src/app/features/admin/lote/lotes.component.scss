@@ -12,7 +12,7 @@ $bg-main: t.$bg-page;
   background-color: t.$bg-page;
   min-height: 100vh;
   box-sizing: border-box;
-  font-family: t.$font-sans;
+  font-family: t.$font-ui;
 }
 
 /* Header */
@@ -23,7 +23,7 @@ $bg-main: t.$bg-page;
   margin-bottom: 1.5rem;
 
   .page-title {
-    font-family: 'Georgia', serif;
+    font-family: t.$font-ui;
     font-size: 2.25rem;
     color: $text-dark;
     margin: 0;
@@ -219,6 +219,22 @@ $bg-main: t.$bg-page;
   &:hover {
     color: $primary-teal;
     background-color: #f1f5f9;
+  }
+}
+
+.btn-eliminar {
+  background: transparent;
+  border: none;
+  color: $text-muted;
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+
+  &:hover {
+    color: #dc2626;
+    background-color: #fef2f2;
   }
 }
 

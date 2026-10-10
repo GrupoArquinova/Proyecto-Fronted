@@ -1,6 +1,7 @@
 export interface ProyectoRef {
   id: number;
   nombre: string;
+  nombreEn?: string | null;
 }
 
 // Estructura que coincide con EtapaResponseDTO del Backend
@@ -9,7 +10,9 @@ export interface Etapa {
   proyectoId: number;
   proyectoNombre?: string;
   nombre: string;
+  nombreEn?: string | null;
   descripcion?: string;
+  descripcionEn?: string | null;
   orden?: number;
   activo?: boolean;
   creadoEn?: string;
@@ -22,7 +25,9 @@ export interface Etapa {
 export interface EtapaRequest {
   proyectoId: number;
   nombre: string;
+  nombreEn?: string | null;
   descripcion?: string;
+  descripcionEn?: string | null;
   orden: number;
   activo: boolean;
 }

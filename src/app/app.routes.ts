@@ -10,7 +10,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/public/home/home.component').then(m => m.HomeComponent)
   },
   {
+    path: 'legal/:slug',
+    loadComponent: () => import('./features/public/legal/legal.component').then(m => m.LegalComponent)
+  },
+  {
     path: 'proyectos',
+    data: {
+      seo: { tituloClave: 'seo.proyectosTitulo', descripcionClave: 'seo.proyectosDescripcion' }
+    },
     loadComponent: () => import('./features/public/proyecto/proyectos-publicos.component')
       .then(m => m.ProyectosPublicosComponent)
   },
@@ -74,21 +81,25 @@ export const routes: Routes = [
 
   {
     path: 'login',
+    data: { seo: { titulo: 'Ingreso al panel', noindex: true } },
     loadComponent: () => import('./features/auth/login.component/login.component').then(m => m.LoginComponent)
   },
   {
     path: 'recuperar-password',
+    data: { seo: { titulo: 'Recuperar contraseña', noindex: true } },
     loadComponent: () => import('./features/auth/recuperar-password/recuperar-password.component')
       .then(m => m.RecuperarPasswordComponent)
   },
   {
     path: 'reset-password',
+    data: { seo: { titulo: 'Nueva contraseña', noindex: true } },
     loadComponent: () => import('./features/auth/reset-password/reset-password.component')
       .then(m => m.ResetPasswordComponent)
   },
 
   {
     path: 'admin',
+    data: { seo: { titulo: 'Panel de administración', noindex: true } },
     loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard],
     canActivateChild: [authGuard], // revisa la sesión en cada navegación dentro del panel

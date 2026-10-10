@@ -38,5 +38,5 @@ export function inicializarSeccion(id: SeccionProyectoId, opciones: { primeraPor
     }
   });
 
-  return { datos, detalle: datos.detalle, vista };
+  return { datos, detalle: datos.detalleLocal, vista };
 }

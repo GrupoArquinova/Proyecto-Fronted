@@ -9,21 +9,66 @@
     <button type="button" class="cerrar" (click)="cerrar.emit()" aria-label="Cerrar">&times;</button>
   </header>
 
-  @if (escenas().length === 0) {
+  <nav class="pestanas" aria-label="Imagen">
+    @for (e of escenas(); track e.id) {
+      <button type="button" [class.activa]="!mapaActivo() && e.id === escena()" (click)="elegirEscena(e.id)">{{ e.titulo }}</button>
+    }
+    <button type="button" [class.activa]="!mapaActivo() && esZonas()" (click)="elegirZonas()">Zonas destacadas</button>
+    <button type="button" [class.activa]="mapaActivo()" (click)="elegirMapa()">
+      Mapa (imágenes){{ imagenesMapa().length > 0 ? ' · ' + imagenesMapa().length : '' }}
+    </button>
+  </nav>
+
+  @if (mapaActivo()) {
+    <section class="mapa-gestor">
+      <div class="mapa-cabecera">
+        <p>
+          Imágenes que se ven en <strong>Ubicación → Mapa</strong> como carrusel a pantalla completa. Usa imágenes horizontales
+          (JPG o PNG, máximo 10 MB). Se guardan también en <strong>Multimedia</strong>.
+        </p>
+        <label class="primario subir-mapa" [class.ocupado]="subiendoMapa()">
+          {{ subiendoMapa() ? 'Subiendo...' : '+ Agregar imágenes' }}
+          <input type="file" accept="image/*" multiple hidden [disabled]="subiendoMapa()" (change)="subirMapa($event)" />
+        </label>
+      </div>
+
+      <ul class="mapa-lista">
+        @for (imagen of imagenesMapa(); track imagen.id; let i = $index; let ultimo = $last) {
+          <li>
+            <span class="posicion">{{ i + 1 }}</span>
+            <img [src]="imagen.url" [alt]="imagen.titulo || 'Imagen del mapa'" loading="lazy" />
+            <span class="nombre" [title]="imagen.nombreArchivo || imagen.titulo">{{ imagen.titulo || imagen.nombreArchivo || 'Imagen del mapa' }}</span>
+            <button type="button" class="enlace" [disabled]="i === 0" (click)="moverMapa(imagen, -1)" aria-label="Subir">↑</button>
+            <button type="button" class="enlace" [disabled]="ultimo" (click)="moverMapa(imagen, 1)" aria-label="Bajar">↓</button>
+            <button type="button" class="enlace peligro" (click)="quitarMapa(imagen)">Quitar</button>
+          </li>
+        } @empty {
+          <li class="sin-puntos">Todavía no hay imágenes del mapa. Si no agregas ninguna, se muestra el mapa interactivo de las coordenadas.</li>
+        }
+      </ul>
+    </section>
+  } @else if (escenas().length === 0 && !esZonas()) {
     <p class="vacio">
       Este proyecto todavía no tiene una imagen para ubicar botones. Carga, en la ubicación, la URL de una imagen para el
       <strong>entorno 360°</strong>, la <strong>vista aérea</strong> o el <strong>plano de urbanismo</strong>
       (tiene que ser una imagen, no un enlace a una página).
     </p>
   } @else {
-    <nav class="pestanas" aria-label="Imagen">
-      @for (e of escenas(); track e.id) {
-        <button type="button" [class.activa]="e.id === escena()" (click)="elegirEscena(e.id)">{{ e.titulo }}</button>
-      }
-    </nav>
-
     <div class="cuerpo">
       <div class="imagen">
+        @if (esZonas()) {
+          <div class="zonas-imagen">
+            <p>
+              Imagen de fondo de <strong>Amenidades → Zonas destacadas</strong> (una vista aérea o un plano del proyecto).
+              Sobre ella pones un botón por cada zona.
+            </p>
+            <label class="primario subir-mapa" [class.ocupado]="subiendoImagenZonas()">
+              {{ subiendoImagenZonas() ? 'Subiendo...' : (imagenZonas() ? 'Cambiar imagen' : '+ Subir imagen de fondo') }}
+              <input type="file" accept="image/*" hidden [disabled]="subiendoImagenZonas()" (change)="subirImagenZonas($event)" />
+            </label>
+          </div>
+        }
+
         @if (escenaActual(); as actual) {
           <!-- Se vuelve a crear al cambiar de imagen: el visor lee su URL una sola vez -->
           @for (clave of [actual.id]; track clave) {
@@ -31,13 +76,15 @@
               <app-plano-puntos [url]="actual.url" [puntos]="puntosDeEscena()" [pendiente]="pendientePlano()"
                                 (clicEnPlano)="clicEnPlano($event)" />
             } @else {
-              <app-visor-360 [url]="actual.url" [titulo]="actual.titulo" [puntos]="puntosDeEscena()"
+              <app-visor-360 [pista360]="false" [url]="actual.url" [titulo]="actual.titulo" [puntos]="puntosDeEscena()"
                              [pendiente]="pendiente360()" (clicEnImagen)="clicEn360($event)" />
             }
           }
         }
         <p class="ayuda">
-          @if (esPlano()) {
+          @if (esZonas()) {
+            @if (escenaActual()) { Haz clic en la imagen donde va el botón de la zona. }
+          } @else if (esPlano()) {
             Haz clic en el plano donde va el botón de la etapa.
           } @else {
             Arrastra para girar y haz clic donde va el botón del lote.
@@ -49,12 +96,23 @@
         <section class="nuevo">
           <h4>Botón nuevo</h4>
 
-          @if (!hayPendiente()) {
+          @if (esZonas() && !escenaActual()) {
+            <p class="paso">Primero sube la imagen de fondo; luego haces clic en ella para colocar el botón de cada zona.</p>
+          } @else if (!hayPendiente()) {
             <p class="paso">1. Haz clic en la imagen para marcar el lugar (aparece un punto amarillo).</p>
           } @else {
             <p class="paso listo">Lugar marcado. {{ esLugar() ? 'Ahora escribe el nombre del lugar.' : 'Ahora elige a qué apunta.' }}</p>
 
-            @if (esPlano()) {
+            @if (esZonas()) {
+              <label>Zona común
+                <select [ngModel]="zonaId()" (ngModelChange)="elegirZona($event)">
+                  <option [ngValue]="null">Elige una zona</option>
+                  @for (zona of zonasLibres(); track zona.id) {
+                    <option [ngValue]="zona.id">{{ zona.nombre }}</option>
+                  }
+                </select>
+              </label>
+            } @else if (esPlano()) {
               <label>Etapa
                 <select [ngModel]="etapaId()" (ngModelChange)="elegirEtapa($event)">
                   <option [ngValue]="null">Elige una etapa</option>
@@ -99,7 +157,31 @@
             @for (punto of puntosDeEscena(); track punto.id) {
               <li>
                 <span class="nombre">{{ punto.etiqueta }}</span>
-                @if (!esPlano() && punto.loteId == null) {
+                @if (punto.zonaComunId != null) {
+                  @if (tienePanoramaZona(punto)) { <span class="con-360" title="Esta zona ya tiene su imagen 360°">360° ✓</span> }
+                  <label class="enlace subir" [class.ocupado]="subiendoZona() === punto.zonaComunId">
+                    {{ subiendoZona() === punto.zonaComunId ? 'Subiendo...' : (tienePanoramaZona(punto) ? 'Cambiar 360°' : 'Subir 360°') }}
+                    <input type="file" accept="image/*" hidden [disabled]="subiendoZona() !== null"
+                           (change)="subirZona360(punto, $event)" />
+                  </label>
+                } @else if (esPlano() && punto.etapaId != null) {
+                  <button type="button" class="con-360 chip-imagenes" (click)="alternarEtapa(punto)"
+                          [attr.aria-expanded]="etapaAbierta() === punto.etapaId"
+                          title="Imágenes que se ven en la tarjeta de esta etapa">
+                    {{ imagenesDe(punto).length }} {{ imagenesDe(punto).length === 1 ? 'imagen' : 'imágenes' }}
+                  </button>
+                  <label class="enlace subir" [class.ocupado]="subiendoEtapa() === punto.etapaId">
+                    {{ subiendoEtapa() === punto.etapaId ? 'Subiendo...' : 'Subir imágenes' }}
+                    <input type="file" accept="image/*" multiple hidden [disabled]="subiendoEtapa() !== null"
+                           (change)="subirEtapa(punto, $event)" />
+                  </label>
+                  @if (tienePanoramaEtapa(punto)) { <span class="con-360" title="Esta etapa ya tiene su imagen 360°">360° ✓</span> }
+                  <label class="enlace subir" [class.ocupado]="subiendoEtapa() === punto.etapaId">
+                    {{ tienePanoramaEtapa(punto) ? 'Cambiar 360°' : 'Subir 360°' }}
+                    <input type="file" accept="image/*" hidden [disabled]="subiendoEtapa() !== null"
+                           (change)="subirEtapa360(punto, $event)" />
+                  </label>
+                } @else if (!esPlano() && punto.loteId == null) {
                   <span class="etiqueta-lugar">Lugar</span>
                   <button type="button" class="enlace" (click)="verEnLaImagen(punto)">Ver</button>
                 } @else if (!esPlano()) {
@@ -113,6 +195,18 @@
                 }
                 <button type="button" class="enlace peligro" (click)="quitar(punto)">Quitar</button>
               </li>
+              @if (esPlano() && punto.etapaId != null && etapaAbierta() === punto.etapaId) {
+                <li class="imagenes-etapa">
+                  @for (imagen of imagenesDe(punto); track imagen.id) {
+                    <figure>
+                      <img [src]="imagen.url" [alt]="imagen.titulo || 'Imagen de la etapa'" loading="lazy" />
+                      <button type="button" class="enlace peligro" (click)="quitarImagenEtapa(imagen)">Quitar</button>
+                    </figure>
+                  } @empty {
+                    <span>Esta etapa todavía no tiene imágenes. Pulsa «Subir imágenes».</span>
+                  }
+                </li>
+              }
             } @empty {
               <li class="sin-puntos">Todavía no hay botones en esta imagen.</li>
             }
