@@ -26,7 +26,7 @@ const multimediaCasas: Record<number, object[]> = {
   8: [
     recurso(101, { casaModeloId: 8, tipo: 'IMAGEN', titulo: 'render_saman_1' }),
     recurso(102, { casaModeloId: 8, tipo: 'IMAGEN', titulo: 'render_saman_2' }),
-    recurso(103, { casaModeloId: 8, tipo: 'PLANO', titulo: 'plano_saman_planta1' }),
+    recurso(103, { casaModeloId: 8, tipo: 'PLANO', titulo: 'plano_saman_planta1', urlEn: IMG('recurso-103-en') }),
     recurso(104, { casaModeloId: 8, tipo: 'PLANO', titulo: 'plano_saman_planta2' })
   ],
   9: [recurso(105, { casaModeloId: 9, tipo: 'IMAGEN', titulo: 'render_guayacan_1' })],

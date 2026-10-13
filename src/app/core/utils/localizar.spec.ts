@@ -84,3 +84,46 @@ describe('localizarDetalle', () => {
     expect(d.zonasComunes[0].nombre).toBe('Portería');
   });
 });
+
+describe('localizarDetalle: imágenes con texto', () => {
+  const conImagenes = (): ProyectoDetalle => ({
+    ...detalle(),
+    ubicacion: { proyectoId: 6, urbanismoUrl: 'https://img/urbanismo-es.jpg', urbanismoUrlEn: 'https://img/urbanismo-en.jpg' } as never,
+    multimedia: [
+      { id: 1, tipo: 'BENEFICIOS', url: 'https://img/descripcion-es.jpg', urlEn: 'https://img/descripcion-en.jpg', portada: false, publicado: true, activo: true },
+      { id: 2, tipo: 'MAPA', url: 'https://img/mapa-es.jpg', portada: false, publicado: true, activo: true },
+      { id: 3, tipo: 'VIDEO', url: 'https://www.youtube.com/watch?v=abc', urlEn: '  ', portada: false, publicado: true, activo: true }
+    ],
+    multimediaCasas: [{ id: 4, tipo: 'PLANO', url: 'https://img/plano-es.jpg', urlEn: 'https://img/plano-en.jpg', portada: false, publicado: true, activo: true }],
+    multimediaZonas: [{ id: 5, tipo: 'IMAGEN', url: 'https://img/zona.jpg', urlEn: 'https://img/zona-en.jpg', portada: true, publicado: true, activo: true }]
+  });
+
+  it('en inglés usa la imagen en inglés donde existe y la original donde no', () => {
+    const d = localizarDetalle(conImagenes(), 'en')!;
+    expect(d.multimedia.map(m => m.url)).toEqual([
+      'https://img/descripcion-en.jpg', 'https://img/mapa-es.jpg', 'https://www.youtube.com/watch?v=abc'
+    ]);
+    expect(d.multimediaCasas[0].url).toBe('https://img/plano-en.jpg');
+    expect(d.multimediaZonas[0].url).toBe('https://img/zona-en.jpg');
+    expect(d.ubicacion?.urbanismoUrl).toBe('https://img/urbanismo-en.jpg');
+  });
+
+  it('en español no cambia ninguna imagen', () => {
+    const original = conImagenes();
+    const d = localizarDetalle(original, 'es')!;
+    expect(d).toBe(original);
+    expect(d.multimedia[0].url).toBe('https://img/descripcion-es.jpg');
+  });
+
+  it('sin plano de urbanismo en inglés conserva el original', () => {
+    const base = conImagenes();
+    base.ubicacion = { proyectoId: 6, urbanismoUrl: 'https://img/urbanismo-es.jpg' } as never;
+    expect(localizarDetalle(base, 'en')!.ubicacion?.urbanismoUrl).toBe('https://img/urbanismo-es.jpg');
+  });
+
+  it('no modifica los datos originales', () => {
+    const original = conImagenes();
+    localizarDetalle(original, 'en');
+    expect(original.multimedia[0].url).toBe('https://img/descripcion-es.jpg');
+  });
+});

@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormsModule } from '@angular/forms';
+import { SubidaArchivoComponent } from '../../../shared/components/subida-archivo/subida-archivo.component';
 import { Ubicacion } from '../../../core/models/ubicacion.models';
 import { Proyecto } from '../../../core/models/proyecto.models';
 import { ProyectoService } from '../../../core/services/proyecto.service';
@@ -15,7 +16,7 @@ import { EditorPuntosComponent } from './editor-puntos/editor-puntos.component';
 @Component({
   selector: 'app-ubicaciones',
   standalone: true,
-  imports: [FormsModule, EditorPuntosComponent],
+  imports: [FormsModule, EditorPuntosComponent, SubidaArchivoComponent],
   templateUrl: './ubicaciones.component.html',
   styleUrls: ['./ubicaciones.component.scss'],
 })
@@ -52,6 +53,7 @@ export class UbicacionesComponent implements OnInit {
     longitud: undefined,
     googleMapsUrl: '',
     urbanismoUrl: '',
+    urbanismoUrlEn: '',
     vistaAereaUrl: '',
     recorrido360Url: '',
     videoComoLlegarUrl: '',
@@ -129,6 +131,7 @@ export class UbicacionesComponent implements OnInit {
       longitud: undefined,
       googleMapsUrl: '',
       urbanismoUrl: '',
+      urbanismoUrlEn: '',
       vistaAereaUrl: '',
       recorrido360Url: '',
       videoComoLlegarUrl: '',

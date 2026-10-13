@@ -16,6 +16,8 @@ export interface Multimedia {
   titulo?: string;
   descripcion?: string;
   url: string;
+  /** La misma imagen con su texto en inglés (opcional): el sitio la usa cuando está en inglés. */
+  urlEn?: string | null;
   nombreArchivo?: string;
   mimeType?: string;
   tamanoBytes?: number;

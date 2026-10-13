@@ -2,6 +2,7 @@ import { Component, inject, OnInit, OnDestroy, DestroyRef } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormsModule } from '@angular/forms';
+import { SubidaArchivoComponent } from '../../../shared/components/subida-archivo/subida-archivo.component';
 import { Viewer } from '@photo-sphere-viewer/core';
 import { Multimedia, TipoMultimedia } from '../../../core/models/multimedia.models';
 import { Proyecto } from '../../../core/models/proyecto.models';
@@ -22,7 +23,7 @@ type TipoPadre = 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo' | 'etapa';
 @Component({
   selector: 'app-multimedia',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, SubidaArchivoComponent],
   templateUrl: './multimedia.component.html',
   styleUrls: ['./multimedia.component.scss'],
 })
@@ -77,6 +78,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     titulo: '',
     descripcion: '',
     url: '',
+    urlEn: '',
     nombreArchivo: '',
     mimeType: '',
     tamanoBytes: undefined as number | undefined,
@@ -253,6 +255,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       titulo: '',
       descripcion: '',
       url: '',
+      urlEn: '',
       nombreArchivo: '',
       mimeType: '',
       tamanoBytes: undefined,
@@ -285,6 +288,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       titulo: item.titulo ?? '',
       descripcion: item.descripcion ?? '',
       url: item.url,
+      urlEn: item.urlEn ?? '',
       nombreArchivo: item.nombreArchivo ?? '',
       mimeType: item.mimeType ?? '',
       tamanoBytes: item.tamanoBytes,

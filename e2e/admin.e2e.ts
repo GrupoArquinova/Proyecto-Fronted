@@ -56,6 +56,32 @@ test.describe('panel de administración', () => {
     await expect(page.getByRole('heading', { name: 'Resumen General' })).toBeVisible();
   });
 
+  // Las pantallas del panel reciben sus datos DESPUÉS de pintarse (la API responde con retraso): si la detección de cambios
+  // las deja congeladas, se quedan en "Cargando..." para siempre. Estas pruebas simulan ese retraso.
+  test('la lista de proyectos del panel muestra los datos que llegan de la API (no se queda en "Cargando")', async ({ page }) => {
+    await page.route(/\/api\/proyectos(\?.*)?$/, async route => {
+      await new Promise(r => setTimeout(r, 400));
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([
+        { id: 77, empresaId: 1, nombre: 'Proyecto de Prueba del Panel', slug: 'proyecto-de-prueba-del-panel', estadoProyecto: 'EN_DISENO',
+          tipoRegistro: 'OFERTA_COMERCIAL', destacado: false, publicado: true, activo: true }
+      ]) });
+    });
+    await page.goto('/admin/proyectos');
+
+    await expect(page.getByText('Proyecto de Prueba del Panel')).toBeVisible();
+    await expect(page.getByText('Cargando proyectos...')).toHaveCount(0);
+  });
+
+  test('la lista de solicitudes del panel deja de decir "Cargando" cuando la API responde', async ({ page }) => {
+    await page.route(/\/api\/solicitudes-contacto$/, async route => {
+      await new Promise(r => setTimeout(r, 400));
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+    });
+    await page.goto('/admin/solicitudes');
+
+    await expect(page.getByText('Cargando solicitudes...')).toHaveCount(0);
+  });
+
   test('el menú lleva a las pantallas del panel', async ({ page }) => {
     await page.goto('/admin/resumen');
     await expect(page.getByRole('heading', { name: 'Resumen General' })).toBeVisible();

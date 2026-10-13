@@ -53,6 +53,8 @@ import { Ubicacion } from '../../../../core/models/ubicacion.models';
 
       <div class="fila">
         <app-subida-archivo etiqueta="Plano de urbanismo" [tipos]="['imagen', 'pdf']" [(url)]="urbanismoUrl" />
+        <app-subida-archivo etiqueta="Plano de urbanismo en inglés (opcional)" [tipos]="['imagen']" [(url)]="urbanismoUrlEn"
+                            ayuda="El mismo plano con el texto en inglés; se muestra cuando el sitio está en inglés." />
         <app-subida-archivo etiqueta="Vista aérea" [tipos]="['imagen', 'video']" [(url)]="vistaAereaUrl" />
         <app-subida-archivo etiqueta="Recorrido 360° (foto panorámica)" [tipos]="['imagen']" [(url)]="recorrido360Url"
                             ayuda="Imagen equirectangular: se explora con el visor." />
@@ -77,6 +79,7 @@ export class PasoUbicacionComponent {
 
   readonly guardando = signal(false);
   readonly urbanismoUrl = signal('');
+  readonly urbanismoUrlEn = signal('');
   readonly vistaAereaUrl = signal('');
   readonly recorrido360Url = signal('');
   readonly videoComoLlegarUrl = signal('');
@@ -99,6 +102,7 @@ export class PasoUbicacionComponent {
         latitud: u.latitud ?? null, longitud: u.longitud ?? null, googleMapsUrl: u.googleMapsUrl ?? ''
       });
       this.urbanismoUrl.set(u.urbanismoUrl ?? '');
+      this.urbanismoUrlEn.set(u.urbanismoUrlEn ?? '');
       this.vistaAereaUrl.set(u.vistaAereaUrl ?? '');
       this.recorrido360Url.set(u.recorrido360Url ?? '');
       this.videoComoLlegarUrl.set(u.videoComoLlegarUrl ?? '');
@@ -128,6 +132,7 @@ export class PasoUbicacionComponent {
       longitud: v.longitud ?? undefined,
       googleMapsUrl: v.googleMapsUrl?.trim() || undefined,
       urbanismoUrl: this.urbanismoUrl() || undefined,
+      urbanismoUrlEn: this.urbanismoUrlEn(),
       vistaAereaUrl: this.vistaAereaUrl() || undefined,
       recorrido360Url: this.recorrido360Url() || undefined,
       videoComoLlegarUrl: this.videoComoLlegarUrl() || undefined
