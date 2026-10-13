@@ -193,7 +193,7 @@
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: 500;
 }
@@ -271,7 +271,7 @@
   padding: 0.5rem 1rem;
   background: #e2e8f0;
   border: none;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
 }
 :host .u-15 {
@@ -279,14 +279,14 @@
   background: #1b4d3e;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
 }
 
 .subir-imagen { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.4rem; }
 .subir-imagen small { color: #6b7a8c; font-size: 0.78rem; }
 .btn-subir {
-  align-self: flex-start; padding: 0.4rem 0.9rem; border: 1px solid #2c6360; border-radius: 8px;
+  align-self: flex-start; padding: 0.4rem 0.9rem; border: 1px solid #2c6360; border-radius: 999px;
   color: #2c6360; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: #fff;
 }
 .btn-subir:hover { background: rgba(44, 99, 96, 0.08); }

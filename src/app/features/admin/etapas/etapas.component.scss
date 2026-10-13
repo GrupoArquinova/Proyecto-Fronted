@@ -70,7 +70,7 @@ $border-color: t.$border;
         background-color: $primary-teal;
         color: #ffffff;
         border: none;
-        border-radius: 8px;
+        border-radius: 999px;
         padding: 0.75rem 1.4rem;
         font-size: 0.95rem;
         font-weight: 500;
@@ -149,7 +149,7 @@ $border-color: t.$border;
         border: 1px solid #fca5a5;
         color: #ef4444;
         padding: 0.35rem 1rem;
-        border-radius: 6px;
+        border-radius: 999px;
         font-size: 0.88rem;
         cursor: pointer;
 
@@ -163,7 +163,7 @@ $border-color: t.$border;
         border: 1px solid $border-color;
         color: #475569;
         padding: 0.35rem 1rem;
-        border-radius: 6px;
+        border-radius: 999px;
         font-size: 0.88rem;
         cursor: pointer;
 
@@ -337,7 +337,7 @@ $border-color: t.$border;
       border: none;
       color: #475569;
       padding: 0.6rem 1.2rem;
-      border-radius: 6px;
+      border-radius: 999px;
       cursor: pointer;
     }
 
@@ -346,7 +346,7 @@ $border-color: t.$border;
       border: none;
       color: #ffffff;
       padding: 0.6rem 1.2rem;
-      border-radius: 6px;
+      border-radius: 999px;
       cursor: pointer;
 
       &:disabled {

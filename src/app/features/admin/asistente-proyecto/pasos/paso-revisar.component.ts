@@ -71,7 +71,7 @@ import { estadoDeLote } from '../../../../core/utils/lotes';
     .exito h3 { margin: 0 0 0.3rem; color: #2c5953; }
     .exito p { margin: 0 0 1rem; color: #475569; }
     .enlaces { display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: center; }
-    .boton-link { padding: 0.7rem 1.4rem; background: #2c5953; color: #fff; border-radius: 6px; font-weight: 600; text-decoration: none; }
+    .boton-link { padding: 0.7rem 1.4rem; background: #2c5953; color: #fff; border-radius: 999px; font-weight: 600; text-decoration: none; }
     .boton-link.claro { background: #fff; color: #2c5953; border: 1px solid #2c5953; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
