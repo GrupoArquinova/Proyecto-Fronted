@@ -1,12 +1,13 @@
 $color-primary: #2d6360; // Verde turquesa de Arquinova
 $color-primary-dark: #224c4a;
 $color-input-bg: #ececec;
+$ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
 // Botón flotante en la esquina inferior derecha
 .whatsapp-btn-float {
   position: fixed;
-  bottom: 25px;
-  right: 25px;
+  bottom: calc(25px + env(safe-area-inset-bottom, 0px));
+  right: calc(25px + env(safe-area-inset-right, 0px));
   width: 58px;
   height: 58px;
   background-color: #2a6665;
@@ -19,10 +20,18 @@ $color-input-bg: #ececec;
   align-items: center;
   justify-content: center;
   z-index: 999;
-  transition: transform 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s $ease-out;
 
-  &:hover {
-    transform: scale(1.08);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: scale(1.08);
+    }
+  }
+
+  &:active {
+    transform: scale(0.94);
   }
 
   .whatsapp-icon {
@@ -32,17 +41,28 @@ $color-input-bg: #ececec;
   }
 }
 
-// Modal desplegable
+// Modal desplegable.
+// Nunca es más alto que la pantalla: si no cabe, el cuerpo del formulario se desplaza y la cabecera (con la X) queda a la vista.
 .whatsapp-modal-container {
+  --wa-bottom: 95px;
   position: fixed;
-  bottom: 95px;
-  right: 25px;
+  bottom: calc(var(--wa-bottom) + env(safe-area-inset-bottom, 0px));
+  right: calc(25px + env(safe-area-inset-right, 0px));
+  width: min(340px, calc(100vw - 2rem));
+  max-height: calc(100vh - var(--wa-bottom) - 12px - env(safe-area-inset-bottom, 0px));
+  max-height: calc(100dvh - var(--wa-bottom) - 12px - env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
   z-index: 1000;
-  animation: fadeIn 0.3s ease;
+  transform-origin: bottom right; // nace del botón de WhatsApp
+  animation: aparecer 0.2s $ease-out;
 }
 
 .whatsapp-modal-card {
-  width: 340px;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -50,6 +70,7 @@ $color-input-bg: #ececec;
   font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
 
   .modal-header {
+    flex-shrink: 0;
     background-color: $color-primary;
     color: #ffffff;
     padding: 1rem 1.25rem;
@@ -71,6 +92,12 @@ $color-input-bg: #ececec;
     }
 
     .close-btn {
+      // Área táctil de 44px sin agrandar el símbolo
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      margin: -0.5rem -0.6rem -0.5rem 0;
       background: none;
       border: none;
       color: #ffffff;
@@ -78,14 +105,27 @@ $color-input-bg: #ececec;
       cursor: pointer;
       line-height: 1;
       opacity: 0.8;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
 
-      &:hover {
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      &:active {
         opacity: 1;
       }
     }
   }
 
   .modal-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     padding: 1.5rem;
 
     .modal-title {
@@ -113,12 +153,13 @@ $color-input-bg: #ececec;
         background-color: $color-input-bg;
         border: 1px solid transparent;
         border-radius: 12px;
-        font-size: 0.9rem;
+        font-size: 16px; // menos de 16px y el iPhone hace zoom al tocar el campo
+        font-family: inherit;
         outline: none;
         box-sizing: border-box;
 
         &::placeholder {
-          color: #8c8c8c;
+          color: #767676;
         }
 
         &:focus {
@@ -135,10 +176,11 @@ $color-input-bg: #ececec;
       margin: 1rem 0 1.25rem 0;
 
       input[type="checkbox"] {
+        flex-shrink: 0;
         margin-top: 0.2rem;
         accent-color: $color-primary;
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
       }
 
       label {
@@ -158,23 +200,123 @@ $color-input-bg: #ececec;
       border-radius: 999px;
       font-size: 1rem;
       font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.2s ease, transform 0.15s $ease-out;
 
-      &:hover {
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background-color: $color-primary-dark;
+        }
+      }
+
+      &:active {
         background-color: $color-primary-dark;
+        transform: scale(0.97);
       }
     }
   }
 }
 
-@keyframes fadeIn {
+// Celular en horizontal o ventanas bajas: el formulario se reparte en dos columnas y se coloca al lado del botón,
+// usando casi todo el alto disponible en vez de quedar recortado arriba.
+@media (max-height: 560px) {
+  .whatsapp-modal-container {
+    --wa-bottom: 12px;
+    right: calc(95px + env(safe-area-inset-right, 0px));
+    width: min(560px, calc(100vw - 8rem));
+    transform-origin: bottom right;
+  }
+
+  .whatsapp-modal-card {
+    border-radius: 16px;
+
+    .modal-header {
+      padding: 0.5rem 1rem;
+
+      .brand-title {
+        font-size: 1.05rem;
+
+        .header-icon {
+          width: 22px;
+          height: 22px;
+        }
+      }
+
+      .close-btn {
+        width: 40px;
+        height: 40px;
+        margin: -0.4rem -0.5rem -0.4rem 0;
+      }
+    }
+
+    .modal-body {
+      padding: 0.75rem 1rem 1rem;
+
+      .modal-title {
+        font-size: 1.05rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .error-msg {
+        margin-bottom: 0.5rem;
+      }
+
+      form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 0.75rem;
+        row-gap: 0.6rem;
+        align-items: center;
+      }
+
+      .form-group {
+        margin-bottom: 0;
+
+        input {
+          padding: 0.65rem 0.9rem;
+        }
+      }
+
+      .checkbox-group {
+        margin: 0;
+      }
+
+      .btn-submit-chat {
+        grid-column: 1 / -1;
+        padding: 0.7rem;
+      }
+    }
+  }
+}
+
+// Pantallas muy angostas: el modal ocupa el ancho disponible
+@media (max-width: 380px) {
+  .whatsapp-modal-container {
+    right: calc(1rem + env(safe-area-inset-right, 0px));
+  }
+}
+
+@keyframes aparecer {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px) scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-modal-container {
+    animation: none;
+  }
+
+  .whatsapp-btn-float,
+  .btn-submit-chat {
+    transition: none;
   }
 }

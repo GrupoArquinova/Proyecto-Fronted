@@ -7,7 +7,9 @@
     },
     "pantallaCompleta": "Full screen",
     "salirPantallaCompleta": "Exit full screen",
-    "cerrar": "Close"
+    "cerrar": "Close",
+    "girarTitulo": "Rotate your screen",
+    "girarTexto": "For a better experience, use your device in <strong>landscape</strong> mode."
   },
   "etapaProyecto": {
     "EN_DISENO": "In design",
@@ -388,5 +390,17 @@
     "paginaNoEncontrada": "Page not found",
     "proyectosTitulo": "Projects",
     "proyectosDescripcion": "Grupo Arquinova projects in Quindío: El Encanto and the cases in our architecture, engineering and management portfolio."
+  },
+  "whatsappModal": {
+    "abrir": "Open WhatsApp",
+    "titulo": "Talk to an Advisor",
+    "nombre": "Full name",
+    "telefono": "Phone",
+    "correo": "Email",
+    "autorizo": "I authorize the processing of my personal data, the privacy policies and the terms and conditions.",
+    "iniciar": "Start chat",
+    "errorCampos": "Please fill in all the fields",
+    "errorAutorizo": "You must authorize the processing of your data",
+    "mensaje": "Hello, my name is {{nombre}}.\n\nPhone: {{telefono}}\n\nEmail:\n{{correo}}\n\nI would like to request more information about Arquinova's projects."
   }
 }
