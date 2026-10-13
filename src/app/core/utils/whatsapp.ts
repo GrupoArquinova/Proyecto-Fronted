@@ -11,7 +11,7 @@ export interface DatosVilla {
 }
 
 /** Mensaje para consultar por una tipología de un proyecto, con los datos de la ficha que estén cargados. */
-export function mensajeConsultaVilla(villa: DatosVilla, proyecto: string, idioma: string = 'es'): string {
+export function mensajeConsultaVilla(villa: DatosVilla, proyecto: string, idioma = 'es'): string {
   const ingles = idioma === 'en';
   const datos: string[] = [];
   if (villa.areaConstruidaM2) datos.push(`${villa.areaConstruidaM2} m²`);

@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, OnDestroy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { FormsModule } from '@angular/forms';
 import { Viewer } from '@photo-sphere-viewer/core';
 import { Multimedia, TipoMultimedia } from '../../../core/models/multimedia.models';
@@ -21,11 +22,12 @@ type TipoPadre = 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo' | 'etapa';
 @Component({
   selector: 'app-multimedia',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './multimedia.component.html',
-  styleUrls: ['./multimedia.component.scss']
+  styleUrls: ['./multimedia.component.scss'],
 })
 export class MultimediaComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef);
   private multimediaService = inject(MultimediaService);
   private etapaService = inject(EtapaService);
   private proyectoService = inject(ProyectoService);
@@ -81,7 +83,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     orden: 1,
     portada: false,
     publicado: true,
-    activo: true
+    activo: true,
   };
 
   ngOnInit(): void {
@@ -97,7 +99,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
 
   cargarMultimedia(): void {
     this.cargando = true;
-    this.multimediaService.obtenerMultimedia().subscribe({
+    this.multimediaService.obtenerMultimedia().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.listaMultimedia = data;
         this.aplicarFiltros();
@@ -107,17 +109,17 @@ export class MultimediaComponent implements OnInit, OnDestroy {
         console.error('Error al cargar multimedia:', err);
         this.toastService.showError('Error al cargar multimedia');
         this.cargando = false;
-      }
+      },
     });
   }
 
   cargarCatalogosBase(): void {
-    this.proyectoService.getProyectos().subscribe(res => this.proyectosDisponibles = res);
-    this.loteService.obtenerLotes().subscribe(res => this.lotesDisponibles = res);
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res) => (this.proyectosDisponibles = res));
+    this.loteService.obtenerLotes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res) => (this.lotesDisponibles = res));
   }
 
   aplicarFiltros(): void {
-    this.multimediaFiltrada = this.listaMultimedia.filter(item => {
+    this.multimediaFiltrada = this.listaMultimedia.filter((item) => {
       const matchTitulo = this.filtroTitulo
         ? item.titulo?.toLowerCase().includes(this.filtroTitulo.toLowerCase().trim())
         : true;
@@ -128,7 +130,13 @@ export class MultimediaComponent implements OnInit, OnDestroy {
 
   // --- Control para ampliar imagen ---
   imagenAmpliadaUrl: string | null = null;
-  imagenAmpliadaTitulo: string = '';
+  imagenAmpliadaTitulo = '';
+
+  /** Abre la vista previa de un recurso: el visor 360 para las panorámicas, la imagen ampliada para las fotos. */
+  abrirVistaPrevia(item: Multimedia): void {
+    if (item.tipo === 'PANORAMICA_360') this.abrirVisor360(item);
+    else if (item.tipo === 'IMAGEN') this.abrirImagenAmpliada(item);
+  }
 
   abrirImagenAmpliada(item: Multimedia): void {
     if (item.tipo === 'IMAGEN') {
@@ -163,28 +171,28 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     }
 
     if (this.tipoPadre === 'zonaComun') {
-      this.multimediaService.obtenerZonasComunesPorProyecto(this.proyectoReferenciaId).subscribe({
-        next: (res) => this.zonasComunesDisponibles = res,
+      this.multimediaService.obtenerZonasComunesPorProyecto(this.proyectoReferenciaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (res) => (this.zonasComunesDisponibles = res),
         error: (err) => {
           console.error('Error cargando zonas comunes:', err);
           this.toastService.showError('Error cargando zonas comunes');
-        }
+        },
       });
     } else if (this.tipoPadre === 'etapa') {
-      this.etapaService.listarPorProyecto(this.proyectoReferenciaId).subscribe({
-        next: (res) => this.etapasDisponibles = res,
+      this.etapaService.listarPorProyecto(this.proyectoReferenciaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (res) => (this.etapasDisponibles = res),
         error: (err) => {
           console.error('Error cargando etapas:', err);
           this.toastService.showError('Error cargando etapas');
-        }
+        },
       });
     } else if (this.tipoPadre === 'casaModelo') {
-      this.multimediaService.obtenerCasasModeloPorProyecto(this.proyectoReferenciaId).subscribe({
-        next: (res) => this.casasModelosDisponibles = res,
+      this.multimediaService.obtenerCasasModeloPorProyecto(this.proyectoReferenciaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (res) => (this.casasModelosDisponibles = res),
         error: (err) => {
           console.error('Error cargando casas modelo:', err);
           this.toastService.showError('Error cargando casas modelo');
-        }
+        },
       });
     }
   }
@@ -212,7 +220,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
         this.errorArchivo = 'No se pudo subir el archivo. Intenta de nuevo.';
         this.subiendoArchivo = false;
         this.nombreArchivoSeleccionado = '';
-      }
+      },
     });
 
     input.value = '';
@@ -251,7 +259,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       orden: 1,
       portada: false,
       publicado: true,
-      activo: true
+      activo: true,
     };
     this.mostrarModal = true;
   }
@@ -283,7 +291,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       orden: item.orden ?? 1,
       portada: item.portada,
       publicado: item.publicado,
-      activo: item.activo
+      activo: item.activo,
     };
     this.mostrarModal = true;
   }
@@ -309,17 +317,17 @@ export class MultimediaComponent implements OnInit, OnDestroy {
         console.error('Error al guardar multimedia:', err);
         this.toastService.showError(err?.error?.mensaje || 'Error al guardar archivo multimedia');
         this.guardando = false;
-      }
+      },
     });
   }
 
   async eliminarMultimedia(id: number): Promise<void> {
-    const item = this.listaMultimedia.find(m => m.id === id);
+    const item = this.listaMultimedia.find((m) => m.id === id);
     const ok = await this.confirmDialog.open({
       title: 'Eliminar Archivo',
       message: `¿Estás seguro de eliminar "${item?.titulo || 'este archivo'}"? Esta acción no se puede deshacer.`,
       confirmText: 'Sí, eliminar',
-      type: 'danger'
+      type: 'danger',
     });
     if (!ok) return;
     this.multimediaService.eliminarMultimedia(id).subscribe({
@@ -330,7 +338,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error al eliminar:', err);
         this.toastService.showError('Error al eliminar el archivo multimedia');
-      }
+      },
     });
   }
 
@@ -350,7 +358,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
           container: container,
           panorama: this.url360Actual,
           size: { width: '100%', height: '500px' },
-          navbar: ['zoom', 'move', 'fullscreen']
+          navbar: ['zoom', 'move', 'fullscreen'],
         });
       }
     }, 100);
@@ -377,7 +385,8 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     const element = event.target as HTMLImageElement;
     // Evita bucles infinitos si la imagen de respaldo tampoco carga
     if (!element.src.includes('data:image/svg+xml')) {
-      element.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180" viewBox="0 0 300 180"><rect width="300" height="180" fill="%23e2e8f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%2364748b">Sin Imagen / Error</text></svg>';
+      element.src =
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180" viewBox="0 0 300 180"><rect width="300" height="180" fill="%23e2e8f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%2364748b">Sin Imagen / Error</text></svg>';
     }
   }
 }

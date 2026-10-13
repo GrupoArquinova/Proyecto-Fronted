@@ -55,7 +55,7 @@ export interface ParteTexto {
 }
 
 /** Reemplaza {{campo}} por su valor; si el campo está vacío devuelve una parte marcada como pendiente. */
-export function partesDeTexto(texto: string, idioma: string = 'es'): ParteTexto[] {
+export function partesDeTexto(texto: string, idioma = 'es'): ParteTexto[] {
   const ingles = idioma === 'en';
   const datos = ingles ? { ...EMPRESA_LEGAL, ...EMPRESA_LEGAL_EN } : EMPRESA_LEGAL;
   const etiquetas = ingles ? ETIQUETA_CAMPO_EN : ETIQUETA_CAMPO;

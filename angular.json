@@ -79,6 +79,11 @@
                 }
               ],
               "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": { "minify": true, "inlineCritical": false },
+                "fonts": { "inline": false }
+              },
               "server": false,
               "ssr": false,
               "outputMode": "static"

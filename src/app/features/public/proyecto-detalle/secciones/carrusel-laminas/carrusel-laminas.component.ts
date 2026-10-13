@@ -1,6 +1,6 @@
 import { TranslocoPipe } from '@jsverse/transloco';
 import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, HostListener, OnDestroy, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, computed, effect, inject, input, signal } from '@angular/core';
 
 export interface Lamina {
   id?: number;
@@ -19,7 +19,8 @@ export interface Lamina {
   imports: [TranslocoPipe],
   templateUrl: './carrusel-laminas.component.html',
   styleUrl: './carrusel-laminas.component.scss',
-  host: { '[class.en-marco]': 'enMarco()', '[class.ampliada]': 'ampliada()' }
+  host: { '[class.en-marco]': 'enMarco()', '[class.ampliada]': 'ampliada()' },
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CarruselLaminasComponent implements OnDestroy {
   readonly laminas = input.required<Lamina[]>();

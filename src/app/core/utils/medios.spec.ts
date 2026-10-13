@@ -4,7 +4,9 @@ describe('clasificarMedio', () => {
   it('reconoce imagenes, videos y pdf por extension', () => {
     expect(clasificarMedio('https://x.com/a/foto.JPG?v=2').tipo).toBe('imagen');
     expect(clasificarMedio('https://x.com/a/video.mp4').tipo).toBe('video');
-    expect(clasificarMedio('https://x.com/a/plano.pdf').tipo).toBe('pdf');
+    expect(clasificarMedio('https://res.cloudinary.com/demo/raw/upload/plano.pdf').tipo).toBe('pdf');
+    // Un PDF de otro sitio no se incrusta en la página: se ofrece como enlace
+    expect(clasificarMedio('https://x.com/a/plano.pdf').tipo).toBe('enlace');
   });
 
   it('trata como video las URLs de video de Cloudinary sin extension', () => {

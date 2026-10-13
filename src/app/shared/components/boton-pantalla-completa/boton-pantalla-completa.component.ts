@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, DestroyRef, HostListener, PLATFORM_ID, afterNextRender, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, PLATFORM_ID, afterNextRender, inject, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 /**
@@ -51,7 +51,8 @@ import { TranslocoPipe } from '@jsverse/transloco';
     .btn-pantalla svg { width: 20px; height: 20px; }
     .btn-pantalla:hover { background: #3c706e; transform: scale(1.06); }
     .btn-pantalla:active { transform: scale(0.96); }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BotonPantallaCompletaComponent {
   private document = inject(DOCUMENT);

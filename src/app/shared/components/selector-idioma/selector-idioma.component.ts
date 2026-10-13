@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { IdiomaService } from '../../../core/services/idioma.service';
 import { IDIOMAS } from '../../../i18n/idiomas';
@@ -41,7 +41,8 @@ import { IDIOMAS } from '../../../i18n/idiomas';
     .cristal button:hover:not(.activo) { background: rgba(255, 255, 255, 0.16); }
     .cristal button.activo { background: rgba(255, 255, 255, 0.92); color: #2a6665; }
     @media (prefers-reduced-motion: reduce) { button { transition: none; } }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectorIdiomaComponent {
   readonly servicio = inject(IdiomaService);

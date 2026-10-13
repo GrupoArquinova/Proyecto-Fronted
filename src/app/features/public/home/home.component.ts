@@ -1,5 +1,6 @@
-import { Component, OnInit, effect, inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, PLATFORM_ID, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { isPlatformBrowser } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LocalizadoPipe } from '../../../shared/pipes/localizado.pipe';
 import { RouterModule } from '@angular/router';
@@ -24,12 +25,20 @@ import { BotonPantallaCompletaComponent } from '../../../shared/components/boton
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, TranslocoPipe, LocalizadoPipe, SelectorIdiomaComponent, BotonPantallaCompletaComponent],
+  imports: [
+    RouterModule,
+    ReactiveFormsModule,
+    TranslocoPipe,
+    LocalizadoPipe,
+    SelectorIdiomaComponent,
+    BotonPantallaCompletaComponent,
+  ],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
-
+  private destroyRef = inject(DestroyRef);
   private proyectoService = inject(ProyectoService);
   private fb = inject(FormBuilder);
   private solicitudService = inject(SolicitudService);
@@ -44,27 +53,30 @@ export class HomeComponent implements OnInit {
   readonly empresa = EMPRESA_INFO;
   readonly servicios = SERVICIOS;
 
-  proyectosList: ProyectoPublico[] = [];
+  proyectosList = signal<ProyectoPublico[]>([]);
   /** Misión, visión y valores publicados en el panel (vacío mientras la empresa no los apruebe). */
-  identidad: BloqueIdentidad[] = [];
+  identidad = signal<BloqueIdentidad[]>([]);
   contactoForm: FormGroup;
 
-  totalProyectos: number = 0;
-  proyectosDestacados: ProyectoPublico[] = [];
+  totalProyectos = signal(0);
+  proyectosDestacados = signal<ProyectoPublico[]>([]);
   /** Proyecto marcado como destacado en el panel (se muestra arriba, con botón al asesor). */
-  destacado: ProyectoPublico | null = null;
-  whatsappDestacado = '';
+  destacado = signal<ProyectoPublico | null>(null);
+  whatsappDestacado = signal('');
 
   constructor() {
-    this.contactoForm = this.fb.group({
-      nombre: ['', Validators.required],
-      correo: ['', [Validators.email]],
-      telefono: [''],
-      proyectoId: [null],
-      servicioInteres: [''],
-      mensaje: [''],
-      consentimientoDatos: [false, Validators.requiredTrue]
-    }, { validators: alMenosUnMedioDeContacto });
+    this.contactoForm = this.fb.group(
+      {
+        nombre: ['', Validators.required],
+        correo: ['', [Validators.email]],
+        telefono: [''],
+        proyectoId: [null],
+        servicioInteres: [''],
+        mensaje: [''],
+        consentimientoDatos: [false, Validators.requiredTrue],
+      },
+      { validators: alMenosUnMedioDeContacto },
+    );
 
     // Los textos de SEO se vuelven a poner cuando cambia el idioma
     effect(() => this.ponerSeo());
@@ -92,35 +104,36 @@ export class HomeComponent implements OnInit {
           streetAddress: this.empresa.oficina,
           addressLocality: 'Armenia',
           addressRegion: 'Quindío',
-          addressCountry: 'CO'
-        }
-      }
+          addressCountry: 'CO',
+        },
+      },
     });
   }
 
   /** Una sola consulta: alimenta el select del formulario y las tarjetas destacadas. */
   cargarCatalogo(): void {
-    this.proyectoService.obtenerCatalogoPublico().subscribe({
+    this.proyectoService.obtenerCatalogoPublico().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: ({ proyectos }) => {
-        this.proyectosList = proyectos;
-        this.proyectosDestacados = proyectos.slice(0, 3);
-        this.destacado = proyectos.find(p => p.destacado) ?? null;
-        this.whatsappDestacado = this.destacado ? this.enlaceWhatsapp(this.destacado) : '';
-        this.totalProyectos = proyectos.length;
+        const destacado = proyectos.find((p) => p.destacado) ?? null;
+        this.proyectosList.set(proyectos);
+        this.proyectosDestacados.set(proyectos.slice(0, 3));
+        this.destacado.set(destacado);
+        this.whatsappDestacado.set(destacado ? this.enlaceWhatsapp(destacado) : '');
+        this.totalProyectos.set(proyectos.length);
         this.cargarIdentidad(proyectos[0]?.empresaId ?? environment.empresaId);
       },
       error: (err) => {
         console.error('Error al cargar los proyectos:', err);
         this.cargarIdentidad(environment.empresaId);
-      }
+      },
     });
   }
 
   /** Solo se piden y muestran los textos que el administrador dejó publicados. */
   private cargarIdentidad(empresaId: number): void {
-    this.contenidoService.obtenerPublicadosPorEmpresa(empresaId).subscribe({
-      next: (contenidos) => this.identidad = bloquesDeIdentidad(contenidos),
-      error: () => this.identidad = []
+    this.contenidoService.obtenerPublicadosPorEmpresa(empresaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (contenidos) => this.identidad.set(bloquesDeIdentidad(contenidos)),
+      error: () => this.identidad.set([]),
     });
   }
 
@@ -134,9 +147,11 @@ export class HomeComponent implements OnInit {
     if (this.contactoForm.valid) {
       const datosFormulario: SolicitudPublicaRequest = {
         ...this.contactoForm.value,
-        proyectoId: this.contactoForm.value.proyectoId ? Number(this.contactoForm.value.proyectoId) : null,
+        proyectoId: this.contactoForm.value.proyectoId
+          ? Number(this.contactoForm.value.proyectoId)
+          : null,
         servicioInteres: this.contactoForm.value.servicioInteres || undefined,
-        userAgent: isPlatformBrowser(this.platformId) ? navigator.userAgent : ''
+        userAgent: isPlatformBrowser(this.platformId) ? navigator.userAgent : '',
       };
 
       this.solicitudService.enviarSolicitud(datosFormulario).subscribe({
@@ -147,9 +162,8 @@ export class HomeComponent implements OnInit {
         error: (err) => {
           console.error('Error al enviar la solicitud:', err);
           this.toastService.showError(this.idioma.t('home.formulario.error'));
-        }
+        },
       });
-
     } else {
       this.contactoForm.markAllAsTouched();
     }

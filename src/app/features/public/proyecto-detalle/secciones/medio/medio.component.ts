@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { clasificarMedio } from '../../../../../core/utils/medios';
 
@@ -73,7 +73,8 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
       transition: background 0.2s, transform 0.2s;
     }
     .enlace:hover { background: #3c706e; transform: translateY(-1px); }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MedioComponent {
   private sanitizer = inject(DomSanitizer);

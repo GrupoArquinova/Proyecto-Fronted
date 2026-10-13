@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AsistenteProyectoService } from '../../asistente-proyecto.service';
 import { MultimediaService } from '../../../../../core/services/multimedia.service';
@@ -69,7 +69,8 @@ const OPCIONES: { tipo: TipoMultimedia; etiqueta: string; archivos: TipoArchivo[
     .lista a { flex: 1; min-width: 0; color: #2c5953; font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .quitar { padding: 0; background: none; border: none; color: #dc2626; font-size: 0.85rem; font-weight: 600; }
     .vacio { justify-content: center; color: #94a3b8; border-style: dashed !important; }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BloqueRecursosComponent {
   readonly asistente = inject(AsistenteProyectoService);

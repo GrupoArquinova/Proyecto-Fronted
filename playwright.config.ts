@@ -27,7 +27,7 @@ export default defineConfig({
     locale: 'es-CO',
     trace: 'retain-on-failure'
   },
-  projects: [{ name: 'edge', use: { ...devices['Desktop Edge'], channel: 'msedge', viewport: { width: 1440, height: 900 } } }],
+  projects: [{ name: 'edge', use: { ...devices['Desktop Edge'], channel: process.env['PLAYWRIGHT_CANAL'] || 'msedge', viewport: { width: 1440, height: 900 } } }],
   webServer: {
     command: 'npx ng serve --port 4300',
     url: 'http://localhost:4300',

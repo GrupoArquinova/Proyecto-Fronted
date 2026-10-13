@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -18,10 +18,17 @@ import { SelectorIdiomaComponent } from '../../../shared/components/selector-idi
 @Component({
   selector: 'app-proyecto-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, TranslocoPipe, SelectorIdiomaComponent, BotonPantallaCompletaComponent],
+  imports: [
+    RouterLink,
+    RouterOutlet,
+    TranslocoPipe,
+    SelectorIdiomaComponent,
+    BotonPantallaCompletaComponent,
+  ],
   providers: [ProyectoDetalleService],
   templateUrl: './proyecto-detalle.component.html',
-  styleUrl: './proyecto-detalle.component.scss'
+  styleUrl: './proyecto-detalle.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProyectoDetalleComponent {
   private route = inject(ActivatedRoute);
@@ -34,7 +41,10 @@ export class ProyectoDetalleComponent {
   private readonly seoDelProyecto = effect(() => {
     const estado = this.datos.estado();
     if (estado === 'no-encontrado' || estado === 'error') {
-      this.seo.establecer({ titulo: this.idioma.t('proyecto.armazon.noEncontradoSeo'), noindex: true });
+      this.seo.establecer({
+        titulo: this.idioma.t('proyecto.armazon.noEncontradoSeo'),
+        noindex: true,
+      });
       return;
     }
 
@@ -46,9 +56,11 @@ export class ProyectoDetalleComponent {
     const lugar = [u?.ciudad, u?.departamento].filter(Boolean).join(', ');
     const seccion = this.seccionTitulo();
     const prefijo = seccion && this.seccionActiva() !== 'bienvenida' ? `${seccion} · ` : '';
-    const imagen = p.imagenUrl ?? detalle.multimedia.find(m => m.tipo === 'IMAGEN')?.url ?? null;
+    const imagen = p.imagenUrl ?? detalle.multimedia.find((m) => m.tipo === 'IMAGEN')?.url ?? null;
     const enLugar = lugar ? ` ${this.idioma.t('proyecto.armazon.enLugar', { lugar })}` : '';
-    const descripcion = p.descripcion || this.idioma.t('proyecto.armazon.descripcionSeo', { nombre: p.nombre, lugar: enLugar });
+    const descripcion =
+      p.descripcion ||
+      this.idioma.t('proyecto.armazon.descripcionSeo', { nombre: p.nombre, lugar: enLugar });
     const ruta = `/proyectos/${p.id}/${this.seccionActiva() || 'bienvenida'}`;
 
     this.seo.establecer({
@@ -63,12 +75,22 @@ export class ProyectoDetalleComponent {
         description: descripcion,
         image: imagen ?? undefined,
         address: u?.ciudad
-          ? { '@type': 'PostalAddress', addressLocality: u.ciudad, addressRegion: u.departamento, addressCountry: 'CO' }
+          ? {
+              '@type': 'PostalAddress',
+              addressLocality: u.ciudad,
+              addressRegion: u.departamento,
+              addressCountry: 'CO',
+            }
           : undefined,
-        geo: u?.latitud != null && u?.longitud != null
-          ? { '@type': 'GeoCoordinates', latitude: Number(u.latitud), longitude: Number(u.longitud) }
-          : undefined
-      }
+        geo:
+          u?.latitud != null && u?.longitud != null
+            ? {
+                '@type': 'GeoCoordinates',
+                latitude: Number(u.latitud),
+                longitude: Number(u.longitud),
+              }
+            : undefined,
+      },
     });
   });
 
@@ -80,25 +102,29 @@ export class ProyectoDetalleComponent {
 
   private urlActual = toSignal(
     this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd),
+      filter((e) => e instanceof NavigationEnd),
       map(() => this.router.url),
-      startWith(this.router.url)
+      startWith(this.router.url),
     ),
-    { initialValue: this.router.url }
+    { initialValue: this.router.url },
   );
 
   /** /proyectos/:id/<seccion>?vista=<vista> */
-  readonly seccionActiva = computed(() =>
-    this.router.parseUrl(this.urlActual()).root.children['primary']?.segments[2]?.path ?? '');
-  readonly vistaActiva = computed(() =>
-    this.router.parseUrl(this.urlActual()).queryParams['vista'] as string | undefined);
+  readonly seccionActiva = computed(
+    () => this.router.parseUrl(this.urlActual()).root.children['primary']?.segments[2]?.path ?? '',
+  );
+  readonly vistaActiva = computed(
+    () => this.router.parseUrl(this.urlActual()).queryParams['vista'] as string | undefined,
+  );
 
   /** Texto de la barra superior: "Sección › Vista" (por ejemplo "Ubicación › Mapa"). */
-  readonly seccionTitulo = computed(() =>
-    this.datos.secciones().find(s => s.id === this.seccionActiva())?.titulo ?? '');
+  readonly seccionTitulo = computed(
+    () => this.datos.secciones().find((s) => s.id === this.seccionActiva())?.titulo ?? '',
+  );
   readonly vistaTitulo = computed(() => {
-    const subs = this.datos.secciones().find(s => s.id === this.seccionActiva())?.subsecciones ?? [];
-    return subs.find(v => v.id === this.vistaDe(this.seccionActiva()))?.titulo ?? '';
+    const subs =
+      this.datos.secciones().find((s) => s.id === this.seccionActiva())?.subsecciones ?? [];
+    return subs.find((v) => v.id === this.vistaDe(this.seccionActiva()))?.titulo ?? '';
   });
 
   /**
@@ -107,7 +133,8 @@ export class ProyectoDetalleComponent {
    */
   readonly inmersivo = computed(() => {
     if (this.seccionActiva() === 'respaldo') return true;
-    if (this.datos.esInmersiva(this.seccionActiva(), this.vistaDe(this.seccionActiva()))) return true;
+    if (this.datos.esInmersiva(this.seccionActiva(), this.vistaDe(this.seccionActiva())))
+      return true;
     if (this.seccionActiva() !== 'bienvenida') return false;
     const vista = this.vistaDe('bienvenida');
     // Beneficios solo es inmersiva si hay lámina; con solo texto usa el panel normal
@@ -121,7 +148,7 @@ export class ProyectoDetalleComponent {
   });
 
   constructor() {
-    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe(params => {
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       this.proyectoId = Number(params.get('id'));
       if (Number.isInteger(this.proyectoId) && this.proyectoId > 0) {
         this.datos.cargar(this.proyectoId);
@@ -137,9 +164,9 @@ export class ProyectoDetalleComponent {
    */
   vistaDe(seccionId: string): string | null {
     if (seccionId !== this.seccionActiva()) return null;
-    const subs = this.datos.secciones().find(s => s.id === seccionId)?.subsecciones ?? [];
+    const subs = this.datos.secciones().find((s) => s.id === seccionId)?.subsecciones ?? [];
     const pedida = this.vistaActiva();
-    if (subs.some(v => v.id === pedida)) return pedida ?? null;
+    if (subs.some((v) => v.id === pedida)) return pedida ?? null;
     return SECCIONES_CON_PORTADA.includes(seccionId) ? null : (subs[0]?.id ?? null);
   }
 

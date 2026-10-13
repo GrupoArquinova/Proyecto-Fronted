@@ -1,7 +1,9 @@
 <div class="resumen">
   <h1 class="titulo">Resumen General</h1>
 
-  <div class="alerta-error" *ngIf="error">{{ error }}</div>
+  @if (error) {
+    <div class="alerta-error">{{ error }}</div>
+  }
 
   <div class="stats-grid">
     <div class="stat-card">
@@ -26,44 +28,50 @@
     <div class="panel">
       <h2 class="panel-titulo">Estado de proyectos</h2>
 
-      <div class="proyecto-item" *ngFor="let proyecto of estadoProyectos">
-        <div class="proyecto-header">
-          <span class="proyecto-nombre">{{ proyecto.nombre }}</span>
-          <span class="proyecto-conteo">{{ proyecto.ocupados }}/{{ proyecto.total }}</span>
+      @for (proyecto of estadoProyectos; track proyecto) {
+        <div class="proyecto-item">
+          <div class="proyecto-header">
+            <span class="proyecto-nombre">{{ proyecto.nombre }}</span>
+            <span class="proyecto-conteo">{{ proyecto.ocupados }}/{{ proyecto.total }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="proyecto.porcentaje"></div>
+          </div>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="proyecto.porcentaje"></div>
-        </div>
-      </div>
+      }
 
-      <p class="vacio" *ngIf="!cargando && estadoProyectos.length === 0">
-        No hay proyectos con lotes registrados.
-      </p>
+      @if (!cargando && estadoProyectos.length === 0) {
+        <p class="vacio">No hay proyectos con lotes registrados.</p>
+      }
     </div>
 
     <div class="panel">
       <h2 class="panel-titulo">Últimas solicitudes</h2>
 
-      <div class="solicitud-item" *ngFor="let solicitud of ultimasSolicitudes">
-        <div class="solicitud-info">
-          <span class="solicitud-nombre">{{ solicitud.clienteNombre }}</span>
-          <span class="solicitud-detalle">{{ solicitud.proyectoNombre }} · {{ solicitud.creadoEn | date:'yyyy-MM-dd' }}</span>
+      @for (solicitud of ultimasSolicitudes; track solicitud) {
+        <div class="solicitud-item">
+          <div class="solicitud-info">
+            <span class="solicitud-nombre">{{ solicitud.clienteNombre }}</span>
+            <span class="solicitud-detalle"
+              >{{ solicitud.proyectoNombre }} · {{ solicitud.creadoEn | date: 'yyyy-MM-dd' }}</span
+            >
+          </div>
+          <span class="badge" [ngClass]="claseEstado(solicitud.estadoNombre)">
+            {{ solicitud.estadoNombre }}
+          </span>
         </div>
-        <span class="badge" [ngClass]="claseEstado(solicitud.estadoNombre)">
-          {{ solicitud.estadoNombre }}
-        </span>
-      </div>
+      }
 
-      <p class="vacio" *ngIf="!cargando && ultimasSolicitudes.length === 0">
-        No hay solicitudes registradas.
-      </p>
+      @if (!cargando && ultimasSolicitudes.length === 0) {
+        <p class="vacio">No hay solicitudes registradas.</p>
+      }
     </div>
   </div>
 
   <!-- Nueva Tabla Ejecutiva Inferior -->
   <div class="panel panel-tabla">
     <h2 class="panel-titulo">Directorio de Proyectos Activos</h2>
-    
+
     <div class="table-responsive">
       <table class="executive-table">
         <thead>
@@ -76,36 +84,59 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of listaProyectos">
-            <td class="font-medium">
-              <div class="project-td-cell">
-  <img *ngIf="p.imagenUrl" [src]="p.imagenUrl" class="td-thumb" alt="Miniatura" />
-  <div *ngIf="!p.imagenUrl" class="td-thumb td-thumb-sin-imagen">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-      <circle cx="8.5" cy="8.5" r="1.5"></circle>
-      <polyline points="21 15 16 10 5 21"></polyline>
-    </svg>
-  </div>
-  <span>{{ p.nombre }}</span>
-</div>
-            </td>
-            <td>
-              <span class="status-pill" [ngClass]="'pill-' + (p.estadoProyecto | lowercase)">
-                {{ etiquetaEtapa(p.estadoProyecto) }}
-              </span>
-            </td>
-            <td class="text-muted">{{ p.slug || 'N/A' }}</td>
-            <td class="text-muted">{{ p.fechaLanzamiento || 'Sin definir' }}</td>
-            <td>
-              <span class="visibility-badge" [class.public]="p.publicado" [class.draft]="!p.publicado">
-                {{ p.publicado ? 'Publicado' : 'Borrador' }}
-              </span>
-            </td>
-          </tr>
-          <tr *ngIf="!cargando && listaProyectos.length === 0">
-            <td colspan="5" class="empty-table-msg">No hay proyectos registrados para mostrar.</td>
-          </tr>
+          @for (p of listaProyectos; track p) {
+            <tr>
+              <td class="font-medium">
+                <div class="project-td-cell">
+                  @if (p.imagenUrl) {
+                    <img [src]="p.imagenUrl" class="td-thumb" alt="Miniatura" />
+                  }
+                  @if (!p.imagenUrl) {
+                    <div class="td-thumb td-thumb-sin-imagen">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                    </div>
+                  }
+                  <span>{{ p.nombre }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="status-pill" [ngClass]="'pill-' + (p.estadoProyecto | lowercase)">
+                  {{ etiquetaEtapa(p.estadoProyecto) }}
+                </span>
+              </td>
+              <td class="text-muted">{{ p.slug || 'N/A' }}</td>
+              <td class="text-muted">{{ p.fechaLanzamiento || 'Sin definir' }}</td>
+              <td>
+                <span
+                  class="visibility-badge"
+                  [class.public]="p.publicado"
+                  [class.draft]="!p.publicado"
+                >
+                  {{ p.publicado ? 'Publicado' : 'Borrador' }}
+                </span>
+              </td>
+            </tr>
+          }
+          @if (!cargando && listaProyectos.length === 0) {
+            <tr>
+              <td colspan="5" class="empty-table-msg">
+                No hay proyectos registrados para mostrar.
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>

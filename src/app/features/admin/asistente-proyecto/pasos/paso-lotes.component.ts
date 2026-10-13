@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { catchError, concatMap, from, map, of } from 'rxjs';
@@ -150,7 +150,8 @@ const ESTADOS = [
       .fila-tabla { grid-template-columns: 1fr 1fr; }
       .fila-tabla .etapa { grid-column: 1 / -1; }
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PasoLotesComponent {
   readonly asistente = inject(AsistenteProyectoService);

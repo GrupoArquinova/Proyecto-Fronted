@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AsistenteProyectoService, PASOS, PasoAsistente } from './asistente-proyecto.service';
 import { PasoProyectoComponent } from './pasos/paso-proyecto.component';
@@ -21,7 +21,8 @@ import { PasoRevisarComponent } from './pasos/paso-revisar.component';
   ],
   providers: [AsistenteProyectoService],
   templateUrl: './asistente-proyecto.component.html',
-  styleUrl: './asistente-proyecto.component.scss'
+  styleUrl: './asistente-proyecto.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AsistenteProyectoComponent implements OnInit {
   readonly asistente = inject(AsistenteProyectoService);

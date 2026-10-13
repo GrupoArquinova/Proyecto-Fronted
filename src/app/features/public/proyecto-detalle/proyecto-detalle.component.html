@@ -29,7 +29,7 @@
       <button type="button" class="btn-menu-movil" (click)="menuMovilAbierto.set(true)" [attr.aria-label]="'proyecto.armazon.abrirMenu' | transloco">
         &#9776;
       </button>
-      <div class="velo" (click)="cerrarMenuMovil()"></div>
+      <div class="velo" role="presentation" (click)="cerrarMenuMovil()"></div>
 
       <aside class="menu" [attr.aria-label]="'proyecto.armazon.secciones' | transloco">
         <header class="menu-marca">

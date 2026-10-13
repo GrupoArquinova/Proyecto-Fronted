@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { FormsModule } from '@angular/forms';
 import { ZonaComunService } from '../../../core/services/zona-comun.service';
 import { ZonaComun } from '../../../core/models/zona-comun.models';
@@ -12,11 +13,12 @@ import { CloudinaryService } from '../../../core/services/cloudinary.service';
 @Component({
   selector: 'app-zonas-comunes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './zonas-comunes.component.html',
-  styleUrls: ['./zonas-comunes.component.scss']
+  styleUrls: ['./zonas-comunes.component.scss'],
 })
 export class ZonasComunesComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private zonaService = inject(ZonaComunService);
   private proyectoService = inject(ProyectoService);
   private zonaImagenService = inject(ZonaComunImagenService);
@@ -42,7 +44,7 @@ export class ZonasComunesComponent implements OnInit {
     zonaComunId: 0,
     imagenUrl: '',
     titulo: '',
-    esPrincipal: false
+    esPrincipal: false,
   };
 
   listaZonas: ZonaComun[] = [];
@@ -63,7 +65,7 @@ export class ZonasComunesComponent implements OnInit {
     nombre: '',
     descripcion: '',
     publicado: true,
-    activo: true
+    activo: true,
   };
 
   ngOnInit(): void {
@@ -71,12 +73,12 @@ export class ZonasComunesComponent implements OnInit {
   }
 
   cargarProyectos(): void {
-    this.proyectoService.getProyectos().subscribe({
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (proyectos) => {
         this.listaProyectos = proyectos;
         this.cargarZonas();
       },
-      error: (err) => console.error('Error al cargar proyectos', err)
+      error: (err) => console.error('Error al cargar proyectos', err),
     });
   }
 
@@ -91,12 +93,12 @@ export class ZonasComunesComponent implements OnInit {
       }
 
       let peticionesCompletadas = 0;
-      let zonasAcumuladas: ZonaComun[] = [];
+      const zonasAcumuladas: ZonaComun[] = [];
 
-      this.listaProyectos.forEach(proj => {
-        this.zonaService.listarPorProyecto(proj.id as number).subscribe({
+      this.listaProyectos.forEach((proj) => {
+        this.zonaService.listarPorProyecto(proj.id as number).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: (zonas) => {
-            const zonasConProyecto = zonas.map(z => ({ ...z, proyectoNombre: proj.nombre }));
+            const zonasConProyecto = zonas.map((z) => ({ ...z, proyectoNombre: proj.nombre }));
             zonasAcumuladas.push(...zonasConProyecto);
             peticionesCompletadas++;
 
@@ -111,18 +113,18 @@ export class ZonasComunesComponent implements OnInit {
               this.listaZonas = zonasAcumuladas;
               this.cargando = false;
             }
-          }
+          },
         });
       });
     } else {
       const projId = Number(this.proyectoIdSeleccionado);
-      const proyectoActual = this.listaProyectos.find(p => p.id === projId);
+      const proyectoActual = this.listaProyectos.find((p) => p.id === projId);
 
-      this.zonaService.listarPorProyecto(projId).subscribe({
+      this.zonaService.listarPorProyecto(projId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (data) => {
-          this.listaZonas = data.map(z => ({
+          this.listaZonas = data.map((z) => ({
             ...z,
-            proyectoNombre: proyectoActual ? proyectoActual.nombre : 'Proyecto ' + projId
+            proyectoNombre: proyectoActual ? proyectoActual.nombre : 'Proyecto ' + projId,
           }));
           this.cargando = false;
         },
@@ -130,23 +132,26 @@ export class ZonasComunesComponent implements OnInit {
           console.error('Error al cargar zonas comunes', err);
           this.cargando = false;
           this.mostrarAlerta('Error al obtener las zonas comunes.');
-        }
+        },
       });
     }
   }
 
   abrirModalCrear(): void {
     this.esEdicion = false;
-    const defaultProj = this.proyectoIdSeleccionado !== 'todos'
-      ? Number(this.proyectoIdSeleccionado)
-      : (this.listaProyectos.length > 0 ? (this.listaProyectos[0].id ?? 1) : 1);
+    const defaultProj =
+      this.proyectoIdSeleccionado !== 'todos'
+        ? Number(this.proyectoIdSeleccionado)
+        : this.listaProyectos.length > 0
+          ? (this.listaProyectos[0].id ?? 1)
+          : 1;
 
     this.zonaActual = {
       proyectoId: defaultProj,
       nombre: '',
       descripcion: '',
       publicado: true,
-      activo: true
+      activo: true,
     };
     this.mostrarModal = true;
   }
@@ -185,7 +190,7 @@ export class ZonasComunesComponent implements OnInit {
           this.cargando = false;
           console.error(err);
           this.mostrarAlerta('Error al actualizar la zona común.');
-        }
+        },
       });
     } else {
       this.zonaService.crear(this.zonaActual).subscribe({
@@ -199,7 +204,7 @@ export class ZonasComunesComponent implements OnInit {
           this.cargando = false;
           console.error(err);
           this.mostrarAlerta('Error al crear la zona común.');
-        }
+        },
       });
     }
   }
@@ -231,7 +236,7 @@ export class ZonasComunesComponent implements OnInit {
         this.cerrarModalEliminar();
         console.error(err);
         this.mostrarAlerta('No se pudo eliminar el registro.');
-      }
+      },
     });
   }
 
@@ -244,9 +249,9 @@ export class ZonasComunesComponent implements OnInit {
   }
 
   cargarImagenesDeZona(zonaId: number): void {
-    this.zonaImagenService.listarPorZona(zonaId).subscribe({
-      next: (imgs) => this.listaImagenesZona = imgs,
-      error: (err) => console.error('Error al cargar imágenes de la zona', err)
+    this.zonaImagenService.listarPorZona(zonaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (imgs) => (this.listaImagenesZona = imgs),
+      error: (err) => console.error('Error al cargar imágenes de la zona', err),
     });
   }
 
@@ -277,7 +282,7 @@ export class ZonasComunesComponent implements OnInit {
         this.errorImagen = 'No se pudo subir la imagen. Intenta de nuevo.';
         this.subiendoImagen = false;
         this.archivoSeleccionado = null;
-      }
+      },
     });
   }
 
@@ -298,7 +303,7 @@ export class ZonasComunesComponent implements OnInit {
         error: (err) => {
           console.error('Error al actualizar imagen', err);
           this.mostrarAlerta('Error al actualizar la imagen.');
-        }
+        },
       });
     } else {
       this.zonaImagenService.crear(this.nuevaImagen).subscribe({
@@ -310,7 +315,7 @@ export class ZonasComunesComponent implements OnInit {
         error: (err) => {
           console.error('Error al agregar imagen', err);
           this.mostrarAlerta('Error al guardar la imagen.');
-        }
+        },
       });
     }
   }
@@ -334,7 +339,7 @@ export class ZonasComunesComponent implements OnInit {
       zonaComunId: this.zonaSeleccionadaParaGaleria?.id ?? 0,
       imagenUrl: '',
       titulo: '',
-      esPrincipal: false
+      esPrincipal: false,
     };
     this.archivoSeleccionado = null;
     this.errorImagen = '';
@@ -351,7 +356,7 @@ export class ZonasComunesComponent implements OnInit {
           this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
           this.mostrarAlerta('Imagen eliminada.');
         },
-        error: (err) => console.error('Error al eliminar imagen', err)
+        error: (err) => console.error('Error al eliminar imagen', err),
       });
     }
   }
@@ -362,6 +367,6 @@ export class ZonasComunesComponent implements OnInit {
 
   private mostrarAlerta(msg: string): void {
     this.mensajeAlerta = msg;
-    setTimeout(() => this.mensajeAlerta = '', 4000);
+    setTimeout(() => (this.mensajeAlerta = ''), 4000);
   }
 }

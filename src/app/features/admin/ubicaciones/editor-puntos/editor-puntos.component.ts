@@ -1,4 +1,5 @@
-import { Component, computed, inject, input, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal, viewChild, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 import { Ubicacion } from '../../../../core/models/ubicacion.models';
@@ -31,9 +32,11 @@ import { PlanoPuntosComponent, PosicionPlano360 } from '../../../public/proyecto
   standalone: true,
   imports: [FormsModule, Visor360Component, PlanoPuntosComponent],
   templateUrl: './editor-puntos.component.html',
-  styleUrl: './editor-puntos.component.scss'
+  styleUrl: './editor-puntos.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditorPuntosComponent {
+  private destroyRef = inject(DestroyRef);
   private puntoService = inject(Punto360Service);
   private loteService = inject(LoteService);
   private etapaService = inject(EtapaService);
@@ -140,15 +143,15 @@ export class EditorPuntosComponent {
     const proyectoId = this.ubicacion().proyectoId;
     this.escena.set(this.escenas()[0]?.id ?? null);
 
-    this.puntoService.listarPorProyecto(proyectoId).subscribe({
+    this.puntoService.listarPorProyecto(proyectoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: lista => this.puntos.set(lista),
       error: () => this.toast.showError('No se pudieron cargar los botones del proyecto.')
     });
-    this.loteService.obtenerLotes().subscribe({
+    this.loteService.obtenerLotes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: lista => this.lotes.set(lista.filter(l => l.proyectoId === proyectoId && l.activo)),
       error: () => this.toast.showError('No se pudieron cargar los lotes.')
     });
-    this.multimediaService.obtenerMultimedia().subscribe({
+    this.multimediaService.obtenerMultimedia().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: lista => {
         this.panoramas.set(new Map(
           lista.filter(m => m.tipo === 'PANORAMICA_360' && m.loteId != null && m.activo).map(m => [m.loteId!, m])));
@@ -164,7 +167,7 @@ export class EditorPuntosComponent {
       },
       error: () => undefined
     });
-    this.multimediaService.listarPorEntidad('proyecto', proyectoId).subscribe({
+    this.multimediaService.listarPorEntidad('proyecto', proyectoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: lista => {
         this.imagenZonas.set(lista
           .filter(m => m.tipo === 'ZONAS_DESTACADAS' && m.activo !== false)
@@ -175,11 +178,11 @@ export class EditorPuntosComponent {
       },
       error: () => undefined
     });
-    this.zonaService.listarPorProyecto(proyectoId).subscribe({
+    this.zonaService.listarPorProyecto(proyectoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: lista => this.zonas.set(lista.filter(z => z.activo !== false)),
       error: () => undefined
     });
-    this.etapaService.listarPorProyecto(proyectoId).subscribe({
+    this.etapaService.listarPorProyecto(proyectoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: lista => this.etapas.set(lista),
       error: () => undefined
     });

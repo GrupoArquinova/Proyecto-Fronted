@@ -1,5 +1,4 @@
 <div class="reportes-container">
-  
   <!-- Cabecera con selector de proyectos estilizado y botón PDF -->
   <div class="header-section">
     <div>
@@ -9,9 +8,11 @@
     <div class="actions-header">
       <div class="select-wrapper">
         <select [(ngModel)]="proyectoIdPdf" class="styled-project-select">
-          <option *ngFor="let p of listaProyectos" [value]="p.id">
-            {{ p.nombre || ('Proyecto ' + p.id) }}
-          </option>
+          @for (p of listaProyectos; track p) {
+            <option [value]="p.id">
+              {{ p.nombre || 'Proyecto ' + p.id }}
+            </option>
+          }
         </select>
       </div>
       <button class="btn-primary" (click)="descargarFichaPdf()">
@@ -19,8 +20,6 @@
       </button>
     </div>
   </div>
-
-
 
   <!-- Tarjetas de Indicadores Principales -->
   <div class="stats-grid">
@@ -63,16 +62,21 @@
   <div class="advanced-exports">
     <h4>Exportaciones del Sistema (Excel / Reportes)</h4>
     <div class="export-buttons-grid">
-      <button class="btn-export" (click)="exportarExcelProyectos()">📥 Descargar Proyectos (Excel)</button>
+      <button class="btn-export" (click)="exportarExcelProyectos()">
+        📥 Descargar Proyectos (Excel)
+      </button>
       <button class="btn-export" (click)="exportarExcelLotes()">📥 Descargar Lotes (Excel)</button>
-      <button class="btn-export" (click)="exportarExcelSolicitudes()">📥 Descargar Solicitudes (Excel)</button>
+      <button class="btn-export" (click)="exportarExcelSolicitudes()">
+        📥 Descargar Solicitudes (Excel)
+      </button>
     </div>
   </div>
 
   <!-- Overlay de carga -->
-  <div *ngIf="cargando" class="loading-overlay">
-    <div class="spinner"></div>
-    <p>Cargando información y generando archivos...</p>
-  </div>
-
+  @if (cargando) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Cargando información y generando archivos...</p>
+    </div>
+  }
 </div>

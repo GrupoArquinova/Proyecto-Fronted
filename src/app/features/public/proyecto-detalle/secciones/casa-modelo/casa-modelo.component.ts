@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { MedioComponent } from '../medio/medio.component';
 import { CarruselLaminasComponent, Lamina } from '../carrusel-laminas/carrusel-laminas.component';
@@ -13,7 +13,8 @@ import { IdiomaService } from '../../../../../core/services/idioma.service';
   standalone: true,
   imports: [TranslocoPipe, MedioComponent, CarruselLaminasComponent],
   templateUrl: './casa-modelo.component.html',
-  styleUrl: './casa-modelo.component.scss'
+  styleUrl: './casa-modelo.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CasaModeloPublicoComponent {
   private seccion = inicializarSeccion('casa-modelo');

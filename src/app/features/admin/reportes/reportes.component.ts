@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Proyecto } from '../../../core/models/proyecto.models';
@@ -11,11 +12,12 @@ import { DashboardResponse } from '../../../core/models/reporte.models';
 @Component({
   selector: 'app-reportes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './reportes.component.html',
-  styleUrls: ['./reportes.component.scss']
+  styleUrls: ['./reportes.component.scss'],
 })
 export class ReportesComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private reporteService = inject(ReporteService);
   private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
@@ -30,14 +32,14 @@ export class ReportesComponent implements OnInit {
     totalSolicitudes: 0,
     solicitudesNuevas: 0,
     distribucionLotesPorEstado: {},
-    distribucionSolicitudesPorEstado: {}
+    distribucionSolicitudesPorEstado: {},
   };
 
   cargando = false;
-  
+
   // Lista dinámica de proyectos para el select de la ficha PDF
   listaProyectos: Proyecto[] = [];
-  proyectoIdPdf: number = 1;
+  proyectoIdPdf = 1;
 
   ngOnInit(): void {
     this.cargarDashboard();
@@ -46,7 +48,7 @@ export class ReportesComponent implements OnInit {
 
   cargarDashboard(): void {
     this.cargando = true;
-    this.reporteService.getDashboard().subscribe({
+    this.reporteService.getDashboard().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.stats = data;
         this.cargando = false;
@@ -55,12 +57,12 @@ export class ReportesComponent implements OnInit {
         console.error('Error al cargar el dashboard:', err);
         this.cargando = false;
         this.toastService.showError('Error al cargar los indicadores del sistema.');
-      }
+      },
     });
   }
 
   cargarProyectos(): void {
-    this.proyectoService.getProyectos().subscribe({
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (proyectos) => {
         this.listaProyectos = proyectos;
         if (proyectos && proyectos.length > 0) {
@@ -70,7 +72,7 @@ export class ReportesComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar la lista de proyectos:', err);
         this.toastService.showError('Error al cargar proyectos');
-      }
+      },
     });
   }
 
@@ -91,7 +93,7 @@ export class ReportesComponent implements OnInit {
         console.error('Error al descargar el archivo:', err);
         this.cargando = false;
         this.toastService.showError('No se pudo completar la descarga del documento.');
-      }
+      },
     });
   }
 
@@ -100,19 +102,24 @@ export class ReportesComponent implements OnInit {
   }
 
   exportarExcelSolicitudes(): void {
-    this.descargarArchivoBlob(this.reporteService.descargarExcelSolicitudes(), 'Reporte_Solicitudes.xlsx');
+    this.descargarArchivoBlob(
+      this.reporteService.descargarExcelSolicitudes(),
+      'Reporte_Solicitudes.xlsx',
+    );
   }
 
   exportarExcelProyectos(): void {
-    this.descargarArchivoBlob(this.reporteService.descargarExcelProyectos(), 'Reporte_Proyectos.xlsx');
+    this.descargarArchivoBlob(
+      this.reporteService.descargarExcelProyectos(),
+      'Reporte_Proyectos.xlsx',
+    );
   }
 
   descargarFichaPdf(): void {
     const proyectoId = Number(this.proyectoIdPdf) || 1;
     this.descargarArchivoBlob(
-      this.reporteService.descargarFichaProyectoPdf(proyectoId), 
-      `Ficha_Tecnica_Proyecto_${proyectoId}.pdf`
+      this.reporteService.descargarFichaProyectoPdf(proyectoId),
+      `Ficha_Tecnica_Proyecto_${proyectoId}.pdf`,
     );
   }
-
 }

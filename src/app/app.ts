@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -12,7 +12,8 @@ import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confi
   selector: 'app-root',
   imports: [RouterOutlet, TranslocoPipe, WhatsappModalComponent, ToastComponent, ConfirmDialogComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App {
   protected readonly title = signal('constructora-frontend');

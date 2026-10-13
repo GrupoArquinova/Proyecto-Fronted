@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsistenteProyectoService } from '../../asistente-proyecto.service';
@@ -75,7 +75,8 @@ import { CasaModelo } from '../../../../../core/models/casa-modelo.models';
     .sub { display: block; font-size: 0.82rem; color: #64748b; }
     .quitar { padding: 0; background: none; border: none; color: #dc2626; font-size: 0.85rem; font-weight: 600; }
     .vacio { justify-content: center !important; color: #94a3b8; border-style: dashed !important; }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BloqueCasasComponent {
   readonly asistente = inject(AsistenteProyectoService);

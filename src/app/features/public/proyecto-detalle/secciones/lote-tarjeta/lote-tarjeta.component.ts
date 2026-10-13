@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Lote } from '../../../../../core/models/lote.models';
 import { estadoDeLote, formatoArea, formatoPrecio } from '../../../../../core/utils/lotes';
@@ -63,7 +63,8 @@ import { IdiomaService } from '../../../../../core/services/idioma.service';
       box-shadow: 0 8px 20px rgba(42, 102, 101, 0.28); transition: background 0.2s, transform 0.2s;
     }
     .boton:hover { background: #3c706e; transform: translateY(-1px); }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoteTarjetaComponent {
   private idioma = inject(IdiomaService);

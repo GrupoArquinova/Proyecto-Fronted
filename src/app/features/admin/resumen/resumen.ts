@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReporteService } from '../../../core/services/reporte.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -21,6 +22,7 @@ interface EstadoProyectoResumen {
   styleUrl: './resumen.scss',
 })
 export class Resumen implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private reporteService = inject(ReporteService);
   private authService = inject(AuthService);
   private proyectoService = inject(ProyectoService);
@@ -56,7 +58,7 @@ export class Resumen implements OnInit {
     this.cargando = true;
     this.error = '';
 
-    this.reporteService.getDashboard().subscribe({
+    this.reporteService.getDashboard().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (dashboard) => {
         this.disponibles = dashboard.lotesDisponibles;
         this.reservados = dashboard.lotesReservados;
@@ -68,7 +70,7 @@ export class Resumen implements OnInit {
       },
     });
 
-    this.reporteService.getReporteLotes().subscribe({
+    this.reporteService.getReporteLotes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (lotes) => {
         this.estadoProyectos = this.agruparPorProyecto(lotes);
       },
@@ -77,7 +79,7 @@ export class Resumen implements OnInit {
       },
     });
 
-    this.reporteService.getReporteSolicitudes().subscribe({
+    this.reporteService.getReporteSolicitudes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (solicitudes) => {
         this.ultimasSolicitudes = solicitudes.slice(0, 4);
       },
@@ -86,7 +88,7 @@ export class Resumen implements OnInit {
       },
     });
 
-    this.proyectoService.getProyectos().subscribe({
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (proyectos) => {
         this.listaProyectos = proyectos;
         this.cargando = false;

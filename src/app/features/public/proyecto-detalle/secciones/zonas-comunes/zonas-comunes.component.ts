@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { CarruselLaminasComponent, Lamina } from '../carrusel-laminas/carrusel-laminas.component';
 import { PlanoPuntosComponent } from '../plano-puntos/plano-puntos.component';
@@ -18,7 +18,8 @@ import { ZonaComun } from '../../../../../core/models/zona-comun.models';
   standalone: true,
   imports: [TranslocoPipe, CarruselLaminasComponent, PlanoPuntosComponent, TarjetaPuntoComponent],
   templateUrl: './zonas-comunes.component.html',
-  styleUrl: './zonas-comunes.component.scss'
+  styleUrl: './zonas-comunes.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ZonasComunesPublicoComponent {
   private seccion = inicializarSeccion('zonas-comunes', { primeraPorDefecto: false });

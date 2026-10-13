@@ -10,65 +10,118 @@
   </div>
 
   <!-- Filtros: solo aparecen los que tienen más de una opción -->
-  <div class="filtros" *ngIf="hayFiltros">
-    <select *ngIf="municipios.length > 1" (change)="filtroMunicipio = valorDe($event)" [attr.aria-label]="'proyectos.municipio' | transloco">
-      <option value="">{{ 'proyectos.todosMunicipios' | transloco }}</option>
-      <option *ngFor="let m of municipios" [value]="m" [selected]="m === filtroMunicipio">{{ m }}</option>
-    </select>
-    <select *ngIf="tipos.length > 1" (change)="filtroTipo = valorDe($event)" [attr.aria-label]="'proyectos.tipo' | transloco">
-      <option value="">{{ 'proyectos.todosTipos' | transloco }}</option>
-      <option *ngFor="let t of tipos" [value]="t.valor" [selected]="t.valor === filtroTipo">{{ 'tipoProyecto.' + t.valor | transloco }}</option>
-    </select>
-    <select *ngIf="etapas.length > 1" (change)="filtroEtapa = valorDe($event)" [attr.aria-label]="'proyectos.etapa' | transloco">
-      <option value="">{{ 'proyectos.todasEtapas' | transloco }}</option>
-      <option *ngFor="let e of etapas" [value]="e.valor" [selected]="e.valor === filtroEtapa">{{ 'etapaProyecto.' + e.valor | transloco }}</option>
-    </select>
-    <button type="button" class="limpiar" *ngIf="filtrando" (click)="limpiarFiltros()">{{ 'proyectos.quitarFiltros' | transloco }}</button>
-  </div>
+  @if (hayFiltros) {
+    <div class="filtros">
+      @if (municipios.length > 1) {
+        <select
+          (change)="filtroMunicipio = valorDe($event)"
+          [attr.aria-label]="'proyectos.municipio' | transloco"
+        >
+          <option value="">{{ 'proyectos.todosMunicipios' | transloco }}</option>
+          @for (m of municipios; track m) {
+            <option [value]="m" [selected]="m === filtroMunicipio">{{ m }}</option>
+          }
+        </select>
+      }
+      @if (tipos.length > 1) {
+        <select
+          (change)="filtroTipo = valorDe($event)"
+          [attr.aria-label]="'proyectos.tipo' | transloco"
+        >
+          <option value="">{{ 'proyectos.todosTipos' | transloco }}</option>
+          @for (t of tipos; track t) {
+            <option [value]="t.valor" [selected]="t.valor === filtroTipo">
+              {{ 'tipoProyecto.' + t.valor | transloco }}
+            </option>
+          }
+        </select>
+      }
+      @if (etapas.length > 1) {
+        <select
+          (change)="filtroEtapa = valorDe($event)"
+          [attr.aria-label]="'proyectos.etapa' | transloco"
+        >
+          <option value="">{{ 'proyectos.todasEtapas' | transloco }}</option>
+          @for (e of etapas; track e) {
+            <option [value]="e.valor" [selected]="e.valor === filtroEtapa">
+              {{ 'etapaProyecto.' + e.valor | transloco }}
+            </option>
+          }
+        </select>
+      }
+      @if (filtrando) {
+        <button type="button" class="limpiar" (click)="limpiarFiltros()">
+          {{ 'proyectos.quitarFiltros' | transloco }}
+        </button>
+      }
+    </div>
+  }
 
-  <p class="sin-resultados" *ngIf="listaProyectos.length > 0 && proyectosFiltrados.length === 0">
-    {{ 'proyectos.sinResultados' | transloco }}
-  </p>
+  @if (listaProyectos().length > 0 && proyectosFiltrados.length === 0) {
+    <p class="sin-resultados">
+      {{ 'proyectos.sinResultados' | transloco }}
+    </p>
+  }
 
   <div class="projects-grid">
-    <div class="project-card" *ngFor="let proyecto of proyectosFiltrados">
-      
-      <!-- Imagen y Estado -->
-      <div class="card-image" [style.backgroundImage]="'url(' + (proyecto.imagenUrl || 'assets/images/default-project.svg') + ')'">
-        <span class="badge-status" *ngIf="proyecto.estado">{{ proyecto.estadoProyecto ? ('etapaProyecto.' + proyecto.estadoProyecto | transloco) : proyecto.estado }}</span>
-      </div>
-
-      <!-- Cuerpo de la Tarjeta -->
-      <div class="card-body">
-        <span class="location">{{ proyecto.ubicacion || 'Colombia' }}<span *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO'"> · {{ 'home.proyectos.portafolio' | transloco }}</span></span>
-        <h3>{{ proyecto.nombre }}</h3>
-        <p *ngIf="proyecto.descripcion">{{ proyecto.descripcion | localizado: proyecto.descripcionEn }}</p>
-        <p class="participacion" *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO' && proyecto.participacion">
-          <strong>{{ 'home.proyectos.participacion' | transloco }}</strong> {{ proyecto.participacion | localizado: proyecto.participacionEn }}
-        </p>
-
-        <!-- Métricas (solo proyectos con oferta comercial) -->
-        <div class="card-metrics" *ngIf="proyecto.tipoRegistro !== 'PORTAFOLIO'">
-          <div class="metric">
-            <strong>{{ proyecto.totalLotes || 0 }}</strong>
-            <span>{{ 'home.proyectos.lotes' | transloco }}</span>
-          </div>
-          <div class="metric">
-            <strong>{{ proyecto.lotesDisponibles || 0 }}</strong>
-            <span>{{ 'home.proyectos.disponibles' | transloco }}</span>
-          </div>
-          <div class="metric">
-            <strong>360°</strong>
-            <span>{{ 'home.proyectos.experiencia' | transloco }}</span>
-          </div>
+    @for (proyecto of proyectosFiltrados; track proyecto) {
+      <div class="project-card">
+        <!-- Imagen y Estado -->
+        <div
+          class="card-image"
+          [style.backgroundImage]="
+            'url(' + (proyecto.imagenUrl || 'assets/images/default-project.svg') + ')'
+          "
+        >
+          @if (proyecto.estado) {
+            <span class="badge-status">{{
+              proyecto.estadoProyecto
+                ? ('etapaProyecto.' + proyecto.estadoProyecto | transloco)
+                : proyecto.estado
+            }}</span>
+          }
         </div>
-
-        <!-- Enlace de Exploración -->
-        <a [routerLink]="['/proyectos', proyecto.id]" class="card-link">
-          {{ 'home.proyectos.explorar' | transloco }} &rarr;
-        </a>
+        <!-- Cuerpo de la Tarjeta -->
+        <div class="card-body">
+          <span class="location"
+            >{{ proyecto.ubicacion || 'Colombia' }}
+            @if (proyecto.tipoRegistro === 'PORTAFOLIO') {
+              <span> · {{ 'home.proyectos.portafolio' | transloco }}</span>
+            }
+          </span>
+          <h3>{{ proyecto.nombre }}</h3>
+          @if (proyecto.descripcion) {
+            <p>{{ proyecto.descripcion | localizado: proyecto.descripcionEn }}</p>
+          }
+          @if (proyecto.tipoRegistro === 'PORTAFOLIO' && proyecto.participacion) {
+            <p class="participacion">
+              <strong>{{ 'home.proyectos.participacion' | transloco }}</strong>
+              {{ proyecto.participacion | localizado: proyecto.participacionEn }}
+            </p>
+          }
+          <!-- Métricas (solo proyectos con oferta comercial) -->
+          @if (proyecto.tipoRegistro !== 'PORTAFOLIO') {
+            <div class="card-metrics">
+              <div class="metric">
+                <strong>{{ proyecto.totalLotes || 0 }}</strong>
+                <span>{{ 'home.proyectos.lotes' | transloco }}</span>
+              </div>
+              <div class="metric">
+                <strong>{{ proyecto.lotesDisponibles || 0 }}</strong>
+                <span>{{ 'home.proyectos.disponibles' | transloco }}</span>
+              </div>
+              <div class="metric">
+                <strong>360°</strong>
+                <span>{{ 'home.proyectos.experiencia' | transloco }}</span>
+              </div>
+            </div>
+          }
+          <!-- Enlace de Exploración -->
+          <a [routerLink]="['/proyectos', proyecto.id]" class="card-link">
+            {{ 'home.proyectos.explorar' | transloco }} &rarr;
+          </a>
+        </div>
       </div>
-
-    </div>
+    }
   </div>
 </div>

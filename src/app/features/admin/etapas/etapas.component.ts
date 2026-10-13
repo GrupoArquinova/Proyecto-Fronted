@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Etapa, EtapaRequest } from '../../../core/models/etapa.models';
@@ -16,6 +17,7 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
   styleUrls: ['./etapas.component.scss']
 })
 export class EtapasComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private etapaService = inject(EtapaService);
   private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
@@ -23,14 +25,14 @@ export class EtapasComponent implements OnInit {
 
   etapas: Etapa[] = [];
   proyectosDisponibles: Proyecto[] = [];
-  cargando: boolean = false;
-  mostrarModal: boolean = false;
-  guardando: boolean = false;
-  esEdicion: boolean = false;
+  cargando = false;
+  mostrarModal = false;
+  guardando = false;
+  esEdicion = false;
   etapaEditandoId: number | null = null;
 
   // Filtro por Proyecto en la cabecera
-  filtroProyectoId: string = '';
+  filtroProyectoId = '';
 
   // Formulario temporal adaptado a EtapaRequestDTO
   nuevaEtapa = {
@@ -74,7 +76,7 @@ export class EtapasComponent implements OnInit {
 
   cargarEtapas(): void {
     this.cargando = true;
-    this.etapaService.obtenerEtapas().subscribe({
+    this.etapaService.obtenerEtapas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.etapas = data.map(etapa => ({
           ...etapa,
@@ -95,7 +97,7 @@ export class EtapasComponent implements OnInit {
   }
 
   cargarProyectos(): void {
-    this.proyectoService.getProyectos().subscribe({
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => (this.proyectosDisponibles = data),
       error: (err) => {
         console.error('Error al cargar proyectos:', err);

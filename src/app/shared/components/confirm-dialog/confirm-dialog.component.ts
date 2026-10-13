@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
@@ -7,7 +7,8 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
   standalone: true,
   imports: [CommonModule],
   templateUrl: './confirm-dialog.component.html',
-  styleUrls: ['./confirm-dialog.component.scss']
+  styleUrls: ['./confirm-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmDialogComponent {
   confirmService = inject(ConfirmDialogService);
