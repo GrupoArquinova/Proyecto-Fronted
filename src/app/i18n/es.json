@@ -7,7 +7,9 @@
     },
     "pantallaCompleta": "Pantalla completa",
     "salirPantallaCompleta": "Salir de pantalla completa",
-    "cerrar": "Cerrar"
+    "cerrar": "Cerrar",
+    "girarTitulo": "Gira tu pantalla",
+    "girarTexto": "Para una mejor experiencia, usa el dispositivo en modo <strong>horizontal</strong>."
   },
   "etapaProyecto": {
     "EN_DISENO": "En diseño",
@@ -388,5 +390,17 @@
     "paginaNoEncontrada": "Página no encontrada",
     "proyectosTitulo": "Proyectos",
     "proyectosDescripcion": "Proyectos de Grupo Arquinova en el Quindío: El Encanto y los casos de nuestro portafolio de arquitectura, ingeniería y gestión."
+  },
+  "whatsappModal": {
+    "abrir": "Abrir WhatsApp",
+    "titulo": "Contacta un Asesor",
+    "nombre": "Nombre Completo",
+    "telefono": "Teléfono",
+    "correo": "Correo electrónico",
+    "autorizo": "Autorizo el tratamiento de mis datos personales, las políticas de privacidad y los términos y condiciones.",
+    "iniciar": "Iniciar Chat",
+    "errorCampos": "Por favor complete todos los campos",
+    "errorAutorizo": "Debe autorizar el tratamiento de datos",
+    "mensaje": "Hola, mi nombre es {{nombre}}.\n\nTeléfono: {{telefono}}\n\nCorreo:\n{{correo}}\n\nQuisiera solicitar más información sobre los proyectos de Arquinova."
   }
 }

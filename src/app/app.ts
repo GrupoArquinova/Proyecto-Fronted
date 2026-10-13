@@ -1,3 +1,4 @@
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
@@ -9,7 +10,7 @@ import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confi
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, WhatsappModalComponent, ToastComponent, ConfirmDialogComponent],
+  imports: [RouterOutlet, TranslocoPipe, WhatsappModalComponent, ToastComponent, ConfirmDialogComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
