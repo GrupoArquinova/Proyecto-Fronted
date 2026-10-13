@@ -11,6 +11,8 @@ export interface Ubicacion {
   longitud?: number;
   googleMapsUrl?: string;
   urbanismoUrl?: string;
+  /** El mismo plano con su texto en inglés (opcional). */
+  urbanismoUrlEn?: string;
   vistaAereaUrl?: string;
   recorrido360Url?: string;
   videoComoLlegarUrl?: string;

@@ -1,4 +1,5 @@
 import { ProyectoDetalle } from '../models/proyecto-detalle.models';
+import { Multimedia } from '../models/multimedia.models';
 import { Idioma } from '../../i18n/idiomas';
 
 /** El texto en inglés si existe (y el idioma es inglés); si no, el español. */
@@ -6,6 +7,11 @@ export function elegirTexto(idioma: Idioma | string, es: string | null | undefin
   const ingles = (en ?? '').trim();
   if (idioma === 'en' && ingles) return ingles;
   return es ?? undefined;
+}
+
+/** Las imágenes con texto dentro (diapositivas, mapas, planos) tienen una versión en inglés opcional; sin ella se usa la original. */
+function localizarMultimedia(lista: Multimedia[], idioma: Idioma | string): Multimedia[] {
+  return lista.map(m => (m.urlEn?.trim() ? { ...m, url: elegirTexto(idioma, m.url, m.urlEn) ?? m.url } : m));
 }
 
 /**
@@ -34,7 +40,11 @@ export function localizarDetalle(d: ProyectoDetalle | null, idioma: Idioma | str
       participacion: elegirTexto(idioma, d.proyecto.participacion, d.proyecto.participacionEn)
     },
     ubicacion: d.ubicacion
-      ? { ...d.ubicacion, referencias: elegirTexto(idioma, d.ubicacion.referencias, d.ubicacion.referenciasEn) }
+      ? {
+          ...d.ubicacion,
+          referencias: elegirTexto(idioma, d.ubicacion.referencias, d.ubicacion.referenciasEn),
+          urbanismoUrl: elegirTexto(idioma, d.ubicacion.urbanismoUrl, d.ubicacion.urbanismoUrlEn)
+        }
       : null,
     zonasComunes: d.zonasComunes.map(z => ({
       ...z,
@@ -52,6 +62,9 @@ export function localizarDetalle(d: ProyectoDetalle | null, idioma: Idioma | str
       titulo: elegirTexto(idioma, c.titulo, c.tituloEn) ?? c.titulo,
       contenido: elegirTexto(idioma, c.contenido, c.contenidoEn) ?? c.contenido
     })),
+    multimedia: localizarMultimedia(d.multimedia, idioma),
+    multimediaCasas: localizarMultimedia(d.multimediaCasas, idioma),
+    multimediaZonas: localizarMultimedia(d.multimediaZonas, idioma),
     puntos: d.puntos.map(p => ({ ...p, etapaNombre: p.etapaNombre != null ? nombreEtapa(p.etapaNombre, idioma) : p.etapaNombre }))
   };
 }

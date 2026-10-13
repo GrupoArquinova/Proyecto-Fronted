@@ -70,6 +70,18 @@ test.describe('idioma del sitio', () => {
     await expect(page.locator('.descripcion')).toHaveText('Villa de dos plantas');
   });
 
+  test('las imágenes con texto (planos) cambian a su versión en inglés y vuelven a la original', async ({ page }) => {
+    await page.goto('/proyectos/6/casa-modelo?vista=planos');
+    await expect(page.locator('img[src*="recurso-103.png"]').first()).toBeVisible();
+
+    await page.getByRole('button', { name: 'English' }).click();
+    await expect(page.locator('img[src*="recurso-103-en.png"]').first()).toBeVisible();
+    await expect(page.locator('img[src*="recurso-103.png"]')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Español' }).click();
+    await expect(page.locator('img[src*="recurso-103.png"]').first()).toBeVisible();
+  });
+
   test('recorrido por todas las páginas públicas en inglés: no queda ninguna palabra de la interfaz en español', async ({ page }) => {
     // Palabras de la interfaz que no deben aparecer cuando el sitio está en inglés (no se incluyen nombres propios ni datos de la base)
     const prohibidas = ['Amenidades', 'Tipologías', 'Ubicación', 'Contacto', 'Contáctanos', 'Enviar', 'Inicio', 'Servicios', 'Cargando',

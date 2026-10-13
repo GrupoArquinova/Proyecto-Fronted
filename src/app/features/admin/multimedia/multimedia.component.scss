@@ -37,7 +37,7 @@ $card-bg: #eef1f0;
     background-color: $primary-teal;
     color: #ffffff;
     border: none;
-    border-radius: 8px;
+    border-radius: 999px;
     padding: 0.65rem 1.4rem;
     font-size: 0.95rem;
     font-weight: 500;
@@ -228,7 +228,7 @@ $card-bg: #eef1f0;
         border: none;
         color: #4b5a56;
         cursor: pointer;
-        border-radius: 6px;
+        border-radius: 999px;
         transition: background-color 0.15s ease, color 0.15s ease;
 
         &:hover {
@@ -366,13 +366,13 @@ $card-bg: #eef1f0;
     flex-shrink: 0;
 
     .btn-cancelar {
-      background: #f1f5f9; border: none; color: #475569; padding: 0.6rem 1.3rem; border-radius: 6px; cursor: pointer;
+      background: #f1f5f9; border: none; color: #475569; padding: 0.6rem 1.3rem; border-radius: 999px; cursor: pointer;
       font-size: 0.9rem;
       transition: background-color 0.15s ease;
       &:hover { background: #e2e8f0; }
     }
     .btn-guardar {
-      background: $primary-teal; border: none; color: #ffffff; padding: 0.6rem 1.4rem; border-radius: 6px; cursor: pointer;
+      background: $primary-teal; border: none; color: #ffffff; padding: 0.6rem 1.4rem; border-radius: 999px; cursor: pointer;
       font-size: 0.9rem;
       font-weight: 500;
       transition: background-color 0.15s ease;
@@ -416,7 +416,7 @@ $card-bg: #eef1f0;
     border: 1px solid #d9534f;
     color: #d9534f;
     padding: 0.3rem 0.65rem;
-    border-radius: 6px;
+    border-radius: 999px;
     cursor: pointer;
     font-size: 0.8rem;
     flex-shrink: 0;
@@ -449,7 +449,7 @@ $card-bg: #eef1f0;
     border: 1px solid $border-color;
     color: #334155;
     padding: 0.5rem 0.9rem;
-    border-radius: 6px;
+    border-radius: 999px;
     font-size: 0.85rem;
     cursor: pointer;
     font-weight: 500;

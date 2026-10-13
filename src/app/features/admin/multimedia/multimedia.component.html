@@ -302,6 +302,14 @@
                   class="url-manual"
                 />
               </div>
+              <div class="form-group full-width">
+                <app-subida-archivo
+                  etiqueta="Versión en inglés (opcional)"
+                  [tipos]="['imagen', 'pdf']"
+                  ayuda="Si la imagen lleva texto escrito (diapositivas, mapas, planos), sube aquí la misma imagen con el texto en inglés. Se muestra cuando el sitio está en inglés; si no la subes, se ve la original."
+                  [(url)]="formData.urlEn"
+                />
+              </div>
               <div class="form-group">
                 <label for="tipo">Tipo de Archivo *</label>
                 <select id="tipo" name="tipo" [(ngModel)]="formData.tipo" required>

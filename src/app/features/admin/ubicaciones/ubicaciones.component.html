@@ -181,6 +181,15 @@
             </div>
           </div>
           <div class="form-group">
+            <app-subida-archivo
+              etiqueta="Urbanismo en inglés (opcional)"
+              [tipos]="['imagen']"
+              ayuda="El mismo plano de urbanismo con el texto en inglés. Se muestra cuando el sitio está en inglés."
+              [url]="formData.urbanismoUrlEn ?? ''"
+              (urlChange)="formData.urbanismoUrlEn = $event"
+            />
+          </div>
+          <div class="form-group">
             <label for="ubicaciones-campo-11" class="u-10">Vista Aérea URL</label>
             <input id="ubicaciones-campo-11"
               class="u-12"
