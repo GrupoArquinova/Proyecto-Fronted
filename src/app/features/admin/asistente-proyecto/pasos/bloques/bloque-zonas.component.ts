@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsistenteProyectoService } from '../../asistente-proyecto.service';
@@ -85,7 +85,8 @@ import { ZonaComunImagen } from '../../../../../core/models/zona-comun-imagen.mo
     .foto-acciones button:last-child { color: #dc2626; }
     .vacio { text-align: center; color: #94a3b8; padding: 0.4rem; }
     @media (max-width: 760px) { .agregar { grid-template-columns: 1fr; } }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BloqueZonasComponent {
   readonly asistente = inject(AsistenteProyectoService);

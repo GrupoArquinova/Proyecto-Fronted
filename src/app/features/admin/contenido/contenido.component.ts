@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContenidoService } from '../../../core/services/contenido.service';
@@ -14,6 +15,7 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
   styleUrls: ['./contenido.component.scss']
 })
 export class ContenidoInstitucionalComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private contenidoService = inject(ContenidoService);
   private toastService = inject(ToastService);
   private confirmDialog = inject(ConfirmDialogService);
@@ -39,7 +41,7 @@ export class ContenidoInstitucionalComponent implements OnInit {
 
   cargarContenidos(): void {
     this.cargando = true;
-    this.contenidoService.obtenerContenidosPorEmpresa(this.empresaId).subscribe({
+    this.contenidoService.obtenerContenidosPorEmpresa(this.empresaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.secciones = data;
         this.cargando = false;

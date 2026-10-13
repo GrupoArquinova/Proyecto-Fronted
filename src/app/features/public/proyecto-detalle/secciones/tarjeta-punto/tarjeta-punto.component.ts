@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { Multimedia } from '../../../../../core/models/multimedia.models';
@@ -19,7 +19,8 @@ import { Visor360Component } from '../visor-360/visor-360.component';
   standalone: true,
   imports: [TranslocoPipe, Visor360Component, CarruselLaminasComponent],
   templateUrl: './tarjeta-punto.component.html',
-  styleUrl: './tarjeta-punto.component.scss'
+  styleUrl: './tarjeta-punto.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TarjetaPuntoComponent {
   private multimedia = inject(MultimediaService);

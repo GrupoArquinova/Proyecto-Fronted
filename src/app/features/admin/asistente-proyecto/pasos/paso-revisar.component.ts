@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AsistenteProyectoService } from '../asistente-proyecto.service';
 import { ProyectoService } from '../../../../core/services/proyecto.service';
@@ -73,7 +73,8 @@ import { estadoDeLote } from '../../../../core/utils/lotes';
     .enlaces { display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: center; }
     .boton-link { padding: 0.7rem 1.4rem; background: #2c5953; color: #fff; border-radius: 6px; font-weight: 600; text-decoration: none; }
     .boton-link.claro { background: #fff; color: #2c5953; border: 1px solid #2c5953; }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PasoRevisarComponent {
   readonly asistente = inject(AsistenteProyectoService);

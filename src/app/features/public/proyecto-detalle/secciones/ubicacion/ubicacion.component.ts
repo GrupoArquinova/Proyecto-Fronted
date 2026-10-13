@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { inicializarSeccion } from '../seccion.utils';
 import { MedioComponent } from '../medio/medio.component';
@@ -16,7 +16,8 @@ import { esLugarCercano } from '../../../../../core/utils/puntos';
   standalone: true,
   imports: [TranslocoPipe, MedioComponent, Visor360Component, PlanoPuntosComponent, TarjetaPuntoComponent, CarruselLaminasComponent],
   templateUrl: './ubicacion.component.html',
-  styleUrl: './ubicacion.component.scss'
+  styleUrl: './ubicacion.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UbicacionComponent {
   private sanitizer = inject(DomSanitizer);

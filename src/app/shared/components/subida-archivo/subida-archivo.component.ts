@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { TipoArchivo, atributoAccept, validarArchivo } from '../../../core/utils/archivos';
@@ -65,7 +65,8 @@ import { TipoArchivo, atributoAccept, validarArchivo } from '../../../core/utils
     .ayuda { color: #94a3b8; }
     .spinner { width: 16px; height: 16px; border: 2px solid #cbd5e1; border-top-color: #2c5953; border-radius: 50%; animation: g 0.8s linear infinite; }
     @keyframes g { to { transform: rotate(360deg); } }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SubidaArchivoComponent {
   private cloudinary = inject(CloudinaryService);

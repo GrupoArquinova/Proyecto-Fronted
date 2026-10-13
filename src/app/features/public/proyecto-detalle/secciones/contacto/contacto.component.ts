@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -18,7 +18,8 @@ import { IdiomaService } from '../../../../../core/services/idioma.service';
   standalone: true,
   imports: [TranslocoPipe, ReactiveFormsModule],
   templateUrl: './contacto.component.html',
-  styleUrl: './contacto.component.scss'
+  styleUrl: './contacto.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContactoPublicoComponent {
   private seccion = inicializarSeccion('contacto');

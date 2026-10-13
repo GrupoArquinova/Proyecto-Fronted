@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { FormsModule } from '@angular/forms';
 import { Ubicacion } from '../../../core/models/ubicacion.models';
 import { Proyecto } from '../../../core/models/proyecto.models';
@@ -14,11 +15,12 @@ import { EditorPuntosComponent } from './editor-puntos/editor-puntos.component';
 @Component({
   selector: 'app-ubicaciones',
   standalone: true,
-  imports: [CommonModule, FormsModule, EditorPuntosComponent],
+  imports: [FormsModule, EditorPuntosComponent],
   templateUrl: './ubicaciones.component.html',
-  styleUrls: ['./ubicaciones.component.scss']
+  styleUrls: ['./ubicaciones.component.scss'],
 })
 export class UbicacionesComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private ubicacionService = inject(UbicacionService);
   private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
@@ -33,7 +35,7 @@ export class UbicacionesComponent implements OnInit {
 
   listaUbicaciones: Ubicacion[] = [];
   proyectosDisponibles: Proyecto[] = [];
-  
+
   cargando = false;
   mostrarModal = false;
   guardando = false;
@@ -52,7 +54,7 @@ export class UbicacionesComponent implements OnInit {
     urbanismoUrl: '',
     vistaAereaUrl: '',
     recorrido360Url: '',
-    videoComoLlegarUrl: ''
+    videoComoLlegarUrl: '',
   };
 
   /** Sube una imagen desde el equipo a Cloudinary y deja su enlace en el campo correspondiente. */
@@ -70,16 +72,16 @@ export class UbicacionesComponent implements OnInit {
 
     this.subiendoCampo = campo;
     this.cloudinary.subirArchivo(archivo).subscribe({
-      next: resultado => {
+      next: (resultado) => {
         this.formData[campo] = resultado.url;
         this.subiendoCampo = null;
         this.toastService.showSuccess('Imagen subida. Recuerda guardar la ubicación.');
       },
-      error: err => {
+      error: (err) => {
         console.error('Error al subir la imagen:', err);
         this.subiendoCampo = null;
         this.toastService.showError('No se pudo subir la imagen. Inténtalo de nuevo.');
-      }
+      },
     });
   }
 
@@ -90,7 +92,7 @@ export class UbicacionesComponent implements OnInit {
 
   cargarUbicaciones(): void {
     this.cargando = true;
-    this.ubicacionService.obtenerUbicaciones().subscribe({
+    this.ubicacionService.obtenerUbicaciones().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.listaUbicaciones = data;
         this.cargando = false;
@@ -99,19 +101,19 @@ export class UbicacionesComponent implements OnInit {
         console.error('Error al cargar ubicaciones:', err);
         this.toastService.showError('Error al cargar las ubicaciones');
         this.cargando = false;
-      }
+      },
     });
   }
 
   cargarProyectos(): void {
-    this.proyectoService.getProyectos().subscribe({
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.proyectosDisponibles = data;
       },
       error: (err) => {
         console.error('Error al cargar proyectos:', err);
         this.toastService.showError('Error al cargar los proyectos');
-      }
+      },
     });
   }
 
@@ -129,7 +131,7 @@ export class UbicacionesComponent implements OnInit {
       urbanismoUrl: '',
       vistaAereaUrl: '',
       recorrido360Url: '',
-      videoComoLlegarUrl: ''
+      videoComoLlegarUrl: '',
     };
     this.mostrarModal = true;
   }
@@ -166,7 +168,7 @@ export class UbicacionesComponent implements OnInit {
         const detalle = typeof err?.error?.mensaje === 'string' ? `: ${err.error.mensaje}` : '';
         this.toastService.showError(`Error al guardar la ubicación${detalle}`);
         this.guardando = false;
-      }
+      },
     });
   }
 
@@ -179,7 +181,9 @@ export class UbicacionesComponent implements OnInit {
       if (valor === null || valor === undefined || valor === '') return undefined;
       const n = Number(valor);
       if (!Number.isFinite(n) || Math.abs(n) > limite) {
-        this.toastService.showError(`La ${nombre} debe estar entre -${limite} y ${limite} (por ejemplo ${nombre === 'latitud' ? '4.5388890' : '-75.6727780'}). Revisa el punto decimal.`);
+        this.toastService.showError(
+          `La ${nombre} debe estar entre -${limite} y ${limite} (por ejemplo ${nombre === 'latitud' ? '4.5388890' : '-75.6727780'}). Revisa el punto decimal.`,
+        );
         return null;
       }
       return Math.round(n * 1e7) / 1e7;
@@ -193,12 +197,12 @@ export class UbicacionesComponent implements OnInit {
   }
 
   async eliminarUbicacion(id: number): Promise<void> {
-    const ubicacion = this.listaUbicaciones.find(u => u.id === id);
+    const ubicacion = this.listaUbicaciones.find((u) => u.id === id);
     const ok = await this.confirmDialog.open({
       title: 'Eliminar Ubicación',
       message: `¿Estás seguro de eliminar la ubicación "${ubicacion?.proyectoNombre || 'esta ubicación'}"?`,
       confirmText: 'Sí, eliminar',
-      type: 'danger'
+      type: 'danger',
     });
     if (!ok) return;
     this.ubicacionService.eliminarUbicacion(id).subscribe({
@@ -209,7 +213,7 @@ export class UbicacionesComponent implements OnInit {
       error: (err) => {
         console.error('Error al eliminar:', err);
         this.toastService.showError('Error al eliminar la ubicación');
-      }
+      },
     });
   }
 }

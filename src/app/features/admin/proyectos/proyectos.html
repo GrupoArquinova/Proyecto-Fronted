@@ -9,251 +9,309 @@
   </header>
 
   <!-- Spinner de Carga -->
-  <div *ngIf="loading" class="loading-state">
-    <p>Cargando proyectos...</p>
-  </div>
+  @if (loading) {
+    <div class="loading-state">
+      <p>Cargando proyectos...</p>
+    </div>
+  }
 
   <!-- Mensaje de Error -->
-  <div *ngIf="errorMsg && !loading" class="error-state">
-    <p>{{ errorMsg }}</p>
-  </div>
+  @if (errorMsg && !loading) {
+    <div class="error-state">
+      <p>{{ errorMsg }}</p>
+    </div>
+  }
 
   <!-- Lista de Proyectos Vacía -->
-  <div *ngIf="!loading && proyectos.length === 0 && !errorMsg" class="empty-state">
-    <p>No hay proyectos registrados aún.</p>
-  </div>
+  @if (!loading && proyectos.length === 0 && !errorMsg) {
+    <div class="empty-state">
+      <p>No hay proyectos registrados aún.</p>
+    </div>
+  }
 
   <!-- Filtro por estado del proyecto -->
-  <nav class="filtros" *ngIf="!loading && proyectos.length > 0" aria-label="Filtrar proyectos">
-    <button type="button" [class.activo]="filtro === 'activos'" (click)="filtro = 'activos'">
-      Activos <span class="contador">{{ totalActivos }}</span>
-    </button>
-    <button type="button" [class.activo]="filtro === 'inactivos'" (click)="filtro = 'inactivos'">
-      Inactivos <span class="contador">{{ totalInactivos }}</span>
-    </button>
-    <button type="button" [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">
-      Todos <span class="contador">{{ proyectos.length }}</span>
-    </button>
-  </nav>
+  @if (!loading && proyectos.length > 0) {
+    <nav class="filtros" aria-label="Filtrar proyectos">
+      <button type="button" [class.activo]="filtro === 'activos'" (click)="filtro = 'activos'">
+        Activos <span class="contador">{{ totalActivos }}</span>
+      </button>
+      <button type="button" [class.activo]="filtro === 'inactivos'" (click)="filtro = 'inactivos'">
+        Inactivos <span class="contador">{{ totalInactivos }}</span>
+      </button>
+      <button type="button" [class.activo]="filtro === 'todos'" (click)="filtro = 'todos'">
+        Todos <span class="contador">{{ proyectos.length }}</span>
+      </button>
+    </nav>
+  }
 
-  <div *ngIf="!loading && proyectos.length > 0 && proyectosVisibles.length === 0" class="empty-state">
-    <p>No hay proyectos {{ filtro === 'activos' ? 'activos' : 'inactivos' }}.</p>
-  </div>
+  @if (!loading && proyectos.length > 0 && proyectosVisibles.length === 0) {
+    <div class="empty-state">
+      <p>No hay proyectos {{ filtro === 'activos' ? 'activos' : 'inactivos' }}.</p>
+    </div>
+  }
 
   <!-- Lista Dinámica de Tarjetas -->
-  <div class="proyectos-list" *ngIf="!loading && proyectosVisibles.length > 0">
-    <div class="proyecto-card" *ngFor="let proyecto of proyectosVisibles" [class.inactivo]="!esActivo(proyecto)">
-      <div class="proyecto-main">
-       <img
-  *ngIf="proyecto.imagenUrl"
-  [src]="proyecto.imagenUrl"
-  [alt]="proyecto.nombre"
-  class="proyecto-img imagen-expandible"
-  (click)="ampliarImagen(proyecto.imagenUrl)"
-  title="Haz clic para explorar el recorrido 360°"
-/>
-<div
-  *ngIf="!proyecto.imagenUrl"
-  class="proyecto-img sin-imagen"
-  title="Sin imagen"
->
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-    <polyline points="21 15 16 10 5 21"></polyline>
-  </svg>
-</div>
-        <div class="proyecto-info">
-          <div class="title-row">
-            <h2 class="proyecto-nombre">{{ proyecto.nombre }}</h2>
-
-            <span
-              class="status-badge"
-              [ngClass]="{
-                'badge-activo':      proyecto.estadoProyecto === 'EN_DISENO',
-                'badge-proximamente': proyecto.estadoProyecto === 'EN_TRAMITE',
-                'badge-entregado':    proyecto.estadoProyecto === 'EN_CONSTRUCCION',
-                'badge-agotado':      proyecto.estadoProyecto === 'FINALIZADO'
-              }"
-            >
-              {{ etiquetaEstado(proyecto.estadoProyecto) }}
-            </span>
-            <span class="status-badge badge-proximamente" *ngIf="proyecto.tipoRegistro === 'PORTAFOLIO'">Portafolio</span>
-            <span class="status-badge badge-activo" *ngIf="proyecto.destacado">Destacado</span>
-            <span class="status-badge badge-inactivo" *ngIf="!esActivo(proyecto)">Inactivo</span>
+  @if (!loading && proyectosVisibles.length > 0) {
+    <div class="proyectos-list">
+      @for (proyecto of proyectosVisibles; track proyecto) {
+        <div class="proyecto-card" [class.inactivo]="!esActivo(proyecto)">
+          <div class="proyecto-main">
+            @if (proyecto.imagenUrl) {
+              <img
+                [src]="proyecto.imagenUrl"
+                [alt]="proyecto.nombre"
+                class="proyecto-img imagen-expandible"
+                role="button"
+                tabindex="0"
+                (click)="ampliarImagen(proyecto.imagenUrl)"
+                (keydown.enter)="ampliarImagen(proyecto.imagenUrl)"
+                title="Haz clic para explorar el recorrido 360°"
+              />
+            }
+            @if (!proyecto.imagenUrl) {
+              <div class="proyecto-img sin-imagen" title="Sin imagen">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </div>
+            }
+            <div class="proyecto-info">
+              <div class="title-row">
+                <h2 class="proyecto-nombre">{{ proyecto.nombre }}</h2>
+                <span
+                  class="status-badge"
+                  [ngClass]="{
+                    'badge-activo': proyecto.estadoProyecto === 'EN_DISENO',
+                    'badge-proximamente': proyecto.estadoProyecto === 'EN_TRAMITE',
+                    'badge-entregado': proyecto.estadoProyecto === 'EN_CONSTRUCCION',
+                    'badge-agotado': proyecto.estadoProyecto === 'FINALIZADO',
+                  }"
+                >
+                  {{ etiquetaEstado(proyecto.estadoProyecto) }}
+                </span>
+                @if (proyecto.tipoRegistro === 'PORTAFOLIO') {
+                  <span class="status-badge badge-proximamente">Portafolio</span>
+                }
+                @if (proyecto.destacado) {
+                  <span class="status-badge badge-activo">Destacado</span>
+                }
+                @if (!esActivo(proyecto)) {
+                  <span class="status-badge badge-inactivo">Inactivo</span>
+                }
+              </div>
+              <p class="proyecto-meta">
+                {{ proyecto.descripcion || 'Sin descripción' }}
+              </p>
+            </div>
           </div>
-
-          <p class="proyecto-meta">
-            {{ proyecto.descripcion || 'Sin descripción' }}
-          </p>
+          <!-- Botones de Acción -->
+          <div class="proyecto-actions">
+            <button
+              class="btn-action"
+              [ngClass]="proyecto.publicado ? 'btn-publicado' : 'btn-borrador'"
+              (click)="togglePublicado(proyecto)"
+            >
+              {{ proyecto.publicado ? 'Publicado' : 'Borrador' }}
+            </button>
+            <button class="btn-action btn-outline" (click)="abrirModalEditar(proyecto)">
+              Editar
+            </button>
+            <button class="btn-action btn-danger" (click)="eliminarProyecto(proyecto.id!)">
+              Eliminar
+            </button>
+          </div>
         </div>
-      </div>
-
-      <!-- Botones de Acción -->
-      <div class="proyecto-actions">
-        <button
-          class="btn-action"
-          [ngClass]="proyecto.publicado ? 'btn-publicado' : 'btn-borrador'"
-          (click)="togglePublicado(proyecto)"
-        >
-          {{ proyecto.publicado ? 'Publicado' : 'Borrador' }}
-        </button>
-
-        <button class="btn-action btn-outline" (click)="abrirModalEditar(proyecto)">
-          Editar
-        </button>
-
-        <button class="btn-action btn-danger" (click)="eliminarProyecto(proyecto.id!)">
-          Eliminar
-        </button>
-      </div>
+      }
     </div>
-  </div>
+  }
 </div>
 
 <!-- MODAL LIGHTBOX 360° -->
-<div class="lightbox-overlay" *ngIf="imagenExpandidaUrl" (click)="cerrarImagen()">
-  <div class="lightbox-content" (click)="$event.stopPropagation()">
-    <button type="button" class="btn-close-lightbox" (click)="cerrarImagen()">&times;</button>
-    
-    <div class="tour-header">
-      <h2>Recorrido Panorámico 360°</h2>
-      <p>Arrastra con el mouse o dedo para explorar el entorno.</p>
+@if (imagenExpandidaUrl) {
+  <div class="lightbox-overlay" role="presentation" (click)="cerrarImagen()">
+    <div class="lightbox-content" role="presentation" (click)="$event.stopPropagation()">
+      <button type="button" class="btn-close-lightbox" (click)="cerrarImagen()">&times;</button>
+      <div class="tour-header">
+        <h2>Recorrido Panorámico 360°</h2>
+        <p>Arrastra con el mouse o dedo para explorar el entorno.</p>
+      </div>
+      <div id="panorama-viewer"></div>
     </div>
-
-    <div id="panorama-viewer"></div>
   </div>
-</div>
+}
 
 <!-- MODAL CREAR / EDITAR PROYECTO -->
-<div class="modal-overlay" *ngIf="mostrarModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>{{ modoEdicion ? 'Editar Proyecto' : 'Crear Nuevo Proyecto' }}</h2>
-      <button class="btn-close" (click)="cerrarModal()">&times;</button>
-    </div>
-
-    <form [formGroup]="proyectoForm" (ngSubmit)="guardarProyecto()">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Nombre del Proyecto *</label>
-          <input type="text" formControlName="nombre" placeholder="Ej: El Pinar" />
-        </div>
-
-        <div class="form-group">
-          <label>Slug (URL amigable)</label>
-          <input type="text" formControlName="slug" placeholder="Ej: el-pinar" />
-        </div>
-
-        <div class="form-group form-group--full">
-          <label>Descripción</label>
-          <textarea formControlName="descripcion" rows="3" placeholder="Descripción del proyecto..."></textarea>
-        </div>
-
-        <div class="form-group form-group--full">
-          <label>Descripción en inglés (opcional)</label>
-          <textarea formControlName="descripcionEn" rows="3" placeholder="Description in English. If empty, the site shows the Spanish text."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Etapa del Proyecto *</label>
-          <select formControlName="estadoProyecto">
-            <option *ngFor="let e of etapas" [value]="e.valor">{{ e.etiqueta }}</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Tipo de registro *</label>
-          <select formControlName="tipoRegistro">
-            <option *ngFor="let t of tiposRegistro" [value]="t.valor">{{ t.etiqueta }}</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Tipo de proyecto</label>
-          <select formControlName="tipoProyecto">
-            <option value="">Sin definir</option>
-            <option *ngFor="let t of tiposProyecto" [value]="t.valor">{{ t.etiqueta }}</option>
-          </select>
-        </div>
-
-        <div class="form-group form-group--full">
-          <label>Participación de Arquinova</label>
-          <input type="text" formControlName="participacion" maxlength="255"
-                 placeholder="Ej: Diseño arquitectónico y gestión de licencias" />
-        </div>
-
-        <div class="form-group form-group--full">
-          <label>Participación de Arquinova en inglés (opcional)</label>
-          <input type="text" formControlName="participacionEn" maxlength="255" placeholder="e.g. Architectural design and licensing" />
-        </div>
-
-        <div class="form-group form-group--full">
-          <label class="check-destacado">
-            <input type="checkbox" formControlName="destacado" />
-            Proyecto destacado en el inicio (solo uno; al marcarlo se quita a los demás)
-          </label>
-        </div>
-
-        <div class="form-group">
-          <label>Fecha de Lanzamiento</label>
-          <input type="date" formControlName="fechaLanzamiento" />
-        </div>
-
-        <div class="form-group form-group--full">
-          <label>Imagen Panorámica 360° (PC)</label>
-
-          <!-- Vista previa de la imagen -->
-          <div class="imagen-preview" *ngIf="proyectoForm.get('imagenUrl')?.value">
-            <img [src]="proyectoForm.get('imagenUrl')?.value" alt="Vista previa" class="preview-img" />
-            <button type="button" class="btn-quitar-imagen" (click)="quitarImagen()">Quitar imagen</button>
+@if (mostrarModal) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>{{ modoEdicion ? 'Editar Proyecto' : 'Crear Nuevo Proyecto' }}</h2>
+        <button class="btn-close" (click)="cerrarModal()">&times;</button>
+      </div>
+      <form [formGroup]="proyectoForm" (ngSubmit)="guardarProyecto()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="proyectos-campo-1">Nombre del Proyecto *</label>
+            <input id="proyectos-campo-1" type="text" formControlName="nombre" placeholder="Ej: El Pinar" />
           </div>
-
-          <!-- Input oculto para buscar en la PC -->
-          <input
-            #fileInput
-            type="file"
-            accept="image/jpeg, image/png, image/jpg"
-            class="file-input-oculto"
-            (change)="onImagenSeleccionada($event)"
-            [disabled]="subiendoImagen"
-          />
-
-          <!-- Botón personalizado para abrir el explorador de archivos -->
-          <div class="file-upload-wrapper">
-            <button
-              type="button"
-              class="btn-elegir-archivo"
-              (click)="fileInput.click()"
+          <div class="form-group">
+            <label for="proyectos-campo-2">Slug (URL amigable)</label>
+            <input id="proyectos-campo-2" type="text" formControlName="slug" placeholder="Ej: el-pinar" />
+          </div>
+          <div class="form-group form-group--full">
+            <label for="proyectos-campo-3">Descripción</label>
+            <textarea id="proyectos-campo-3"
+              formControlName="descripcion"
+              rows="3"
+              placeholder="Descripción del proyecto..."
+            ></textarea>
+          </div>
+          <div class="form-group form-group--full">
+            <label for="proyectos-campo-4">Descripción en inglés (opcional)</label>
+            <textarea id="proyectos-campo-4"
+              formControlName="descripcionEn"
+              rows="3"
+              placeholder="Description in English. If empty, the site shows the Spanish text."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="proyectos-campo-5">Etapa del Proyecto *</label>
+            <select id="proyectos-campo-5" formControlName="estadoProyecto">
+              @for (e of etapas; track e) {
+                <option [value]="e.valor">{{ e.etiqueta }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="proyectos-campo-6">Tipo de registro *</label>
+            <select id="proyectos-campo-6" formControlName="tipoRegistro">
+              @for (t of tiposRegistro; track t) {
+                <option [value]="t.valor">{{ t.etiqueta }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="proyectos-campo-7">Tipo de proyecto</label>
+            <select id="proyectos-campo-7" formControlName="tipoProyecto">
+              <option value="">Sin definir</option>
+              @for (t of tiposProyecto; track t) {
+                <option [value]="t.valor">{{ t.etiqueta }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group form-group--full">
+            <label for="proyectos-campo-8">Participación de Arquinova</label>
+            <input id="proyectos-campo-8"
+              type="text"
+              formControlName="participacion"
+              maxlength="255"
+              placeholder="Ej: Diseño arquitectónico y gestión de licencias"
+            />
+          </div>
+          <div class="form-group form-group--full">
+            <label for="proyectos-campo-9">Participación de Arquinova en inglés (opcional)</label>
+            <input id="proyectos-campo-9"
+              type="text"
+              formControlName="participacionEn"
+              maxlength="255"
+              placeholder="e.g. Architectural design and licensing"
+            />
+          </div>
+          <div class="form-group form-group--full">
+            <label class="check-destacado">
+              <input type="checkbox" formControlName="destacado" />
+              Proyecto destacado en el inicio (solo uno; al marcarlo se quita a los demás)
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="proyectos-campo-10">Fecha de Lanzamiento</label>
+            <input id="proyectos-campo-10" type="date" formControlName="fechaLanzamiento" />
+          </div>
+          <div class="form-group form-group--full">
+            <label for="proyectos-campo-11">Imagen Panorámica 360° (PC)</label>
+            <!-- Vista previa de la imagen -->
+            @if (proyectoForm.get('imagenUrl')?.value) {
+              <div class="imagen-preview">
+                <img
+                  [src]="proyectoForm.get('imagenUrl')?.value"
+                  alt="Vista previa"
+                  class="preview-img"
+                />
+                <button type="button" class="btn-quitar-imagen" (click)="quitarImagen()">
+                  Quitar imagen
+                </button>
+              </div>
+            }
+            <!-- Input oculto para buscar en la PC -->
+            <input id="proyectos-campo-11"
+              #fileInput
+              type="file"
+              accept="image/jpeg, image/png, image/jpg"
+              class="file-input-oculto"
+              (change)="onImagenSeleccionada($event)"
               [disabled]="subiendoImagen"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              {{ subiendoImagen ? 'Subiendo...' : 'Elegir desde PC' }}
-            </button>
-            <span class="file-nombre">{{ nombreArchivoSeleccionado || 'Ningún archivo seleccionado' }}</span>
+            />
+            <!-- Botón personalizado para abrir el explorador de archivos -->
+            <div class="file-upload-wrapper">
+              <button
+                type="button"
+                class="btn-elegir-archivo"
+                (click)="fileInput.click()"
+                [disabled]="subiendoImagen"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                {{ subiendoImagen ? 'Subiendo...' : 'Elegir desde PC' }}
+              </button>
+              <span class="file-nombre">{{
+                nombreArchivoSeleccionado || 'Ningún archivo seleccionado'
+              }}</span>
+            </div>
+            @if (errorImagen) {
+              <p class="error-texto">{{ errorImagen }}</p>
+            }
           </div>
-
-          <p class="error-texto" *ngIf="errorImagen">{{ errorImagen }}</p>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" formControlName="publicado" />
+              Publicar proyecto
+            </label>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label>
-            <input type="checkbox" formControlName="publicado" />
-            Publicar proyecto
-          </label>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="proyectoForm.invalid || subiendoImagen"
+          >
+            {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+          </button>
         </div>
-      </div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
-        <button type="submit" class="btn-submit" [disabled]="proyectoForm.invalid || subiendoImagen">
-          {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
+}

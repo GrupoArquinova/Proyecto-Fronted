@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -19,6 +20,7 @@ export type FiltroProyectos = 'activos' | 'inactivos' | 'todos';
   styleUrls: ['./proyectos.scss']
 })
 export class ProyectosComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef);
   private proyectoService = inject(ProyectoService);
   private cloudinaryService = inject(CloudinaryService);
   private toastService = inject(ToastService);
@@ -150,7 +152,9 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     if (this.viewer360) {
       try {
         this.viewer360.destroy();
-      } catch (e) {}
+      } catch {
+        // el visor ya estaba cerrado
+      }
       this.viewer360 = null;
     }
 
@@ -183,7 +187,9 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     if (this.viewer360) {
       try {
         this.viewer360.destroy();
-      } catch (e) {}
+      } catch {
+        // el visor ya estaba cerrado
+      }
       this.viewer360 = null;
     }
     this.imagenExpandidaUrl = null;
@@ -191,7 +197,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
   cargarProyectos(): void {
     this.loading = true;
-    this.proyectoService.getProyectos().subscribe({
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.proyectos = data;
         this.loading = false;

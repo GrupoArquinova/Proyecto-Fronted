@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsistenteProyectoService } from '../asistente-proyecto.service';
@@ -85,7 +85,8 @@ const EMPRESA_ID = 1;
         </button>
       </div>
     </form>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PasoProyectoComponent {
   readonly asistente = inject(AsistenteProyectoService);

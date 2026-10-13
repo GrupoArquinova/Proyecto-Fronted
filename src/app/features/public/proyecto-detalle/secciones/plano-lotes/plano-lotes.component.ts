@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Lote } from '../../../../../core/models/lote.models';
 import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes';
 
@@ -51,7 +51,8 @@ import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes
     .reservado { background: #d9951a; }
     .vendido { background: #c94a4a; }
     .otro { background: #8a8a8a; }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlanoLotesComponent {
   readonly imagenUrl = input<string | null>(null);

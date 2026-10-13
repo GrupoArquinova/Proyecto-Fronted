@@ -2,7 +2,7 @@
 
 <div class="area">
   <!-- La caja mide exactamente lo que la imagen: así los porcentajes de los botones caen en su sitio -->
-  <div class="caja" (click)="clic($event)">
+  <div class="caja" role="presentation" (click)="clic($event)">
     <img [src]="url()" [alt]="titulo() || ('proyecto.ubicacion.tPlano' | transloco)" draggable="false" />
 
     @for (punto of puntos(); track punto.id) {

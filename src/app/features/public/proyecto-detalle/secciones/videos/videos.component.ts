@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { MedioComponent } from '../medio/medio.component';
 
@@ -8,7 +8,8 @@ import { MedioComponent } from '../medio/medio.component';
   standalone: true,
   imports: [TranslocoPipe, MedioComponent],
   templateUrl: './videos.component.html',
-  styleUrl: './videos.component.scss'
+  styleUrl: './videos.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VideosPublicoComponent {
   private seccion = inicializarSeccion('videos');

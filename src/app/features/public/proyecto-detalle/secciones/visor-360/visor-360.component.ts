@@ -1,7 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import {
-  Component, DestroyRef, ElementRef, ViewEncapsulation, afterNextRender, effect, inject, input, output, signal, viewChild
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, ViewEncapsulation, afterNextRender, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { Punto360 } from '../../../../../core/models/punto-360.models';
 import { htmlDePin } from '../../../../../core/utils/puntos';
 
@@ -95,7 +93,8 @@ interface PluginMarcadores {
     '(pointerdown)': 'pista.set(false)',
     '(touchstart)': 'pista.set(false)',
     '(wheel)': 'pista.set(false)'
-  }
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Visor360Component {
   readonly url = input.required<string>();

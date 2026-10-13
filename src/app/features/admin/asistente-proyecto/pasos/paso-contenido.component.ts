@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsistenteProyectoService } from '../asistente-proyecto.service';
 import { BloqueZonasComponent } from './bloques/bloque-zonas.component';
 import { BloqueCasasComponent } from './bloques/bloque-casas.component';
@@ -22,7 +22,8 @@ import { BloqueRecursosComponent } from './bloques/bloque-recursos.component';
       <button type="button" class="secundario" (click)="asistente.anterior()">Atrás</button>
       <button type="button" class="primario" (click)="asistente.siguiente()">Continuar</button>
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PasoContenidoComponent {
   readonly asistente = inject(AsistenteProyectoService);

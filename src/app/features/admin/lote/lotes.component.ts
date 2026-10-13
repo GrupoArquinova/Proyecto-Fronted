@@ -1,5 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { FormsModule } from '@angular/forms';
 import { Lote, EstadoLote, Etapa } from '../../../core/models/lote.models';
 import { Proyecto } from '../../../core/models/proyecto.models';
@@ -11,11 +12,12 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
 @Component({
   selector: 'app-lotes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './lotes.component.html',
-  styleUrls: ['./lotes.component.scss']
+  styleUrls: ['./lotes.component.scss'],
 })
 export class LotesComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private loteService = inject(LoteService);
   private proyectoService = inject(ProyectoService);
   private toastService = inject(ToastService);
@@ -26,20 +28,20 @@ export class LotesComponent implements OnInit {
   proyectosDisponibles: Proyecto[] = [];
   etapasDisponibles: Etapa[] = [];
   etapasFiltradas: Etapa[] = [];
-  
-  cargando: boolean = false;
-  mostrarModal: boolean = false;
-  guardando: boolean = false;
+
+  cargando = false;
+  mostrarModal = false;
+  guardando = false;
 
   // Variables de filtros y buscadores
-  filtroCodigo: string = '';
-  filtroProyecto: string = '';
+  filtroCodigo = '';
+  filtroProyecto = '';
   filtroActivo: boolean | null = null; // null = Todos, true = Activos, false = Inactivos
 
   estadosDisponibles: EstadoLote[] = [
     { id: 1, nombre: 'Disponible' },
     { id: 2, nombre: 'Reservado' },
-    { id: 3, nombre: 'Vendido' }
+    { id: 3, nombre: 'Vendido' },
   ];
 
   nuevoLote = {
@@ -51,7 +53,7 @@ export class LotesComponent implements OnInit {
     etapaId: null as number | null,
     estadoId: 1,
     descripcion: '',
-    descripcionEn: ''
+    descripcionEn: '',
   };
 
   ngOnInit(): void {
@@ -66,7 +68,7 @@ export class LotesComponent implements OnInit {
       title: 'Eliminar lote',
       message: `¿Eliminar el lote "${lote.codigo}"? Se borra de forma permanente, junto con su historial y sus imágenes. Si solo quieres ocultarlo, desactívalo.`,
       confirmText: 'Sí, eliminar',
-      type: 'danger'
+      type: 'danger',
     });
     if (!ok) return;
     this.loteService.eliminarLote(lote.id).subscribe({
@@ -77,18 +79,18 @@ export class LotesComponent implements OnInit {
       error: (err) => {
         console.error('Error al eliminar el lote:', err);
         this.toastService.showError(err?.error?.mensaje || 'Error al eliminar el lote');
-      }
+      },
     });
   }
 
   cargarLotes(): void {
     this.cargando = true;
-    this.loteService.obtenerLotes().subscribe({
+    this.loteService.obtenerLotes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data: Lote[]) => {
-        this.lotes = data.map(lote => ({
+        this.lotes = data.map((lote) => ({
           ...lote,
           estadoId: lote.estadoId ?? 1,
-          activo: lote.activo ?? true
+          activo: lote.activo ?? true,
         }));
         // Aplicar filtros inmediatamente al cargar los datos
         this.aplicarFiltros();
@@ -98,7 +100,7 @@ export class LotesComponent implements OnInit {
         console.error('Error al cargar lotes:', err);
         this.toastService.showError('Error al cargar los lotes');
         this.cargando = false;
-      }
+      },
     });
   }
 
@@ -106,7 +108,7 @@ export class LotesComponent implements OnInit {
    * Lógica principal para filtrar por código de lote, nombre de proyecto y estado activo/inactivo.
    */
   aplicarFiltros(): void {
-    this.lotesFiltrados = this.lotes.filter(lote => {
+    this.lotesFiltrados = this.lotes.filter((lote) => {
       // 1. Coincidencia por código de lote (Ej: "LT-104")
       const coincideCodigo = this.filtroCodigo
         ? lote.codigo.toLowerCase().includes(this.filtroCodigo.toLowerCase().trim())
@@ -119,26 +121,24 @@ export class LotesComponent implements OnInit {
         : true;
 
       // 3. Coincidencia por estado activo/inactivo
-      const coincideActivo = this.filtroActivo !== null
-        ? lote.activo === this.filtroActivo
-        : true;
+      const coincideActivo = this.filtroActivo !== null ? lote.activo === this.filtroActivo : true;
 
       return coincideCodigo && coincideProyecto && coincideActivo;
     });
   }
 
   cargarProyectos(): void {
-    this.proyectoService.getProyectos().subscribe({
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => (this.proyectosDisponibles = data),
       error: (err) => {
         console.error('Error al cargar proyectos:', err);
         this.toastService.showError('Error al cargar proyectos');
-      }
+      },
     });
   }
 
   cargarEtapas(): void {
-    this.loteService.obtenerEtapas().subscribe({
+    this.loteService.obtenerEtapas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.etapasDisponibles = data;
         this.etapasFiltradas = data;
@@ -146,7 +146,7 @@ export class LotesComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar etapas:', err);
         this.toastService.showError('Error al cargar etapas');
-      }
+      },
     });
   }
 
@@ -155,13 +155,13 @@ export class LotesComponent implements OnInit {
 
     const etapaId = lote.etapaId;
     if (etapaId) {
-      const etapa = this.etapasDisponibles.find(e => e.id === etapaId);
+      const etapa = this.etapasDisponibles.find((e) => e.id === etapaId);
       if (etapa) {
         if (etapa.proyecto?.nombre) return etapa.proyecto.nombre;
         if (etapa.proyectoNombre) return etapa.proyectoNombre;
         const pId = etapa.proyecto?.id || etapa.proyectoId;
         if (pId) {
-          const proyecto = this.proyectosDisponibles.find(p => p.id === pId);
+          const proyecto = this.proyectosDisponibles.find((p) => p.id === pId);
           if (proyecto) return proyecto.nombre;
         }
       }
@@ -174,7 +174,7 @@ export class LotesComponent implements OnInit {
     if (this.nuevoLote.proyectoId) {
       const pId = Number(this.nuevoLote.proyectoId);
       this.etapasFiltradas = this.etapasDisponibles.filter(
-        (e: Etapa) => e.proyecto?.id === pId || e.proyectoId === pId
+        (e: Etapa) => e.proyecto?.id === pId || e.proyectoId === pId,
       );
     } else {
       this.etapasFiltradas = this.etapasDisponibles;
@@ -191,7 +191,7 @@ export class LotesComponent implements OnInit {
       etapaId: null,
       estadoId: 1,
       descripcion: '',
-      descripcionEn: ''
+      descripcionEn: '',
     };
     this.etapasFiltradas = [];
     this.mostrarModal = true;
@@ -215,7 +215,7 @@ export class LotesComponent implements OnInit {
       etapaId: Number(this.nuevoLote.etapaId),
       estadoId: Number(this.nuevoLote.estadoId),
       activo: true,
-      publicado: true
+      publicado: true,
     };
 
     if (this.nuevoLote.id) {
@@ -230,7 +230,7 @@ export class LotesComponent implements OnInit {
           console.error('Error al actualizar el lote:', err);
           this.toastService.showError('Error al actualizar el lote');
           this.guardando = false;
-        }
+        },
       });
     } else {
       this.loteService.crearLote(payload as Partial<Lote>).subscribe({
@@ -244,7 +244,7 @@ export class LotesComponent implements OnInit {
           console.error('Error al guardar el lote:', err);
           this.toastService.showError('Error al crear el lote');
           this.guardando = false;
-        }
+        },
       });
     }
   }
@@ -258,7 +258,7 @@ export class LotesComponent implements OnInit {
       error: (err) => {
         console.error('Error al actualizar estado:', err);
         this.toastService.showError('Error al actualizar estado del lote');
-      }
+      },
     });
   }
 
@@ -274,16 +274,16 @@ export class LotesComponent implements OnInit {
         console.error('Error al cambiar visibilidad:', err);
         this.toastService.showError('Error al cambiar visibilidad del lote');
         lote.activo = !lote.activo;
-      }
+      },
     });
   }
 
   editarLote(lote: Lote): void {
     const etapaId = lote.etapaId;
     let proyectoId: number | null = null;
-    
+
     if (etapaId) {
-      const etapa = this.etapasDisponibles.find(e => e.id === etapaId);
+      const etapa = this.etapasDisponibles.find((e) => e.id === etapaId);
       if (etapa) {
         const pId = etapa.proyecto?.id || etapa.proyectoId;
         if (pId !== undefined && pId !== null) {
@@ -301,18 +301,18 @@ export class LotesComponent implements OnInit {
       etapaId: etapaId ?? null,
       estadoId: lote.estadoId || 1,
       descripcion: lote.descripcion || '',
-      descripcionEn: lote.descripcionEn || ''
+      descripcionEn: lote.descripcionEn || '',
     };
-    
+
     if (proyectoId) {
       const pId = Number(proyectoId);
       this.etapasFiltradas = this.etapasDisponibles.filter(
-        (e: Etapa) => e.proyecto?.id === pId || e.proyectoId === pId
+        (e: Etapa) => e.proyecto?.id === pId || e.proyectoId === pId,
       );
     } else {
       this.etapasFiltradas = this.etapasDisponibles;
     }
-    
+
     this.mostrarModal = true;
   }
 }

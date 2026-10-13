@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsistenteProyectoService } from '../asistente-proyecto.service';
@@ -57,7 +57,8 @@ import { Etapa } from '../../../../core/models/etapa.models';
     .quitar:hover { text-decoration: underline; }
     .vacia { justify-content: center; color: #94a3b8; border-style: dashed !important; }
     @media (max-width: 640px) { .agregar { grid-template-columns: 1fr; } .corto { width: 100%; } }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PasoEtapasComponent {
   readonly asistente = inject(AsistenteProyectoService);

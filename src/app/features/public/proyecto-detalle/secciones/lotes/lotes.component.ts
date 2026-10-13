@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { inicializarSeccion } from '../seccion.utils';
 import { PlanoLotesComponent } from '../plano-lotes/plano-lotes.component';
@@ -13,7 +13,8 @@ import { IdiomaService } from '../../../../../core/services/idioma.service';
   standalone: true,
   imports: [TranslocoPipe, RouterLink, PlanoLotesComponent, LoteTarjetaComponent],
   templateUrl: './lotes.component.html',
-  styleUrl: './lotes.component.scss'
+  styleUrl: './lotes.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LotesPublicoComponent {
   private seccion = inicializarSeccion('lotes');

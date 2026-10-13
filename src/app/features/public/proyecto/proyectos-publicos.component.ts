@@ -1,21 +1,28 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { RouterModule } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LocalizadoPipe } from '../../../shared/pipes/localizado.pipe';
 import { ProyectoService } from '../../../core/services/proyecto.service';
-import { ProyectoPublico, ETAPAS_PROYECTO, TIPOS_PROYECTO } from '../../../core/models/proyecto.models';
+import {
+  ProyectoPublico,
+  ETAPAS_PROYECTO,
+  TIPOS_PROYECTO,
+} from '../../../core/models/proyecto.models';
 
 @Component({
   selector: 'app-proyectos-publicos',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslocoPipe, LocalizadoPipe],
+  imports: [RouterModule, TranslocoPipe, LocalizadoPipe],
   templateUrl: './proyectos-publicos.component.html',
-  styleUrl: './proyectos-publicos.component.scss'
+  styleUrl: './proyectos-publicos.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProyectosPublicosComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private proyectoService = inject(ProyectoService);
-  listaProyectos: ProyectoPublico[] = [];
+  listaProyectos = signal<ProyectoPublico[]>([]);
 
   // Filtros (RF12): solo se ofrecen los que tienen datos para elegir
   filtroMunicipio = '';
@@ -23,15 +30,19 @@ export class ProyectosPublicosComponent implements OnInit {
   filtroEtapa = '';
 
   get municipios(): string[] {
-    return [...new Set(this.listaProyectos.map(p => p.municipio).filter(Boolean))].sort();
+    return [...new Set(this.listaProyectos().map((p) => p.municipio).filter(Boolean))].sort();
   }
 
   get tipos() {
-    return TIPOS_PROYECTO.filter(t => this.listaProyectos.some(p => p.tipoProyecto === t.valor));
+    return TIPOS_PROYECTO.filter((t) =>
+      this.listaProyectos().some((p) => p.tipoProyecto === t.valor),
+    );
   }
 
   get etapas() {
-    return ETAPAS_PROYECTO.filter(e => this.listaProyectos.some(p => p.estadoProyecto === e.valor));
+    return ETAPAS_PROYECTO.filter((e) =>
+      this.listaProyectos().some((p) => p.estadoProyecto === e.valor),
+    );
   }
 
   get hayFiltros(): boolean {
@@ -43,10 +54,12 @@ export class ProyectosPublicosComponent implements OnInit {
   }
 
   get proyectosFiltrados(): ProyectoPublico[] {
-    return this.listaProyectos.filter(p =>
-      (!this.filtroMunicipio || p.municipio === this.filtroMunicipio)
-      && (!this.filtroTipo || p.tipoProyecto === this.filtroTipo)
-      && (!this.filtroEtapa || p.estadoProyecto === this.filtroEtapa));
+    return this.listaProyectos().filter(
+      (p) =>
+        (!this.filtroMunicipio || p.municipio === this.filtroMunicipio) &&
+        (!this.filtroTipo || p.tipoProyecto === this.filtroTipo) &&
+        (!this.filtroEtapa || p.estadoProyecto === this.filtroEtapa),
+    );
   }
 
   limpiarFiltros(): void {
@@ -60,9 +73,9 @@ export class ProyectosPublicosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.proyectoService.obtenerCatalogoPublico().subscribe({
-      next: ({ proyectos }) => (this.listaProyectos = proyectos),
-      error: (err) => console.error('Error al cargar proyectos y lotes:', err)
+    this.proyectoService.obtenerCatalogoPublico().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ proyectos }) => this.listaProyectos.set(proyectos),
+      error: (err) => console.error('Error al cargar proyectos y lotes:', err),
     });
   }
 }

@@ -1,165 +1,255 @@
 <!-- Botón principal para abrir el modal de creación -->
 <div class="header-section u-1">
   <h2>Ubicaciones</h2>
-  <button class="btn-nuevo u-2" (click)="abrirModalCrear()">
-    + Nueva Ubicación
-  </button>
+  <button class="btn-nuevo u-2" (click)="abrirModalCrear()">+ Nueva Ubicación</button>
 </div>
 
 <!-- Grid de tarjetas (la vista principal) -->
 <div class="cards-grid">
-  <div class="ubicacion-card" *ngFor="let item of listaUbicaciones">
-    <div class="card-icon-header">
-      <div class="icon-circle">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-          <circle cx="12" cy="10" r="3"></circle>
-        </svg>
+  @for (item of listaUbicaciones; track item) {
+    <div class="ubicacion-card">
+      <div class="card-icon-header">
+        <div class="icon-circle">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </div>
+      </div>
+      <div class="card-content">
+        <h3>{{ item.proyectoNombre || 'Proyecto Inmobiliario' }}</h3>
+        <p class="ubicacion-sub">{{ item.ciudad }}, {{ item.departamento }}</p>
+      </div>
+      <div class="card-footer u-3">
+        <button class="btn-ver-ubicacion" (click)="abrirDetalleUbicacion(item)">
+          Ver / Editar &rarr;
+        </button>
+        <button
+          class="btn-ver-ubicacion"
+          (click)="editorPuntos.set(item)"
+          title="Colocar los botones de los lotes sobre las imágenes 360° y el plano"
+        >
+          Botones 360° &rarr;
+        </button>
+        <button class="btn-eliminar u-4" (click)="eliminarUbicacion(item.id!)">Eliminar</button>
       </div>
     </div>
-
-    <div class="card-content">
-      <h3>{{ item.proyectoNombre || 'Proyecto Inmobiliario' }}</h3>
-      <p class="ubicacion-sub">{{ item.ciudad }}, {{ item.departamento }}</p>
-    </div>
-
-    <div class="card-footer u-3">
-      <button class="btn-ver-ubicacion" (click)="abrirDetalleUbicacion(item)">
-        Ver / Editar &rarr;
-      </button>
-      <button class="btn-ver-ubicacion" (click)="editorPuntos.set(item)" title="Colocar los botones de los lotes sobre las imágenes 360° y el plano">
-        Botones 360° &rarr;
-      </button>
-      <button class="btn-eliminar u-4" (click)="eliminarUbicacion(item.id!)">
-        Eliminar
-      </button>
-    </div>
-  </div>
+  }
 </div>
 
 <!-- Modal Formulario para Crear / Editar Ubicación -->
-<div class="modal-overlay u-5" *ngIf="mostrarModal">
-  <div class="modal-card u-6">
-    <div class="modal-header u-1">
-      <h3 class="u-7">{{ editandoId ? 'Editar Ubicación' : 'Registrar Ubicación' }}</h3>
-      <button class="u-8" (click)="cerrarModal()">&times;</button>
+@if (mostrarModal) {
+  <div class="modal-overlay u-5">
+    <div class="modal-card u-6">
+      <div class="modal-header u-1">
+        <h3 class="u-7">{{ editandoId ? 'Editar Ubicación' : 'Registrar Ubicación' }}</h3>
+        <button class="u-8" (click)="cerrarModal()">&times;</button>
+      </div>
+      <form (ngSubmit)="guardarUbicacion()" #ubicacionForm="ngForm">
+        <div class="form-grid-2">
+          <!-- Proyecto -->
+          <div class="form-group u-9">
+            <label for="ubicaciones-campo-1" class="u-10">Proyecto *</label>
+            <select id="ubicaciones-campo-1" class="u-11" name="proyectoId" [(ngModel)]="formData.proyectoId" required>
+              <option [value]="0" disabled>Selecciona un proyecto</option>
+              @for (p of proyectosDisponibles; track p) {
+                <option [value]="p.id">{{ p.nombre }}</option>
+              }
+            </select>
+          </div>
+          <!-- Ciudad -->
+          <div class="form-group">
+            <label for="ubicaciones-campo-2" class="u-10">Ciudad *</label>
+            <input id="ubicaciones-campo-2"
+              class="u-12"
+              type="text"
+              name="ciudad"
+              [(ngModel)]="formData.ciudad"
+              required
+              placeholder="Ej. Armenia"
+            />
+          </div>
+          <!-- Departamento -->
+          <div class="form-group">
+            <label for="ubicaciones-campo-3" class="u-10">Departamento *</label>
+            <input id="ubicaciones-campo-3"
+              class="u-12"
+              type="text"
+              name="departamento"
+              [(ngModel)]="formData.departamento"
+              required
+              placeholder="Ej. Quindío"
+            />
+          </div>
+          <!-- Dirección -->
+          <div class="form-group u-9">
+            <label for="ubicaciones-campo-4" class="u-10">Dirección</label>
+            <input id="ubicaciones-campo-4"
+              class="u-12"
+              type="text"
+              name="direccion"
+              [(ngModel)]="formData.direccion"
+              placeholder="Ej. Km 3 vía al edén"
+            />
+          </div>
+          <!-- Referencias -->
+          <div class="form-group u-9">
+            <label for="ubicaciones-campo-5" class="u-10">Referencias</label>
+            <textarea id="ubicaciones-campo-5"
+              class="u-12"
+              name="referencias"
+              [(ngModel)]="formData.referencias"
+              rows="2"
+              placeholder="Puntos de referencia cercanos..."
+            ></textarea>
+          </div>
+          <!-- Referencias en inglés -->
+          <div class="form-group u-9">
+            <label for="ubicaciones-campo-6" class="u-10">Referencias en inglés (opcional)</label>
+            <textarea id="ubicaciones-campo-6"
+              class="u-12"
+              name="referenciasEn"
+              [(ngModel)]="formData.referenciasEn"
+              rows="2"
+              placeholder="Nearby landmarks in English. If empty, the site shows the Spanish text."
+            ></textarea>
+          </div>
+          <!-- Latitud -->
+          <div class="form-group">
+            <label for="ubicaciones-campo-7" class="u-10">Latitud</label>
+            <input id="ubicaciones-campo-7"
+              class="u-12"
+              type="number"
+              step="any"
+              name="latitud"
+              [(ngModel)]="formData.latitud"
+              placeholder="4.533888"
+            />
+          </div>
+          <!-- Longitud -->
+          <div class="form-group">
+            <label for="ubicaciones-campo-8" class="u-10">Longitud</label>
+            <input id="ubicaciones-campo-8"
+              class="u-12"
+              type="number"
+              step="any"
+              name="longitud"
+              [(ngModel)]="formData.longitud"
+              placeholder="-75.681111"
+            />
+          </div>
+          <!-- URLs Multimedia que pide tu tabla -->
+          <div class="form-group u-9">
+            <label for="ubicaciones-campo-9" class="u-10">Google Maps URL</label>
+            <input id="ubicaciones-campo-9"
+              class="u-12"
+              type="text"
+              name="googleMapsUrl"
+              [(ngModel)]="formData.googleMapsUrl"
+              placeholder="https://goo.gl/maps/..."
+            />
+          </div>
+          <div class="form-group">
+            <label for="ubicaciones-campo-10" class="u-10">Urbanismo URL</label>
+            <input id="ubicaciones-campo-10"
+              class="u-12"
+              type="text"
+              name="urbanismoUrl"
+              [(ngModel)]="formData.urbanismoUrl"
+            />
+            <div class="subir-imagen">
+              <label class="btn-subir">
+                {{
+                  subiendoCampo === 'urbanismoUrl' ? 'Subiendo...' : 'Subir imagen desde mi equipo'
+                }}
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  [disabled]="subiendoCampo !== null"
+                  (change)="subirImagen('urbanismoUrl', $event)"
+                />
+              </label>
+              <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ubicaciones-campo-11" class="u-10">Vista Aérea URL</label>
+            <input id="ubicaciones-campo-11"
+              class="u-12"
+              type="text"
+              name="vistaAereaUrl"
+              [(ngModel)]="formData.vistaAereaUrl"
+            />
+            <div class="subir-imagen">
+              <label class="btn-subir">
+                {{
+                  subiendoCampo === 'vistaAereaUrl' ? 'Subiendo...' : 'Subir imagen desde mi equipo'
+                }}
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  [disabled]="subiendoCampo !== null"
+                  (change)="subirImagen('vistaAereaUrl', $event)"
+                />
+              </label>
+              <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ubicaciones-campo-12" class="u-10">Recorrido 360 URL</label>
+            <input id="ubicaciones-campo-12"
+              class="u-12"
+              type="text"
+              name="recorrido360Url"
+              [(ngModel)]="formData.recorrido360Url"
+            />
+            <div class="subir-imagen">
+              <label class="btn-subir">
+                {{
+                  subiendoCampo === 'recorrido360Url'
+                    ? 'Subiendo...'
+                    : 'Subir imagen desde mi equipo'
+                }}
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  [disabled]="subiendoCampo !== null"
+                  (change)="subirImagen('recorrido360Url', $event)"
+                />
+              </label>
+              <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ubicaciones-campo-13" class="u-10">Video Cómo Llegar URL</label>
+            <input id="ubicaciones-campo-13"
+              class="u-12"
+              type="text"
+              name="videoComoLlegarUrl"
+              [(ngModel)]="formData.videoComoLlegarUrl"
+            />
+          </div>
+        </div>
+        <div class="u-13">
+          <button class="u-14" type="button" (click)="cerrarModal()">Cancelar</button>
+          <button class="u-15" type="submit" [disabled]="!ubicacionForm.form.valid || guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
     </div>
-
-    <form (ngSubmit)="guardarUbicacion()" #ubicacionForm="ngForm">
-      <div class="form-grid-2">
-        
-        <!-- Proyecto -->
-        <div class="form-group u-9">
-          <label class="u-10">Proyecto *</label>
-          <select class="u-11" name="proyectoId" [(ngModel)]="formData.proyectoId" required>
-            <option [value]="0" disabled>Selecciona un proyecto</option>
-            <option *ngFor="let p of proyectosDisponibles" [value]="p.id">{{ p.nombre }}</option>
-          </select>
-        </div>
-
-        <!-- Ciudad -->
-        <div class="form-group">
-          <label class="u-10">Ciudad *</label>
-          <input class="u-12" type="text" name="ciudad" [(ngModel)]="formData.ciudad" required placeholder="Ej. Armenia" />
-        </div>
-
-        <!-- Departamento -->
-        <div class="form-group">
-          <label class="u-10">Departamento *</label>
-          <input class="u-12" type="text" name="departamento" [(ngModel)]="formData.departamento" required placeholder="Ej. Quindío" />
-        </div>
-
-        <!-- Dirección -->
-        <div class="form-group u-9">
-          <label class="u-10">Dirección</label>
-          <input class="u-12" type="text" name="direccion" [(ngModel)]="formData.direccion" placeholder="Ej. Km 3 vía al edén" />
-        </div>
-
-        <!-- Referencias -->
-        <div class="form-group u-9">
-          <label class="u-10">Referencias</label>
-          <textarea class="u-12" name="referencias" [(ngModel)]="formData.referencias" rows="2" placeholder="Puntos de referencia cercanos..."></textarea>
-        </div>
-
-        <!-- Referencias en inglés -->
-        <div class="form-group u-9">
-          <label class="u-10">Referencias en inglés (opcional)</label>
-          <textarea class="u-12" name="referenciasEn" [(ngModel)]="formData.referenciasEn" rows="2" placeholder="Nearby landmarks in English. If empty, the site shows the Spanish text."></textarea>
-        </div>
-
-        <!-- Latitud -->
-        <div class="form-group">
-          <label class="u-10">Latitud</label>
-          <input class="u-12" type="number" step="any" name="latitud" [(ngModel)]="formData.latitud" placeholder="4.533888" />
-        </div>
-
-        <!-- Longitud -->
-        <div class="form-group">
-          <label class="u-10">Longitud</label>
-          <input class="u-12" type="number" step="any" name="longitud" [(ngModel)]="formData.longitud" placeholder="-75.681111" />
-        </div>
-
-        <!-- URLs Multimedia que pide tu tabla -->
-        <div class="form-group u-9">
-          <label class="u-10">Google Maps URL</label>
-          <input class="u-12" type="text" name="googleMapsUrl" [(ngModel)]="formData.googleMapsUrl" placeholder="https://goo.gl/maps/..." />
-        </div>
-
-        <div class="form-group">
-          <label class="u-10">Urbanismo URL</label>
-          <input class="u-12" type="text" name="urbanismoUrl" [(ngModel)]="formData.urbanismoUrl" />
-          <div class="subir-imagen">
-            <label class="btn-subir">
-              {{ subiendoCampo === 'urbanismoUrl' ? 'Subiendo...' : 'Subir imagen desde mi equipo' }}
-              <input type="file" accept="image/*" hidden [disabled]="subiendoCampo !== null"
-                     (change)="subirImagen('urbanismoUrl', $event)" />
-            </label>
-            <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="u-10">Vista Aérea URL</label>
-          <input class="u-12" type="text" name="vistaAereaUrl" [(ngModel)]="formData.vistaAereaUrl" />
-          <div class="subir-imagen">
-            <label class="btn-subir">
-              {{ subiendoCampo === 'vistaAereaUrl' ? 'Subiendo...' : 'Subir imagen desde mi equipo' }}
-              <input type="file" accept="image/*" hidden [disabled]="subiendoCampo !== null"
-                     (change)="subirImagen('vistaAereaUrl', $event)" />
-            </label>
-            <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="u-10">Recorrido 360 URL</label>
-          <input class="u-12" type="text" name="recorrido360Url" [(ngModel)]="formData.recorrido360Url" />
-          <div class="subir-imagen">
-            <label class="btn-subir">
-              {{ subiendoCampo === 'recorrido360Url' ? 'Subiendo...' : 'Subir imagen desde mi equipo' }}
-              <input type="file" accept="image/*" hidden [disabled]="subiendoCampo !== null"
-                     (change)="subirImagen('recorrido360Url', $event)" />
-            </label>
-            <small>JPG o PNG, máximo 10 MB. Para 360° usa una imagen panorámica 2:1.</small>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="u-10">Video Cómo Llegar URL</label>
-          <input class="u-12" type="text" name="videoComoLlegarUrl" [(ngModel)]="formData.videoComoLlegarUrl" />
-        </div>
-
-      </div>
-
-      <div class="u-13">
-        <button class="u-14" type="button" (click)="cerrarModal()">Cancelar</button>
-        <button class="u-15" type="submit" [disabled]="!ubicacionForm.form.valid || guardando">
-          {{ guardando ? 'Guardando...' : 'Guardar' }}
-        </button>
-      </div>
-    </form>
   </div>
-</div>
+}
 
 <!-- Editor de los botones sobre el entorno 360°, la vista aérea y el plano de urbanismo -->
 @if (editorPuntos(); as ubicacion) {

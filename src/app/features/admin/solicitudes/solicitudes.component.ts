@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EstadoSolicitud, Solicitud } from '../../../core/models/solicitud.models';
@@ -16,6 +17,7 @@ import { ToastService } from '../../../core/services/toast.service';
   styleUrls: ['./solicitudes.component.scss']
 })
 export class SolicitudesComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private solicitudService = inject(SolicitudService);
   private toastService = inject(ToastService);
 
@@ -38,7 +40,7 @@ export class SolicitudesComponent implements OnInit {
   }
 
   cargarEstados(): void {
-    this.solicitudService.obtenerEstados().subscribe({
+    this.solicitudService.obtenerEstados().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => this.estados = data.filter(e => e.activo).sort((a, b) => a.orden - b.orden),
       error: (err) => {
         console.error('Error al cargar los estados:', err);
@@ -56,7 +58,7 @@ export class SolicitudesComponent implements OnInit {
 
   cargarSolicitudes(): void {
     this.cargando = true;
-    this.solicitudService.obtenerSolicitudes().subscribe({
+    this.solicitudService.obtenerSolicitudes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.listaSolicitudes = data;
         this.cargando = false;

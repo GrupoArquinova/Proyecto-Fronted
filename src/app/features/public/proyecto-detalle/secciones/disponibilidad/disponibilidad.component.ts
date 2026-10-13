@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { PlanoLotesComponent } from '../plano-lotes/plano-lotes.component';
 import { LoteTarjetaComponent } from '../lote-tarjeta/lote-tarjeta.component';
@@ -18,7 +18,8 @@ const LEYENDA: { clave: ClaveEstadoLote; etiqueta: string }[] = [
   standalone: true,
   imports: [TranslocoPipe, PlanoLotesComponent, LoteTarjetaComponent],
   templateUrl: './disponibilidad.component.html',
-  styleUrl: './disponibilidad.component.scss'
+  styleUrl: './disponibilidad.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DisponibilidadPublicoComponent {
   private seccion = inicializarSeccion('disponibilidad');

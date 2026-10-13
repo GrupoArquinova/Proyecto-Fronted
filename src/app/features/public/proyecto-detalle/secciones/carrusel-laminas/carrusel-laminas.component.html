@@ -1,7 +1,7 @@
 @if (actual(); as lamina) {
   <section class="carrusel" [attr.aria-label]="etiqueta() || ('proyecto.bienvenida.imagenes' | transloco)" [class.sin-miniaturas]="!miniaturasVisibles()">
     <!-- Clic en la mitad izquierda: imagen anterior; en la derecha: siguiente (también se desliza en táctil) -->
-    <div class="imagen" (click)="clicEnImagen($event)" (pointerdown)="pista.set(false)" (touchstart)="inicioToque($event)" (touchend)="finToque($event)">
+    <div class="imagen" role="presentation" (click)="clicEnImagen($event)" (pointerdown)="pista.set(false)" (touchstart)="inicioToque($event)" (touchend)="finToque($event)">
       <img [src]="lamina.url" [alt]="lamina.titulo || alt()" draggable="false" />
     </div>
 

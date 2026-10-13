@@ -63,8 +63,8 @@ test.describe('celular en horizontal', () => {
   });
 
   test('el menú del panel de administración se desplaza y "Cerrar sesión" siempre está a la vista', async ({ page }) => {
-    // Sesión simulada: un JWT sin firma real, con vencimiento lejano (el panel solo revisa que no haya expirado)
-    const payload = Buffer.from(JSON.stringify({ sub: 'admin@arquinova.com', exp: 4102444800 })).toString('base64url');
+    // Sesión simulada: un JWT sin firma real, con vencimiento lejano (el panel solo revisa que no haya expirado y que traiga el rol de administrador)
+    const payload = Buffer.from(JSON.stringify({ sub: 'admin@arquinova.com', roles: ['ROLE_ADMINISTRADOR'], exp: 4102444800 })).toString('base64url');
     const token = `eyJhbGciOiJIUzI1NiJ9.${payload}.firma`;
     await page.addInitScript(valor => localStorage.setItem('jwt_token', valor), token);
 

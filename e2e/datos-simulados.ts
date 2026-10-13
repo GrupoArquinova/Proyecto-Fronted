@@ -55,10 +55,10 @@ const multimediaZonas: Record<number, object[]> = {
 };
 
 /** Responde con datos de prueba a todo lo que el sitio público pide al backend. */
-export async function simularBackend(page: Page): Promise<void> {
+export async function simularBackend(page: Page, apiBase = 'http://localhost:8080'): Promise<void> {
   await page.route('https://imagenes.prueba/**', route => route.fulfill({ status: 200, contentType: 'image/png', body: PNG_1X1 }));
 
-  await page.route('http://localhost:8080/api/**', route => {
+  await page.route(`${apiBase}/api/**`, route => {
     const url = new URL(route.request().url());
     const ruta = url.pathname.replace('/api', '');
     const json = (cuerpo: unknown) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cuerpo) });

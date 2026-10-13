@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
@@ -31,7 +31,8 @@ const DOCUMENTOS_EN = contenidoEn as unknown as Record<string, DocumentoLegal>;
   standalone: true,
   imports: [RouterLink, TranslocoPipe],
   templateUrl: './legal.component.html',
-  styleUrl: './legal.component.scss'
+  styleUrl: './legal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegalComponent {
   private ruta = inject(ActivatedRoute);

@@ -67,8 +67,8 @@
       </ol>
 
       @if (zonaAbierta() !== null) {
-        <div class="visor-zona" (click)="zonaAbierta.set(null)">
-          <div class="marco" (click)="$event.stopPropagation()">
+        <div class="visor-zona" role="presentation" (click)="zonaAbierta.set(null)">
+          <div class="marco" role="presentation" (click)="$event.stopPropagation()">
             <div class="marco-interior">
             @for (clave of [zonaAbierta()]; track clave) {
               <app-carrusel-laminas [laminas]="laminasZonaAbierta()" [alt]="nombreZonaAbierta()" [enMarco]="true" [ampliable]="true"

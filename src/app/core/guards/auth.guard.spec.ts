@@ -5,19 +5,29 @@ import { authGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
 
 describe('authGuard', () => {
-  const ejecutar = (logueado: boolean) => {
+  const ejecutar = (logueado: boolean, administrador = true) => {
+    const cerrar = vi.fn();
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), { provide: AuthService, useValue: { isLoggedIn: () => logueado } }]
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: { isLoggedIn: () => logueado, esAdministrador: () => administrador, logout: cerrar } }
+      ]
     });
-    return TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
+    return { resultado: TestBed.runInInjectionContext(() => authGuard({} as any, {} as any)), cerrar };
   };
 
-  it('permite el paso con sesion activa', () => {
-    expect(ejecutar(true)).toBe(true);
+  it('permite el paso a un administrador con sesion activa', () => {
+    expect(ejecutar(true, true).resultado).toBe(true);
   });
 
   it('redirige a /login sin sesion', () => {
-    const res = ejecutar(false) as UrlTree;
-    expect(TestBed.inject(Router).serializeUrl(res)).toBe('/login');
+    const { resultado } = ejecutar(false);
+    expect(TestBed.inject(Router).serializeUrl(resultado as UrlTree)).toBe('/login');
+  });
+
+  it('con sesion pero sin rol de administrador cierra la sesion local y manda a /login', () => {
+    const { resultado, cerrar } = ejecutar(true, false);
+    expect(TestBed.inject(Router).serializeUrl(resultado as UrlTree)).toBe('/login');
+    expect(cerrar).toHaveBeenCalled();
   });
 });

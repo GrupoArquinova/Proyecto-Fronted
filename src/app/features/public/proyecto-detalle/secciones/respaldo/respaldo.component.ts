@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { inicializarSeccion } from '../seccion.utils';
 import { CarruselLaminasComponent } from '../carrusel-laminas/carrusel-laminas.component';
 
@@ -15,7 +15,8 @@ import { CarruselLaminasComponent } from '../carrusel-laminas/carrusel-laminas.c
     @if (laminas().length > 0) {
       <app-carrusel-laminas [laminas]="laminas()" [alt]="'proyecto.respaldo.alt' | transloco: { nombre: nombre() }" [etiqueta]="'proyecto.respaldo.etiqueta' | transloco" />
     }
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RespaldoPublicoComponent {
   private seccion = inicializarSeccion('respaldo');

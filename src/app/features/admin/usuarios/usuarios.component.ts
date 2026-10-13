@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../../core/models/usuario.models';
@@ -8,11 +9,12 @@ import { UsuarioService } from '../../../core/services/usuario.service';
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './usuarios.component.html',
-  styleUrls: ['./usuarios.component.scss']
+  styleUrls: ['./usuarios.component.scss'],
 })
 export class UsuariosComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   listaAdmins: Usuario[] = [];
   modalAbierto = false;
   esEdicion = false;
@@ -23,7 +25,7 @@ export class UsuariosComponent implements OnInit {
 
   usuarioActual: Usuario = this.usuarioVacio();
 
-  constructor(private usuarioService: UsuarioService) {}
+  private usuarioService = inject(UsuarioService);
 
   ngOnInit(): void {
     this.cargarAdmins();
@@ -33,14 +35,29 @@ export class UsuariosComponent implements OnInit {
   get pass(): string {
     return this.usuarioActual.password ?? '';
   }
-  get tieneLongitudMinima(): boolean { return this.pass.length >= 8; }
-  get tieneMayuscula(): boolean { return /[A-Z]/.test(this.pass); }
-  get tieneMinuscula(): boolean { return /[a-z]/.test(this.pass); }
-  get tieneNumero(): boolean { return /[0-9]/.test(this.pass); }
-  get tieneEspecial(): boolean { return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(this.pass); }
+  get tieneLongitudMinima(): boolean {
+    return this.pass.length >= 8;
+  }
+  get tieneMayuscula(): boolean {
+    return /[A-Z]/.test(this.pass);
+  }
+  get tieneMinuscula(): boolean {
+    return /[a-z]/.test(this.pass);
+  }
+  get tieneNumero(): boolean {
+    return /[0-9]/.test(this.pass);
+  }
+  get tieneEspecial(): boolean {
+    return /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(this.pass);
+  }
   get esPasswordValida(): boolean {
-    return this.tieneLongitudMinima && this.tieneMayuscula && this.tieneMinuscula &&
-           this.tieneNumero && this.tieneEspecial;
+    return (
+      this.tieneLongitudMinima &&
+      this.tieneMayuscula &&
+      this.tieneMinuscula &&
+      this.tieneNumero &&
+      this.tieneEspecial
+    );
   }
   get mostrarRequisitos(): boolean {
     return this.pass.length > 0;
@@ -52,14 +69,14 @@ export class UsuariosComponent implements OnInit {
       nombreCompleto: '',
       correo: '',
       password: '',
-      activo: true
+      activo: true,
     };
   }
 
   cargarAdmins(): void {
-    this.usuarioService.listar().subscribe({
+    this.usuarioService.listar().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => (this.listaAdmins = data),
-      error: (err) => console.error('Error al cargar administradores', err)
+      error: (err) => console.error('Error al cargar administradores', err),
     });
   }
 
@@ -103,7 +120,8 @@ export class UsuariosComponent implements OnInit {
       return;
     }
     if (nuevaPass && !this.esPasswordValida) {
-      this.errorForm = 'La contraseña debe tener mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y carácter especial.';
+      this.errorForm =
+        'La contraseña debe tener mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y carácter especial.';
       return;
     }
     this.errorForm = '';
@@ -133,7 +151,7 @@ export class UsuariosComponent implements OnInit {
       error: (err) => {
         console.error('Error al guardar', err);
         this.errorForm = this.extraerMensajeError(err);
-      }
+      },
     });
   }
 
@@ -161,7 +179,7 @@ export class UsuariosComponent implements OnInit {
           this.cargarAdmins();
           this.mostrarExito('Administrador eliminado correctamente.');
         },
-        error: (err) => console.error('Error al eliminar', err)
+        error: (err) => console.error('Error al eliminar', err),
       });
     }
   }
