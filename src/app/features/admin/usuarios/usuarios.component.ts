@@ -5,7 +5,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../../core/models/usuario.models';
 import { UsuarioService } from '../../../core/services/usuario.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -26,6 +29,7 @@ export class UsuariosComponent implements OnInit {
   usuarioActual: Usuario = this.usuarioVacio();
 
   private usuarioService = inject(UsuarioService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   ngOnInit(): void {
     this.cargarAdmins();
@@ -171,16 +175,21 @@ export class UsuariosComponent implements OnInit {
     return err?.error?.mensaje || err?.error?.message || 'No se pudo guardar. Intenta de nuevo.';
   }
 
-  eliminarAdmin(id?: number): void {
+  async eliminarAdmin(id?: number): Promise<void> {
     if (!id) return;
-    if (confirm('¿Estás seguro de eliminar este administrador?')) {
-      this.usuarioService.eliminar(id).subscribe({
-        next: () => {
-          this.cargarAdmins();
-          this.mostrarExito('Administrador eliminado correctamente.');
-        },
-        error: (err) => console.error('Error al eliminar', err),
-      });
-    }
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar administrador',
+      message: '¿Estás seguro de eliminar este administrador? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
+    this.usuarioService.eliminar(id).subscribe({
+      next: () => {
+        this.cargarAdmins();
+        this.mostrarExito('Administrador eliminado correctamente.');
+      },
+      error: (err) => console.error('Error al eliminar', err),
+    });
   }
 }

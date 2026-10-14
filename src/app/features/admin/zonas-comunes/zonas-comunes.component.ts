@@ -9,7 +9,10 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ZonaComunImagenService } from '../../../core/services/zona-comun-imagen.service';
 import { ZonaComunImagen } from '../../../core/models/zona-comun-imagen.models';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-zonas-comunes',
   standalone: true,
@@ -23,6 +26,7 @@ export class ZonasComunesComponent implements OnInit {
   private proyectoService = inject(ProyectoService);
   private zonaImagenService = inject(ZonaComunImagenService);
   private cloudinaryService = inject(CloudinaryService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   mostrarModalImagenes = false;
   zonaSeleccionadaParaGaleria: ZonaComun | null = null;
@@ -52,8 +56,6 @@ export class ZonasComunesComponent implements OnInit {
 
   proyectoIdSeleccionado: string | number = 'todos';
 
-  mostrarModalEliminar = false;
-  zonaAEliminarId: number | null = null;
 
   cargando = false;
   mostrarModal = false;
@@ -209,31 +211,25 @@ export class ZonasComunesComponent implements OnInit {
     }
   }
 
-  prepararEliminacion(id?: number): void {
+  async prepararEliminacion(id?: number): Promise<void> {
     if (!id) return;
-    this.zonaAEliminarId = id;
-    this.mostrarModalEliminar = true;
-  }
-
-  cerrarModalEliminar(): void {
-    this.mostrarModalEliminar = false;
-    this.zonaAEliminarId = null;
-  }
-
-  confirmarEliminacion(): void {
-    if (!this.zonaAEliminarId) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar zona común',
+      message: '¿Estás seguro de que deseas eliminar esta zona común? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
 
     this.cargando = true;
-    this.zonaService.eliminar(this.zonaAEliminarId).subscribe({
+    this.zonaService.eliminar(id).subscribe({
       next: () => {
         this.cargando = false;
-        this.cerrarModalEliminar();
         this.mostrarAlerta('Zona común eliminada correctamente.');
         this.cargarZonas();
       },
       error: (err) => {
         this.cargando = false;
-        this.cerrarModalEliminar();
         console.error(err);
         this.mostrarAlerta('No se pudo eliminar el registro.');
       },
@@ -345,20 +341,25 @@ export class ZonasComunesComponent implements OnInit {
     this.errorImagen = '';
   }
 
-  eliminarImagenZona(id?: number): void {
+  async eliminarImagenZona(id?: number): Promise<void> {
     if (!id) return;
-    if (confirm('¿Desea eliminar esta imagen de la galería?')) {
-      this.zonaImagenService.eliminar(id).subscribe({
-        next: () => {
-          if (this.imagenEditandoId === id) {
-            this.cancelarEdicionImagen();
-          }
-          this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
-          this.mostrarAlerta('Imagen eliminada.');
-        },
-        error: (err) => console.error('Error al eliminar imagen', err),
-      });
-    }
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar imagen',
+      message: '¿Deseas eliminar esta imagen de la galería? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
+    this.zonaImagenService.eliminar(id).subscribe({
+      next: () => {
+        if (this.imagenEditandoId === id) {
+          this.cancelarEdicionImagen();
+        }
+        this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
+        this.mostrarAlerta('Imagen eliminada.');
+      },
+      error: (err) => console.error('Error al eliminar imagen', err),
+    });
   }
 
   marcarImagenConError(id?: number): void {

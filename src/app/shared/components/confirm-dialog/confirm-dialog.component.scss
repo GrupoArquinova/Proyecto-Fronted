@@ -1,5 +1,7 @@
 @use '../../styles/admin-tokens' as t;
 .cd-backdrop {
+  // El diálogo vive en la raíz de la aplicación, fuera de cualquier pantalla: sin esto el texto cae en la letra por defecto del navegador (serif)
+  font-family: t.$font-ui;
   position: fixed;
   inset: 0;
   background-color: rgba(15, 23, 42, 0.55);

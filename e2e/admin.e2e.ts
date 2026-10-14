@@ -82,6 +82,69 @@ test.describe('panel de administración', () => {
     await expect(page.getByText('Cargando solicitudes...')).toHaveCount(0);
   });
 
+  test('eliminar un administrador pide confirmación con el diálogo de la página, no con el del navegador', async ({ page }) => {
+    let dialogoNativo = false;
+    page.on('dialog', async d => { dialogoNativo = true; await d.dismiss(); });
+    let borrado = false;
+    await page.route(/\/api\/usuarios(\/\d+)?$/, async route => {
+      const peticion = route.request();
+      if (peticion.method() === 'DELETE') {
+        borrado = true;
+        return route.fulfill({ status: 204, body: '' });
+      }
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([
+        { id: 5, nombreCompleto: 'Admin de Prueba', correo: 'prueba@arquinova.com', activo: true }
+      ]) });
+    });
+    await page.goto('/admin/usuarios');
+    await expect(page.getByText('Admin de Prueba')).toBeVisible();
+
+    // Cancelar: no se borra nada
+    await page.locator('.btn-action.delete').first().click();
+    const dialogo = page.getByRole('alertdialog');
+    await expect(dialogo).toContainText('Eliminar administrador');
+    await dialogo.getByRole('button', { name: 'Cancelar' }).click();
+    await expect(dialogo).toHaveCount(0);
+    expect(borrado).toBe(false);
+
+    // Confirmar: ahora sí se borra
+    await page.locator('.btn-action.delete').first().click();
+    await Promise.all([
+      page.waitForRequest(r => r.method() === 'DELETE' && /\/usuarios\/5$/.test(r.url())),
+      page.getByRole('alertdialog').getByRole('button', { name: 'Sí, eliminar' }).click()
+    ]);
+    expect(dialogoNativo).toBe(false);
+  });
+
+  test('eliminar una zona común usa el mismo diálogo de confirmación que el resto del panel', async ({ page }) => {
+    let borrada = false;
+    await page.route(/\/api\/proyectos(\?.*)?$/, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([
+      { id: 6, empresaId: 1, nombre: 'Proyecto de Prueba', slug: 'proyecto-de-prueba', estadoProyecto: 'EN_DISENO', tipoRegistro: 'OFERTA_COMERCIAL', destacado: false, publicado: true, activo: true }
+    ]) }));
+    await page.route(/\/api\/zonas-comunes\/12$/, route => {
+      borrada = true;
+      return route.fulfill({ status: 204, body: '' });
+    });
+    await page.route(/\/api\/zonas-comunes\/proyecto\/\d+$/, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([
+      { id: 12, proyectoId: 6, nombre: 'Jacuzzi de Prueba', descripcion: 'Zona de prueba', publicado: true, activo: true, imagenes: [] }
+    ]) }));
+    await page.goto('/admin/zonas-comunes');
+    await expect(page.getByText('Jacuzzi de Prueba').first()).toBeVisible();
+
+    await page.locator('.btn-icon.delete').first().click();
+    const dialogo = page.getByRole('alertdialog');
+    await expect(dialogo).toContainText('Eliminar zona común');
+    await dialogo.getByRole('button', { name: 'Cancelar' }).click();
+    await expect(dialogo).toHaveCount(0);
+    expect(borrada).toBe(false);
+
+    await page.locator('.btn-icon.delete').first().click();
+    await Promise.all([
+      page.waitForRequest(r => r.method() === 'DELETE' && /\/zonas-comunes\/12$/.test(r.url())),
+      page.getByRole('alertdialog').getByRole('button', { name: 'Sí, eliminar' }).click()
+    ]);
+  });
+
   test('el menú lleva a las pantallas del panel', async ({ page }) => {
     await page.goto('/admin/resumen');
     await expect(page.getByRole('heading', { name: 'Resumen General' })).toBeVisible();

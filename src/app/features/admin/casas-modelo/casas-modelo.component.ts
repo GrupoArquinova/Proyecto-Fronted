@@ -8,9 +8,12 @@ import { CasaModeloService } from '../../../core/services/casa-modelo.service';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { MultimediaService } from '../../../core/services/multimedia.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { Multimedia, TipoMultimedia } from '../../../core/models/multimedia.models';
 import { SubidaArchivoComponent } from '../../../shared/components/subida-archivo/subida-archivo.component';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-casas-modelo',
   standalone: true,
@@ -24,6 +27,7 @@ export class CasasModeloComponent implements OnInit {
   private proyectoService = inject(ProyectoService);
   private multimediaService = inject(MultimediaService);
   private toast = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   listaCasas: CasaModelo[] = [];
   listaProyectos: Proyecto[] = [];
@@ -135,8 +139,15 @@ export class CasasModeloComponent implements OnInit {
     });
   }
 
-  quitarArchivo(recurso: Multimedia): void {
-    if (recurso.id == null || !confirm('¿Quitar este archivo de la tipología?')) return;
+  async quitarArchivo(recurso: Multimedia): Promise<void> {
+    if (recurso.id == null) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Quitar archivo',
+      message: '¿Quitar este archivo de la tipología? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, quitar',
+      type: 'danger',
+    });
+    if (!ok) return;
     this.multimediaService.eliminarMultimedia(recurso.id).subscribe({
       next: () => {
         this.imagenes = this.imagenes.filter((m) => m.id !== recurso.id);
@@ -170,13 +181,18 @@ export class CasasModeloComponent implements OnInit {
     }
   }
 
-  eliminarCasa(id?: number): void {
+  async eliminarCasa(id?: number): Promise<void> {
     if (!id) return;
-    if (confirm('¿Estás seguro de eliminar esta tipología?')) {
-      this.casaModeloService.eliminar(id).subscribe({
-        next: () => this.cargarCasas(),
-        error: (err) => console.error('Error al eliminar casa modelo', err),
-      });
-    }
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar tipología',
+      message: '¿Estás seguro de eliminar esta tipología? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
+    this.casaModeloService.eliminar(id).subscribe({
+      next: () => this.cargarCasas(),
+      error: (err) => console.error('Error al eliminar casa modelo', err),
+    });
   }
 }

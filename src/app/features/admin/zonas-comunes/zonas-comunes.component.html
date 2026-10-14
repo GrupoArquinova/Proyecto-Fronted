@@ -322,27 +322,6 @@
     </div>
   }
 
-  <!-- Modal de Confirmación de Eliminación -->
-  @if (mostrarModalEliminar) {
-    <div class="modal-overlay">
-      <div class="modal-content modal-confirm">
-        <div class="modal-header">
-          <h3>Confirmar Eliminación</h3>
-          <button class="close-btn" (click)="cerrarModalEliminar()">×</button>
-        </div>
-        <div class="modal-body">
-          <p class="confirm-text">
-            ¿Estás seguro de que deseas eliminar esta zona común? Esta acción no se puede deshacer.
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-secondary" (click)="cerrarModalEliminar()">Cancelar</button>
-          <button class="btn-danger" (click)="confirmarEliminacion()">Sí, Eliminar</button>
-        </div>
-      </div>
-    </div>
-  }
-
   @if (cargando) {
     <div class="loading-overlay">
       <div class="spinner"></div>

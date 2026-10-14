@@ -20,6 +20,8 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
 
 type TipoPadre = 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo' | 'etapa';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-multimedia',
   standalone: true,
