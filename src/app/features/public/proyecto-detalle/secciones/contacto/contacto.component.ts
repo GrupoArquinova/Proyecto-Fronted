@@ -47,6 +47,14 @@ export class ContactoPublicoComponent {
   readonly lote = computed(() =>
     this.seccion.detalle()?.lotes.find(l => l.id === this.loteId()) ?? null);
 
+  /** Tipología (villa) por la que se consulta (llega con ?casa=<id> desde "Solicitar información" en la villa). */
+  private casaId = toSignal(
+    this.route.queryParamMap.pipe(map(p => Number(p.get('casa')) || null)),
+    { initialValue: Number(this.route.snapshot.queryParamMap.get('casa')) || null }
+  );
+  readonly casa = computed(() =>
+    this.seccion.detalle()?.casasModelo.find(c => c.id === this.casaId()) ?? null);
+
   readonly enviando = signal(false);
 
   readonly form = this.fb.nonNullable.group({
@@ -63,11 +71,16 @@ export class ContactoPublicoComponent {
     && (this.form.controls.telefono.touched || this.form.controls.correo.touched);
 
   constructor() {
-    // Si llegan por un lote, el mensaje ya viene escrito (sin pisar lo que la persona haya escrito)
+    // Si llegan por un lote o una villa, el mensaje ya viene escrito (sin pisar lo que la persona haya escrito)
     effect(() => {
       const lote = this.lote();
-      if (lote && !untracked(() => this.form.controls.mensaje.value)) {
-        this.form.controls.mensaje.setValue(this.idioma.t('proyecto.contacto.mensajeLote', { codigo: lote.codigo }));
+      const casa = this.casa();
+      if (!untracked(() => this.form.controls.mensaje.value)) {
+        if (lote) {
+          this.form.controls.mensaje.setValue(this.idioma.t('proyecto.contacto.mensajeLote', { codigo: lote.codigo }));
+        } else if (casa) {
+          this.form.controls.mensaje.setValue(this.idioma.t('proyecto.contacto.mensajeVilla', { nombre: casa.nombre }));
+        }
       }
     });
   }
@@ -83,6 +96,7 @@ export class ContactoPublicoComponent {
       ...this.form.getRawValue(),
       proyectoId: proyecto.id ?? null,
       loteId: this.lote()?.id ?? null,
+      casaModeloId: this.casa()?.id ?? null,
       userAgent: isPlatformBrowser(this.platformId) ? navigator.userAgent : ''
     };
 

@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -16,8 +16,12 @@ import { AuthService } from '../../../core/services/auth.service';
 export class ResetPasswordComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  token = '';
+  /** El enlace del correo trae el token (?token=...): se lee y se quita de la dirección para que no quede en el historial. */
+  token = this.route.snapshot.queryParamMap.get('token')?.trim() ?? '';
+  readonly llegoPorEnlace = this.token !== '';
+
   nuevaPassword = '';
   errorMessage = signal('');
   successMessage = signal('');
@@ -25,6 +29,12 @@ export class ResetPasswordComponent {
   mostrarPassword = false;
 
   // Validaciones en tiempo real para la contraseña
+  constructor() {
+    if (this.llegoPorEnlace) {
+      void this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    }
+  }
+
   get tieneLongitudMinima(): boolean {
     return this.nuevaPassword.length >= 8;
   }
@@ -82,11 +92,10 @@ export class ResetPasswordComponent {
         error: (err: HttpErrorResponse) => {
           this.isLoading.set(false);
           if (err.status === 0) {
-            this.successMessage.set('Contraseña actualizada correctamente (Modo simulación)');
-            setTimeout(() => this.router.navigate(['/login']), 2000);
+            this.errorMessage.set('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.');
             return;
           }
-          this.errorMessage.set(err.error?.mensaje || err.error?.error || 'El token es inválido o ha expirado');
+          this.errorMessage.set(err.error?.mensaje || err.error?.error || 'El enlace es inválido o ha expirado. Solicita uno nuevo.');
         },
       });
   }

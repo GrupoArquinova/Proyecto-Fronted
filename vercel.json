@@ -4,6 +4,11 @@
   "installCommand": "npm ci",
   "buildCommand": "npx ng build --configuration vercel",
   "outputDirectory": "dist/constructora-frontend/browser",
+  "redirects": [
+    { "source": "/qr/inicio", "destination": "/?utm_source=qr&utm_medium=inicio&utm_campaign=grupo-arquinova", "permanent": false },
+    { "source": "/qr/encanto", "destination": "/proyectos/6?utm_source=qr&utm_medium=encanto&utm_campaign=el-encanto", "permanent": false },
+    { "source": "/qr/brochure", "destination": "/documentos/brochure-el-encanto.pdf", "permanent": false }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

@@ -244,6 +244,7 @@
       "plano": "Plano",
       "abrir": "abrir",
       "tour": "el tour virtual",
+      "solicitar": "Solicitar información",
       "consultar": "Consultar por {{nombre}}",
       "elProyecto": "el proyecto",
       "whatsapp": "Hola, estoy interesado en la tipología {{nombre}} de {{proyecto}}{{ficha}}. ¿Me pueden dar más información sobre esta villa?"
@@ -270,7 +271,8 @@
       "enviar": "Enviar mensaje",
       "enviando": "Enviando...",
       "whatsapp": "WhatsApp",
-      "mensajeLote": "Hola, me interesa el lote {{codigo}}. ¿Me pueden dar más información?"
+      "mensajeLote": "Hola, me interesa el lote {{codigo}}. ¿Me pueden dar más información?",
+      "mensajeVilla": "Hola, me interesa la villa {{nombre}}. ¿Me pueden dar más información?"
     },
     "disponibilidad": {
       "estados": "Estados de los lotes",

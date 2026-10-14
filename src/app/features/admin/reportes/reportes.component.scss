@@ -1,31 +1,18 @@
 @use '../../../shared/styles/admin-tokens' as t;
 .reportes-container {
-  padding: 1.5rem;
-  max-width: 1250px;
-  margin: 0 auto;
+  @include t.page-container;
   position: relative;
 
   .header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    @include t.page-header;
 
     .sub-title {
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      color: #64748b;
-      font-weight: 600;
-      text-transform: uppercase;
+      @include t.page-eyebrow;
     }
 
     h2 {
-      margin: 0.2rem 0 0 0;
-      font-size: 1.8rem;
-      color: #1e293b;
-      font-family: t.$font-ui;
+      @include t.page-title;
+      margin-top: 0.2rem;
     }
 
     .actions-header {

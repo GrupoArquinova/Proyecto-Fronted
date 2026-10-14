@@ -15,6 +15,8 @@ export interface Solicitud {
   proyectoNombre?: string;
   loteId?: number;
   loteCodigo?: string;
+  casaModeloId?: number;
+  casaModeloNombre?: string;
   nombre: string;
   correo?: string | null;
   telefono?: string | null;
@@ -38,6 +40,8 @@ export interface SolicitudPublicaRequest {
   idioma?: string;
   proyectoId: number | null;
   loteId?: number | null;
+  /** Tipología (villa) por la que se consulta. */
+  casaModeloId?: number | null;
   mensaje?: string;
   consentimientoDatos: boolean;
   userAgent?: string;

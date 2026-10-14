@@ -72,7 +72,7 @@
           </div>
         </div>
         <!-- Información del Proyecto / Lote de Interés -->
-        @if (item.proyectoNombre || item.loteCodigo || item.servicioInteres) {
+        @if (item.proyectoNombre || item.loteCodigo || item.casaModeloNombre || item.servicioInteres) {
           <div class="interes-info">
             <p>
               <strong>Interés:</strong>
@@ -81,6 +81,9 @@
               }
               @if (item.servicioInteres) {
                 <span class="tag-proyecto">Servicio: {{ item.servicioInteres }}</span>
+              }
+              @if (item.casaModeloNombre) {
+                <span class="tag-lote">Villa: {{ item.casaModeloNombre }}</span>
               }
               @if (item.loteCodigo) {
                 <span class="tag-lote">Lote: {{ item.loteCodigo }}</span>

@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -15,7 +15,6 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class RecuperarPasswordComponent {
   private authService = inject(AuthService);
-  private router = inject(Router);
 
   correo = '';
   errorMessage = signal('');
@@ -40,7 +39,7 @@ export class RecuperarPasswordComponent {
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
         if (err.status === 0) {
-          this.successMessage.set('Se envió el token a tu correo (Modo simulación)');
+          this.errorMessage.set('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.');
           return;
         }
         this.errorMessage.set(err.error?.mensaje || err.error?.error || 'Error al solicitar la recuperación');
@@ -48,7 +47,4 @@ export class RecuperarPasswordComponent {
     });
   }
 
-  irARestablecer(): void {
-    this.router.navigate(['/reset-password']);
-  }
 }

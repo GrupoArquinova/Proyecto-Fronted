@@ -1,22 +1,12 @@
 @use '../../../shared/styles/admin-tokens' as t;
 .solicitudes-container {
-  padding: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  @include t.page-container;
 
   .header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    @include t.page-header;
 
     h2 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: #1e293b;
-      font-family: t.$font-ui;
+      @include t.page-title;
     }
 
     .subtitle {

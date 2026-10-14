@@ -244,6 +244,7 @@
       "plano": "Floor plan",
       "abrir": "open",
       "tour": "the virtual tour",
+      "solicitar": "Request information",
       "consultar": "Enquire about {{nombre}}",
       "elProyecto": "the project",
       "whatsapp": "Hello, I am interested in the {{nombre}} house type at {{proyecto}}{{ficha}}. Could you give me more information about this villa?"
@@ -270,7 +271,8 @@
       "enviar": "Send message",
       "enviando": "Sending...",
       "whatsapp": "WhatsApp",
-      "mensajeLote": "Hello, I am interested in lot {{codigo}}. Could you give me more information?"
+      "mensajeLote": "Hello, I am interested in lot {{codigo}}. Could you give me more information?",
+      "mensajeVilla": "Hello, I am interested in the {{nombre}} villa. Could you give me more information?"
     },
     "disponibilidad": {
       "estados": "Lot statuses",

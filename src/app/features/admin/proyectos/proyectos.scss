@@ -27,26 +27,14 @@ $text-muted: t.$text-muted;
 }
 
 .proyectos-container {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 2.5rem 3rem;
-  background-color: t.$bg-page;
-  min-height: calc(100vh - 65px);
-  font-family: t.$font-ui;
+  @include t.page-container;
 
   .proyectos-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include t.page-header;
     width: 100%;
-    margin-bottom: 2rem;
 
     .page-title {
-      font-family: t.$font-ui;
-      font-size: 2.25rem;
-      font-weight: 500;
-      color: $text-dark;
-      margin: 0;
+      @include t.page-title;
     }
 
     .btn-nuevo {
@@ -595,10 +583,6 @@ $text-muted: t.$text-muted;
 }
 
 @media (max-width: 768px) {
-  .proyectos-container {
-    padding: 1.5rem 1rem;
-  }
-
   .proyectos-header {
     flex-direction: column;
     align-items: flex-start;

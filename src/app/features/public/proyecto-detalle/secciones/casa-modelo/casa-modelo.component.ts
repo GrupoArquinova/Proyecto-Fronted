@@ -1,5 +1,6 @@
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { inicializarSeccion } from '../seccion.utils';
 import { MedioComponent } from '../medio/medio.component';
 import { CarruselLaminasComponent, Lamina } from '../carrusel-laminas/carrusel-laminas.component';
@@ -11,7 +12,7 @@ import { IdiomaService } from '../../../../../core/services/idioma.service';
 @Component({
   selector: 'app-casa-modelo-publico',
   standalone: true,
-  imports: [TranslocoPipe, MedioComponent, CarruselLaminasComponent],
+  imports: [TranslocoPipe, RouterLink, MedioComponent, CarruselLaminasComponent],
   templateUrl: './casa-modelo.component.html',
   styleUrl: './casa-modelo.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,6 +27,8 @@ export class CasaModeloPublicoComponent {
   /** Cuando el proyecto tiene varias casas modelo se elige cuál ver. */
   readonly seleccionada = signal(0);
   readonly casa = computed(() => this.casas()[this.seleccionada()] ?? this.casas()[0] ?? null);
+
+  readonly proyectoId = computed(() => this.seccion.detalle()?.proyecto.id ?? null);
 
   /** WhatsApp con el mensaje ya escrito sobre la tipología que se está viendo. */
   readonly whatsappUrl = computed(() => {

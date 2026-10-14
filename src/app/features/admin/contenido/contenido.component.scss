@@ -2,14 +2,12 @@
 
 .contenido-container {
   @include t.page-container;
-  max-width: 1300px;
 
   .header-section {
     @include t.page-header;
 
     div h2 {
       @include t.page-title;
-      font-size: 2rem;
     }
 
     div p {

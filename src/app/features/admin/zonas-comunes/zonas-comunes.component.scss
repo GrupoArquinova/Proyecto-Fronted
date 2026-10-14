@@ -1,31 +1,18 @@
 @use 'shared/styles/admin-tokens' as t;
 
 .admin-container {
-  padding: 1.5rem;
-  max-width: 1250px;
-  margin: 0 auto;
+  @include t.page-container;
 
   .header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    @include t.page-header;
 
     .sub-title {
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      color: #64748b;
-      font-weight: 600;
-      text-transform: uppercase;
+      @include t.page-eyebrow;
     }
 
     h2 {
-      margin: 0.2rem 0 0 0;
-      font-size: 1.8rem;
-      color: #1e293b;
-      font-family: t.$font-ui;
+      @include t.page-title;
+      margin-top: 0.2rem;
     }
 
     .header-actions {
@@ -47,8 +34,10 @@
         background: #1b4d3e;
         color: white;
         border: none;
-        padding: 0.6rem 1.2rem;
+        padding: 0.65rem 1.4rem;
         border-radius: 999px;
+        font-family: inherit;
+        font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
         display: flex;
