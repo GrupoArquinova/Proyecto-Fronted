@@ -7,12 +7,13 @@ import { DatosSeo, SeoService } from './core/services/seo.service';
 import { WhatsappModalComponent } from './features/whatsapp/whatsapp-modal.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
+import { ChatWidget } from './components/chat-widget/chat-widget';
 
 // Sin OnPush a propósito: este componente aloja pantallas que se actualizan al recibir datos del servidor y no usan signals;
 // con OnPush quedarían congeladas en "Cargando...".
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, TranslocoPipe, WhatsappModalComponent, ToastComponent, ConfirmDialogComponent],
+  imports: [RouterOutlet, TranslocoPipe, WhatsappModalComponent, ToastComponent, ConfirmDialogComponent, ChatWidget],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

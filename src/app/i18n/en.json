@@ -393,6 +393,17 @@
     "proyectosTitulo": "Projects",
     "proyectosDescripcion": "Grupo Arquinova projects in Quindío: El Encanto and the cases in our architecture, engineering and management portfolio."
   },
+  "chat": {
+    "boton": "AI assistant",
+    "cerrar": "Close",
+    "titulo": "Arquinova Assistant",
+    "saludo": "Hello! I'm Arquinova's virtual assistant. How can I help you today?",
+    "placeholder": "Type your question...",
+    "enviar": "Send",
+    "escribiendo": "Writing a reply...",
+    "error": "Sorry, I can't answer right now. You can write to us on WhatsApp and we will help you right away.",
+    "demasiadas": "You have sent many questions in a row. Please wait a moment and try again."
+  },
   "whatsappModal": {
     "abrir": "Open WhatsApp",
     "titulo": "Talk to an Advisor",

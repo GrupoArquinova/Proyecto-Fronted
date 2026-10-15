@@ -393,6 +393,17 @@
     "proyectosTitulo": "Proyectos",
     "proyectosDescripcion": "Proyectos de Grupo Arquinova en el Quindío: El Encanto y los casos de nuestro portafolio de arquitectura, ingeniería y gestión."
   },
+  "chat": {
+    "boton": "Asistente IA",
+    "cerrar": "Cerrar",
+    "titulo": "Asistente Arquinova",
+    "saludo": "¡Hola! Soy el asistente virtual de Arquinova. ¿En qué te puedo ayudar hoy?",
+    "placeholder": "Escribe tu consulta...",
+    "enviar": "Enviar",
+    "escribiendo": "Escribiendo respuesta...",
+    "error": "Lo siento, en este momento no puedo responder. Puedes escribirnos por WhatsApp y te atendemos enseguida.",
+    "demasiadas": "Has enviado muchas preguntas seguidas. Espera un momento e inténtalo de nuevo."
+  },
   "whatsappModal": {
     "abrir": "Abrir WhatsApp",
     "titulo": "Contacta un Asesor",
