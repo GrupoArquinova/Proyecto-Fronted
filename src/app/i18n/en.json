@@ -334,12 +334,12 @@
       "tDestacadas": "the featured areas",
       "filtrar": "Filter by area",
       "todas": "All",
-      "galeria": "Common areas gallery",
+      "galeria": "Amenities gallery",
       "imagenesDe": "Images of {{nombre}}",
       "cerrarImagenes": "Close images"
     },
     "tarjeta": {
-      "zona": "Common area",
+      "zona": "Amenity",
       "lote": "Lot",
       "etapa": "Stage",
       "zonaSin360": "This area does not have a 360° image yet.",

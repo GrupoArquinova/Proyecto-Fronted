@@ -133,7 +133,7 @@ export class ZonasComunesComponent implements OnInit {
         error: (err) => {
           console.error('Error al cargar zonas comunes', err);
           this.cargando = false;
-          this.mostrarAlerta('Error al obtener las zonas comunes.');
+          this.mostrarAlerta('Error al obtener las amenidades.');
         },
       });
     }
@@ -170,12 +170,12 @@ export class ZonasComunesComponent implements OnInit {
 
   guardarZona(): void {
     if (!this.zonaActual.nombre.trim()) {
-      this.mostrarAlerta('El nombre de la zona común es obligatorio.');
+      this.mostrarAlerta('El nombre de la amenidad es obligatorio.');
       return;
     }
 
     if (!this.zonaActual.proyectoId) {
-      this.mostrarAlerta('Debe asociar la zona común a un proyecto.');
+      this.mostrarAlerta('Debe asociar la amenidad a un proyecto.');
       return;
     }
 
@@ -184,28 +184,28 @@ export class ZonasComunesComponent implements OnInit {
       this.zonaService.actualizar(this.zonaActual.id, this.zonaActual).subscribe({
         next: () => {
           this.cargando = false;
-          this.mostrarAlerta('Zona común actualizada con éxito.');
+          this.mostrarAlerta('Amenidad actualizada con éxito.');
           this.cerrarModal();
           this.cargarZonas();
         },
         error: (err) => {
           this.cargando = false;
           console.error(err);
-          this.mostrarAlerta('Error al actualizar la zona común.');
+          this.mostrarAlerta('Error al actualizar la amenidad.');
         },
       });
     } else {
       this.zonaService.crear(this.zonaActual).subscribe({
         next: () => {
           this.cargando = false;
-          this.mostrarAlerta('Zona común creada con éxito.');
+          this.mostrarAlerta('Amenidad creada con éxito.');
           this.cerrarModal();
           this.cargarZonas();
         },
         error: (err) => {
           this.cargando = false;
           console.error(err);
-          this.mostrarAlerta('Error al crear la zona común.');
+          this.mostrarAlerta('Error al crear la amenidad.');
         },
       });
     }
@@ -214,8 +214,8 @@ export class ZonasComunesComponent implements OnInit {
   async prepararEliminacion(id?: number): Promise<void> {
     if (!id) return;
     const ok = await this.confirmDialog.open({
-      title: 'Eliminar zona común',
-      message: '¿Estás seguro de que deseas eliminar esta zona común? Esta acción no se puede deshacer.',
+      title: 'Eliminar amenidad',
+      message: '¿Estás seguro de que deseas eliminar esta amenidad? Esta acción no se puede deshacer.',
       confirmText: 'Sí, eliminar',
       type: 'danger',
     });
@@ -225,7 +225,7 @@ export class ZonasComunesComponent implements OnInit {
     this.zonaService.eliminar(id).subscribe({
       next: () => {
         this.cargando = false;
-        this.mostrarAlerta('Zona común eliminada correctamente.');
+        this.mostrarAlerta('Amenidad eliminada correctamente.');
         this.cargarZonas();
       },
       error: (err) => {

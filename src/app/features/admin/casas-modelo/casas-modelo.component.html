@@ -176,7 +176,9 @@
               />
             </div>
           } @else {
-            <p class="nota-archivos">Guarda la tipología para poder subir sus imágenes y planos.</p>
+            <div class="form-group archivos">
+              <app-archivos-tipologia [(imagenes)]="imagenesNuevas" [(planos)]="planosNuevos" />
+            </div>
           }
           <div class="form-row-checkboxes">
             <label class="checkbox-group">
@@ -189,8 +191,8 @@
         </div>
         <div class="modal-footer">
           <button class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-          <button class="btn-primary" (click)="guardarCasa()">
-            {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+          <button class="btn-primary" (click)="guardarCasa()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : esEdicion ? 'Actualizar' : 'Guardar' }}
           </button>
         </div>
       </div>

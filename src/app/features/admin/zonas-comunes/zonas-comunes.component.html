@@ -7,7 +7,7 @@
     </div>
     <div class="header-actions">
       <select [(ngModel)]="proyectoIdSeleccionado" (change)="cargarZonas()" class="select-proyecto">
-        <option value="todos">🌐 Todas las zonas comunes (Todos los proyectos)</option>
+        <option value="todos">🌐 Todas las amenidades (Todos los proyectos)</option>
         @for (p of listaProyectos; track p) {
           <option [value]="p.id">{{ p.nombre }}</option>
         }
@@ -94,7 +94,7 @@
   } @else {
     @if (!cargando) {
       <div class="empty-state">
-        <p>No hay zonas comunes registradas.</p>
+        <p>No hay amenidades registradas.</p>
       </div>
     }
   }
@@ -137,7 +137,7 @@
             <textarea id="zonas-comunes-campo-4"
               [(ngModel)]="zonaActual.descripcion"
               rows="3"
-              placeholder="Detalles de la zona común..."
+              placeholder="Detalles de la amenidad..."
             ></textarea>
           </div>
           <div class="form-group">
@@ -241,7 +241,7 @@
                   @if (!imagenesConError.has(img.id!)) {
                     <img
                       [src]="img.imagenUrl"
-                      [alt]="img.titulo || 'Imagen de zona común'"
+                      [alt]="img.titulo || 'Imagen de amenidad'"
                       (error)="marcarImagenConError(img.id)"
                     />
                   }
@@ -312,7 +312,7 @@
               }
             </div>
           } @else {
-            <p class="sin-imagenes-txt">No hay imágenes registradas para esta zona común.</p>
+            <p class="sin-imagenes-txt">No hay imágenes registradas para esta amenidad.</p>
           }
         </div>
         <div class="modal-footer">

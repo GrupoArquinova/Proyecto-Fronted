@@ -135,7 +135,7 @@
                   : item.loteCodigo
                     ? 'Lote: ' + item.loteCodigo
                     : item.zonaComunNombre
-                      ? 'Zona común: ' + item.zonaComunNombre
+                      ? 'Amenidad: ' + item.zonaComunNombre
                       : item.casaModeloNombre
                         ? 'Tipología: ' + item.casaModeloNombre
                         : item.etapaNombre
@@ -354,7 +354,7 @@
                 <select id="multimedia-campo-2" name="tipoPadre" [(ngModel)]="tipoPadre" (change)="onCambioTipoPadre()">
                   <option value="proyecto">Proyecto</option>
                   <option value="lote">Lote</option>
-                  <option value="zonaComun">Zona Común</option>
+                  <option value="zonaComun">Amenidad</option>
                   <option value="casaModelo">Tipología</option>
                   <option value="etapa">Etapa</option>
                 </select>
@@ -405,7 +405,7 @@
                 </div>
                 @if (tipoPadre === 'zonaComun') {
                   <div class="form-group full-width">
-                    <label for="zonaComunId">Zona Común *</label>
+                    <label for="zonaComunId">Amenidad *</label>
                     <select
                       id="zonaComunId"
                       name="zonaComunId"
@@ -413,7 +413,7 @@
                       required
                       [disabled]="!proyectoReferenciaId"
                     >
-                      <option [ngValue]="null" disabled>Selecciona una zona común</option>
+                      <option [ngValue]="null" disabled>Selecciona una amenidad</option>
                       @for (z of zonasComunesDisponibles; track z) {
                         <option [value]="z.id">{{ z.nombre }}</option>
                       }

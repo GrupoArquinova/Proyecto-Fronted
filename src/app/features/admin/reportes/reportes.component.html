@@ -1,35 +1,32 @@
 <div class="reportes-container">
-  <!-- Cabecera con selector de proyectos estilizado y botón PDF -->
+  <!-- Cabecera: título y ficha técnica de un proyecto -->
   <div class="header-section">
     <div>
       <span class="sub-title">ANÁLISIS COMERCIAL</span>
       <h2>Reportes y Trazabilidad</h2>
     </div>
     <div class="actions-header">
-      <div class="select-wrapper">
-        <select [(ngModel)]="proyectoIdPdf" class="styled-project-select">
-          @for (p of listaProyectos; track p) {
-            <option [value]="p.id">
-              {{ p.nombre || 'Proyecto ' + p.id }}
-            </option>
-          }
-        </select>
-      </div>
-      <button class="btn-primary" (click)="descargarFichaPdf()">
-        <span>📄</span> Descargar Ficha PDF
+      <label class="visually-hidden" for="reportes-ficha">Proyecto de la ficha técnica</label>
+      <select id="reportes-ficha" class="styled-project-select" [(ngModel)]="proyectoIdPdf">
+        @for (p of listaProyectos; track p.id) {
+          <option [ngValue]="p.id">{{ p.nombre || 'Proyecto ' + p.id }}{{ p.activo === false ? ' (inactivo)' : '' }}</option>
+        }
+      </select>
+      <button type="button" class="btn-primary" (click)="descargarFichaPdf()" [disabled]="proyectoIdPdf == null">
+        Descargar ficha técnica (PDF)
       </button>
     </div>
   </div>
 
-  <!-- Tarjetas de Indicadores Principales -->
+  <!-- Indicadores principales -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-number">{{ stats.totalProyectos }}</div>
-      <div class="stat-label">Proyectos Totales ({{ stats.proyectosPublicados }} publicados)</div>
+      <div class="stat-label">Proyectos activos ({{ stats.proyectosPublicados }} publicados)</div>
     </div>
     <div class="stat-card">
       <div class="stat-number">{{ stats.totalLotes }}</div>
-      <div class="stat-label">Lotes Registrados</div>
+      <div class="stat-label">Lotes activos</div>
     </div>
     <div class="stat-card">
       <div class="stat-number">{{ stats.totalSolicitudes }}</div>
@@ -37,46 +34,174 @@
     </div>
   </div>
 
-  <!-- Bloque de Estado Comercial de Lotes -->
-  <div class="commercial-status-card">
-    <h3>Estado comercial de lotes</h3>
-    <div class="status-columns">
-      <div class="status-item">
-        <span class="status-num">{{ stats.lotesDisponibles }}</span>
-        <span class="status-name">Disponibles</span>
+  <div class="paneles-estado">
+    <div class="commercial-status-card">
+      <h3>Estado comercial de lotes</h3>
+      <div class="status-columns">
+        <div class="status-item">
+          <span class="status-num">{{ stats.lotesDisponibles }}</span>
+          <span class="status-name">Disponibles</span>
+        </div>
+        <div class="divider"></div>
+        <div class="status-item">
+          <span class="status-num">{{ stats.lotesReservados }}</span>
+          <span class="status-name">Reservados</span>
+        </div>
+        <div class="divider"></div>
+        <div class="status-item">
+          <span class="status-num">{{ stats.lotesVendidos }}</span>
+          <span class="status-name">Vendidos</span>
+        </div>
       </div>
-      <div class="divider"></div>
-      <div class="status-item">
-        <span class="status-num">{{ stats.lotesReservados }}</span>
-        <span class="status-name">Reservados</span>
-      </div>
-      <div class="divider"></div>
-      <div class="status-item">
-        <span class="status-num">{{ stats.lotesVendidos }}</span>
-        <span class="status-name">Vendidos</span>
-      </div>
+    </div>
+
+    <div class="commercial-status-card">
+      <h3>Solicitudes por estado</h3>
+      @if (solicitudesPorEstado.length > 0) {
+        <div class="status-columns">
+          @for (s of solicitudesPorEstado; track s.nombre; let ultimo = $last) {
+            <div class="status-item">
+              <span class="status-num">{{ s.cantidad }}</span>
+              <span class="status-name">{{ s.nombre }}</span>
+            </div>
+            @if (!ultimo) { <div class="divider"></div> }
+          }
+        </div>
+      } @else {
+        <p class="sin-datos">Todavía no hay solicitudes.</p>
+      }
     </div>
   </div>
 
-  <!-- Panel de Exportaciones Avanzadas (Excel / Reportes) -->
-  <div class="advanced-exports">
-    <h4>Exportaciones del Sistema (Excel / Reportes)</h4>
-    <div class="export-buttons-grid">
-      <button class="btn-export" (click)="exportarExcelProyectos()">
-        📥 Descargar Proyectos (Excel)
-      </button>
-      <button class="btn-export" (click)="exportarExcelLotes()">📥 Descargar Lotes (Excel)</button>
-      <button class="btn-export" (click)="exportarExcelSolicitudes()">
-        📥 Descargar Solicitudes (Excel)
-      </button>
+  <!-- Reportes detallados -->
+  <section class="detalle-card" aria-label="Reportes detallados">
+    <div class="detalle-cabecera">
+      <h3>Reportes detallados</h3>
+      <p>{{ definicion().descripcion }} El Excel y el PDF respetan los filtros que elijas.</p>
     </div>
-  </div>
 
-  <!-- Overlay de carga -->
+    <div class="pestanas" role="tablist" aria-label="Tipo de reporte">
+      @for (p of pestanas; track p.id) {
+        <button type="button" role="tab" class="pestana" [class.activa]="p.id === pestana()"
+                [attr.aria-selected]="p.id === pestana()" (click)="elegirPestana(p.id)">
+          {{ p.titulo }}
+        </button>
+      }
+    </div>
+
+    <!-- Filtros: solo los que aplican a este reporte -->
+    <div class="filtros" aria-label="Filtros del reporte">
+      @if (usa('proyecto')) {
+        <label>Proyecto
+          <select [ngModel]="proyectoId()" (ngModelChange)="proyectoId.set(numeroONulo($event)); consultar()">
+            <option [ngValue]="null">Todos los proyectos</option>
+            @for (p of listaProyectos; track p.id) { <option [ngValue]="p.id">{{ p.nombre }}</option> }
+          </select>
+        </label>
+      }
+      @if (usa('estadoLote')) {
+        <label>Estado del lote
+          <select [ngModel]="estadoLoteId()" (ngModelChange)="estadoLoteId.set(numeroONulo($event)); consultar()">
+            <option [ngValue]="null">Todos</option>
+            @for (e of estadosLote; track e.id) { <option [ngValue]="e.id">{{ e.nombre }}</option> }
+          </select>
+        </label>
+      }
+      @if (usa('estadoSolicitud')) {
+        <label>Estado de la solicitud
+          <select [ngModel]="estadoSolicitudId()" (ngModelChange)="estadoSolicitudId.set(numeroONulo($event)); consultar()">
+            <option [ngValue]="null">Todos</option>
+            @for (e of estadosSolicitud; track e.id) { <option [ngValue]="e.id">{{ legible(e.nombre) }}</option> }
+          </select>
+        </label>
+      }
+      @if (usa('estadoProyecto')) {
+        <label>Etapa del proyecto
+          <select [ngModel]="estadoProyecto()" (ngModelChange)="estadoProyecto.set($event || null); consultar()">
+            <option [ngValue]="null">Todas</option>
+            @for (e of etapasProyecto; track e.valor) { <option [ngValue]="e.valor">{{ e.etiqueta }}</option> }
+          </select>
+        </label>
+      }
+      @if (usa('fechas')) {
+        <label>Desde
+          <input type="date" [ngModel]="fechaInicio()" (ngModelChange)="fechaInicio.set($event); consultar()" />
+        </label>
+        <label>Hasta
+          <input type="date" [ngModel]="fechaFin()" (ngModelChange)="fechaFin.set($event); consultar()" />
+        </label>
+      }
+      @if (usa('inactivos')) {
+        <label class="casilla">
+          <input type="checkbox" [ngModel]="incluirInactivos()" (ngModelChange)="incluirInactivos.set($event); consultar()" />
+          Incluir inactivos
+        </label>
+      }
+      <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+    @if (rangoInvalido()) {
+      <p class="aviso-error" role="alert">La fecha inicial no puede ser posterior a la fecha final.</p>
+    }
+
+    <div class="barra-acciones">
+      <span class="conteo" aria-live="polite">
+        @if (cargandoTabla()) { Cargando... }
+        @else { {{ filas().length }} {{ filas().length === 1 ? 'registro' : 'registros' }} }
+      </span>
+      <div class="botones-exportar">
+        <button type="button" class="btn-export" (click)="exportar('excel')" [disabled]="rangoInvalido() || cargando">Descargar Excel</button>
+        <button type="button" class="btn-export" (click)="exportar('pdf')" [disabled]="rangoInvalido() || cargando">Descargar PDF</button>
+      </div>
+    </div>
+
+    <div class="tabla-envoltorio">
+      <table class="tabla-reporte">
+        <thead>
+          <tr>
+            @for (c of definicion().columnas; track c.titulo) {
+              <th scope="col" [class.num]="c.tipo === 'num'">{{ c.titulo }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (fila of filasVisibles(); track $index) {
+            <tr>
+              @for (c of definicion().columnas; track c.titulo) {
+                @switch (c.tipo) {
+                  @case ('barra') {
+                    <td class="celda-barra">
+                      <span class="barra"><span class="relleno" [style.width.%]="c.valor(fila)"></span></span>
+                      <span class="barra-texto">{{ porcentaje(c.valor(fila)) }} %</span>
+                    </td>
+                  }
+                  @case ('num') { <td class="num">{{ c.valor(fila) }}</td> }
+                  @case ('largo') { <td class="largo" [title]="c.valor(fila)">{{ c.valor(fila) }}</td> }
+                  @default { <td>{{ c.valor(fila) }}</td> }
+                }
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td class="vacio" [attr.colspan]="definicion().columnas.length">
+                @if (cargandoTabla()) { Cargando el reporte... }
+                @else if (errorTabla()) { No se pudo cargar el reporte. Inténtalo de nuevo. }
+                @else { No hay registros para los filtros elegidos. }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (hayMas()) {
+      <p class="nota-limite">Se muestran los primeros {{ filasVisibles().length }} de {{ filas().length }} registros. El Excel y el PDF incluyen todos.</p>
+    }
+  </section>
+
+  <!-- Overlay de carga al generar archivos -->
   @if (cargando) {
     <div class="loading-overlay">
       <div class="spinner"></div>
-      <p>Cargando información y generando archivos...</p>
+      <p>Generando el archivo...</p>
     </div>
   }
 </div>

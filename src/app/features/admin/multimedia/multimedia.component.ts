@@ -179,7 +179,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
         next: (res) => (this.zonasComunesDisponibles = res),
         error: (err) => {
           console.error('Error cargando zonas comunes:', err);
-          this.toastService.showError('Error cargando zonas comunes');
+          this.toastService.showError('Error cargando amenidades');
         },
       });
     } else if (this.tipoPadre === 'etapa') {
@@ -381,7 +381,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
   calcularVinculoTexto(item: Multimedia): string {
     if (item.proyectoNombre) return `Proyecto: ${item.proyectoNombre}`;
     if (item.loteCodigo) return `Lote: ${item.loteCodigo}`;
-    if (item.zonaComunNombre) return `Zona común: ${item.zonaComunNombre}`;
+    if (item.zonaComunNombre) return `Amenidad: ${item.zonaComunNombre}`;
     if (item.casaModeloNombre) return `Tipología: ${item.casaModeloNombre}`;
     if (item.etapaNombre) return `Etapa: ${item.etapaNombre}`;
     return 'Sin vínculo';

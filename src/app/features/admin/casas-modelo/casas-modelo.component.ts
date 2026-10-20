@@ -6,18 +6,19 @@ import { Proyecto } from '../../../core/models/proyecto.models';
 import { CasaModelo } from '../../../core/models/casa-modelo.models';
 import { CasaModeloService } from '../../../core/services/casa-modelo.service';
 import { ProyectoService } from '../../../core/services/proyecto.service';
-import { MultimediaService } from '../../../core/services/multimedia.service';
+import { ArchivoSubido, MultimediaService } from '../../../core/services/multimedia.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { Multimedia, TipoMultimedia } from '../../../core/models/multimedia.models';
 import { SubidaArchivoComponent } from '../../../shared/components/subida-archivo/subida-archivo.component';
+import { ArchivosTipologiaComponent } from '../../../shared/components/archivos-tipologia/archivos-tipologia.component';
 
 // Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
 // del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-casas-modelo',
   standalone: true,
-  imports: [FormsModule, SubidaArchivoComponent],
+  imports: [FormsModule, SubidaArchivoComponent, ArchivosTipologiaComponent],
   templateUrl: './casas-modelo.component.html',
   styleUrls: ['./casas-modelo.component.scss'],
 })
@@ -35,6 +36,10 @@ export class CasasModeloComponent implements OnInit {
   /** Imágenes (renders) y planos subidos de la tipología que se está editando. */
   imagenes: Multimedia[] = [];
   planos: Multimedia[] = [];
+  /** Al crear una tipología: renders y planos ya subidos que se asocian cuando se guarda. */
+  imagenesNuevas: ArchivoSubido[] = [];
+  planosNuevos: ArchivoSubido[] = [];
+  guardando = false;
   esEdicion = false;
 
   casaActual: CasaModelo = {
@@ -71,6 +76,8 @@ export class CasasModeloComponent implements OnInit {
 
   abrirModalCrear(): void {
     this.esEdicion = false;
+    this.imagenesNuevas = [];
+    this.planosNuevos = [];
     this.casaActual = {
       proyectoId: this.listaProyectos.length > 0 ? (this.listaProyectos[0].id ?? 0) : 0,
       nombre: '',
@@ -118,17 +125,9 @@ export class CasasModeloComponent implements OnInit {
     const id = this.casaActual.id;
     if (id == null) return;
     const lista = tipo === 'IMAGEN' ? this.imagenes : this.planos;
-    const recurso: Partial<Multimedia> = {
-      casaModeloId: id,
-      tipo,
-      titulo: archivo.nombre.replace(/\.[^.]+$/, ''),
-      url: archivo.url,
-      nombreArchivo: archivo.nombre,
-      orden: Math.max(0, ...lista.map((m) => m.orden ?? 0)) + 1,
-      portada: tipo === 'IMAGEN' && lista.length === 0,
-      publicado: true,
-      activo: true,
-    };
+    const orden = Math.max(0, ...lista.map((m) => m.orden ?? 0)) + 1;
+    const recurso = this.multimediaService.recursoDeTipologia(id, tipo, archivo, orden);
+    recurso.portada = tipo === 'IMAGEN' && lista.length === 0;
     this.multimediaService.crearMultimedia(recurso).subscribe({
       next: (creado) => {
         if (tipo === 'IMAGEN') this.imagenes = [...this.imagenes, creado];
@@ -171,14 +170,33 @@ export class CasasModeloComponent implements OnInit {
         error: (err) => console.error('Error al actualizar casa modelo', err),
       });
     } else {
+      this.guardando = true;
       this.casaModeloService.crear(this.casaActual).subscribe({
-        next: () => {
-          this.cargarCasas();
-          this.cerrarModal();
+        next: (creada) => {
+          const conArchivos = creada.id != null && (this.imagenesNuevas.length > 0 || this.planosNuevos.length > 0);
+          if (!conArchivos) return this.terminarCreacion(0);
+          this.multimediaService
+            .guardarArchivosDeTipologia(creada.id as number, this.imagenesNuevas, this.planosNuevos)
+            .subscribe((fallidos) => this.terminarCreacion(fallidos));
         },
-        error: (err) => console.error('Error al crear casa modelo', err),
+        error: (err) => {
+          this.guardando = false;
+          console.error('Error al crear casa modelo', err);
+          this.toast.showError('No se pudo crear la tipología.');
+        },
       });
     }
+  }
+
+  private terminarCreacion(fallidos: number): void {
+    this.guardando = false;
+    if (fallidos > 0) {
+      this.toast.showError(`La tipología se creó, pero ${fallidos} archivo(s) no se pudieron asociar. Ábrela con Editar para volver a subirlos.`);
+    } else {
+      this.toast.showSuccess('Tipología creada correctamente');
+    }
+    this.cargarCasas();
+    this.cerrarModal();
   }
 
   async eliminarCasa(id?: number): Promise<void> {

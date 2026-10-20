@@ -77,4 +77,14 @@ test.describe('asistente de IA', () => {
     await expect(page).toHaveURL(/\/login$/);
     await expect(page.locator('app-chat-widget .chat-toggle-btn')).toHaveCount(0);
   });
+
+  test('el botón de WhatsApp está en el sitio público pero no en el login', async ({ page }) => {
+    await page.goto('/login');
+    await expect(page.locator('.whatsapp-btn-float')).toHaveCount(0);
+    await page.goto('/');
+    await expect(page.locator('.whatsapp-btn-float')).toHaveCount(1);
+    await page.getByRole('link', { name: 'Admin' }).click();
+    await expect(page).toHaveURL(/\/login$/);
+    await expect(page.locator('.whatsapp-btn-float')).toHaveCount(0);
+  });
 });

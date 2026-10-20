@@ -116,7 +116,7 @@ test.describe('panel de administración', () => {
     expect(dialogoNativo).toBe(false);
   });
 
-  test('eliminar una zona común usa el mismo diálogo de confirmación que el resto del panel', async ({ page }) => {
+  test('eliminar una amenidad usa el mismo diálogo de confirmación que el resto del panel', async ({ page }) => {
     let borrada = false;
     await page.route(/\/api\/proyectos(\?.*)?$/, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([
       { id: 6, empresaId: 1, nombre: 'Proyecto de Prueba', slug: 'proyecto-de-prueba', estadoProyecto: 'EN_DISENO', tipoRegistro: 'OFERTA_COMERCIAL', destacado: false, publicado: true, activo: true }
@@ -133,7 +133,7 @@ test.describe('panel de administración', () => {
 
     await page.locator('.btn-icon.delete').first().click();
     const dialogo = page.getByRole('alertdialog');
-    await expect(dialogo).toContainText('Eliminar zona común');
+    await expect(dialogo).toContainText('Eliminar amenidad');
     await dialogo.getByRole('button', { name: 'Cancelar' }).click();
     await expect(dialogo).toHaveCount(0);
     expect(borrada).toBe(false);
@@ -143,6 +143,64 @@ test.describe('panel de administración', () => {
       page.waitForRequest(r => r.method() === 'DELETE' && /\/zonas-comunes\/12$/.test(r.url())),
       page.getByRole('alertdialog').getByRole('button', { name: 'Sí, eliminar' }).click()
     ]);
+  });
+
+  test('reportes: se ven en tablas, se filtran y el Excel y el PDF salen con los mismos filtros', async ({ page }) => {
+    const json = (cuerpo: unknown) => ({ status: 200, contentType: 'application/json', body: JSON.stringify(cuerpo) });
+    await page.route(/\/api\/proyectos(\?.*)?$/, route => route.fulfill(json([
+      { id: 1, empresaId: 1, nombre: 'Condominio Los Andes', slug: 'los-andes', estadoProyecto: 'EN_CONSTRUCCION', tipoRegistro: 'OFERTA_COMERCIAL', publicado: true, activo: true },
+      { id: 2, empresaId: 1, nombre: 'Solara Campestre', slug: 'solara', estadoProyecto: 'EN_DISENO', tipoRegistro: 'OFERTA_COMERCIAL', publicado: true, activo: true }
+    ])));
+    await page.route(/\/api\/reportes\/dashboard$/, route => route.fulfill(json({
+      totalProyectos: 2, proyectosPublicados: 2, totalLotes: 3, lotesDisponibles: 2, lotesReservados: 1, lotesVendidos: 0,
+      totalSolicitudes: 1, solicitudesNuevas: 1, distribucionLotesPorEstado: {}, distribucionSolicitudesPorEstado: { NUEVO: 1 }
+    })));
+    await page.route(/\/api\/reportes\/lotes(\?.*)?$/, route => {
+      const soloUno = new URL(route.request().url()).searchParams.get('proyectoId') === '1';
+      const lotes = [
+        { id: 1, proyectoNombre: 'Condominio Los Andes', etapaNombre: 'Etapa 1', codigo: 'LT-101', loteNombre: 'Lote 101', areaM2: 1200, estadoComercial: 'DISPONIBLE', publicado: true, activo: true, creadoEn: '2026-10-14T09:00:00' },
+        { id: 2, proyectoNombre: 'Condominio Los Andes', etapaNombre: 'Etapa 1', codigo: 'LT-102', loteNombre: 'Lote 102', areaM2: 1000, estadoComercial: 'RESERVADO', publicado: true, activo: true, creadoEn: '2026-10-14T09:00:00' },
+        { id: 3, proyectoNombre: 'Solara Campestre', etapaNombre: 'Etapa 1', codigo: 'LT-0101', loteNombre: '', areaM2: 500, estadoComercial: 'DISPONIBLE', publicado: true, activo: true, creadoEn: '2026-10-05T09:00:00' }
+      ];
+      return route.fulfill(json(soloUno ? lotes.slice(0, 2) : lotes));
+    });
+    await page.route(/\/api\/reportes\/estados-comerciales(\?.*)?$/, route => route.fulfill(json([
+      { proyectoId: 1, proyectoNombre: 'Condominio Los Andes', estadoNombre: 'DISPONIBLE', cantidadLotes: 1, porcentaje: 50 },
+      { proyectoId: 1, proyectoNombre: 'Condominio Los Andes', estadoNombre: 'RESERVADO', cantidadLotes: 1, porcentaje: 50 }
+    ])));
+
+    await page.goto('/admin/reportes');
+    const filas = page.locator('.tabla-reporte tbody tr');
+    await expect(filas).toHaveCount(3);
+    await expect(page.locator('.conteo')).toContainText('3 registros');
+    await expect(filas.first()).toContainText('LT-101');
+    await expect(filas.first()).toContainText('Disponible');
+
+    // Filtrar por proyecto pide el reporte filtrado
+    await Promise.all([
+      page.waitForRequest(r => /\/reportes\/lotes/.test(r.url()) && new URL(r.url()).searchParams.get('proyectoId') === '1'),
+      page.locator('.filtros').getByLabel('Proyecto').selectOption({ label: 'Condominio Los Andes' })
+    ]);
+    await expect(filas).toHaveCount(2);
+
+    // Otra pestaña: tabla con barras de porcentaje
+    await page.getByRole('tab', { name: 'Estados comerciales' }).click();
+    await expect(page.locator('.tabla-reporte tbody tr')).toHaveCount(2);
+    await expect(page.locator('.celda-barra').first()).toContainText('50,0 %');
+    await page.getByRole('tab', { name: 'Lotes' }).click();
+
+    // Exportar: mismos filtros que en pantalla
+    await page.route(/\/api\/documentos\/(excel|pdf)\/lotes/, route => route.fulfill({ status: 200, contentType: 'application/octet-stream', body: 'archivo' }));
+    const [excel] = await Promise.all([
+      page.waitForRequest(r => /\/documentos\/excel\/lotes/.test(r.url())),
+      page.getByRole('button', { name: 'Descargar Excel' }).click()
+    ]);
+    expect(new URL(excel.url()).searchParams.get('proyectoId')).toBe('1');
+    const [pdf] = await Promise.all([
+      page.waitForRequest(r => /\/documentos\/pdf\/lotes/.test(r.url())),
+      page.getByRole('button', { name: 'Descargar PDF' }).click()
+    ]);
+    expect(new URL(pdf.url()).searchParams.get('proyectoId')).toBe('1');
   });
 
   test('el menú lleva a las pantallas del panel', async ({ page }) => {

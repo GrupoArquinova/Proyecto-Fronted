@@ -39,6 +39,31 @@ export function generarFilas(opciones: OpcionesGeneracion, primeraClave: number)
 }
 
 /**
+ * Al cambiar el código de una fila (por ejemplo a LT-100), las filas que le siguen en la misma etapa y con el mismo prefijo
+ * continúan la numeración (LT-101, LT-102...). Cada fila se puede volver a editar a mano. Si el código no termina en número
+ * no cambia nada. Se conserva el ancho con ceros que escribió la persona (LT-009 → LT-010).
+ */
+export function renumerarDesde(filas: FilaLote[], clave: number): FilaLote[] {
+  const indice = filas.findIndex(f => f.clave === clave);
+  if (indice < 0) return filas;
+  const base = /^(.*?)(\d{1,9})$/.exec(filas[indice].codigo.trim());
+  if (!base) return filas;
+
+  const prefijo = base[1].toLowerCase();
+  const ancho = base[2].length;
+  let numero = Number(base[2]);
+  const etapa = filas[indice].etapaId;
+
+  return filas.map((fila, i) => {
+    if (i <= indice || fila.etapaId !== etapa) return fila;
+    const propio = /^(.*?)(\d+)$/.exec(fila.codigo.trim());
+    if (!propio || propio[1].toLowerCase() !== prefijo) return fila;
+    numero++;
+    return { ...fila, codigo: `${base[1]}${String(numero).padStart(ancho, '0')}`, error: undefined };
+  });
+}
+
+/**
  * Siguiente número libre para un prefijo en una etapa, mirando los códigos ya existentes
  * (LT-01..LT-10 → 11), para que una segunda tanda no choque con la primera.
  */

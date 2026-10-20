@@ -65,7 +65,7 @@
                 tabindex="0"
                 (click)="ampliarImagen(proyecto.imagenUrl)"
                 (keydown.enter)="ampliarImagen(proyecto.imagenUrl)"
-                title="Haz clic para explorar el recorrido 360°"
+                title="Haz clic para ampliar la imagen"
               />
             }
             @if (!proyecto.imagenUrl) {
@@ -137,16 +137,12 @@
   }
 </div>
 
-<!-- MODAL LIGHTBOX 360° -->
+<!-- VENTANA PARA AMPLIAR LA IMAGEN -->
 @if (imagenExpandidaUrl) {
   <div class="lightbox-overlay" role="presentation" (click)="cerrarImagen()">
     <div class="lightbox-content" role="presentation" (click)="$event.stopPropagation()">
       <button type="button" class="btn-close-lightbox" (click)="cerrarImagen()">&times;</button>
-      <div class="tour-header">
-        <h2>Recorrido Panorámico 360°</h2>
-        <p>Arrastra con el mouse o dedo para explorar el entorno.</p>
-      </div>
-      <div id="panorama-viewer"></div>
+      <img class="imagen-ampliada" [src]="imagenExpandidaUrl" alt="Imagen del proyecto" />
     </div>
   </div>
 }
@@ -239,7 +235,7 @@
             <input id="proyectos-campo-10" type="date" formControlName="fechaLanzamiento" />
           </div>
           <div class="form-group form-group--full">
-            <label for="proyectos-campo-11">Imagen Panorámica 360° (PC)</label>
+            <label for="proyectos-campo-11">Imagen del proyecto</label>
             <!-- Vista previa de la imagen -->
             @if (proyectoForm.get('imagenUrl')?.value) {
               <div class="imagen-preview">

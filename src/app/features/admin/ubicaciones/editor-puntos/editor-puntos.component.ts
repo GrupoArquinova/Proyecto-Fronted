@@ -281,11 +281,11 @@ export class EditorPuntosComponent {
         activo: true
       }));
       this.panoramasZona.update(mapa => new Map(mapa).set(zonaId, creado));
-      this.toast.showSuccess('Imagen 360° de la zona guardada');
+      this.toast.showSuccess('Imagen 360° de la amenidad guardada');
       if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
     } catch (err) {
       console.error('Error al subir la imagen 360° de la zona:', err);
-      this.toast.showError('No se pudo guardar la imagen 360° de la zona.');
+      this.toast.showError('No se pudo guardar la imagen 360° de la amenidad.');
     } finally {
       this.subiendoZona.set(null);
     }

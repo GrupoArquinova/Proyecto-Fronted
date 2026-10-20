@@ -27,7 +27,7 @@ export const PASOS: PasoInfo[] = [
   { numero: 2, titulo: 'Ubicación' },
   { numero: 3, titulo: 'Etapas' },
   { numero: 4, titulo: 'Lotes' },
-  { numero: 5, titulo: 'Zonas, casa y recursos' },
+  { numero: 5, titulo: 'Amenidades, tipologías y recursos' },
   { numero: 6, titulo: 'Revisar y publicar' }
 ];
 

@@ -20,7 +20,7 @@ import { estadoDeLote } from '../../../../core/utils/lotes';
         <li><span class="cifra">{{ asistente.etapas().length }}</span> etapas</li>
         <li><span class="cifra">{{ asistente.lotes().length }}</span> lotes
           <small>{{ conteo().disponible }} disponibles · {{ conteo().reservado }} reservados · {{ conteo().vendido }} vendidos</small></li>
-        <li><span class="cifra">{{ asistente.zonas().length }}</span> zonas comunes <small>{{ fotosZonas() }} fotos</small></li>
+        <li><span class="cifra">{{ asistente.zonas().length }}</span> amenidades <small>{{ fotosZonas() }} fotos</small></li>
         <li><span class="cifra">{{ asistente.casas().length }}</span> casas modelo</li>
         <li><span class="cifra">{{ asistente.recursos().length }}</span> recursos <small>videos, PDF y más</small></li>
       </ul>
@@ -105,7 +105,7 @@ export class PasoRevisarComponent {
     if (!this.asistente.ubicacion()) avisos.push('No tiene ubicación registrada.');
     if (this.asistente.lotes().length === 0) avisos.push('No tiene lotes: la sección Lotes y Disponibilidad no aparecerá.');
     const sinFotos = this.asistente.zonas().filter(z => (z.imagenes?.length ?? 0) === 0).length;
-    if (sinFotos > 0) avisos.push(`${sinFotos} ${sinFotos === 1 ? 'zona común no tiene' : 'zonas comunes no tienen'} fotos.`);
+    if (sinFotos > 0) avisos.push(`${sinFotos} ${sinFotos === 1 ? 'amenidad no tiene' : 'amenidades no tienen'} fotos.`);
     return avisos;
   });
 

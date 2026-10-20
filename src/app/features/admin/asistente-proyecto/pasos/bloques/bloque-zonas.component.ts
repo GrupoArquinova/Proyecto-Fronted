@@ -60,7 +60,7 @@ import { ZonaComunImagen } from '../../../../../core/models/zona-comun-imagen.mo
                                 (subido)="agregarFoto(zona, $event.url)" />
           </li>
         } @empty {
-          <li class="vacio">Todavía no hay zonas comunes.</li>
+          <li class="vacio">Todavía no hay amenidades.</li>
         }
       </ul>
     </section>
@@ -131,7 +131,7 @@ export class BloqueZonasComponent {
 
   async eliminar(zona: ZonaComun): Promise<void> {
     if (zona.id == null) return;
-    const ok = await this.confirm.open({ title: 'Eliminar zona común', message: `¿Eliminar "${zona.nombre}" y sus fotos?`, confirmText: 'Sí, eliminar' });
+    const ok = await this.confirm.open({ title: 'Eliminar amenidad', message: `¿Eliminar "${zona.nombre}" y sus fotos?`, confirmText: 'Sí, eliminar' });
     if (!ok) return;
     this.zonaService.eliminar(zona.id).subscribe({
       next: () => this.asistente.zonas.update(l => l.filter(z => z.id !== zona.id)),

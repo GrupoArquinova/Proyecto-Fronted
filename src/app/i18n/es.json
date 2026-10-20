@@ -334,12 +334,12 @@
       "tDestacadas": "las zonas destacadas",
       "filtrar": "Filtrar por zona",
       "todas": "Todas",
-      "galeria": "Galería de las zonas comunes",
+      "galeria": "Galería de las amenidades",
       "imagenesDe": "Imágenes de {{nombre}}",
       "cerrarImagenes": "Cerrar imágenes"
     },
     "tarjeta": {
-      "zona": "Zona común",
+      "zona": "Amenidad",
       "lote": "Lote",
       "etapa": "Etapa",
       "zonaSin360": "Esta zona aún no tiene imagen 360°.",

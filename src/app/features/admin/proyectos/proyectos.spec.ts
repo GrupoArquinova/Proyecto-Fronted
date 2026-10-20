@@ -23,4 +23,22 @@ describe('ProyectosComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('la imagen del proyecto es una imagen normal: sin campo ni visor 360°', () => {
+    component.abrirModalCrear();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Imagen del proyecto');
+    expect(el.textContent).not.toContain('360');
+
+    component.ampliarImagen('https://res.cloudinary.com/demo/foto.jpg');
+    fixture.detectChanges();
+    expect(el.querySelector('img.imagen-ampliada')).not.toBeNull();
+    expect(el.querySelector('#panorama-viewer')).toBeNull();
+    expect(el.textContent).not.toContain('360');
+
+    component.cerrarImagen();
+    fixture.detectChanges();
+    expect(el.querySelector('img.imagen-ampliada')).toBeNull();
+  });
 });

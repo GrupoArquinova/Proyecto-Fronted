@@ -9,7 +9,7 @@ import { ChatMessage } from '../../core/models/chat.model';
 import { ChatService, PREGUNTA_MAX } from '../../core/services/chat.service';
 import { IdiomaService } from '../../core/services/idioma.service';
 
-/** Rutas donde el asistente no tiene sentido: el panel de administración y las pantallas de acceso. */
+/** Rutas donde el asistente y el botón de WhatsApp no tienen sentido: el panel de administración y las pantallas de acceso. */
 const RUTAS_SIN_CHAT = ['/admin', '/login', '/recuperar-password', '/reset-password'];
 
 export function chatVisibleEn(url: string): boolean {
