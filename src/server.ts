@@ -26,12 +26,19 @@ const angularApp = new AngularNodeAppEngine();
  * ```
  */
 
+/** Dirección fija que se usa en producción cuando no hay SITE_URL ni sitioUrl: nunca se confía en las cabeceras Host/X-Forwarded-*. */
+const SITIO_POR_DEFECTO = 'https://arquinova.vercel.app';
+
 /**
- * Dirección del sitio: SITE_URL (producción), el dominio configurado en el entorno o, si no hay ninguno, el de la petición.
+ * Dirección del sitio: SITE_URL (producción), el dominio configurado en el entorno o, si no hay ninguno:
+ * - en producción (NODE_ENV=production) una dirección fija, porque las cabeceras Host y X-Forwarded-Host las controla quien hace
+ *   la petición y se podría envenenar el sitemap/robots (host header injection);
+ * - en desarrollo, la de la petición.
  */
-function urlDelSitio(req: express.Request): string {
-  const configurada = (process.env['SITE_URL'] || environment.sitioUrl || '').replace(/\/+$/, '');
+function urlDelSitio(req: express.Request, entorno: NodeJS.ProcessEnv = process.env): string {
+  const configurada = (entorno['SITE_URL'] || environment.sitioUrl || '').replace(/\/+$/, '');
   if (configurada) return configurada;
+  if (entorno['NODE_ENV'] === 'production') return SITIO_POR_DEFECTO;
   const protocolo = String(req.headers['x-forwarded-proto'] ?? req.protocol).split(',')[0];
   const host = String(req.headers['x-forwarded-host'] ?? req.get('host')).split(',')[0];
   return `${protocolo}://${host}`;

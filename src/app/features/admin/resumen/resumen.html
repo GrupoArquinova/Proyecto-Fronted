@@ -28,7 +28,7 @@
     <div class="panel">
       <h2 class="panel-titulo">Estado de proyectos</h2>
 
-      @for (proyecto of estadoProyectos; track proyecto) {
+      @for (proyecto of estadoProyectos; track proyecto.nombre) {
         <div class="proyecto-item">
           <div class="proyecto-header">
             <span class="proyecto-nombre">{{ proyecto.nombre }}</span>
@@ -48,7 +48,7 @@
     <div class="panel">
       <h2 class="panel-titulo">Últimas solicitudes</h2>
 
-      @for (solicitud of ultimasSolicitudes; track solicitud) {
+      @for (solicitud of ultimasSolicitudes; track solicitud.id) {
         <div class="solicitud-item">
           <div class="solicitud-info">
             <span class="solicitud-nombre">{{ solicitud.clienteNombre }}</span>
@@ -84,7 +84,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (p of listaProyectos; track p) {
+          @for (p of listaProyectos; track p.id) {
             <tr>
               <td class="font-medium">
                 <div class="project-td-cell">

@@ -22,12 +22,14 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
       }
       @case ('incrustado') {
         <iframe [src]="embedSeguro()" [title]="titulo()" loading="lazy" allowfullscreen
+                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"
                 allow="fullscreen; autoplay; xr-spatial-tracking; gyroscope; accelerometer"
                 referrerpolicy="strict-origin-when-cross-origin"></iframe>
       }
       @case ('pdf') {
+        <!-- Sin sandbox a propósito: Chrome bloquea el visor de PDF dentro de un iframe con sandbox -->
         <iframe [src]="pdfSeguro()" [title]="titulo()" loading="lazy"></iframe>
-        <a class="enlace" [href]="url()" target="_blank" rel="noopener">{{ 'proyecto.medio.abrirNueva' | transloco: { titulo: titulo() } }}</a>
+        <a class="enlace" [href]="url()" target="_blank" rel="noopener noreferrer">{{ 'proyecto.medio.abrirNueva' | transloco: { titulo: titulo() } }}</a>
       }
       @default {
         <a class="enlace" [href]="url()" target="_blank" rel="noopener noreferrer">{{ 'proyecto.medio.abrir' | transloco: { titulo: titulo() } }} &rarr;</a>
@@ -86,13 +88,13 @@ export class MedioComponent {
 
   readonly clasificado = computed(() => clasificarMedio(this.url()));
 
-  /** Seguro porque clasificarMedio solo devuelve URLs https de una lista cerrada de hosts. */
+  /** Seguro porque clasificarMedio solo devuelve URLs https de una lista cerrada de hosts (la misma de frame-src en vercel.json). */
   readonly embedSeguro = computed<SafeResourceUrl | null>(() => {
     const embed = this.clasificado().embedUrl;
     return embed ? this.sanitizer.bypassSecurityTrustResourceUrl(embed) : null;
   });
 
-  /** Los PDF son https; se muestran en el visor del navegador. */
+  /** Solo llega aquí un PDF https de Cloudinary (clasificarMedio lo decide); se muestra en el visor del navegador. */
   readonly pdfSeguro = computed<SafeResourceUrl>(() =>
     this.sanitizer.bypassSecurityTrustResourceUrl(this.url()));
 }

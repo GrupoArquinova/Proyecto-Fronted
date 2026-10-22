@@ -28,7 +28,7 @@
         </p>
         <label class="primario subir-mapa" [class.ocupado]="subiendoMapa()">
           {{ subiendoMapa() ? 'Subiendo...' : '+ Agregar imágenes' }}
-          <input type="file" accept="image/*" multiple hidden [disabled]="subiendoMapa()" (change)="subirMapa($event)" />
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple hidden [disabled]="subiendoMapa()" (change)="subirMapa($event)" />
         </label>
       </div>
 
@@ -64,7 +64,7 @@
             </p>
             <label class="primario subir-mapa" [class.ocupado]="subiendoImagenZonas()">
               {{ subiendoImagenZonas() ? 'Subiendo...' : (imagenZonas() ? 'Cambiar imagen' : '+ Subir imagen de fondo') }}
-              <input type="file" accept="image/*" hidden [disabled]="subiendoImagenZonas()" (change)="subirImagenZonas($event)" />
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden [disabled]="subiendoImagenZonas()" (change)="subirImagenZonas($event)" />
             </label>
           </div>
         }
@@ -161,7 +161,7 @@
                   @if (tienePanoramaZona(punto)) { <span class="con-360" title="Esta amenidad ya tiene su imagen 360°">360° ✓</span> }
                   <label class="enlace subir" [class.ocupado]="subiendoZona() === punto.zonaComunId">
                     {{ subiendoZona() === punto.zonaComunId ? 'Subiendo...' : (tienePanoramaZona(punto) ? 'Cambiar 360°' : 'Subir 360°') }}
-                    <input type="file" accept="image/*" hidden [disabled]="subiendoZona() !== null"
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden [disabled]="subiendoZona() !== null"
                            (change)="subirZona360(punto, $event)" />
                   </label>
                 } @else if (esPlano() && punto.etapaId != null) {
@@ -172,13 +172,13 @@
                   </button>
                   <label class="enlace subir" [class.ocupado]="subiendoEtapa() === punto.etapaId">
                     {{ subiendoEtapa() === punto.etapaId ? 'Subiendo...' : 'Subir imágenes' }}
-                    <input type="file" accept="image/*" multiple hidden [disabled]="subiendoEtapa() !== null"
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple hidden [disabled]="subiendoEtapa() !== null"
                            (change)="subirEtapa(punto, $event)" />
                   </label>
                   @if (tienePanoramaEtapa(punto)) { <span class="con-360" title="Esta etapa ya tiene su imagen 360°">360° ✓</span> }
                   <label class="enlace subir" [class.ocupado]="subiendoEtapa() === punto.etapaId">
                     {{ tienePanoramaEtapa(punto) ? 'Cambiar 360°' : 'Subir 360°' }}
-                    <input type="file" accept="image/*" hidden [disabled]="subiendoEtapa() !== null"
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden [disabled]="subiendoEtapa() !== null"
                            (change)="subirEtapa360(punto, $event)" />
                   </label>
                 } @else if (!esPlano() && punto.loteId == null) {
@@ -189,7 +189,7 @@
                   <button type="button" class="enlace" (click)="verEnLaImagen(punto)">Ver</button>
                   <label class="enlace subir" [class.ocupado]="subiendoLote() === punto.loteId">
                     {{ subiendoLote() === punto.loteId ? 'Subiendo...' : (tienePanorama(punto) ? 'Cambiar 360°' : 'Subir 360°') }}
-                    <input type="file" accept="image/*" hidden [disabled]="subiendoLote() !== null"
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden [disabled]="subiendoLote() !== null"
                            (change)="subir360(punto, $event)" />
                   </label>
                 }

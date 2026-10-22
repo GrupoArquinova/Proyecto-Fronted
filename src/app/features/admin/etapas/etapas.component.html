@@ -12,7 +12,7 @@
         <!-- Selector de Filtro por Proyecto -->
         <select class="select-filtro" [(ngModel)]="filtroProyectoId">
           <option value="">Todos los proyectos</option>
-          @for (proy of proyectosParaFiltro; track proy) {
+          @for (proy of proyectosParaFiltro; track proy.id) {
             <option [value]="proy.id">
               {{ proy.nombre }}
             </option>
@@ -27,7 +27,7 @@
   <!-- Lista de Tarjetas de Etapas (Usando el getter de filtrado) -->
   @if (etapasFiltradas.length > 0) {
     <div class="etapas-list">
-      @for (etapa of etapasFiltradas; track etapa) {
+      @for (etapa of etapasFiltradas; track etapa.id) {
         <div class="etapa-card">
           <div class="card-header">
             <div class="title-badge-group">
@@ -121,7 +121,7 @@
                 required
               >
                 <option [ngValue]="null" disabled>Selecciona un proyecto</option>
-                @for (proy of proyectosDisponibles; track proy) {
+                @for (proy of proyectosDisponibles; track proy.id) {
                   <option [value]="proy.id">
                     {{ proy.nombre }}
                   </option>

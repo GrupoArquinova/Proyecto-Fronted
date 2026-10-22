@@ -113,8 +113,8 @@ const ESTADOS = [
     </section>
 
     <div class="acciones">
-      <button type="button" class="secundario" (click)="asistente.anterior()" [disabled]="guardando()">Atrás</button>
-      <button type="button" class="primario" (click)="asistente.siguiente()" [disabled]="guardando()">
+      <button type="button" class="secundario" (click)="irAtras()" [disabled]="guardando()">Atrás</button>
+      <button type="button" class="primario" (click)="continuar()" [disabled]="guardando()">
         {{ asistente.lotes().length === 0 ? 'Omitir por ahora' : 'Continuar' }}
       </button>
     </div>
@@ -239,6 +239,29 @@ export class PasoLotesComponent {
   /** Al terminar de editar un código, los siguientes de la etapa continúan la numeración. */
   renumerar(clave: number): void {
     this.filas.update(lista => renumerarDesde(lista, clave));
+  }
+
+  /** Si quedan filas generadas sin guardar, avisa antes de salir del paso: así no se pierden en silencio. */
+  private async confirmarSalida(): Promise<boolean> {
+    const pendientes = this.filas().length;
+    if (pendientes === 0) return true;
+    return this.confirm.open({
+      title: 'Lotes sin guardar',
+      message: pendientes === 1
+        ? 'Tienes 1 lote generado que todavía no se guardó. Si sales de este paso se pierde.'
+        : `Tienes ${pendientes} lotes generados que todavía no se guardaron. Si sales de este paso se pierden.`,
+      confirmText: 'Salir sin guardar',
+      cancelText: 'Volver a revisarlos',
+      type: 'warning'
+    });
+  }
+
+  async continuar(): Promise<void> {
+    if (await this.confirmarSalida()) this.asistente.siguiente();
+  }
+
+  async irAtras(): Promise<void> {
+    if (await this.confirmarSalida()) this.asistente.anterior();
   }
 
   quitarFila(clave: number): void {

@@ -54,6 +54,10 @@ test.describe('formulario de contacto del proyecto', () => {
     const cuerpo = peticion.postDataJSON();
     expect(cuerpo.casaModeloId).toBe(8);
     expect(cuerpo.loteId).toBeNull();
+    // La trampa viaja vacía y no se envían ip ni user-agent (los fija el backend)
+    expect(cuerpo.sitioWeb).toBe('');
+    expect(cuerpo).not.toHaveProperty('userAgent');
+    expect(cuerpo).not.toHaveProperty('ip');
   });
 
   test('en la tipología el botón "Solicitar información" lleva al formulario con la villa', async ({ page }) => {

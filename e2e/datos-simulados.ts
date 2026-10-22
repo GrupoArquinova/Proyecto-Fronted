@@ -7,7 +7,7 @@ const PNG_1X1 = Buffer.from(
 );
 
 export const PROYECTO_ID = 6;
-const IMG = (nombre: string) => `https://imagenes.prueba/${nombre}.png`;
+const IMG = (nombre: string) => `https://res.cloudinary.com/demo/image/upload/v1/${nombre}.png`;
 
 const proyecto = {
   id: PROYECTO_ID, empresaId: 1, nombre: 'El Encanto', slug: 'el-encanto', descripcion: 'Proyecto de prueba', descripcionEn: 'Test project',
@@ -56,7 +56,7 @@ const multimediaZonas: Record<number, object[]> = {
 
 /** Responde con datos de prueba a todo lo que el sitio público pide al backend. */
 export async function simularBackend(page: Page, apiBase = 'http://localhost:8080'): Promise<void> {
-  await page.route('https://imagenes.prueba/**', route => route.fulfill({ status: 200, contentType: 'image/png', body: PNG_1X1 }));
+  await page.route('https://res.cloudinary.com/**', route => route.fulfill({ status: 200, contentType: 'image/png', body: PNG_1X1 }));
 
   await page.route(`${apiBase}/api/**`, route => {
     const url = new URL(route.request().url());

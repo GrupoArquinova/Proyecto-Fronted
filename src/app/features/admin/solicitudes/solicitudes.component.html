@@ -15,7 +15,7 @@
       >
         Todas
       </button>
-      @for (e of estados; track e) {
+      @for (e of estados; track e.id) {
         <button
           class="btn-filtro"
           [class.active]="filtroEstado === e.id"
@@ -43,7 +43,7 @@
 
   <!-- Grid / Lista de Tarjetas de Solicitudes -->
   <div class="solicitudes-grid">
-    @for (item of solicitudesFiltradas; track item) {
+    @for (item of solicitudesFiltradas; track item.id) {
       <div class="solicitud-card">
         <!-- Cabecera de la Tarjeta -->
         <div class="card-top">
@@ -60,7 +60,7 @@
                 <a [href]="'tel:' + item.telefono">{{ item.telefono }}</a>
               }
               @if (enlaceWhatsapp(item.telefono); as wa) {
-                <a [href]="wa" target="_blank" rel="noopener" class="wa-link">WhatsApp</a>
+                <a [href]="wa" target="_blank" rel="noopener noreferrer" class="wa-link">WhatsApp</a>
               }
             </div>
           </div>
@@ -116,7 +116,7 @@
         <div class="card-footer">
           <div class="acciones-estado">
             <span class="label-cambiar">Cambiar estado:</span>
-            @for (e of estados; track e) {
+            @for (e of estados; track e.id) {
               <button
                 class="btn-estado"
                 [class.seleccionado]="item.estadoId === e.id"

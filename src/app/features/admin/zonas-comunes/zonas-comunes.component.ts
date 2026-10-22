@@ -9,6 +9,7 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ZonaComunImagenService } from '../../../core/services/zona-comun-imagen.service';
 import { ZonaComunImagen } from '../../../core/models/zona-comun-imagen.models';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { mensajeDeSubida } from '../../../core/utils/archivos';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
 // Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
@@ -61,6 +62,8 @@ export class ZonasComunesComponent implements OnInit {
   mostrarModal = false;
   esEdicion = false;
   mensajeAlerta = '';
+  /** El aviso se pinta distinto si es un error (rojo, con ✕) que si es un éxito (verde, con ✓). */
+  tipoAlerta: 'exito' | 'error' = 'exito';
 
   zonaActual: ZonaComun = {
     proyectoId: 1,
@@ -80,7 +83,10 @@ export class ZonasComunesComponent implements OnInit {
         this.listaProyectos = proyectos;
         this.cargarZonas();
       },
-      error: (err) => console.error('Error al cargar proyectos', err),
+      error: (err) => {
+        console.error('Error al cargar proyectos', err);
+        this.mostrarAlerta('No se pudieron cargar los proyectos.', 'error');
+      },
     });
   }
 
@@ -133,7 +139,7 @@ export class ZonasComunesComponent implements OnInit {
         error: (err) => {
           console.error('Error al cargar zonas comunes', err);
           this.cargando = false;
-          this.mostrarAlerta('Error al obtener las amenidades.');
+          this.mostrarAlerta('Error al obtener las amenidades.', 'error');
         },
       });
     }
@@ -170,12 +176,12 @@ export class ZonasComunesComponent implements OnInit {
 
   guardarZona(): void {
     if (!this.zonaActual.nombre.trim()) {
-      this.mostrarAlerta('El nombre de la amenidad es obligatorio.');
+      this.mostrarAlerta('El nombre de la amenidad es obligatorio.', 'error');
       return;
     }
 
     if (!this.zonaActual.proyectoId) {
-      this.mostrarAlerta('Debe asociar la amenidad a un proyecto.');
+      this.mostrarAlerta('Debe asociar la amenidad a un proyecto.', 'error');
       return;
     }
 
@@ -191,7 +197,7 @@ export class ZonasComunesComponent implements OnInit {
         error: (err) => {
           this.cargando = false;
           console.error(err);
-          this.mostrarAlerta('Error al actualizar la amenidad.');
+          this.mostrarAlerta('Error al actualizar la amenidad.', 'error');
         },
       });
     } else {
@@ -205,7 +211,7 @@ export class ZonasComunesComponent implements OnInit {
         error: (err) => {
           this.cargando = false;
           console.error(err);
-          this.mostrarAlerta('Error al crear la amenidad.');
+          this.mostrarAlerta('Error al crear la amenidad.', 'error');
         },
       });
     }
@@ -231,7 +237,7 @@ export class ZonasComunesComponent implements OnInit {
       error: (err) => {
         this.cargando = false;
         console.error(err);
-        this.mostrarAlerta('No se pudo eliminar el registro.');
+        this.mostrarAlerta('No se pudo eliminar el registro.', 'error');
       },
     });
   }
@@ -247,7 +253,10 @@ export class ZonasComunesComponent implements OnInit {
   cargarImagenesDeZona(zonaId: number): void {
     this.zonaImagenService.listarPorZona(zonaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (imgs) => (this.listaImagenesZona = imgs),
-      error: (err) => console.error('Error al cargar imágenes de la zona', err),
+      error: (err) => {
+        console.error('Error al cargar imágenes de la zona', err);
+        this.mostrarAlerta('No se pudieron cargar las imágenes de la amenidad.', 'error');
+      },
     });
   }
 
@@ -275,7 +284,7 @@ export class ZonasComunesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error subiendo imagen a Cloudinary:', err);
-        this.errorImagen = 'No se pudo subir la imagen. Intenta de nuevo.';
+        this.errorImagen = mensajeDeSubida(err, 'No se pudo subir la imagen. Intenta de nuevo.');
         this.subiendoImagen = false;
         this.archivoSeleccionado = null;
       },
@@ -285,7 +294,7 @@ export class ZonasComunesComponent implements OnInit {
   /** Guarda la imagen: crea una nueva, o actualiza si está en modo edición. */
   agregarImagenAZona(): void {
     if (!this.nuevaImagen.imagenUrl.trim()) {
-      this.mostrarAlerta('Debe ingresar una URL o seleccionar un archivo de imagen.');
+      this.mostrarAlerta('Debe ingresar una URL o seleccionar un archivo de imagen.', 'error');
       return;
     }
 
@@ -298,7 +307,7 @@ export class ZonasComunesComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al actualizar imagen', err);
-          this.mostrarAlerta('Error al actualizar la imagen.');
+          this.mostrarAlerta('Error al actualizar la imagen.', 'error');
         },
       });
     } else {
@@ -310,7 +319,7 @@ export class ZonasComunesComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al agregar imagen', err);
-          this.mostrarAlerta('Error al guardar la imagen.');
+          this.mostrarAlerta('Error al guardar la imagen.', 'error');
         },
       });
     }
@@ -358,7 +367,25 @@ export class ZonasComunesComponent implements OnInit {
         this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
         this.mostrarAlerta('Imagen eliminada.');
       },
-      error: (err) => console.error('Error al eliminar imagen', err),
+      error: (err) => {
+        console.error('Error al eliminar imagen', err);
+        this.mostrarAlerta('No se pudo eliminar la imagen.', 'error');
+      },
+    });
+  }
+
+  /** Deja la imagen como la principal de la amenidad (la que se usa como portada); solo puede haber una. */
+  marcarImagenPrincipal(img: ZonaComunImagen): void {
+    if (!img.id || img.esPrincipal) return;
+    this.zonaImagenService.marcarComoPrincipal(img.id).subscribe({
+      next: () => {
+        this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
+        this.mostrarAlerta('Imagen principal actualizada.');
+      },
+      error: (err) => {
+        console.error('Error al marcar la imagen principal', err);
+        this.mostrarAlerta('No se pudo marcar la imagen como principal.', 'error');
+      },
     });
   }
 
@@ -366,8 +393,9 @@ export class ZonasComunesComponent implements OnInit {
     if (id) this.imagenesConError.add(id);
   }
 
-  private mostrarAlerta(msg: string): void {
+  private mostrarAlerta(msg: string, tipo: 'exito' | 'error' = 'exito'): void {
     this.mensajeAlerta = msg;
+    this.tipoAlerta = tipo;
     setTimeout(() => (this.mensajeAlerta = ''), 4000);
   }
 }

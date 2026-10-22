@@ -8,6 +8,7 @@ import { LoteService } from '../../../core/services/lote.service';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { mensajeDeError } from '../../../core/utils/errores';
 
 // Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
 // del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
@@ -80,7 +81,7 @@ export class LotesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al eliminar el lote:', err);
-        this.toastService.showError(err?.error?.mensaje || 'Error al eliminar el lote');
+        this.toastService.showError(mensajeDeError(err, 'Error al eliminar el lote'));
       },
     });
   }
@@ -183,6 +184,19 @@ export class LotesComponent implements OnInit {
     }
   }
 
+  /** Al elegir una etapa sin haber elegido proyecto, el proyecto se completa con el de esa etapa. */
+  alCambiarEtapa(): void {
+    if (this.nuevoLote.proyectoId || !this.nuevoLote.etapaId) return;
+    const etapa = this.etapasDisponibles.find((e) => e.id === Number(this.nuevoLote.etapaId));
+    const proyectoId = etapa?.proyecto?.id ?? etapa?.proyectoId;
+    if (proyectoId != null) {
+      this.nuevoLote.proyectoId = Number(proyectoId);
+      this.etapasFiltradas = this.etapasDisponibles.filter(
+        (e: Etapa) => e.proyecto?.id === Number(proyectoId) || e.proyectoId === Number(proyectoId),
+      );
+    }
+  }
+
   abrirModalCrear(): void {
     this.nuevoLote = {
       id: null,
@@ -195,7 +209,8 @@ export class LotesComponent implements OnInit {
       descripcion: '',
       descripcionEn: '',
     };
-    this.etapasFiltradas = [];
+    // Sin proyecto elegido se ofrecen todas las etapas (con el nombre del proyecto al lado)
+    this.etapasFiltradas = this.etapasDisponibles;
     this.mostrarModal = true;
   }
 
@@ -251,6 +266,7 @@ export class LotesComponent implements OnInit {
     }
   }
 
+  // Cambiar el estado o la visibilidad son escrituras: a diferencia de las cargas de lista, no se cancelan al salir de la pantalla
   actualizarEstado(lote: Lote): void {
     if (!lote.id) return;
     this.loteService.cambiarEstado(lote.id, Number(lote.estadoId)).subscribe({

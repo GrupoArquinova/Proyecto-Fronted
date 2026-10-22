@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { mensajeDeSubida } from '../../../core/utils/archivos';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { Proyecto, CrearProyectoDTO, ETAPAS_PROYECTO, TIPOS_REGISTRO, TIPOS_PROYECTO, etiquetaEtapa } from '../../../core/models/proyecto.models';
@@ -110,15 +111,15 @@ export class ProyectosComponent implements OnInit {
     this.nombreArchivoSeleccionado = file.name;
     this.subiendoImagen = true;
 
-    this.cloudinaryService.subirArchivo(file).subscribe({
+    this.cloudinaryService.subirArchivo(file, ['imagen']).subscribe({
       next: (response: { url: string }) => {
         this.proyectoForm.patchValue({ imagenUrl: response.url });
         this.subiendoImagen = false;
       },
       error: (err) => {
         console.error('Error al subir la imagen a Cloudinary:', err);
-        this.toastService.showError('Error al subir la imagen a Cloudinary');
-        this.errorImagen = 'No se pudo subir la imagen. Inténtalo de nuevo.';
+        this.toastService.showError(mensajeDeSubida(err, 'Error al subir la imagen a Cloudinary'));
+        this.errorImagen = mensajeDeSubida(err, 'No se pudo subir la imagen. Inténtalo de nuevo.');
         this.subiendoImagen = false;
         this.nombreArchivoSeleccionado = '';
       }

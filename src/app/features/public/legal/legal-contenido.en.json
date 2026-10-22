@@ -49,7 +49,8 @@
         ],
         "items": [
           "Contact details you give us in the forms: name, email, phone, message, project or lot of interest.",
-          "Technical details of the request: IP address, browser type, and date and time, which are kept as proof of the authorization and for security.",
+          "Technical details of the request: IP address, user agent (browser and device type), and date and time, which our server records automatically when you submit the contact form, as proof of the authorization and for security.",
+          "If you use the AI chat, the text of the questions you type. Please do not type personal or sensitive data in the chat.",
           "Data of the people who manage the site (internal users): name, email, role and activity records within the panel.",
           "If you write to us on WhatsApp, the data you share in the conversation, which is also governed by the terms of that service."
         ],
@@ -65,6 +66,8 @@
           "To follow up on your request commercially and manage the relationship with prospective buyers.",
           "To send you information about new projects, construction progress or news, provided you have authorized it, with the option to stop receiving it at any time.",
           "To prepare internal statistics and improve the website and our services.",
+          "Answering your questions through the AI chat, when you choose to use it.",
+          "Displaying the maps, videos, images and 360° tours of the site, which are loaded from external providers.",
           "To ensure the security of the site and prevent fraud or misuse.",
           "To comply with legal obligations and respond to requests from competent authorities."
         ]
@@ -72,7 +75,7 @@
       {
         "titulo": "7. Authorization",
         "parrafos": [
-          "We collect your data only with your prior, express and informed authorization, which you give by ticking the acceptance box in our forms. We keep a record of the authorization (date, time and IP address). You may revoke it or request the deletion of your data at any time, except where there is a legal or contractual duty to keep it."
+          "We collect your data only with your prior, express and informed authorization, which you give by ticking the acceptance box in our forms. We keep a record of the authorization (date, time, IP address and user agent). You may revoke it or request the deletion of your data at any time, except where there is a legal or contractual duty to keep it."
         ]
       },
       {
@@ -105,6 +108,19 @@
         "titulo": "10. Transmission and transfer of data",
         "parrafos": [
           "We do not sell your personal data. To operate the site we may share it with providers acting as processors, such as web hosting, database, image storage, email and messaging services. Some of these providers may be located outside Colombia; in those cases we require security and confidentiality measures equivalent to those of this policy and, where the law requires it, we have your authorization or the corresponding data transmission contracts.",
+          "These are the third parties that may receive your data when you use the site, and why:"
+        ],
+        "items": [
+          "Cloudinary: stores and delivers the images, videos and documents of the site; when they load it receives your IP address and technical data from your browser.",
+          "YouTube (youtube-nocookie.com, by Google): if you play an embedded video, it receives your IP address and browser data and may use cookies or similar technologies.",
+          "Google Maps (Google): if you open an embedded Google map, it receives your IP address and browser data.",
+          "OpenStreetMap (OpenStreetMap Foundation): if you open an interactive OpenStreetMap map, it receives your IP address and browser data.",
+          "WhatsApp (Meta): if you write to us on WhatsApp from the site, it receives your number and the messages of the conversation, which are governed by the terms of that service.",
+          "Google Gemini (Google): if you use the AI chat, the text of your questions is sent to Google to generate the answer.",
+          "Email: the data from the contact form (name, email, phone and message) is sent by email to our team and, where applicable, to you as a confirmation, through our email provider.",
+          "Hosting, server and database providers: they store the requests you send and the associated technical data."
+        ],
+        "parrafos2": [
           "We may also hand over data to authorities that request it in the exercise of their legal functions."
         ]
       },
@@ -117,7 +133,8 @@
       {
         "titulo": "12. Data retention",
         "parrafos": [
-          "We keep your data for as long as it is necessary for the purposes described and for the periods required by law. When it is no longer needed, we will securely delete or anonymize it."
+          "We keep your data for as long as it is necessary for the purposes described and for the periods required by law. When it is no longer needed, we will securely delete or anonymize it.",
+          "Contact requests, together with the IP address and user agent recorded when they are submitted, are kept for 24 months from the date we receive them and are then deleted or anonymized. You can ask for them to be deleted before that period by writing to {{correoDatos}}, unless there is a legal or contractual duty to keep them."
         ]
       },
       {
@@ -282,7 +299,13 @@
       {
         "titulo": "What we use your data for",
         "parrafos": [
-          "We will use your name, email, phone and message to respond to your request, contact you with commercial information about our projects (by phone, email or WhatsApp), follow up on your interest and, if you authorize it, send you news. We also keep technical data (IP and browser) as proof of your authorization and for security."
+          "We will use your name, email, phone and message to respond to your request, contact you with commercial information about our projects (by phone, email or WhatsApp), follow up on your interest and, if you authorize it, send you news. We also keep technical data (IP address and user agent) as proof of your authorization and for security."
+        ]
+      },
+      {
+        "titulo": "Third parties and retention",
+        "parrafos": [
+          "To display maps, videos and images, and for the AI chat, some external providers (Cloudinary, YouTube, Google Maps, OpenStreetMap, WhatsApp and Google Gemini) receive technical data from you, such as your IP address, when you use those features. We keep your contact request, with the IP and user agent, for 24 months and delete it earlier if you ask us by writing to {{correoDatos}}. The Personal data processing policy details each third party and its purpose."
         ]
       },
       {

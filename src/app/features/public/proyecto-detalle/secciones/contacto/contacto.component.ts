@@ -1,6 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -26,7 +25,6 @@ export class ContactoPublicoComponent {
   private fb = inject(FormBuilder);
   private solicitudService = inject(SolicitudService);
   private toast = inject(ToastService);
-  private platformId = inject(PLATFORM_ID);
   private route = inject(ActivatedRoute);
   private idioma = inject(IdiomaService);
 
@@ -62,7 +60,9 @@ export class ContactoPublicoComponent {
     telefono: ['', [Validators.maxLength(30)]],
     correo: ['', [Validators.email]],
     mensaje: ['', [Validators.required, Validators.maxLength(1000)]],
-    consentimientoDatos: [false, Validators.requiredTrue]
+    consentimientoDatos: [false, Validators.requiredTrue],
+    /** Honeypot: oculto para las personas (ver .campo-trampa en styles.scss). */
+    sitioWeb: ['']
   }, { validators: alMenosUnMedioDeContacto });
 
   /** Falta el medio de contacto y la persona ya tocó alguno de los dos campos. */
@@ -96,8 +96,7 @@ export class ContactoPublicoComponent {
       ...this.form.getRawValue(),
       proyectoId: proyecto.id ?? null,
       loteId: this.lote()?.id ?? null,
-      casaModeloId: this.casa()?.id ?? null,
-      userAgent: isPlatformBrowser(this.platformId) ? navigator.userAgent : ''
+      casaModeloId: this.casa()?.id ?? null
     };
 
     this.enviando.set(true);

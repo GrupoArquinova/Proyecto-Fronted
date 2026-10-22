@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, PLATFORM_ID, signal, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { isPlatformBrowser } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LocalizadoPipe } from '../../../shared/pipes/localizado.pipe';
 import { RouterModule } from '@angular/router';
@@ -43,7 +42,6 @@ export class HomeComponent implements OnInit {
   private fb = inject(FormBuilder);
   private solicitudService = inject(SolicitudService);
   private toastService = inject(ToastService);
-  private platformId = inject(PLATFORM_ID);
   private seo = inject(SeoService);
   private contenidoService = inject(ContenidoService);
   private idioma = inject(IdiomaService);
@@ -74,6 +72,8 @@ export class HomeComponent implements OnInit {
         servicioInteres: [''],
         mensaje: [''],
         consentimientoDatos: [false, Validators.requiredTrue],
+        // Honeypot: oculto para las personas (ver .campo-trampa en styles.scss)
+        sitioWeb: [''],
       },
       { validators: alMenosUnMedioDeContacto },
     );
@@ -151,7 +151,7 @@ export class HomeComponent implements OnInit {
           ? Number(this.contactoForm.value.proyectoId)
           : null,
         servicioInteres: this.contactoForm.value.servicioInteres || undefined,
-        userAgent: isPlatformBrowser(this.platformId) ? navigator.userAgent : '',
+        sitioWeb: this.contactoForm.value.sitioWeb ?? '',
       };
 
       this.solicitudService.enviarSolicitud(datosFormulario).subscribe({

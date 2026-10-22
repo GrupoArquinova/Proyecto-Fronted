@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable, from, map, switchMap, throwError } from 'rxjs';
+import { ArchivoInvalidoError, TipoArchivo, validarContenidoArchivo } from '../utils/archivos';
 import { environment } from '../../../environments/environment';
 
 export interface CloudinaryUploadResult {
@@ -38,12 +39,18 @@ export class CloudinaryService {
 
   /** Mantenido por compatibilidad con proyectos.component.ts (solo imágenes) */
   subirImagen(file: File): Observable<string> {
-    return this.subirArchivo(file).pipe(map(res => res.url));
+    return this.subirArchivo(file, ['imagen']).pipe(map(res => res.url));
   }
 
-  /** Sube cualquier tipo de archivo: imagen, video, pdf, etc. */
-  subirArchivo(file: File): Observable<CloudinaryUploadResult> {
-    return this.http.post<CloudinaryFirma>(this.firmaUrl, {}).pipe(
+  /**
+   * Sube una imagen, un video o un PDF. Antes de pedir la firma se valida el archivo (lista cerrada de tipos, sin SVG,
+   * tamaño y magic bytes); si no pasa, el Observable falla con ArchivoInvalidoError y no sale nada hacia Cloudinary.
+   */
+  subirArchivo(file: File, permitidos: TipoArchivo[] = ['imagen', 'video', 'pdf']): Observable<CloudinaryUploadResult> {
+    return from(validarContenidoArchivo(file, permitidos)).pipe(
+      switchMap(problema => problema
+        ? throwError(() => new ArchivoInvalidoError(problema))
+        : this.http.post<CloudinaryFirma>(this.firmaUrl, {})),
       switchMap(firma => {
         const formData = new FormData();
         formData.append('file', file);

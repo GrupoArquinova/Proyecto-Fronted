@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, DestroyRef, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -28,11 +28,17 @@ export class ResetPasswordComponent {
   isLoading = signal(false);
   mostrarPassword = false;
 
+  /** Espera de 2,5 s antes de ir al login tras cambiar la contraseña; se cancela si la persona sale antes. */
+  private redireccion: ReturnType<typeof setTimeout> | null = null;
+
   // Validaciones en tiempo real para la contraseña
   constructor() {
     if (this.llegoPorEnlace) {
       void this.router.navigate([], { queryParams: {}, replaceUrl: true });
     }
+    inject(DestroyRef).onDestroy(() => {
+      if (this.redireccion) clearTimeout(this.redireccion);
+    });
   }
 
   get tieneLongitudMinima(): boolean {
@@ -87,7 +93,7 @@ export class ResetPasswordComponent {
         next: (res) => {
           this.isLoading.set(false);
           this.successMessage.set(res.mensaje || 'Contraseña actualizada con éxito.');
-          setTimeout(() => this.router.navigate(['/login']), 2500);
+          this.redireccion = setTimeout(() => this.router.navigate(['/login']), 2500);
         },
         error: (err: HttpErrorResponse) => {
           this.isLoading.set(false);
@@ -95,7 +101,10 @@ export class ResetPasswordComponent {
             this.errorMessage.set('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.');
             return;
           }
-          this.errorMessage.set(err.error?.mensaje || err.error?.error || 'El enlace es inválido o ha expirado. Solicita uno nuevo.');
+          // Mensajes fijos: nunca se muestra el texto que devuelva el servidor
+          this.errorMessage.set(err.status === 429
+            ? 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.'
+            : 'El enlace es inválido o ha expirado. Solicita uno nuevo.');
         },
       });
   }

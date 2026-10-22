@@ -44,5 +44,6 @@ export interface SolicitudPublicaRequest {
   casaModeloId?: number | null;
   mensaje?: string;
   consentimientoDatos: boolean;
-  userAgent?: string;
+  /** Campo trampa (honeypot): siempre vacío para una persona; el backend descarta lo que llegue con texto. La IP y el user-agent los fija el backend. */
+  sitioWeb?: string;
 }

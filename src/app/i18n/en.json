@@ -296,6 +296,7 @@
       "estado": "Status",
       "precio": "Price",
       "etapa": "Stage",
+      "ver360": "View in 360°",
       "solicitar": "Request information"
     },
     "ubicacion": {

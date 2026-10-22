@@ -25,5 +25,4 @@ export interface Multimedia {
   portada: boolean;
   publicado: boolean;
   activo: boolean;
-  vinculoTexto?: string; // ← calculado una sola vez al cargar, no en el template
 }

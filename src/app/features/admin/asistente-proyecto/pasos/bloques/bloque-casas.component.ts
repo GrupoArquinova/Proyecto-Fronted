@@ -126,7 +126,7 @@ export class BloqueCasasComponent {
     this.casaService.crear(casa).subscribe({
       next: creada => {
         this.asistente.casas.update(l => [...l, creada]);
-        this.form.reset();
+        this.form.reset({ nombre: '', area: null, habitaciones: null, banos: null, descripcion: '', tourVirtualUrl: '' });
         const imagenes = this.imagenes();
         const planos = this.planos();
         this.imagenes.set([]);

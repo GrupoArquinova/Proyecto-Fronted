@@ -8,6 +8,7 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { EtapaService } from '../../../core/services/etapa.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { mensajeDeError } from '../../../core/utils/errores';
 
 // Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
 // del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
@@ -80,13 +81,17 @@ export class EtapasComponent implements OnInit {
     this.cargando = true;
     this.etapaService.obtenerEtapas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        this.etapas = data.map(etapa => ({
-          ...etapa,
-          proyecto: {
-            id: etapa.proyectoId,
-            nombre: etapa.proyectoNombre || 'Sin asignación'
-          }
-        }));
+        this.etapas = data.map(etapa => {
+          // El backend puede mandar el proyecto plano (proyectoId, proyectoNombre) o anidado (proyecto: { id, nombre })
+          const proyectoId = etapa.proyectoId ?? etapa.proyecto?.id;
+          const nombre = etapa.proyectoNombre || etapa.proyecto?.nombre || (proyectoId ? `Proyecto #${proyectoId}` : 'Sin asignación');
+          return {
+            ...etapa,
+            proyectoId: proyectoId as number,
+            proyectoNombre: nombre,
+            proyecto: { id: proyectoId as number, nombre }
+          };
+        });
         this.calcularProyectosParaFiltro();
         this.cargando = false;
       },
@@ -205,7 +210,7 @@ export class EtapasComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al eliminar etapa:', err);
-        this.toastService.showError(err?.error?.mensaje || 'Error al eliminar la etapa');
+        this.toastService.showError(mensajeDeError(err, 'Error al eliminar la etapa'));
       }
     });
   }

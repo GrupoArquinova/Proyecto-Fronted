@@ -17,7 +17,7 @@ import { CloudinaryService } from '../../../../core/services/cloudinary.service'
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../../core/services/confirm-dialog.service';
 import { clasificarMedio } from '../../../../core/utils/medios';
-import { validarArchivo } from '../../../../core/utils/archivos';
+import { mensajeDeSubida, validarArchivo } from '../../../../core/utils/archivos';
 import { ordenarLotes } from '../../../../core/utils/lotes';
 import { esLugarCercano, esPuntoDePlano, tituloDeLote } from '../../../../core/utils/puntos';
 import { PosicionPanorama, Visor360Component } from '../../../public/proyecto-detalle/secciones/visor-360/visor-360.component';
@@ -241,7 +241,7 @@ export class EditorPuntosComponent {
       if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
     } catch (err) {
       console.error('Error al subir la imagen de zonas destacadas:', err);
-      this.toast.showError('No se pudo subir la imagen. Inténtalo de nuevo.');
+      this.toast.showError(mensajeDeSubida(err, 'No se pudo subir la imagen. Inténtalo de nuevo.'));
     } finally {
       this.subiendoImagenZonas.set(false);
     }
@@ -285,7 +285,7 @@ export class EditorPuntosComponent {
       if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
     } catch (err) {
       console.error('Error al subir la imagen 360° de la zona:', err);
-      this.toast.showError('No se pudo guardar la imagen 360° de la amenidad.');
+      this.toast.showError(mensajeDeSubida(err, 'No se pudo guardar la imagen 360° de la amenidad.'));
     } finally {
       this.subiendoZona.set(null);
     }
@@ -335,7 +335,7 @@ export class EditorPuntosComponent {
       this.toast.showSuccess(subidas === 1 ? 'Imagen del mapa guardada' : `${subidas} imágenes del mapa guardadas`);
     } catch (err) {
       console.error('Error al subir la imagen del mapa:', err);
-      this.toast.showError('No se pudo subir la imagen del mapa. Inténtalo de nuevo.');
+      this.toast.showError(mensajeDeSubida(err, 'No se pudo subir la imagen del mapa. Inténtalo de nuevo.'));
     } finally {
       this.subiendoMapa.set(false);
     }
@@ -425,7 +425,7 @@ export class EditorPuntosComponent {
       this.toast.showSuccess(subidas === 1 ? 'Imagen de la etapa guardada' : `${subidas} imágenes de la etapa guardadas`);
     } catch (err) {
       console.error('Error al subir la imagen de la etapa:', err);
-      this.toast.showError('No se pudo subir la imagen de la etapa. Inténtalo de nuevo.');
+      this.toast.showError(mensajeDeSubida(err, 'No se pudo subir la imagen de la etapa. Inténtalo de nuevo.'));
     } finally {
       this.subiendoEtapa.set(null);
     }
@@ -469,7 +469,7 @@ export class EditorPuntosComponent {
       if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
     } catch (err) {
       console.error('Error al subir la imagen 360° de la etapa:', err);
-      this.toast.showError('No se pudo guardar la imagen 360° de la etapa.');
+      this.toast.showError(mensajeDeSubida(err, 'No se pudo guardar la imagen 360° de la etapa.'));
     } finally {
       this.subiendoEtapa.set(null);
     }

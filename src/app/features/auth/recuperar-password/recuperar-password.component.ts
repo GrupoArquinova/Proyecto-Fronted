@@ -42,7 +42,10 @@ export class RecuperarPasswordComponent {
           this.errorMessage.set('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.');
           return;
         }
-        this.errorMessage.set(err.error?.mensaje || err.error?.error || 'Error al solicitar la recuperación');
+        // Mensajes fijos: nunca se muestra el texto que devuelva el servidor
+        this.errorMessage.set(err.status === 429
+          ? 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.'
+          : 'Error al solicitar la recuperación');
       },
     });
   }

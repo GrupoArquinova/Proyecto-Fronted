@@ -132,7 +132,7 @@ export class PasoUbicacionComponent {
       longitud: v.longitud ?? undefined,
       googleMapsUrl: v.googleMapsUrl?.trim() || undefined,
       urbanismoUrl: this.urbanismoUrl() || undefined,
-      urbanismoUrlEn: this.urbanismoUrlEn(),
+      urbanismoUrlEn: this.urbanismoUrlEn() || undefined,
       vistaAereaUrl: this.vistaAereaUrl() || undefined,
       recorrido360Url: this.recorrido360Url() || undefined,
       videoComoLlegarUrl: this.videoComoLlegarUrl() || undefined

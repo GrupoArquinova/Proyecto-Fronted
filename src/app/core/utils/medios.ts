@@ -17,15 +17,16 @@ const EXT_PDF = /\.pdf(\?.*)?$/i;
 
 /** Hosts desde los que se permite incrustar tours, mapas y reproductores. */
 const HOSTS_INCRUSTABLES = [
-  'www.youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com',
-  'www.google.com', 'maps.google.com', 'www.openstreetmap.org',
+  'www.youtube-nocookie.com', 'player.vimeo.com',
+  'www.google.com', 'www.openstreetmap.org',
   'my.matterport.com', 'kuula.co', 'www.kuula.co', 'cloudpano.com', 'tour.cloudpano.com'
 ];
 
 function analizar(url: string): URL | null {
   try {
     const u = new URL(url.trim());
-    return u.protocol === 'https:' ? u : null;
+    // Sin credenciales en la URL (https://usuario@otro-host): solo https plano
+    return u.protocol === 'https:' && !u.username && !u.password ? u : null;
   } catch {
     return null;
   }
@@ -65,7 +66,8 @@ export function clasificarMedio(url: string | null | undefined): MedioClasificad
   }
 
   // Un enlace normal de Google Maps no se puede incrustar; solo la versión /maps/embed
-  if (u.hostname.endsWith('google.com') && !u.pathname.startsWith('/maps/embed')) return { tipo: 'enlace' };
+  // (y solo desde www.google.com, el único host de Google que permite la CSP en frame-src)
+  if (u.hostname.endsWith('google.com') && !(u.hostname === 'www.google.com' && u.pathname.startsWith('/maps/embed'))) return { tipo: 'enlace' };
 
   if (HOSTS_INCRUSTABLES.includes(u.hostname)) return { tipo: 'incrustado', embedUrl: u.toString() };
 

@@ -37,7 +37,7 @@ import { estadoDeLote } from '../../../../core/utils/lotes';
           <h3>Proyecto publicado</h3>
           <p>Ya se puede ver en el sitio.</p>
           <div class="enlaces">
-            <a [routerLink]="['/proyectos', p.id]" target="_blank" class="boton-link">Ver en el sitio</a>
+            <a [routerLink]="['/proyectos', p.id]" target="_blank" class="boton-link" rel="noopener noreferrer">Ver en el sitio</a>
             <a routerLink="/admin/proyectos" (click)="terminar()" class="boton-link claro">Ir a Proyectos</a>
             <button type="button" class="secundario" (click)="otroProyecto()">Crear otro proyecto</button>
           </div>

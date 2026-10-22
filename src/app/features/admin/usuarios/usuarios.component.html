@@ -21,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (admin of listaAdmins; track admin) {
+        @for (admin of listaAdmins; track admin.id) {
           <tr>
             <td>{{ admin.nombreCompleto }}</td>
             <td>{{ admin.correo }}</td>

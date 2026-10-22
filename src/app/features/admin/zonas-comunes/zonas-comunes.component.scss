@@ -60,6 +60,12 @@
     border-radius: 10px;
     margin-bottom: 1.5rem;
     font-weight: 500;
+
+    &.alerta-error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
   }
 
   .cards-grid {
@@ -546,3 +552,17 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+// Imagen principal de la amenidad: etiqueta y botón de estrella
+.badge-principal {
+  align-self: flex-start;
+  padding: 0.1rem 0.55rem;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.btn-icon-mini.principal:hover {
+  color: #d97706;
+}

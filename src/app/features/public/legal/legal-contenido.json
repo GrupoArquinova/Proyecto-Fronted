@@ -49,7 +49,8 @@
         ],
         "items": [
           "Datos de contacto que nos entregas en los formularios: nombre, correo electrónico, teléfono, mensaje, proyecto o lote de interés.",
-          "Datos técnicos de la solicitud: dirección IP, tipo de navegador y fecha y hora, que se guardan como prueba de la autorización y por seguridad.",
+          "Datos técnicos de la solicitud: dirección IP, user-agent (tipo de navegador y de dispositivo) y fecha y hora, que nuestro servidor registra automáticamente cuando envías el formulario de contacto, como prueba de la autorización y por seguridad.",
+          "Si usas el chat con inteligencia artificial, el texto de las preguntas que escribas. No escribas en el chat datos personales ni sensibles.",
           "Datos de las personas que administran el sitio (usuarios internos): nombre, correo, rol y registros de actividad dentro del panel.",
           "Si nos escribes por WhatsApp, los datos que compartas en la conversación, que además se rigen por las condiciones de ese servicio."
         ],
@@ -65,6 +66,8 @@
           "Hacer seguimiento comercial a tu solicitud y gestionar la relación con posibles compradores.",
           "Enviarte información sobre nuevos proyectos, avances de obra o novedades, siempre que lo hayas autorizado, con la posibilidad de dejar de recibirla en cualquier momento.",
           "Elaborar estadísticas internas y mejorar el sitio web y nuestros servicios.",
+          "Responder tus preguntas mediante el chat con inteligencia artificial, cuando decides usarlo.",
+          "Mostrar mapas, videos, imágenes y recorridos 360° del sitio, que se cargan desde proveedores externos.",
           "Garantizar la seguridad del sitio y prevenir fraudes o usos indebidos.",
           "Cumplir obligaciones legales y atender requerimientos de autoridades competentes."
         ]
@@ -72,7 +75,7 @@
       {
         "titulo": "7. Autorización",
         "parrafos": [
-          "Recolectamos tus datos solo con tu autorización previa, expresa e informada, que otorgas marcando la casilla de aceptación en nuestros formularios. Guardamos constancia de la autorización (fecha, hora y dirección IP). Puedes revocarla o solicitar la supresión de tus datos en cualquier momento, salvo cuando exista un deber legal o contractual de conservarlos."
+          "Recolectamos tus datos solo con tu autorización previa, expresa e informada, que otorgas marcando la casilla de aceptación en nuestros formularios. Guardamos constancia de la autorización (fecha, hora, dirección IP y user-agent). Puedes revocarla o solicitar la supresión de tus datos en cualquier momento, salvo cuando exista un deber legal o contractual de conservarlos."
         ]
       },
       {
@@ -105,6 +108,19 @@
         "titulo": "10. Transmisión y transferencia de datos",
         "parrafos": [
           "No vendemos tus datos personales. Para operar el sitio podemos compartirlos con proveedores que actúan como encargados del tratamiento, tales como servicios de alojamiento web, base de datos, almacenamiento de imágenes, envío de correo electrónico y mensajería. Algunos de estos proveedores pueden estar ubicados fuera de Colombia; en esos casos exigimos medidas de seguridad y confidencialidad equivalentes a las de esta política y, cuando la ley lo requiera, contamos con tu autorización o con los contratos de transmisión correspondientes.",
+          "Estos son los terceros que pueden recibir datos tuyos cuando usas el sitio, y para qué:"
+        ],
+        "items": [
+          "Cloudinary: almacena y entrega las imágenes, videos y documentos del sitio; al cargarlos recibe tu dirección IP y datos técnicos de tu navegador.",
+          "YouTube (youtube-nocookie.com, de Google): si reproduces un video incrustado, recibe tu dirección IP y datos de tu navegador y puede usar cookies o tecnologías similares.",
+          "Google Maps (Google): si abres un mapa de Google incrustado, recibe tu dirección IP y datos de tu navegador.",
+          "OpenStreetMap (Fundación OpenStreetMap): si abres un mapa interactivo de OpenStreetMap, recibe tu dirección IP y datos de tu navegador.",
+          "WhatsApp (Meta): si nos escribes por WhatsApp desde el sitio, recibe tu número y los mensajes de la conversación, que se rigen por las condiciones de ese servicio.",
+          "Google Gemini (Google): si usas el chat con inteligencia artificial, el texto de tus preguntas se envía a Google para generar la respuesta.",
+          "Correo electrónico: los datos del formulario de contacto (nombre, correo, teléfono y mensaje) se envían por correo a nuestro equipo y, si corresponde, a ti como confirmación, a través de nuestro proveedor de correo.",
+          "Proveedores de alojamiento, servidores y base de datos: almacenan las solicitudes que envías y los datos técnicos asociados."
+        ],
+        "parrafos2": [
           "También podremos entregar datos a autoridades que lo requieran en ejercicio de sus funciones legales."
         ]
       },
@@ -117,7 +133,8 @@
       {
         "titulo": "12. Conservación de los datos",
         "parrafos": [
-          "Conservamos tus datos mientras sean necesarios para las finalidades descritas y durante los plazos exigidos por la ley. Cuando dejen de serlo, los suprimiremos o anonimizaremos de forma segura."
+          "Conservamos tus datos mientras sean necesarios para las finalidades descritas y durante los plazos exigidos por la ley. Cuando dejen de serlo, los suprimiremos o anonimizaremos de forma segura.",
+          "Las solicitudes de contacto, junto con la dirección IP y el user-agent registrados al enviarlas, se conservan durante 24 meses contados desde que las recibimos y después se suprimen o anonimizan. Puedes pedir la supresión antes de ese plazo escribiendo a {{correoDatos}}, salvo que exista un deber legal o contractual de conservarlos."
         ]
       },
       {
@@ -282,7 +299,13 @@
       {
         "titulo": "Para qué usamos tus datos",
         "parrafos": [
-          "Usaremos tu nombre, correo, teléfono y mensaje para responder tu solicitud, contactarte con información comercial de nuestros proyectos (por teléfono, correo o WhatsApp), hacer seguimiento a tu interés y, si lo autorizas, enviarte novedades. También guardamos datos técnicos (IP y navegador) como prueba de tu autorización y por seguridad."
+          "Usaremos tu nombre, correo, teléfono y mensaje para responder tu solicitud, contactarte con información comercial de nuestros proyectos (por teléfono, correo o WhatsApp), hacer seguimiento a tu interés y, si lo autorizas, enviarte novedades. También guardamos datos técnicos (dirección IP y user-agent) como prueba de tu autorización y por seguridad."
+        ]
+      },
+      {
+        "titulo": "Terceros y conservación",
+        "parrafos": [
+          "Para mostrar mapas, videos e imágenes, y para el chat con inteligencia artificial, algunos proveedores externos (Cloudinary, YouTube, Google Maps, OpenStreetMap, WhatsApp y Google Gemini) reciben datos técnicos tuyos, como tu dirección IP, cuando usas esas funciones. Conservamos tu solicitud de contacto, con la IP y el user-agent, durante 24 meses y la suprimimos antes si nos lo pides escribiendo a {{correoDatos}}. La Política de tratamiento de datos personales detalla cada tercero y su finalidad."
         ]
       },
       {

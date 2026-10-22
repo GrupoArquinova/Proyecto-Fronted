@@ -24,6 +24,7 @@
       @case ('google-maps') {
         <div class="lienzo">
           <iframe [src]="googleMaps()!" [title]="'proyecto.ubicacion.mapaGoogleDe' | transloco: { nombre: u.proyectoNombre || ('proyecto.ubicacion.elProyecto' | transloco) }" loading="lazy" allowfullscreen
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"
                   referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       }
@@ -64,7 +65,8 @@
         @case ('mapa') {
           <h2>{{ 'proyecto.ubicacion.mapa' | transloco }}</h2>
           @if (mapaUrl(); as mapa) {
-            <iframe [src]="mapa" [title]="'proyecto.ubicacion.mapaTitulo' | transloco" loading="lazy"></iframe>
+            <iframe [src]="mapa" [title]="'proyecto.ubicacion.mapaTitulo' | transloco" loading="lazy"
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"></iframe>
           }
         }
 
