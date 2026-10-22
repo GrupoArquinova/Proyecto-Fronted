@@ -1,18 +1,13 @@
+@use 'shared/styles/admin-tokens' as t;
+
 .admin-container {
-  padding: 2rem;
-  background: #f1f5f9;
-  min-height: 100vh;
+  @include t.page-container;
 
   .header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+    @include t.page-header;
 
     h2 {
-      color: #1e293b;
-      font-size: 1.5rem;
-      font-weight: 600;
+      @include t.page-title;
     }
   }
 
@@ -69,9 +64,11 @@
   .btn-primary {
     background: #1b4d3e;
     color: white;
-    padding: 0.6rem 1.2rem;
+    padding: 0.65rem 1.4rem;
     border-radius: 999px;
     border: none;
+    font-family: inherit;
+    font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
     transition: background 0.2s;

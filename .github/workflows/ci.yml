@@ -41,6 +41,12 @@ jobs:
       - name: Auditoría de dependencias de producción
         run: npm audit --omit=dev --audit-level=high
 
+      # Informativo: incluye las dependencias de desarrollo (Angular CLI, Vite, Vitest...). No hace fallar el trabajo;
+      # solo deja a la vista los avisos para revisarlos al actualizar Angular.
+      - name: Auditoría completa (informativa)
+        continue-on-error: true
+        run: npm audit
+
   e2e:
     name: Pruebas de extremo a extremo (Playwright)
     runs-on: ubuntu-latest

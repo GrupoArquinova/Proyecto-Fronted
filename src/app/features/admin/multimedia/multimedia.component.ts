@@ -15,11 +15,15 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { LoteService } from '../../../core/services/lote.service';
 import { MultimediaService } from '../../../core/services/multimedia.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { mensajeDeSubida } from '../../../core/utils/archivos';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { mensajeDeError } from '../../../core/utils/errores';
 
 type TipoPadre = 'proyecto' | 'lote' | 'zonaComun' | 'casaModelo' | 'etapa';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-multimedia',
   standalone: true,
@@ -177,7 +181,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
         next: (res) => (this.zonasComunesDisponibles = res),
         error: (err) => {
           console.error('Error cargando zonas comunes:', err);
-          this.toastService.showError('Error cargando zonas comunes');
+          this.toastService.showError('Error cargando amenidades');
         },
       });
     } else if (this.tipoPadre === 'etapa') {
@@ -218,8 +222,8 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error subiendo archivo a Cloudinary:', err);
-        this.toastService.showError('No se pudo subir el archivo a Cloudinary');
-        this.errorArchivo = 'No se pudo subir el archivo. Intenta de nuevo.';
+        this.toastService.showError(mensajeDeSubida(err, 'No se pudo subir el archivo a Cloudinary'));
+        this.errorArchivo = mensajeDeSubida(err, 'No se pudo subir el archivo. Intenta de nuevo.');
         this.subiendoArchivo = false;
         this.nombreArchivoSeleccionado = '';
       },
@@ -319,7 +323,7 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error al guardar multimedia:', err);
-        this.toastService.showError(err?.error?.mensaje || 'Error al guardar archivo multimedia');
+        this.toastService.showError(mensajeDeError(err, 'Error al guardar archivo multimedia'));
         this.guardando = false;
       },
     });
@@ -374,15 +378,6 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       this.viewer360.destroy();
       this.viewer360 = null;
     }
-  }
-
-  calcularVinculoTexto(item: Multimedia): string {
-    if (item.proyectoNombre) return `Proyecto: ${item.proyectoNombre}`;
-    if (item.loteCodigo) return `Lote: ${item.loteCodigo}`;
-    if (item.zonaComunNombre) return `Zona común: ${item.zonaComunNombre}`;
-    if (item.casaModeloNombre) return `Tipología: ${item.casaModeloNombre}`;
-    if (item.etapaNombre) return `Etapa: ${item.etapaNombre}`;
-    return 'Sin vínculo';
   }
 
   manejarErrorImagen(event: Event): void {

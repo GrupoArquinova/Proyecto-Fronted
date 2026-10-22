@@ -67,7 +67,7 @@
 
 .main-content {
   flex: 1;
-  padding: 2.5rem;
+  padding: 2.5rem 3rem;
   overflow-y: auto !important;
   background-color: #f4f6f6;
   display: flex;
@@ -155,7 +155,7 @@
     }
   }
 }
-
+
 
 @media (max-height: 520px) {
   .admin-layout {

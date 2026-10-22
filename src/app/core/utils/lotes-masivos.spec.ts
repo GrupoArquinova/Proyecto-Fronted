@@ -1,4 +1,4 @@
-import { FilaLote, filaValida, filasConCodigoRepetido, generarFilas, proximoNumero } from './lotes-masivos';
+import { FilaLote, filaValida, filasConCodigoRepetido, generarFilas, proximoNumero, renumerarDesde } from './lotes-masivos';
 
 const base = { etapaId: 1, prefijo: 'LT-', desde: 1, cantidad: 3, areaM2: 800, estadoId: 1 };
 const fila = (clave: number, codigo: string, etapaId = 1): FilaLote =>
@@ -67,5 +67,40 @@ describe('filaValida', () => {
     expect(filaValida({ ...fila(1, 'LT-01'), areaM2: 0 })).toBe(false);
     expect(filaValida({ ...fila(1, 'LT-01'), areaM2: null })).toBe(false);
     expect(filaValida({ ...fila(1, 'LT-01'), etapaId: 0 })).toBe(false);
+  });
+});
+
+describe('renumerarDesde', () => {
+  const codigos = (filas: FilaLote[]) => filas.map(f => f.codigo);
+
+  it('si la primera fila pasa a LT-100, las siguientes siguen LT-101, LT-102...', () => {
+    const filas = [fila(1, 'LT-100'), fila(2, 'LT-02'), fila(3, 'LT-03')];
+    expect(codigos(renumerarDesde(filas, 1))).toEqual(['LT-100', 'LT-101', 'LT-102']);
+  });
+
+  it('no toca las filas anteriores a la editada', () => {
+    const filas = [fila(1, 'LT-01'), fila(2, 'LT-50'), fila(3, 'LT-03'), fila(4, 'LT-04')];
+    expect(codigos(renumerarDesde(filas, 2))).toEqual(['LT-01', 'LT-50', 'LT-51', 'LT-52']);
+  });
+
+  it('conserva los ceros a la izquierda que escribio la persona', () => {
+    const filas = [fila(1, 'LT-009'), fila(2, 'LT-002'), fila(3, 'LT-003')];
+    expect(codigos(renumerarDesde(filas, 1))).toEqual(['LT-009', 'LT-010', 'LT-011']);
+  });
+
+  it('solo sigue las filas de la misma etapa y del mismo prefijo', () => {
+    const filas = [fila(1, 'LT-100'), fila(2, 'LT-02'), fila(3, 'LT-01', 2), fila(4, 'MZ-07'), fila(5, 'LT-04')];
+    expect(codigos(renumerarDesde(filas, 1))).toEqual(['LT-100', 'LT-101', 'LT-01', 'MZ-07', 'LT-102']);
+  });
+
+  it('si el codigo no termina en numero no cambia nada', () => {
+    const filas = [fila(1, 'LOTE-ESQUINA'), fila(2, 'LT-02')];
+    expect(renumerarDesde(filas, 1)).toBe(filas);
+    expect(renumerarDesde(filas, 99)).toBe(filas);
+  });
+
+  it('quita el aviso de error de las filas renumeradas, que ya son otro codigo', () => {
+    const filas = [fila(1, 'LT-100'), { ...fila(2, 'LT-02'), error: 'Ya existe un lote con ese código en la etapa.' }];
+    expect(renumerarDesde(filas, 1)[1]).toMatchObject({ codigo: 'LT-101', error: undefined });
   });
 });

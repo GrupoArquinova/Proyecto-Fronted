@@ -5,18 +5,19 @@ import { AsistenteProyectoService } from '../../asistente-proyecto.service';
 import { CasaModeloService } from '../../../../../core/services/casa-modelo.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../../../core/services/confirm-dialog.service';
-import { SubidaArchivoComponent } from '../../../../../shared/components/subida-archivo/subida-archivo.component';
+import { ArchivosTipologiaComponent } from '../../../../../shared/components/archivos-tipologia/archivos-tipologia.component';
+import { ArchivoSubido, MultimediaService } from '../../../../../core/services/multimedia.service';
 import { CasaModelo } from '../../../../../core/models/casa-modelo.models';
 
 @Component({
   selector: 'app-bloque-casas',
   standalone: true,
-  imports: [ReactiveFormsModule, SubidaArchivoComponent],
+  imports: [ReactiveFormsModule, ArchivosTipologiaComponent],
   styleUrl: '../paso.scss',
   template: `
     <section class="bloque" aria-label="Tipologías">
       <h3>Tipologías</h3>
-      <p class="nota">Opcional. Si el proyecto tiene una casa de muestra, agrégala con su plano y su tour virtual.</p>
+      <p class="nota">Opcional. Si el proyecto tiene una casa de muestra, agrégala con sus renders, sus planos y su tour virtual.</p>
 
       <form [formGroup]="form" (ngSubmit)="agregar()" novalidate>
         <div class="fila">
@@ -43,7 +44,7 @@ import { CasaModelo } from '../../../../../core/models/casa-modelo.models';
           <input type="text" formControlName="tourVirtualUrl" placeholder="https://my.matterport.com/show/?m=…" />
           <small class="ayuda">Enlace de Matterport, Kuula, YouTube u otro. Se muestra incrustado en el sitio.</small>
         </label>
-        <app-subida-archivo etiqueta="Plano de la casa" [tipos]="['imagen', 'pdf']" [(url)]="planoUrl" />
+        <app-archivos-tipologia [(imagenes)]="imagenes" [(planos)]="planos" />
 
         <div><button type="submit" class="secundario" [disabled]="guardando()">{{ guardando() ? 'Agregando...' : 'Agregar casa modelo' }}</button></div>
         @if (duplicada()) { <small class="error">Ya hay una tipología con ese nombre en este proyecto.</small> }
@@ -81,13 +82,15 @@ import { CasaModelo } from '../../../../../core/models/casa-modelo.models';
 export class BloqueCasasComponent {
   readonly asistente = inject(AsistenteProyectoService);
   private casaService = inject(CasaModeloService);
+  private multimedia = inject(MultimediaService);
   private toast = inject(ToastService);
   private confirm = inject(ConfirmDialogService);
   private fb = inject(FormBuilder);
 
   readonly guardando = signal(false);
   readonly duplicada = signal(false);
-  readonly planoUrl = signal('');
+  readonly imagenes = signal<ArchivoSubido[]>([]);
+  readonly planos = signal<ArchivoSubido[]>([]);
 
   readonly form = this.fb.group({
     nombre: ['', [Validators.required, Validators.maxLength(150)]],
@@ -114,7 +117,6 @@ export class BloqueCasasComponent {
       numeroHabitaciones: v.habitaciones ?? undefined,
       numeroBanos: v.banos ?? undefined,
       tourVirtualUrl: v.tourVirtualUrl?.trim() || undefined,
-      planoUrl: this.planoUrl() || undefined,
       publicado: true,
       activo: true
     };
@@ -124,9 +126,21 @@ export class BloqueCasasComponent {
     this.casaService.crear(casa).subscribe({
       next: creada => {
         this.asistente.casas.update(l => [...l, creada]);
-        this.form.reset();
-        this.planoUrl.set('');
-        this.guardando.set(false);
+        this.form.reset({ nombre: '', area: null, habitaciones: null, banos: null, descripcion: '', tourVirtualUrl: '' });
+        const imagenes = this.imagenes();
+        const planos = this.planos();
+        this.imagenes.set([]);
+        this.planos.set([]);
+        if (creada.id == null || (imagenes.length === 0 && planos.length === 0)) {
+          this.guardando.set(false);
+          return;
+        }
+        this.multimedia.guardarArchivosDeTipologia(creada.id, imagenes, planos).subscribe(fallidos => {
+          this.guardando.set(false);
+          if (fallidos > 0) {
+            this.toast.showError(`La tipología se agregó, pero ${fallidos} archivo(s) no se pudieron asociar. Súbelos de nuevo desde Tipologías.`);
+          }
+        });
       },
       error: (err: HttpErrorResponse) => {
         this.guardando.set(false);

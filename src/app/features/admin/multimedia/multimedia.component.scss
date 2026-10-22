@@ -9,25 +9,14 @@ $bg-main: t.$bg-page;
 $card-bg: #eef1f0;
 
 .multimedia-container {
-  padding: 2rem 2.5rem;
-  background-color: t.$bg-page;
-  min-height: 100vh;
-  box-sizing: border-box;
-  font-family: t.$font-ui;
+  @include t.page-container;
 }
 
 .header-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  @include t.page-header;
 
   .page-title {
-    font-family: t.$font-ui;
-    font-size: 2.25rem;
-    color: $text-dark;
-    margin: 0;
-    font-weight: 500;
+    @include t.page-title;
   }
 
   .btn-nuevo {

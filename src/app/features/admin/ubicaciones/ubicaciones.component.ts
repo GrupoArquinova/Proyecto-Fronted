@@ -10,9 +10,12 @@ import { UbicacionService } from '../../../core/services/ubicacion.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
-import { validarArchivo } from '../../../core/utils/archivos';
+import { mensajeDeSubida, validarArchivo } from '../../../core/utils/archivos';
 import { EditorPuntosComponent } from './editor-puntos/editor-puntos.component';
+import { mensajeDeError } from '../../../core/utils/errores';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-ubicaciones',
   standalone: true,
@@ -82,7 +85,7 @@ export class UbicacionesComponent implements OnInit {
       error: (err) => {
         console.error('Error al subir la imagen:', err);
         this.subiendoCampo = null;
-        this.toastService.showError('No se pudo subir la imagen. Inténtalo de nuevo.');
+        this.toastService.showError(mensajeDeSubida(err, 'No se pudo subir la imagen. Inténtalo de nuevo.'));
       },
     });
   }
@@ -168,8 +171,8 @@ export class UbicacionesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al guardar la ubicación:', err);
-        const detalle = typeof err?.error?.mensaje === 'string' ? `: ${err.error.mensaje}` : '';
-        this.toastService.showError(`Error al guardar la ubicación${detalle}`);
+        const mensaje = mensajeDeError(err, '');
+        this.toastService.showError(`Error al guardar la ubicación${mensaje ? `: ${mensaje}` : ''}`);
         this.guardando = false;
       },
     });

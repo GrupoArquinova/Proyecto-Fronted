@@ -1,31 +1,18 @@
 @use 'shared/styles/admin-tokens' as t;
 
 .admin-container {
-  padding: 1.5rem;
-  max-width: 1250px;
-  margin: 0 auto;
+  @include t.page-container;
 
   .header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    @include t.page-header;
 
     .sub-title {
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      color: #64748b;
-      font-weight: 600;
-      text-transform: uppercase;
+      @include t.page-eyebrow;
     }
 
     h2 {
-      margin: 0.2rem 0 0 0;
-      font-size: 1.8rem;
-      color: #1e293b;
-      font-family: t.$font-ui;
+      @include t.page-title;
+      margin-top: 0.2rem;
     }
 
     .header-actions {
@@ -47,8 +34,10 @@
         background: #1b4d3e;
         color: white;
         border: none;
-        padding: 0.6rem 1.2rem;
+        padding: 0.65rem 1.4rem;
         border-radius: 999px;
+        font-family: inherit;
+        font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
         display: flex;
@@ -71,6 +60,12 @@
     border-radius: 10px;
     margin-bottom: 1.5rem;
     font-weight: 500;
+
+    &.alerta-error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
   }
 
   .cards-grid {
@@ -544,13 +539,6 @@
   }
 }
 
-.confirm-text {
-  color: #475569;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0.5rem 0;
-}
-
 .subiendo-texto {
   color: #5c6b67;
   font-size: 0.8rem;
@@ -564,3 +552,17 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+// Imagen principal de la amenidad: etiqueta y botón de estrella
+.badge-principal {
+  align-self: flex-start;
+  padding: 0.1rem 0.55rem;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.btn-icon-mini.principal:hover {
+  color: #d97706;
+}

@@ -9,7 +9,11 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ZonaComunImagenService } from '../../../core/services/zona-comun-imagen.service';
 import { ZonaComunImagen } from '../../../core/models/zona-comun-imagen.models';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { mensajeDeSubida } from '../../../core/utils/archivos';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-zonas-comunes',
   standalone: true,
@@ -23,6 +27,7 @@ export class ZonasComunesComponent implements OnInit {
   private proyectoService = inject(ProyectoService);
   private zonaImagenService = inject(ZonaComunImagenService);
   private cloudinaryService = inject(CloudinaryService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   mostrarModalImagenes = false;
   zonaSeleccionadaParaGaleria: ZonaComun | null = null;
@@ -52,13 +57,13 @@ export class ZonasComunesComponent implements OnInit {
 
   proyectoIdSeleccionado: string | number = 'todos';
 
-  mostrarModalEliminar = false;
-  zonaAEliminarId: number | null = null;
 
   cargando = false;
   mostrarModal = false;
   esEdicion = false;
   mensajeAlerta = '';
+  /** El aviso se pinta distinto si es un error (rojo, con ✕) que si es un éxito (verde, con ✓). */
+  tipoAlerta: 'exito' | 'error' = 'exito';
 
   zonaActual: ZonaComun = {
     proyectoId: 1,
@@ -78,7 +83,10 @@ export class ZonasComunesComponent implements OnInit {
         this.listaProyectos = proyectos;
         this.cargarZonas();
       },
-      error: (err) => console.error('Error al cargar proyectos', err),
+      error: (err) => {
+        console.error('Error al cargar proyectos', err);
+        this.mostrarAlerta('No se pudieron cargar los proyectos.', 'error');
+      },
     });
   }
 
@@ -131,7 +139,7 @@ export class ZonasComunesComponent implements OnInit {
         error: (err) => {
           console.error('Error al cargar zonas comunes', err);
           this.cargando = false;
-          this.mostrarAlerta('Error al obtener las zonas comunes.');
+          this.mostrarAlerta('Error al obtener las amenidades.', 'error');
         },
       });
     }
@@ -168,12 +176,12 @@ export class ZonasComunesComponent implements OnInit {
 
   guardarZona(): void {
     if (!this.zonaActual.nombre.trim()) {
-      this.mostrarAlerta('El nombre de la zona común es obligatorio.');
+      this.mostrarAlerta('El nombre de la amenidad es obligatorio.', 'error');
       return;
     }
 
     if (!this.zonaActual.proyectoId) {
-      this.mostrarAlerta('Debe asociar la zona común a un proyecto.');
+      this.mostrarAlerta('Debe asociar la amenidad a un proyecto.', 'error');
       return;
     }
 
@@ -182,60 +190,54 @@ export class ZonasComunesComponent implements OnInit {
       this.zonaService.actualizar(this.zonaActual.id, this.zonaActual).subscribe({
         next: () => {
           this.cargando = false;
-          this.mostrarAlerta('Zona común actualizada con éxito.');
+          this.mostrarAlerta('Amenidad actualizada con éxito.');
           this.cerrarModal();
           this.cargarZonas();
         },
         error: (err) => {
           this.cargando = false;
           console.error(err);
-          this.mostrarAlerta('Error al actualizar la zona común.');
+          this.mostrarAlerta('Error al actualizar la amenidad.', 'error');
         },
       });
     } else {
       this.zonaService.crear(this.zonaActual).subscribe({
         next: () => {
           this.cargando = false;
-          this.mostrarAlerta('Zona común creada con éxito.');
+          this.mostrarAlerta('Amenidad creada con éxito.');
           this.cerrarModal();
           this.cargarZonas();
         },
         error: (err) => {
           this.cargando = false;
           console.error(err);
-          this.mostrarAlerta('Error al crear la zona común.');
+          this.mostrarAlerta('Error al crear la amenidad.', 'error');
         },
       });
     }
   }
 
-  prepararEliminacion(id?: number): void {
+  async prepararEliminacion(id?: number): Promise<void> {
     if (!id) return;
-    this.zonaAEliminarId = id;
-    this.mostrarModalEliminar = true;
-  }
-
-  cerrarModalEliminar(): void {
-    this.mostrarModalEliminar = false;
-    this.zonaAEliminarId = null;
-  }
-
-  confirmarEliminacion(): void {
-    if (!this.zonaAEliminarId) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar amenidad',
+      message: '¿Estás seguro de que deseas eliminar esta amenidad? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
 
     this.cargando = true;
-    this.zonaService.eliminar(this.zonaAEliminarId).subscribe({
+    this.zonaService.eliminar(id).subscribe({
       next: () => {
         this.cargando = false;
-        this.cerrarModalEliminar();
-        this.mostrarAlerta('Zona común eliminada correctamente.');
+        this.mostrarAlerta('Amenidad eliminada correctamente.');
         this.cargarZonas();
       },
       error: (err) => {
         this.cargando = false;
-        this.cerrarModalEliminar();
         console.error(err);
-        this.mostrarAlerta('No se pudo eliminar el registro.');
+        this.mostrarAlerta('No se pudo eliminar el registro.', 'error');
       },
     });
   }
@@ -251,7 +253,10 @@ export class ZonasComunesComponent implements OnInit {
   cargarImagenesDeZona(zonaId: number): void {
     this.zonaImagenService.listarPorZona(zonaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (imgs) => (this.listaImagenesZona = imgs),
-      error: (err) => console.error('Error al cargar imágenes de la zona', err),
+      error: (err) => {
+        console.error('Error al cargar imágenes de la zona', err);
+        this.mostrarAlerta('No se pudieron cargar las imágenes de la amenidad.', 'error');
+      },
     });
   }
 
@@ -279,7 +284,7 @@ export class ZonasComunesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error subiendo imagen a Cloudinary:', err);
-        this.errorImagen = 'No se pudo subir la imagen. Intenta de nuevo.';
+        this.errorImagen = mensajeDeSubida(err, 'No se pudo subir la imagen. Intenta de nuevo.');
         this.subiendoImagen = false;
         this.archivoSeleccionado = null;
       },
@@ -289,7 +294,7 @@ export class ZonasComunesComponent implements OnInit {
   /** Guarda la imagen: crea una nueva, o actualiza si está en modo edición. */
   agregarImagenAZona(): void {
     if (!this.nuevaImagen.imagenUrl.trim()) {
-      this.mostrarAlerta('Debe ingresar una URL o seleccionar un archivo de imagen.');
+      this.mostrarAlerta('Debe ingresar una URL o seleccionar un archivo de imagen.', 'error');
       return;
     }
 
@@ -302,7 +307,7 @@ export class ZonasComunesComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al actualizar imagen', err);
-          this.mostrarAlerta('Error al actualizar la imagen.');
+          this.mostrarAlerta('Error al actualizar la imagen.', 'error');
         },
       });
     } else {
@@ -314,7 +319,7 @@ export class ZonasComunesComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al agregar imagen', err);
-          this.mostrarAlerta('Error al guardar la imagen.');
+          this.mostrarAlerta('Error al guardar la imagen.', 'error');
         },
       });
     }
@@ -345,28 +350,52 @@ export class ZonasComunesComponent implements OnInit {
     this.errorImagen = '';
   }
 
-  eliminarImagenZona(id?: number): void {
+  async eliminarImagenZona(id?: number): Promise<void> {
     if (!id) return;
-    if (confirm('¿Desea eliminar esta imagen de la galería?')) {
-      this.zonaImagenService.eliminar(id).subscribe({
-        next: () => {
-          if (this.imagenEditandoId === id) {
-            this.cancelarEdicionImagen();
-          }
-          this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
-          this.mostrarAlerta('Imagen eliminada.');
-        },
-        error: (err) => console.error('Error al eliminar imagen', err),
-      });
-    }
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar imagen',
+      message: '¿Deseas eliminar esta imagen de la galería? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
+    this.zonaImagenService.eliminar(id).subscribe({
+      next: () => {
+        if (this.imagenEditandoId === id) {
+          this.cancelarEdicionImagen();
+        }
+        this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
+        this.mostrarAlerta('Imagen eliminada.');
+      },
+      error: (err) => {
+        console.error('Error al eliminar imagen', err);
+        this.mostrarAlerta('No se pudo eliminar la imagen.', 'error');
+      },
+    });
+  }
+
+  /** Deja la imagen como la principal de la amenidad (la que se usa como portada); solo puede haber una. */
+  marcarImagenPrincipal(img: ZonaComunImagen): void {
+    if (!img.id || img.esPrincipal) return;
+    this.zonaImagenService.marcarComoPrincipal(img.id).subscribe({
+      next: () => {
+        this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
+        this.mostrarAlerta('Imagen principal actualizada.');
+      },
+      error: (err) => {
+        console.error('Error al marcar la imagen principal', err);
+        this.mostrarAlerta('No se pudo marcar la imagen como principal.', 'error');
+      },
+    });
   }
 
   marcarImagenConError(id?: number): void {
     if (id) this.imagenesConError.add(id);
   }
 
-  private mostrarAlerta(msg: string): void {
+  private mostrarAlerta(msg: string, tipo: 'exito' | 'error' = 'exito'): void {
     this.mensajeAlerta = msg;
+    this.tipoAlerta = tipo;
     setTimeout(() => (this.mensajeAlerta = ''), 4000);
   }
 }

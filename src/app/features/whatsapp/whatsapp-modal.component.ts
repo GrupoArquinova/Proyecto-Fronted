@@ -56,7 +56,7 @@ export class WhatsappModalComponent {
 
     const url = `https://wa.me/${this.numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
 
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
     this.toggleModal();
   }
 

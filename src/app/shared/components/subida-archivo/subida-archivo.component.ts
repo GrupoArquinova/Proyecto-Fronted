@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { TipoArchivo, atributoAccept, validarArchivo } from '../../../core/utils/archivos';
+import { TipoArchivo, atributoAccept, mensajeDeSubida, validarArchivo } from '../../../core/utils/archivos';
 
 /**
  * Campo para subir un archivo (imagen, video o PDF) directo a Cloudinary y quedarse con su URL.
@@ -140,8 +140,8 @@ export class SubidaArchivoComponent {
       },
       error: err => {
         console.error('Error al subir el archivo a Cloudinary:', err);
-        this.toast.showError('No se pudo subir el archivo');
-        this.error.set(`No se pudo subir ${archivo.name}. Inténtalo de nuevo.`);
+        this.toast.showError(mensajeDeSubida(err, 'No se pudo subir el archivo'));
+        this.error.set(mensajeDeSubida(err, `No se pudo subir ${archivo.name}. Inténtalo de nuevo.`));
         this.nombre.set('');
         this.subiendo.set(false);
       }

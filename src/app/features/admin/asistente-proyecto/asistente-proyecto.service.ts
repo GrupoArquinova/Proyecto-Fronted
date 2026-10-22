@@ -14,6 +14,7 @@ import { Lote } from '../../../core/models/lote.models';
 import { ZonaComun } from '../../../core/models/zona-comun.models';
 import { CasaModelo } from '../../../core/models/casa-modelo.models';
 import { Multimedia } from '../../../core/models/multimedia.models';
+import { CLAVE_BORRADOR_ASISTENTE } from '../../../core/utils/almacenamiento';
 
 export type PasoAsistente = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -27,11 +28,11 @@ export const PASOS: PasoInfo[] = [
   { numero: 2, titulo: 'Ubicación' },
   { numero: 3, titulo: 'Etapas' },
   { numero: 4, titulo: 'Lotes' },
-  { numero: 5, titulo: 'Zonas, casa y recursos' },
+  { numero: 5, titulo: 'Amenidades, tipologías y recursos' },
   { numero: 6, titulo: 'Revisar y publicar' }
 ];
 
-const CLAVE_BORRADOR = 'asistente_proyecto_borrador';
+const CLAVE_BORRADOR = CLAVE_BORRADOR_ASISTENTE;
 
 interface Borrador {
   proyectoId: number;

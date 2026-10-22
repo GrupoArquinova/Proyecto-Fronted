@@ -6,7 +6,10 @@ import { ContenidoService } from '../../../core/services/contenido.service';
 import { ContenidoInstitucional } from '../../../core/models/contenido.models';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { mensajeDeError } from '../../../core/utils/errores';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-contenido-institucional',
   standalone: true,
@@ -88,7 +91,7 @@ export class ContenidoInstitucionalComponent implements OnInit {
       error: (err) => {
         console.error('Error al crear sección:', err);
         this.cargandoCrear = false;
-        const errorMsg = err.error?.message || 'Error al crear la sección. Verifica que no esté duplicada.';
+        const errorMsg = mensajeDeError(err, 'Error al crear la sección. Verifica que no esté duplicada.');
         this.toastService.showError(errorMsg);
       }
     });

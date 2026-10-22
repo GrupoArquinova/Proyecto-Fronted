@@ -1,16 +1,11 @@
 @use '../../../shared/styles/admin-tokens' as t;
 .resumen {
-  padding: 2.5rem 3rem;
-  font-family: inherit;
-  box-sizing: border-box;
+  @include t.page-container;
 }
 
 .titulo {
-  font-family: t.$font-ui;
-  font-size: 2.25rem;
-  font-weight: 400;
-  color: #1f2b28;
-  margin: 0 0 1.75rem 0;
+  @include t.page-title;
+  margin-bottom: t.$space-lg;
 }
 
 .alerta-error {

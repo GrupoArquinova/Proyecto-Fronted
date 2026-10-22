@@ -1,13 +1,17 @@
 <router-outlet></router-outlet>
 
-<!-- Únicamente el componente modal de WhatsApp -->
-<app-whatsapp-modal></app-whatsapp-modal>
+<!-- Botón de WhatsApp: solo en el sitio público -->
+@if (sitioPublico()) {
+  <app-whatsapp-modal></app-whatsapp-modal>
+}
 
 <!-- Notificaciones Globales -->
 <app-toast></app-toast>
 
 <!-- Diálogo de Confirmación Global -->
 <app-confirm-dialog></app-confirm-dialog>
+
+<app-chat-widget></app-chat-widget>
 
 <!-- Overlay Global: Rotación de Dispositivo -->
 <div class="rotate-device-overlay" id="rotateOverlay">

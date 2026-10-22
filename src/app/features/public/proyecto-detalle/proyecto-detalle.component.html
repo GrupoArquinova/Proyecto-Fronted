@@ -77,9 +77,9 @@
           <a routerLink="/proyectos">&larr; {{ 'proyecto.armazon.todosProyectos' | transloco }}</a>
           <!-- Se abren en otra pestaña para no sacar a la persona del proyecto que está viendo -->
           <nav class="enlaces-legales" [attr.aria-label]="'proyecto.armazon.informacionLegal' | transloco">
-            <a routerLink="/legal/politica-datos" target="_blank">{{ 'proyecto.armazon.datos' | transloco }}</a>
-            <a routerLink="/legal/terminos" target="_blank">{{ 'proyecto.armazon.terminos' | transloco }}</a>
-            <a routerLink="/legal/cookies" target="_blank">{{ 'proyecto.armazon.cookies' | transloco }}</a>
+            <a routerLink="/legal/politica-datos" target="_blank" rel="noopener noreferrer">{{ 'proyecto.armazon.datos' | transloco }}</a>
+            <a routerLink="/legal/terminos" target="_blank" rel="noopener noreferrer">{{ 'proyecto.armazon.terminos' | transloco }}</a>
+            <a routerLink="/legal/cookies" target="_blank" rel="noopener noreferrer">{{ 'proyecto.armazon.cookies' | transloco }}</a>
           </nav>
           <app-selector-idioma variante="cristal" />
         </footer>

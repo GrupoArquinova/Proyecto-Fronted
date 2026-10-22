@@ -8,7 +8,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../../core/services/confirm-dialog.service';
 import { Lote } from '../../../../core/models/lote.models';
 import {
-  FilaLote, MAX_LOTES_POR_TANDA, filaValida, filasConCodigoRepetido, generarFilas, proximoNumero
+  FilaLote, MAX_LOTES_POR_TANDA, filaValida, filasConCodigoRepetido, generarFilas, proximoNumero, renumerarDesde
 } from '../../../../core/utils/lotes-masivos';
 import { estadoDeLote, formatoArea } from '../../../../core/utils/lotes';
 
@@ -26,7 +26,7 @@ const ESTADOS = [
   styleUrl: './paso.scss',
   template: `
     <h2>Lotes</h2>
-    <p class="intro">Genera varios lotes de una vez (por ejemplo LT-01 a LT-20), revísalos en la tabla y guárdalos. Puedes repetirlo por cada etapa.</p>
+    <p class="intro">Genera varios lotes de una vez (por ejemplo LT-01 a LT-20), revísalos en la tabla y guárdalos. Puedes repetirlo por cada etapa. Si cambias el código de una fila (por ejemplo a LT-100), las que le siguen continúan la numeración (LT-101, LT-102...); cada una se puede seguir editando.</p>
 
     @if (asistente.etapas().length === 0) {
       <p class="aviso">Primero crea al menos una etapa en el paso 3.</p>
@@ -69,7 +69,7 @@ const ESTADOS = [
             @for (f of filas(); track f.clave) {
               <div class="fila-tabla" role="row" [class.con-error]="f.error || repetidas().has(f.clave)">
                 <span class="etapa">{{ nombreEtapa(f.etapaId) }}</span>
-                <input type="text" [ngModel]="f.codigo" (ngModelChange)="editar(f.clave, 'codigo', $event)" maxlength="50"
+                <input type="text" [ngModel]="f.codigo" (ngModelChange)="editar(f.clave, 'codigo', $event)" (change)="renumerar(f.clave)" maxlength="50"
                        [class.invalido]="repetidas().has(f.clave) || !f.codigo.trim()" aria-label="Código" />
                 <input type="number" min="1" step="any" [ngModel]="f.areaM2" (ngModelChange)="editar(f.clave, 'areaM2', $event)"
                        [class.invalido]="!(f.areaM2 && f.areaM2 > 0)" aria-label="Área" />
@@ -113,8 +113,8 @@ const ESTADOS = [
     </section>
 
     <div class="acciones">
-      <button type="button" class="secundario" (click)="asistente.anterior()" [disabled]="guardando()">Atrás</button>
-      <button type="button" class="primario" (click)="asistente.siguiente()" [disabled]="guardando()">
+      <button type="button" class="secundario" (click)="irAtras()" [disabled]="guardando()">Atrás</button>
+      <button type="button" class="primario" (click)="continuar()" [disabled]="guardando()">
         {{ asistente.lotes().length === 0 ? 'Omitir por ahora' : 'Continuar' }}
       </button>
     </div>
@@ -234,6 +234,34 @@ export class PasoLotesComponent {
 
   editar<K extends 'codigo' | 'areaM2' | 'estadoId'>(clave: number, campo: K, valor: FilaLote[K]): void {
     this.filas.update(lista => lista.map(f => (f.clave === clave ? { ...f, [campo]: valor, error: undefined } : f)));
+  }
+
+  /** Al terminar de editar un código, los siguientes de la etapa continúan la numeración. */
+  renumerar(clave: number): void {
+    this.filas.update(lista => renumerarDesde(lista, clave));
+  }
+
+  /** Si quedan filas generadas sin guardar, avisa antes de salir del paso: así no se pierden en silencio. */
+  private async confirmarSalida(): Promise<boolean> {
+    const pendientes = this.filas().length;
+    if (pendientes === 0) return true;
+    return this.confirm.open({
+      title: 'Lotes sin guardar',
+      message: pendientes === 1
+        ? 'Tienes 1 lote generado que todavía no se guardó. Si sales de este paso se pierde.'
+        : `Tienes ${pendientes} lotes generados que todavía no se guardaron. Si sales de este paso se pierden.`,
+      confirmText: 'Salir sin guardar',
+      cancelText: 'Volver a revisarlos',
+      type: 'warning'
+    });
+  }
+
+  async continuar(): Promise<void> {
+    if (await this.confirmarSalida()) this.asistente.siguiente();
+  }
+
+  async irAtras(): Promise<void> {
+    if (await this.confirmarSalida()) this.asistente.anterior();
   }
 
   quitarFila(clave: number): void {

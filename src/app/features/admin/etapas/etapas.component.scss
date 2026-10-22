@@ -7,22 +7,15 @@ $text-muted: t.$text-muted;
 $border-color: t.$border;
 
 .etapas-container {
-  width: 100%;
-  box-sizing: border-box;
-  padding-bottom: 4px;
-  font-family: t.$font-ui;
+  @include t.page-container;
 }
 
 /* Header */
 .top-header {
-  margin-bottom: 2rem;
+  margin-bottom: t.$space-lg;
 
   .section-tag {
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: #a0aec0;
-    text-transform: uppercase;
+    @include t.page-eyebrow;
   }
 
   .header-main {
@@ -32,11 +25,7 @@ $border-color: t.$border;
     margin-top: 0.35rem;
 
     .page-title {
-      font-family: t.$font-ui;
-      font-size: 2.35rem;
-      color: $text-dark;
-      margin: 0;
-      font-weight: 400;
+      @include t.page-title;
     }
 
     .subtitle {

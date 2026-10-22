@@ -38,9 +38,14 @@
 
       <label class="consentimiento">
         <input type="checkbox" formControlName="consentimientoDatos" />
-        <span>{{ 'proyecto.contacto.consentimientoAntes' | transloco }} <a href="/legal/politica-datos" target="_blank" rel="noopener">{{ 'proyecto.contacto.consentimientoEnlace' | transloco }}</a>.</span>
+        <span>{{ 'proyecto.contacto.consentimientoAntes' | transloco }} <a href="/legal/politica-datos" target="_blank" rel="noopener noreferrer">{{ 'proyecto.contacto.consentimientoEnlace' | transloco }}</a>.</span>
       </label>
       @if (invalido('consentimientoDatos')) { <small class="aviso">{{ 'proyecto.contacto.errorConsentimiento' | transloco }}</small> }
+
+      <!-- Trampa para bots: las personas no la ven ni la llenan; el backend descarta el envío si trae texto -->
+      <div class="campo-trampa" aria-hidden="true">
+        <label>Sitio web <input type="text" formControlName="sitioWeb" tabindex="-1" autocomplete="off" /></label>
+      </div>
 
       <button type="submit" class="enviar" [disabled]="enviando()">
         {{ (enviando() ? 'proyecto.contacto.enviando' : 'proyecto.contacto.enviar') | transloco }}
@@ -49,7 +54,7 @@
 
     <footer class="pie">
       <a [href]="'tel:+' + contacto.whatsapp">{{ contacto.telefonoTexto }}</a>
-      <a [href]="whatsappUrl" target="_blank" rel="noopener">{{ 'proyecto.contacto.whatsapp' | transloco }}</a>
+      <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">{{ 'proyecto.contacto.whatsapp' | transloco }}</a>
       @if (lugar()) { <span>{{ lugar() }}</span> }
     </footer>
   </section>

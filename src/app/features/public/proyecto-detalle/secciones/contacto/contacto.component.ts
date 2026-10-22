@@ -1,6 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -26,7 +25,6 @@ export class ContactoPublicoComponent {
   private fb = inject(FormBuilder);
   private solicitudService = inject(SolicitudService);
   private toast = inject(ToastService);
-  private platformId = inject(PLATFORM_ID);
   private route = inject(ActivatedRoute);
   private idioma = inject(IdiomaService);
 
@@ -47,6 +45,14 @@ export class ContactoPublicoComponent {
   readonly lote = computed(() =>
     this.seccion.detalle()?.lotes.find(l => l.id === this.loteId()) ?? null);
 
+  /** Tipología (villa) por la que se consulta (llega con ?casa=<id> desde "Solicitar información" en la villa). */
+  private casaId = toSignal(
+    this.route.queryParamMap.pipe(map(p => Number(p.get('casa')) || null)),
+    { initialValue: Number(this.route.snapshot.queryParamMap.get('casa')) || null }
+  );
+  readonly casa = computed(() =>
+    this.seccion.detalle()?.casasModelo.find(c => c.id === this.casaId()) ?? null);
+
   readonly enviando = signal(false);
 
   readonly form = this.fb.nonNullable.group({
@@ -54,7 +60,9 @@ export class ContactoPublicoComponent {
     telefono: ['', [Validators.maxLength(30)]],
     correo: ['', [Validators.email]],
     mensaje: ['', [Validators.required, Validators.maxLength(1000)]],
-    consentimientoDatos: [false, Validators.requiredTrue]
+    consentimientoDatos: [false, Validators.requiredTrue],
+    /** Honeypot: oculto para las personas (ver .campo-trampa en styles.scss). */
+    sitioWeb: ['']
   }, { validators: alMenosUnMedioDeContacto });
 
   /** Falta el medio de contacto y la persona ya tocó alguno de los dos campos. */
@@ -63,11 +71,16 @@ export class ContactoPublicoComponent {
     && (this.form.controls.telefono.touched || this.form.controls.correo.touched);
 
   constructor() {
-    // Si llegan por un lote, el mensaje ya viene escrito (sin pisar lo que la persona haya escrito)
+    // Si llegan por un lote o una villa, el mensaje ya viene escrito (sin pisar lo que la persona haya escrito)
     effect(() => {
       const lote = this.lote();
-      if (lote && !untracked(() => this.form.controls.mensaje.value)) {
-        this.form.controls.mensaje.setValue(this.idioma.t('proyecto.contacto.mensajeLote', { codigo: lote.codigo }));
+      const casa = this.casa();
+      if (!untracked(() => this.form.controls.mensaje.value)) {
+        if (lote) {
+          this.form.controls.mensaje.setValue(this.idioma.t('proyecto.contacto.mensajeLote', { codigo: lote.codigo }));
+        } else if (casa) {
+          this.form.controls.mensaje.setValue(this.idioma.t('proyecto.contacto.mensajeVilla', { nombre: casa.nombre }));
+        }
       }
     });
   }
@@ -83,7 +96,7 @@ export class ContactoPublicoComponent {
       ...this.form.getRawValue(),
       proyectoId: proyecto.id ?? null,
       loteId: this.lote()?.id ?? null,
-      userAgent: isPlatformBrowser(this.platformId) ? navigator.userAgent : ''
+      casaModeloId: this.casa()?.id ?? null
     };
 
     this.enviando.set(true);

@@ -43,6 +43,30 @@ describe('clasificarMedio', () => {
     expect(clasificarMedio(null).tipo).toBe('enlace');
   });
 
+  it('rechaza esquemas peligrosos, http y hosts fuera de la lista (nada llega a bypassSecurityTrustResourceUrl)', () => {
+    for (const url of [
+      'javascript:alert(1)', ' JAVASCRIPT:alert(1)', 'data:text/html;base64,PHNjcmlwdD4=', 'vbscript:x', 'blob:https://my.matterport.com/abc',
+      'file:///etc/passwd', 'http://www.youtube-nocookie.com/embed/abc', 'http://www.openstreetmap.org/export/embed.html',
+      'https://my.matterport.com.evil.com/show', 'https://evil.com/my.matterport.com', 'https://www.google.com.evil.com/maps/embed',
+      'https://user@evil.com@my.matterport.com/', 'https://maps.google.com/maps/embed?pb=1', 'https://www.youtube.com/redirect?q=x'
+    ]) {
+      const r = clasificarMedio(url);
+      expect(r.embedUrl, url).toBeUndefined();
+      expect(r.tipo, url).toBe('enlace');
+    }
+  });
+
+  it('todo embedUrl devuelto es https y de un host de frame-src', () => {
+    const permitidos = ['www.youtube-nocookie.com', 'player.vimeo.com', 'www.google.com', 'www.openstreetmap.org', 'my.matterport.com',
+      'kuula.co', 'www.kuula.co', 'cloudpano.com', 'tour.cloudpano.com'];
+    for (const url of ['https://youtu.be/abc', 'https://vimeo.com/12', 'https://www.google.com/maps/embed?pb=1',
+      'https://www.openstreetmap.org/export/embed.html', 'https://my.matterport.com/show/?m=1', 'https://kuula.co/share/x']) {
+      const u = new URL(clasificarMedio(url).embedUrl!);
+      expect(u.protocol).toBe('https:');
+      expect(permitidos).toContain(u.hostname);
+    }
+  });
+
   it('incrusta tours de hosts permitidos', () => {
     expect(clasificarMedio('https://my.matterport.com/show/?m=abc')).toEqual({
       tipo: 'incrustado', embedUrl: 'https://my.matterport.com/show/?m=abc'

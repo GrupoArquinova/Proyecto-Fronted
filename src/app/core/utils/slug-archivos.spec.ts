@@ -1,5 +1,5 @@
 import { generarSlug, PATRON_SLUG } from './slug';
-import { atributoAccept, tipoDeArchivo, validarArchivo } from './archivos';
+import { atributoAccept, esImagenPorFirma, mensajeDeSubida, ArchivoInvalidoError, tipoDeArchivo, validarArchivo, validarContenidoArchivo } from './archivos';
 
 describe('generarSlug', () => {
   it('quita tildes, simbolos y espacios', () => {
@@ -52,6 +52,66 @@ describe('archivos', () => {
   });
 
   it('arma el atributo accept', () => {
-    expect(atributoAccept(['imagen', 'pdf'])).toBe('image/*,application/pdf');
+    expect(atributoAccept(['imagen', 'pdf'])).toBe('image/jpeg,image/png,image/webp,image/gif,image/avif,application/pdf');
+  });
+
+  it('solo reconoce como imagen jpeg, png, webp, gif y avif (nunca svg ni bmp/tiff)', () => {
+    for (const t of ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']) expect(tipoDeArchivo({ type: t })).toBe('imagen');
+    for (const t of ['image/svg+xml', 'image/bmp', 'image/tiff', 'image/x-icon', 'image/heic']) expect(tipoDeArchivo({ type: t })).toBeNull();
+  });
+
+  it('rechaza el SVG con un mensaje claro, venga con tipo svg o disfrazado por nombre', () => {
+    expect(validarArchivo({ type: 'image/svg+xml', size: 10, name: 'logo.svg' }, ['imagen'])).toContain('SVG');
+    expect(validarArchivo({ type: 'image/png', size: 10, name: 'logo.svg' }, ['imagen'])).toContain('SVG');
+    expect(validarArchivo({ type: 'image/svg+xml', size: 10 }, ['imagen', 'pdf'])).toContain('no se admiten');
+  });
+
+  it('exige que la extensión sea de imagen cuando hay nombre', () => {
+    expect(validarArchivo({ type: 'image/png', size: 10, name: 'foto.PNG' }, ['imagen'])).toBeNull();
+    expect(validarArchivo({ type: 'image/png', size: 10, name: 'foto.php' }, ['imagen'])).toContain('extensión');
+    expect(validarArchivo({ type: 'image/png', size: 10, name: 'foto' }, ['imagen'])).toContain('extensión');
+  });
+
+  it('el PDF solo se acepta donde se permite', () => {
+    expect(validarArchivo({ type: 'application/pdf', size: 10, name: 'a.pdf' }, ['imagen'])).toContain('imágenes');
+    expect(validarArchivo({ type: 'application/pdf', size: 10, name: 'a.pdf' }, ['imagen', 'pdf'])).toBeNull();
+  });
+
+  describe('magic bytes', () => {
+    const f = (bytes: number[] | string, tipo: string, nombre: string) =>
+      new File([typeof bytes === 'string' ? bytes : new Uint8Array(bytes)], nombre, { type: tipo });
+    const ascii = (s: string) => [...s].map(c => c.charCodeAt(0));
+
+    it('reconoce las firmas de cada formato', () => {
+      expect(esImagenPorFirma(new Uint8Array([0xff, 0xd8, 0xff, 0xe0]))).toBe(true);
+      expect(esImagenPorFirma(new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))).toBe(true);
+      expect(esImagenPorFirma(new Uint8Array(ascii('GIF89a')))).toBe(true);
+      expect(esImagenPorFirma(new Uint8Array([...ascii('RIFF'), 0, 0, 0, 0, ...ascii('WEBP')]))).toBe(true);
+      expect(esImagenPorFirma(new Uint8Array([0, 0, 0, 0x1c, ...ascii('ftypavif')]))).toBe(true);
+      expect(esImagenPorFirma(new Uint8Array(ascii('<svg xmlns')))).toBe(false);
+      expect(esImagenPorFirma(new Uint8Array(ascii('<?xml')))).toBe(false);
+      expect(esImagenPorFirma(new Uint8Array([]))).toBe(false);
+    });
+
+    it('acepta una imagen real y rechaza una con el contenido cambiado', async () => {
+      expect(await validarContenidoArchivo(f([0xff, 0xd8, 0xff, 0xe0, 0, 0], 'image/jpeg', 'a.jpg'), ['imagen'])).toBeNull();
+      expect(await validarContenidoArchivo(f('<svg onload=alert(1)>', 'image/png', 'a.png'), ['imagen'])).toContain('contenido');
+      expect(await validarContenidoArchivo(f('<html>', 'image/jpeg', 'a.jpg'), ['imagen'])).toContain('contenido');
+    });
+
+    it('un PDF debe empezar por %PDF- y un SVG se rechaza antes de leerlo', async () => {
+      expect(await validarContenidoArchivo(f('%PDF-1.4 ...', 'application/pdf', 'a.pdf'), ['pdf'])).toBeNull();
+      expect(await validarContenidoArchivo(f('MZ', 'application/pdf', 'a.pdf'), ['pdf'])).toContain('PDF');
+      expect(await validarContenidoArchivo(f('<svg/>', 'image/svg+xml', 'a.svg'), ['imagen'])).toContain('SVG');
+    });
+
+    it('el video no se inspecciona (solo tipo y tamaño)', async () => {
+      expect(await validarContenidoArchivo(f('x', 'video/mp4', 'a.mp4'), ['video'])).toBeNull();
+    });
+  });
+
+  it('mensajeDeSubida muestra el de la validación y oculta el resto de errores', () => {
+    expect(mensajeDeSubida(new ArchivoInvalidoError('Sin SVG'), 'genérico')).toBe('Sin SVG');
+    expect(mensajeDeSubida(new Error('boom'), 'genérico')).toBe('genérico');
   });
 });

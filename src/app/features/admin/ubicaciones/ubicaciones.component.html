@@ -6,7 +6,7 @@
 
 <!-- Grid de tarjetas (la vista principal) -->
 <div class="cards-grid">
-  @for (item of listaUbicaciones; track item) {
+  @for (item of listaUbicaciones; track item.id) {
     <div class="ubicacion-card">
       <div class="card-icon-header">
         <div class="icon-circle">
@@ -59,7 +59,7 @@
             <label for="ubicaciones-campo-1" class="u-10">Proyecto *</label>
             <select id="ubicaciones-campo-1" class="u-11" name="proyectoId" [(ngModel)]="formData.proyectoId" required>
               <option [value]="0" disabled>Selecciona un proyecto</option>
-              @for (p of proyectosDisponibles; track p) {
+              @for (p of proyectosDisponibles; track p.id) {
                 <option [value]="p.id">{{ p.nombre }}</option>
               }
             </select>
@@ -171,7 +171,7 @@
                 }}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
                   hidden
                   [disabled]="subiendoCampo !== null"
                   (change)="subirImagen('urbanismoUrl', $event)"
@@ -204,7 +204,7 @@
                 }}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
                   hidden
                   [disabled]="subiendoCampo !== null"
                   (change)="subirImagen('vistaAereaUrl', $event)"
@@ -230,7 +230,7 @@
                 }}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
                   hidden
                   [disabled]="subiendoCampo !== null"
                   (change)="subirImagen('recorrido360Url', $event)"

@@ -1,18 +1,19 @@
 @use 'shared/styles/admin-tokens' as t;
 
-.ubicaciones-container {
+:host {
+  display: block;
   @include t.page-container;
+}
 
-  .header-section {
-    @include t.page-header;
+.header-section {
+  @include t.page-header;
 
-    h2 {
-      @include t.page-title;
-    }
+  h2 {
+    @include t.page-title;
+  }
 
-    .btn-nuevo {
-      @include t.btn-primary;
-    }
+  .btn-nuevo {
+    @include t.btn-primary;
   }
 }
 
@@ -188,13 +189,16 @@
   align-items: center;
   margin-bottom: 1.5rem;
 }
+/* Botón crear: mismo tamaño que el resto del panel */
 :host .u-2 {
   background: #1b4d3e;
   color: white;
   border: none;
-  padding: 0.6rem 1.2rem;
+  padding: 0.65rem 1.4rem;
   border-radius: 999px;
   cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
   font-weight: 500;
 }
 :host .u-3 {

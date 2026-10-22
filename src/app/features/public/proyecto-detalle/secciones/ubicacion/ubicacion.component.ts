@@ -45,7 +45,7 @@ export class UbicacionComponent {
   readonly puntosAerea = computed(() => this.seccion.datos.puntosDe('AEREA').filter(p => !esLugarCercano(p)));
   readonly puntosPlano = computed(() => this.seccion.datos.puntosDe('URBANISMO'));
 
-  /** Mapa satelital de Google incrustado (URL armada con números o un embed oficial); null si no se puede armar. */
+  /** Mapa satelital de Google incrustado (URL armada con números o un embed oficial de www.google.com/maps/embed); null si no se puede armar. */
   readonly googleMaps = computed<SafeResourceUrl | null>(() => {
     const url = this.seccion.datos.urlGoogleMaps();
     return url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : null;

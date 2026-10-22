@@ -52,7 +52,7 @@
       </thead>
       <tbody>
         <!-- Se recorre la lista filtrada -->
-        @for (lote of lotesFiltrados; track lote) {
+        @for (lote of lotesFiltrados; track lote.id) {
           <tr>
             <td class="font-medium">{{ lote.codigo }}</td>
             <td class="text-muted">
@@ -133,7 +133,7 @@
                 (change)="alCambiarProyecto()"
               >
                 <option [ngValue]="null">Todos los proyectos</option>
-                @for (proy of proyectosDisponibles; track proy) {
+                @for (proy of proyectosDisponibles; track proy.id) {
                   <option [value]="proy.id">
                     {{ proy.nombre }}
                   </option>
@@ -147,12 +147,12 @@
                 name="etapaId"
                 [(ngModel)]="nuevoLote.etapaId"
                 required
-                [disabled]="!nuevoLote.proyectoId && proyectosDisponibles.length > 0"
+                (change)="alCambiarEtapa()"
               >
                 <option [ngValue]="null" disabled>Selecciona una etapa</option>
-                @for (etapa of etapasFiltradas; track etapa) {
+                @for (etapa of etapasFiltradas; track etapa.id) {
                   <option [value]="etapa.id">
-                    {{ etapa.nombre }}
+                    {{ !nuevoLote.proyectoId && (etapa.proyectoNombre || etapa.proyecto?.nombre) ? (etapa.proyectoNombre || etapa.proyecto?.nombre) + ' · ' : '' }}{{ etapa.nombre }}
                   </option>
                 }
               </select>

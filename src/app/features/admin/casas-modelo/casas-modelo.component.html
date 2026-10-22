@@ -6,7 +6,7 @@
 
   <!-- Contenedor en Tarjetas estilo Multimedia / Zonas Comunes -->
   <div class="cards-grid">
-    @for (casa of listaCasas; track casa) {
+    @for (casa of listaCasas; track casa.id) {
       <div class="card-item">
         <div class="card-header-badges">
           <span class="badge project-badge">{{
@@ -80,7 +80,7 @@
           <div class="form-group">
             <label for="casas-modelo-campo-1">Proyecto *</label>
             <select id="casas-modelo-campo-1" [(ngModel)]="casaActual.proyectoId">
-              @for (p of listaProyectos; track p) {
+              @for (p of listaProyectos; track p.id) {
                 <option [value]="p.id">{{ p.nombre }}</option>
               }
             </select>
@@ -136,7 +136,7 @@
               <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -->
               <label>Imágenes de la tipología (renders)</label>
               <ul class="miniaturas">
-                @for (img of imagenes; track img) {
+                @for (img of imagenes; track img.id) {
                   <li>
                     <img [src]="img.url" [alt]="img.titulo || casaActual.nombre" />
                     <button type="button" (click)="quitarArchivo(img)" aria-label="Quitar imagen">
@@ -157,7 +157,7 @@
               <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -->
               <label>Planos (se pueden subir varios, por ejemplo uno por planta)</label>
               <ul class="miniaturas">
-                @for (plano of planos; track plano) {
+                @for (plano of planos; track plano.id) {
                   <li>
                     <img [src]="plano.url" [alt]="plano.titulo || 'Plano'" />
                     <span>{{ plano.titulo }}</span>
@@ -176,7 +176,9 @@
               />
             </div>
           } @else {
-            <p class="nota-archivos">Guarda la tipología para poder subir sus imágenes y planos.</p>
+            <div class="form-group archivos">
+              <app-archivos-tipologia [(imagenes)]="imagenesNuevas" [(planos)]="planosNuevos" />
+            </div>
           }
           <div class="form-row-checkboxes">
             <label class="checkbox-group">
@@ -189,8 +191,8 @@
         </div>
         <div class="modal-footer">
           <button class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-          <button class="btn-primary" (click)="guardarCasa()">
-            {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+          <button class="btn-primary" (click)="guardarCasa()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : esEdicion ? 'Actualizar' : 'Guardar' }}
           </button>
         </div>
       </div>

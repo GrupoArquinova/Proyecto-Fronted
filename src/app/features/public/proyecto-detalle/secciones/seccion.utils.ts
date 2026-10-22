@@ -1,4 +1,5 @@
-import { computed, effect, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
@@ -12,12 +13,15 @@ import { SeccionProyectoId } from '../../../../core/models/proyecto-detalle.mode
  *  - vista: la vista activa (query param `vista`), o la primera disponible si no hay una válida
  *    (con `primeraPorDefecto: false` queda en null: la sección muestra su vista principal, como la portada)
  * y devuelve a Bienvenida si la sección no tiene contenido (por ejemplo, URL escrita a mano).
+ * Esa redirección solo la hace el navegador: en el servidor una consulta que falla (las secundarias se tratan como
+ * vacías) respondería un 302 y la URL compartida de una sección con contenido perdería su destino.
  */
 export function inicializarSeccion(id: SeccionProyectoId, opciones: { primeraPorDefecto?: boolean } = {}) {
   const primeraPorDefecto = opciones.primeraPorDefecto ?? true;
   const datos = inject(ProyectoDetalleService);
   const route = inject(ActivatedRoute);
   const router = inject(Router);
+  const enNavegador = isPlatformBrowser(inject(PLATFORM_ID));
 
   const vistaSolicitada = toSignal(route.queryParamMap.pipe(map(p => p.get('vista'))), {
     initialValue: route.snapshot.queryParamMap.get('vista')
@@ -33,7 +37,7 @@ export function inicializarSeccion(id: SeccionProyectoId, opciones: { primeraPor
 
   effect(() => {
     const detalle = datos.detalle();
-    if (detalle && !datos.secciones().some(s => s.id === id)) {
+    if (enNavegador && detalle && !datos.secciones().some(s => s.id === id)) {
       router.navigate(['/proyectos', detalle.proyecto.id, 'bienvenida'], { replaceUrl: true });
     }
   });

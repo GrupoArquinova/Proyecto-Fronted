@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, DestroyRef, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -29,6 +29,13 @@ export class LoginComponent {
 
   private errorTimeout: ReturnType<typeof setTimeout> | null = null;
 
+  constructor() {
+    // Al salir de la pantalla no queda pendiente el temporizador que borra el mensaje de error
+    inject(DestroyRef).onDestroy(() => {
+      if (this.errorTimeout) clearTimeout(this.errorTimeout);
+    });
+  }
+
   onSubmit(): void {
     if (this.loginForm.invalid) {
       this.setTemporaryError('Por favor complete todos los campos correctamente.');
@@ -49,14 +56,15 @@ export class LoginComponent {
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
 
+        // Mensajes fijos: nunca se muestra el texto que devuelva el servidor
         let msg = 'Ocurrió un error al intentar iniciar sesión.';
 
         if (err.status === 401) {
           msg = 'Correo o contraseña incorrectos.';
         } else if (err.status === 0) {
           msg = 'No se pudo conectar con el servidor. Verifica tu conexión.';
-        } else if (err.error?.message) {
-          msg = err.error.message;
+        } else if (err.status === 429) {
+          msg = 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.';
         }
 
         this.setTemporaryError(msg);

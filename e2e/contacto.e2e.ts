@@ -40,6 +40,33 @@ test.describe('formulario de contacto del proyecto', () => {
     expect(peticion.postDataJSON().correo).toBe('luis@example.com');
   });
 
+  test('desde una villa el mensaje ya viene escrito y la solicitud lleva la villa', async ({ page }) => {
+    await page.goto(`/proyectos/${PROYECTO_ID}/contacto?casa=8`);
+    await expect(page.getByLabel('Mensaje')).toHaveValue(/Villa Samán/);
+
+    await page.getByLabel('Nombre').fill('Ana Gómez');
+    await page.getByLabel('Correo').fill('ana@example.com');
+    await page.getByRole('checkbox').check();
+    const [peticion] = await Promise.all([
+      page.waitForRequest(esEnvio),
+      page.getByRole('button', { name: 'Enviar mensaje' }).click()
+    ]);
+    const cuerpo = peticion.postDataJSON();
+    expect(cuerpo.casaModeloId).toBe(8);
+    expect(cuerpo.loteId).toBeNull();
+    // La trampa viaja vacía y no se envían ip ni user-agent (los fija el backend)
+    expect(cuerpo.sitioWeb).toBe('');
+    expect(cuerpo).not.toHaveProperty('userAgent');
+    expect(cuerpo).not.toHaveProperty('ip');
+  });
+
+  test('en la tipología el botón "Solicitar información" lleva al formulario con la villa', async ({ page }) => {
+    await page.goto(`/proyectos/${PROYECTO_ID}/casa-modelo`);
+    await page.getByRole('link', { name: 'Solicitar información' }).first().click();
+
+    await expect(page).toHaveURL(/\/contacto\?casa=\d+/);
+  });
+
   test('sin teléfono ni correo no se envía y avisa qué falta', async ({ page }) => {
     let enviada = false;
     page.on('request', r => { if (esEnvio(r)) enviada = true; });

@@ -5,12 +5,14 @@ import { LoginRequest, AuthResponse } from '../models/auth.models';
 import { ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth.models';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { CLAVE_BORRADOR_ASISTENTE } from '../utils/almacenamiento';
 
 const TOKEN_KEY = 'jwt_token';
 const USER_NAME_KEY = 'user_name';
 const NOMBRE_POR_DEFECTO = 'Administrador';
 const ROL_ADMINISTRADOR = 'ROLE_ADMINISTRADOR';
 /** Cuando a la sesión le quedan menos de estos segundos, se renueva sola en la siguiente petición. */
+// (No acorta la vida del token: esa la fija el backend al emitirlo; este umbral solo decide cuándo se pide uno nuevo.)
 const UMBRAL_RENOVACION_SEGUNDOS = 20 * 60;
 
 @Injectable({
@@ -81,14 +83,25 @@ export class AuthService {
     const token = this.getToken();
     if (!token || this.tokenExpirado(token)) {
       this.logout();
+      this.limpiarBorradores();
       return of(undefined);
     }
 
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.post(`${this.apiUrl}/logout`, {}, { headers }).pipe(
       catchError(() => of(null)),
-      map(() => this.logout())
+      map(() => {
+        this.logout();
+        this.limpiarBorradores();
+      })
     );
+  }
+
+  /** Al cerrar sesión de forma explícita no queda en el navegador el borrador del asistente de proyectos. */
+  private limpiarBorradores(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try { localStorage.removeItem(CLAVE_BORRADOR_ASISTENTE); } catch { /* sin almacenamiento: no hay nada que borrar */ }
+    }
   }
 
   /**

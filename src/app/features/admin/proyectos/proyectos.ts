@@ -1,17 +1,19 @@
-import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Viewer } from '@photo-sphere-viewer/core';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { mensajeDeSubida } from '../../../core/utils/archivos';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { Proyecto, CrearProyectoDTO, ETAPAS_PROYECTO, TIPOS_REGISTRO, TIPOS_PROYECTO, etiquetaEtapa } from '../../../core/models/proyecto.models';
 
 export type FiltroProyectos = 'activos' | 'inactivos' | 'todos';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-proyectos',
   standalone: true,
@@ -19,7 +21,7 @@ export type FiltroProyectos = 'activos' | 'inactivos' | 'todos';
   templateUrl: './proyectos.html',
   styleUrls: ['./proyectos.scss']
 })
-export class ProyectosComponent implements OnInit, OnDestroy {
+export class ProyectosComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private proyectoService = inject(ProyectoService);
   private cloudinaryService = inject(CloudinaryService);
@@ -40,9 +42,8 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   modoEdicion = false;
   proyectoEditandoId: number | null = null;
 
-  // Modal / Visor 360° con Photo Sphere Viewer
+  // Imagen del proyecto ampliada en una ventana
   imagenExpandidaUrl: string | null = null;
-  private viewer360: Viewer | null = null;
 
   // Estado del archivo y carga de Cloudinary
   errorImagen = '';
@@ -100,12 +101,6 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     return etiquetaEtapa(estado);
   }
 
-  ngOnDestroy(): void {
-    if (this.viewer360) {
-      this.viewer360.destroy();
-    }
-  }
-
   // --- Subida directa de imagen a Cloudinary ---
   onImagenSeleccionada(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -116,15 +111,15 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     this.nombreArchivoSeleccionado = file.name;
     this.subiendoImagen = true;
 
-    this.cloudinaryService.subirArchivo(file).subscribe({
+    this.cloudinaryService.subirArchivo(file, ['imagen']).subscribe({
       next: (response: { url: string }) => {
         this.proyectoForm.patchValue({ imagenUrl: response.url });
         this.subiendoImagen = false;
       },
       error: (err) => {
         console.error('Error al subir la imagen a Cloudinary:', err);
-        this.toastService.showError('Error al subir la imagen a Cloudinary');
-        this.errorImagen = 'No se pudo subir la imagen. Inténtalo de nuevo.';
+        this.toastService.showError(mensajeDeSubida(err, 'Error al subir la imagen a Cloudinary'));
+        this.errorImagen = mensajeDeSubida(err, 'No se pudo subir la imagen. Inténtalo de nuevo.');
         this.subiendoImagen = false;
         this.nombreArchivoSeleccionado = '';
       }
@@ -138,60 +133,12 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     this.nombreArchivoSeleccionado = '';
   }
 
-  // --- Visor 360° (Photo Sphere Viewer) ---
+  // --- Ampliar la imagen del proyecto ---
   ampliarImagen(url: string | undefined): void {
-    if (!url) return;
-    this.imagenExpandidaUrl = url;
-
-    setTimeout(() => {
-      this.initVisor360(url);
-    }, 250);
-  }
-
-  initVisor360(url: string): void {
-    if (this.viewer360) {
-      try {
-        this.viewer360.destroy();
-      } catch {
-        // el visor ya estaba cerrado
-      }
-      this.viewer360 = null;
-    }
-
-    const contenedor = document.getElementById('panorama-viewer');
-    if (contenedor) {
-      contenedor.innerHTML = '';
-    }
-
-    setTimeout(() => {
-      try {
-        if (contenedor) {
-          this.viewer360 = new Viewer({
-            container: contenedor as HTMLElement,
-            panorama: url,
-            size: { width: '100%', height: '500px' },
-            navbar: [
-              'zoom',
-              'move',
-              'fullscreen'
-            ]
-          });
-        }
-      } catch (e) {
-        console.error('Error al inicializar Photo Sphere Viewer:', e);
-      }
-    }, 250);
+    if (url) this.imagenExpandidaUrl = url;
   }
 
   cerrarImagen(): void {
-    if (this.viewer360) {
-      try {
-        this.viewer360.destroy();
-      } catch {
-        // el visor ya estaba cerrado
-      }
-      this.viewer360 = null;
-    }
     this.imagenExpandidaUrl = null;
   }
 

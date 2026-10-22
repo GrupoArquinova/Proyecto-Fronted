@@ -33,7 +33,7 @@ test('el sitio funciona con la CSP de Vercel: nada bloqueado', async ({ page }) 
     await page.goto(ruta);
     await page.waitForTimeout(900);
     const violaciones: string[] = await page.evaluate(() => (window as any).__csp || []);
-    // Las imágenes simuladas (imagenes.prueba) y el backend simulado se interceptan en la red, no son bloqueos de la CSP
+    // Las imágenes simuladas (res.cloudinary.com simulado) y el backend simulado se interceptan en la red, no son bloqueos de la CSP
     violaciones.forEach(v => bloqueos.push(`${ruta}: ${v}`));
   }
 

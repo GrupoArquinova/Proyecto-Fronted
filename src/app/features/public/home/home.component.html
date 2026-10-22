@@ -73,7 +73,7 @@
             <a [routerLink]="['/proyectos', d.id]" class="btn-primary">{{
               'home.destacado.conocer' | transloco
             }}</a>
-            <a [href]="whatsappDestacado()" target="_blank" rel="noopener" class="btn-outline">{{
+            <a [href]="whatsappDestacado()" target="_blank" rel="noopener noreferrer" class="btn-outline">{{
               'home.destacado.asesor' | transloco
             }}</a>
           </div>
@@ -112,7 +112,7 @@
 
       <!-- Contenedor de Tarjetas Dinámicas -->
       <div class="projects-grid">
-        @for (proyecto of proyectosDestacados(); track proyecto) {
+        @for (proyecto of proyectosDestacados(); track proyecto.id) {
           <div class="project-card">
             <div class="card-image" [style.backgroundImage]="'url(' + proyecto.imagenUrl + ')'">
               @if (proyecto.estado) {
@@ -311,7 +311,7 @@
             </div>
             <div>
               <span class="label">{{ 'home.contacto.whatsapp' | transloco }}</span>
-              <a [href]="whatsappUrl" target="_blank" rel="noopener" class="whatsapp-link"
+              <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="whatsapp-link"
                 >{{ 'home.contacto.escribanos' | transloco }} &rarr;</a
               >
             </div>
@@ -374,7 +374,7 @@
             <label for="home-campo-5">{{ 'home.formulario.proyecto' | transloco }}</label>
             <select id="home-campo-5" formControlName="proyectoId" class="form-control">
               <option [value]="null">{{ 'home.formulario.seleccioneProyecto' | transloco }}</option>
-              @for (p of proyectosList(); track p) {
+              @for (p of proyectosList(); track p.id) {
                 <option [value]="p.id">
                   {{ p.nombre }}
                 </option>
@@ -396,12 +396,17 @@
               <input type="checkbox" formControlName="consentimientoDatos" />
               <span>
                 {{ 'home.formulario.consentimientoAntes' | transloco }}
-                <a routerLink="/legal/politica-datos" target="_blank">{{
+                <a routerLink="/legal/politica-datos" target="_blank" rel="noopener noreferrer">{{
                   'home.formulario.consentimientoEnlace' | transloco
                 }}</a
                 >{{ 'home.formulario.consentimientoDespues' | transloco }}
               </span>
             </label>
+          </div>
+
+          <!-- Trampa para bots: las personas no la ven ni la llenan; el backend descarta el envío si trae texto -->
+          <div class="campo-trampa" aria-hidden="true">
+            <label>Sitio web <input type="text" formControlName="sitioWeb" tabindex="-1" autocomplete="off" /></label>
           </div>
 
           <button type="submit" class="btn-submit" [disabled]="contactoForm.invalid">

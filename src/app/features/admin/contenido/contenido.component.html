@@ -92,7 +92,7 @@
   <!-- Listado de Secciones en Grid de 3 Columnas -->
   @if (!cargando) {
     <div class="secciones-grid">
-      @for (item of secciones; track item) {
+      @for (item of secciones; track item.id) {
         <div class="contenido-card">
           <!-- Cabecera de la tarjeta -->
           <div class="card-header">

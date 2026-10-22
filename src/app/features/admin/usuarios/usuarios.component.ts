@@ -5,7 +5,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../../core/models/usuario.models';
 import { UsuarioService } from '../../../core/services/usuario.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { mensajeDeError } from '../../../core/utils/errores';
 
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -15,6 +20,7 @@ import { UsuarioService } from '../../../core/services/usuario.service';
 })
 export class UsuariosComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private toastService = inject(ToastService);
   listaAdmins: Usuario[] = [];
   modalAbierto = false;
   esEdicion = false;
@@ -26,6 +32,7 @@ export class UsuariosComponent implements OnInit {
   usuarioActual: Usuario = this.usuarioVacio();
 
   private usuarioService = inject(UsuarioService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   ngOnInit(): void {
     this.cargarAdmins();
@@ -76,7 +83,10 @@ export class UsuariosComponent implements OnInit {
   cargarAdmins(): void {
     this.usuarioService.listar().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => (this.listaAdmins = data),
-      error: (err) => console.error('Error al cargar administradores', err),
+      error: (err) => {
+        console.error('Error al cargar administradores', err);
+        this.toastService.showError('No se pudieron cargar los administradores.');
+      },
     });
   }
 
@@ -124,6 +134,11 @@ export class UsuariosComponent implements OnInit {
         'La contraseña debe tener mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y carácter especial.';
       return;
     }
+    // Editar sin saber a quién: no se debe crear un administrador nuevo en su lugar
+    if (this.esEdicion && !this.usuarioActual.id) {
+      this.errorForm = 'No se pudo identificar al administrador que se está editando. Cierra la ventana y ábrelo de nuevo.';
+      return;
+    }
     this.errorForm = '';
 
     // Solo se envía la contraseña si el admin escribió una
@@ -133,6 +148,7 @@ export class UsuariosComponent implements OnInit {
       this.esEdicion && this.usuarioActual.id
         ? this.usuarioService.actualizar(this.usuarioActual.id, datos)
         : this.usuarioService.crear(datos);
+
 
     const eraEdicion = this.esEdicion;
 
@@ -163,24 +179,32 @@ export class UsuariosComponent implements OnInit {
   private extraerMensajeError(err: HttpErrorResponse): string {
     const detalles = err?.error?.detalles;
     if (detalles && typeof detalles === 'object') {
-      const mensajes = Object.values(detalles) as string[];
+      const mensajes = (Object.values(detalles) as unknown[]).filter((m): m is string => typeof m === 'string' && m.length <= 200);
       if (mensajes.length > 0) {
         return mensajes.join(' ');
       }
     }
-    return err?.error?.mensaje || err?.error?.message || 'No se pudo guardar. Intenta de nuevo.';
+    return mensajeDeError(err, 'No se pudo guardar. Intenta de nuevo.');
   }
 
-  eliminarAdmin(id?: number): void {
+  async eliminarAdmin(id?: number): Promise<void> {
     if (!id) return;
-    if (confirm('¿Estás seguro de eliminar este administrador?')) {
-      this.usuarioService.eliminar(id).subscribe({
-        next: () => {
-          this.cargarAdmins();
-          this.mostrarExito('Administrador eliminado correctamente.');
-        },
-        error: (err) => console.error('Error al eliminar', err),
-      });
-    }
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar administrador',
+      message: '¿Estás seguro de eliminar este administrador? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
+    this.usuarioService.eliminar(id).subscribe({
+      next: () => {
+        this.cargarAdmins();
+        this.mostrarExito('Administrador eliminado correctamente.');
+      },
+      error: (err) => {
+        console.error('Error al eliminar', err);
+        this.toastService.showError(mensajeDeError(err, 'No se pudo eliminar el administrador.'));
+      },
+    });
   }
 }

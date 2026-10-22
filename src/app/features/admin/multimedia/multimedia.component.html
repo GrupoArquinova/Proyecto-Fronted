@@ -53,7 +53,7 @@
   <!-- Grid -->
   @if (!cargando && multimediaFiltrada.length > 0) {
     <div class="media-grid">
-      @for (item of multimediaFiltrada; track item) {
+      @for (item of multimediaFiltrada; track item.id) {
         <div class="media-card">
           <!-- Vista previa interactiva para 360° -->
           <div
@@ -135,7 +135,7 @@
                   : item.loteCodigo
                     ? 'Lote: ' + item.loteCodigo
                     : item.zonaComunNombre
-                      ? 'Zona común: ' + item.zonaComunNombre
+                      ? 'Amenidad: ' + item.zonaComunNombre
                       : item.casaModeloNombre
                         ? 'Tipología: ' + item.casaModeloNombre
                         : item.etapaNombre
@@ -259,6 +259,7 @@
                 <input
                   #fileInput
                   type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif,video/*,application/pdf"
                   class="file-input-oculto"
                   (change)="onArchivoSeleccionado($event)"
                   [disabled]="subiendoArchivo"
@@ -354,7 +355,7 @@
                 <select id="multimedia-campo-2" name="tipoPadre" [(ngModel)]="tipoPadre" (change)="onCambioTipoPadre()">
                   <option value="proyecto">Proyecto</option>
                   <option value="lote">Lote</option>
-                  <option value="zonaComun">Zona Común</option>
+                  <option value="zonaComun">Amenidad</option>
                   <option value="casaModelo">Tipología</option>
                   <option value="etapa">Etapa</option>
                 </select>
@@ -369,7 +370,7 @@
                     required
                   >
                     <option [ngValue]="null" disabled>Selecciona un proyecto</option>
-                    @for (p of proyectosDisponibles; track p) {
+                    @for (p of proyectosDisponibles; track p.id) {
                       <option [value]="p.id">{{ p.nombre }}</option>
                     }
                   </select>
@@ -380,7 +381,7 @@
                   <label for="loteId">Lote *</label>
                   <select id="loteId" name="loteId" [(ngModel)]="formData.loteId" required>
                     <option [ngValue]="null" disabled>Selecciona un lote</option>
-                    @for (l of lotesDisponibles; track l) {
+                    @for (l of lotesDisponibles; track l.id) {
                       <option [value]="l.id">{{ l.codigo }}</option>
                     }
                   </select>
@@ -398,14 +399,14 @@
                     required
                   >
                     <option [ngValue]="null" disabled>Selecciona el proyecto</option>
-                    @for (p of proyectosDisponibles; track p) {
+                    @for (p of proyectosDisponibles; track p.id) {
                       <option [value]="p.id">{{ p.nombre }}</option>
                     }
                   </select>
                 </div>
                 @if (tipoPadre === 'zonaComun') {
                   <div class="form-group full-width">
-                    <label for="zonaComunId">Zona Común *</label>
+                    <label for="zonaComunId">Amenidad *</label>
                     <select
                       id="zonaComunId"
                       name="zonaComunId"
@@ -413,8 +414,8 @@
                       required
                       [disabled]="!proyectoReferenciaId"
                     >
-                      <option [ngValue]="null" disabled>Selecciona una zona común</option>
-                      @for (z of zonasComunesDisponibles; track z) {
+                      <option [ngValue]="null" disabled>Selecciona una amenidad</option>
+                      @for (z of zonasComunesDisponibles; track z.id) {
                         <option [value]="z.id">{{ z.nombre }}</option>
                       }
                     </select>
@@ -431,7 +432,7 @@
                       [disabled]="!proyectoReferenciaId"
                     >
                       <option [ngValue]="null" disabled>Selecciona una tipología</option>
-                      @for (c of casasModelosDisponibles; track c) {
+                      @for (c of casasModelosDisponibles; track c.id) {
                         <option [value]="c.id">{{ c.nombre }}</option>
                       }
                     </select>
@@ -448,7 +449,7 @@
                       [disabled]="!proyectoReferenciaId"
                     >
                       <option [ngValue]="null" disabled>Selecciona una etapa</option>
-                      @for (e of etapasDisponibles; track e) {
+                      @for (e of etapasDisponibles; track e.id) {
                         <option [value]="e.id">{{ e.nombre }}</option>
                       }
                     </select>

@@ -60,7 +60,13 @@
   strong { color: t.$verde; font-size: 1.15rem; margin-right: 0.2rem; }
 }
 
-// Botón para consultar por la villa: abre WhatsApp con el mensaje ya escrito
+// Botones de la villa: pedir información por el formulario o escribir por WhatsApp con el mensaje ya escrito
+.acciones-villa {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
 .consultar {
   display: inline-flex;
   align-items: center;
@@ -81,6 +87,18 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover { background: t.$verde-claro; }
+  }
+
+  // WhatsApp es la segunda opción: contorno en lugar de relleno
+  &.consultar-whatsapp {
+    background: transparent;
+    color: t.$verde;
+    border: 1.5px solid t.$verde;
+    box-shadow: none;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover { background: t.$verde; color: t.$blanco; }
+    }
   }
 }
 

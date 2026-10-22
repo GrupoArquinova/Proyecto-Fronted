@@ -27,26 +27,14 @@ $text-muted: t.$text-muted;
 }
 
 .proyectos-container {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 2.5rem 3rem;
-  background-color: t.$bg-page;
-  min-height: calc(100vh - 65px);
-  font-family: t.$font-ui;
+  @include t.page-container;
 
   .proyectos-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include t.page-header;
     width: 100%;
-    margin-bottom: 2rem;
 
     .page-title {
-      font-family: t.$font-ui;
-      font-size: 2.25rem;
-      font-weight: 500;
-      color: $text-dark;
-      margin: 0;
+      @include t.page-title;
     }
 
     .btn-nuevo {
@@ -272,7 +260,7 @@ $text-muted: t.$text-muted;
   }
 }
 
-// --- VISOR 360° EN MODAL LIGHTBOX ---
+// --- IMAGEN AMPLIADA EN MODAL LIGHTBOX ---
 .lightbox-overlay {
   position: fixed;
   top: 0;
@@ -290,39 +278,20 @@ $text-muted: t.$text-muted;
   .lightbox-content {
     position: relative;
     width: 900px;
+    max-width: 92vw;
     background-color: #ffffff;
     border-radius: 14px;
     padding: 25px;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
     box-sizing: border-box;
 
-    .tour-header {
-      margin-bottom: 15px;
-
-      h2 {
-        color: $primary-green;
-        font-family: t.$font-ui;
-        font-size: 1.5rem;
-        margin: 0 0 5px 0;
-      }
-
-      p {
-        color: #6b7280;
-        font-size: 0.9rem;
-        margin: 0;
-      }
-    }
-
-    /* Contenedor obligatorio de Photo Sphere Viewer / Pannellum */
-    #panorama-viewer {
-      width: 100% !important;
-      height: 450px !important;
-      position: relative !important;
-      display: block !important;
+    .imagen-ampliada {
+      display: block;
+      width: 100%;
+      max-height: 75vh;
+      object-fit: contain;
       border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      background-color: #000000;
-      overflow: hidden;
+      background-color: #f3f4f6;
     }
 
     .btn-close-lightbox {
@@ -595,10 +564,6 @@ $text-muted: t.$text-muted;
 }
 
 @media (max-width: 768px) {
-  .proyectos-container {
-    padding: 1.5rem 1rem;
-  }
-
   .proyectos-header {
     flex-direction: column;
     align-items: flex-start;

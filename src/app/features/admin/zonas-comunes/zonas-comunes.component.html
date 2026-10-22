@@ -7,8 +7,8 @@
     </div>
     <div class="header-actions">
       <select [(ngModel)]="proyectoIdSeleccionado" (change)="cargarZonas()" class="select-proyecto">
-        <option value="todos">🌐 Todas las zonas comunes (Todos los proyectos)</option>
-        @for (p of listaProyectos; track p) {
+        <option value="todos">🌐 Todas las amenidades (Todos los proyectos)</option>
+        @for (p of listaProyectos; track p.id) {
           <option [value]="p.id">{{ p.nombre }}</option>
         }
       </select>
@@ -18,15 +18,15 @@
 
   <!-- Alerta -->
   @if (mensajeAlerta) {
-    <div class="alerta-flotante">
-      <span>✓ {{ mensajeAlerta }}</span>
+    <div class="alerta-flotante" [class.alerta-error]="tipoAlerta === 'error'" [attr.role]="tipoAlerta === 'error' ? 'alert' : 'status'">
+      <span>{{ tipoAlerta === 'error' ? '✕' : '✓' }} {{ mensajeAlerta }}</span>
     </div>
   }
 
   <!-- Grid de Zonas Comunes -->
   @if (listaZonas.length > 0) {
     <div class="cards-grid">
-      @for (zona of listaZonas; track zona) {
+      @for (zona of listaZonas; track zona.id) {
         <div class="item-card">
           <div class="card-header-info">
             <div>
@@ -94,7 +94,7 @@
   } @else {
     @if (!cargando) {
       <div class="empty-state">
-        <p>No hay zonas comunes registradas.</p>
+        <p>No hay amenidades registradas.</p>
       </div>
     }
   }
@@ -111,7 +111,7 @@
           <div class="form-group">
             <label for="zonas-comunes-campo-1">Proyecto al que pertenece *</label>
             <select id="zonas-comunes-campo-1" [(ngModel)]="zonaActual.proyectoId" class="modal-select">
-              @for (p of listaProyectos; track p) {
+              @for (p of listaProyectos; track p.id) {
                 <option [value]="p.id">{{ p.nombre }}</option>
               }
             </select>
@@ -137,7 +137,7 @@
             <textarea id="zonas-comunes-campo-4"
               [(ngModel)]="zonaActual.descripcion"
               rows="3"
-              placeholder="Detalles de la zona común..."
+              placeholder="Detalles de la amenidad..."
             ></textarea>
           </div>
           <div class="form-group">
@@ -191,7 +191,7 @@
               <input id="zonas-comunes-campo-6"
                 type="file"
                 class="file-input"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
                 (change)="onArchivoSeleccionado($event)"
                 [disabled]="subiendoImagen"
               />
@@ -236,12 +236,12 @@
           <h4>Imágenes asociadas ({{ listaImagenesZona.length }})</h4>
           @if (listaImagenesZona.length > 0) {
             <div class="imagenes-grid">
-              @for (img of listaImagenesZona; track img) {
+              @for (img of listaImagenesZona; track img.id) {
                 <div class="img-card" [class.editando]="imagenEditandoId === img.id">
                   @if (!imagenesConError.has(img.id!)) {
                     <img
                       [src]="img.imagenUrl"
-                      [alt]="img.titulo || 'Imagen de zona común'"
+                      [alt]="img.titulo || 'Imagen de amenidad'"
                       (error)="marcarImagenConError(img.id)"
                     />
                   }
@@ -267,7 +267,29 @@
                     <span class="img-title" [title]="img.titulo">{{
                       img.titulo || 'Sin título'
                     }}</span>
+                    @if (img.esPrincipal) {
+                      <span class="badge-principal">Principal</span>
+                    }
                     <div class="img-actions">
+                      @if (!img.esPrincipal) {
+                        <button
+                          class="btn-icon-mini principal"
+                          (click)="marcarImagenPrincipal(img)"
+                          title="Marcar como imagen principal"
+                          aria-label="Marcar como imagen principal"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                          </svg>
+                        </button>
+                      }
                       <button
                         class="btn-icon-mini"
                         (click)="editarImagenZona(img)"
@@ -312,32 +334,11 @@
               }
             </div>
           } @else {
-            <p class="sin-imagenes-txt">No hay imágenes registradas para esta zona común.</p>
+            <p class="sin-imagenes-txt">No hay imágenes registradas para esta amenidad.</p>
           }
         </div>
         <div class="modal-footer">
           <button class="btn-secondary" (click)="cerrarModalImagenes()">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  }
-
-  <!-- Modal de Confirmación de Eliminación -->
-  @if (mostrarModalEliminar) {
-    <div class="modal-overlay">
-      <div class="modal-content modal-confirm">
-        <div class="modal-header">
-          <h3>Confirmar Eliminación</h3>
-          <button class="close-btn" (click)="cerrarModalEliminar()">×</button>
-        </div>
-        <div class="modal-body">
-          <p class="confirm-text">
-            ¿Estás seguro de que deseas eliminar esta zona común? Esta acción no se puede deshacer.
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-secondary" (click)="cerrarModalEliminar()">Cancelar</button>
-          <button class="btn-danger" (click)="confirmarEliminacion()">Sí, Eliminar</button>
         </div>
       </div>
     </div>

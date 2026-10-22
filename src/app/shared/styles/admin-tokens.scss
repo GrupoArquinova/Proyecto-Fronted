@@ -45,16 +45,15 @@ $radius-lg: 14px;
 // ================================================================
 
 // Contenedor principal de página
+// El margen con el borde verde lo da .main-content del dashboard: las vistas no agregan el suyo,
+// así todas arrancan en el mismo punto y con el mismo ancho máximo.
 @mixin page-container {
-  padding: $space-xl $space-2xl;
-  background-color: $bg-page;
-  min-height: 100%;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0;
   box-sizing: border-box;
   font-family: $font-sans;
-
-  @media (max-width: 768px) {
-    padding: $space-lg $space-md;
-  }
 }
 
 // Header de página (título + botón acción)
@@ -62,7 +61,7 @@ $radius-lg: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $space-xl;
+  margin-bottom: $space-lg;
   flex-wrap: wrap;
   gap: $space-md;
 }
@@ -71,10 +70,19 @@ $radius-lg: 14px;
 @mixin page-title {
   font-family: $font-serif;
   font-size: 2.1rem;
-  font-weight: 400;
+  font-weight: 500;
   color: $text-dark;
   margin: 0;
   line-height: 1.2;
+}
+
+// Rótulo pequeño sobre el título (ESTRUCTURA COMERCIAL, GESTIÓN DE INFRAESTRUCTURA...)
+@mixin page-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: $text-muted;
+  text-transform: uppercase;
 }
 
 // Tarjeta estándar
