@@ -13,6 +13,7 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { SolicitudService } from '../../../core/services/solicitud.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { TURNSTILE_SITE_KEY, TurnstileApi } from '../../../core/services/turnstile.service';
 import { provideI18nPruebas } from '../../../i18n/pruebas';
 import { EMPRESA_INFO, SERVICIOS } from './empresa-contenido';
 import { HomeComponent } from './home.component';
@@ -48,6 +49,7 @@ interface Opciones {
   errorCatalogo?: boolean;
   contenidos?: ContenidoInstitucional[];
   errorContenido?: boolean;
+  claveCaptcha?: string;
 }
 
 function crear(op: Opciones = {}) {
@@ -67,6 +69,7 @@ function crear(op: Opciones = {}) {
       { provide: ProyectoService, useValue: { obtenerCatalogoPublico: catalogo } },
       { provide: ContenidoService, useValue: { obtenerPublicadosPorEmpresa: publicados } },
       { provide: SolicitudService, useValue: { enviarSolicitud } },
+      { provide: TURNSTILE_SITE_KEY, useValue: op.claveCaptcha ?? '' },
       { provide: SeoService, useValue: { establecer, urlAbsoluta: (r: string) => `https://arquinova.test${r}` } },
     ],
   });
@@ -333,6 +336,61 @@ describe('HomeComponent', () => {
       expect(error).toHaveBeenCalled();
       expect(toast.toasts().at(-1)).toMatchObject({ type: 'error', message: expect.stringContaining('Hubo un error al enviar') });
       expect(c.contactoForm.value.nombre).toBe('Laura');
+    });
+  });
+
+  describe('captcha (Turnstile)', () => {
+    afterEach(() => { delete (window as unknown as { turnstile?: TurnstileApi }).turnstile; });
+    const conCaptcha = async () => {
+      const callbacks: Record<string, (t?: string) => void> = {};
+      const api = {
+        render: vi.fn((_el: HTMLElement, op: Record<string, unknown>) => {
+          callbacks['exito'] = op['callback'] as (t?: string) => void;
+          callbacks['expira'] = op['expired-callback'] as () => void;
+          return 'w1';
+        }),
+        reset: vi.fn(), remove: vi.fn(),
+      };
+      (window as unknown as { turnstile?: TurnstileApi }).turnstile = api as unknown as TurnstileApi;
+      const ctx = crear({ claveCaptcha: 'clave-sitio' });
+      await ctx.fixture.whenStable();
+      ctx.refrescar();
+      ctx.fixture.componentInstance.contactoForm.patchValue({ nombre: 'Laura', telefono: '300', consentimientoDatos: true });
+      ctx.refrescar();
+      return { ...ctx, api, callbacks };
+    };
+
+    it('sin clave no hay widget y se envía sin captchaToken', () => {
+      const { fixture, enviarSolicitud, el } = crear();
+      fixture.componentInstance.contactoForm.patchValue({ nombre: 'Laura', telefono: '300', consentimientoDatos: true });
+      fixture.componentInstance.enviarFormulario();
+      expect(el.querySelector('app-captcha-turnstile .captcha')).toBeNull();
+      expect((enviarSolicitud.mock.calls[0] as unknown[])[0]).not.toHaveProperty('captchaToken');
+    });
+
+    it('con clave el botón queda deshabilitado y no envía hasta tener token', async () => {
+      const { fixture, enviarSolicitud, el, callbacks, refrescar } = await conCaptcha();
+      expect(el.querySelector<HTMLButtonElement>('.btn-submit')?.disabled).toBe(true);
+      fixture.componentInstance.enviarFormulario();
+      expect(enviarSolicitud).not.toHaveBeenCalled();
+
+      callbacks['exito']('token-ok');
+      refrescar();
+      expect(el.querySelector<HTMLButtonElement>('.btn-submit')?.disabled).toBe(false);
+    });
+
+    it('envía el captchaToken y reinicia el widget; si expira vuelve a bloquear', async () => {
+      const { fixture, enviarSolicitud, callbacks, api } = await conCaptcha();
+      callbacks['exito']('token-ok');
+      fixture.componentInstance.enviarFormulario();
+      expect((enviarSolicitud.mock.calls[0] as unknown[])[0]).toMatchObject({ captchaToken: 'token-ok' });
+      expect(api.reset).toHaveBeenCalledWith('w1');
+      expect(fixture.componentInstance.captchaToken()).toBeNull();
+
+      callbacks['exito']('otro');
+      expect(fixture.componentInstance.puedeEnviar()).toBe(true);
+      callbacks['expira']();
+      expect(fixture.componentInstance.puedeEnviar()).toBe(false);
     });
   });
 });

@@ -1,5 +1,5 @@
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -11,11 +11,13 @@ import { SolicitudPublicaRequest } from '../../../../../core/models/solicitud.mo
 import { alMenosUnMedioDeContacto } from '../../../../../core/utils/solicitudes';
 import { environment } from '../../../../../../environments/environment';
 import { IdiomaService } from '../../../../../core/services/idioma.service';
+import { TurnstileService } from '../../../../../core/services/turnstile.service';
+import { CaptchaTurnstileComponent } from '../../../../../shared/components/captcha-turnstile/captcha-turnstile.component';
 
 @Component({
   selector: 'app-contacto-publico',
   standalone: true,
-  imports: [TranslocoPipe, ReactiveFormsModule],
+  imports: [TranslocoPipe, ReactiveFormsModule, CaptchaTurnstileComponent],
   templateUrl: './contacto.component.html',
   styleUrl: './contacto.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -27,6 +29,12 @@ export class ContactoPublicoComponent {
   private toast = inject(ToastService);
   private route = inject(ActivatedRoute);
   private idioma = inject(IdiomaService);
+  private captcha = viewChild(CaptchaTurnstileComponent);
+
+  /** Hay captcha (el sitio tiene clave de Turnstile) y, entonces, no se envía sin su token. */
+  readonly captchaActivo = inject(TurnstileService).activo;
+  readonly captchaToken = signal<string | null>(null);
+  readonly puedeEnviar = computed(() => !this.captchaActivo || this.captchaToken() !== null);
 
   readonly contacto = environment.contacto;
   readonly whatsappUrl = `https://wa.me/${environment.contacto.whatsapp}`;
@@ -87,7 +95,7 @@ export class ContactoPublicoComponent {
 
   enviar(): void {
     const proyecto = this.proyecto();
-    if (this.form.invalid || !proyecto || this.enviando()) {
+    if (this.form.invalid || !proyecto || this.enviando() || !this.puedeEnviar()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -96,7 +104,8 @@ export class ContactoPublicoComponent {
       ...this.form.getRawValue(),
       proyectoId: proyecto.id ?? null,
       loteId: this.lote()?.id ?? null,
-      casaModeloId: this.casa()?.id ?? null
+      casaModeloId: this.casa()?.id ?? null,
+      ...(this.captchaToken() ? { captchaToken: this.captchaToken()! } : {})
     };
 
     this.enviando.set(true);
@@ -104,11 +113,13 @@ export class ContactoPublicoComponent {
       next: () => {
         this.toast.showSuccess(this.idioma.t('home.formulario.exito'));
         this.form.reset();
+        this.captcha()?.resetear();
         this.enviando.set(false);
       },
       error: err => {
         console.error('Error al enviar la solicitud:', err);
         this.toast.showError(this.idioma.t('home.formulario.error'));
+        this.captcha()?.resetear();
         this.enviando.set(false);
       }
     });

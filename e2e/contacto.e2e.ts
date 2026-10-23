@@ -24,6 +24,7 @@ test.describe('formulario de contacto del proyecto', () => {
     expect(cuerpo.telefono).toBe('300 123 4567');
     expect(cuerpo.correo).toBe('');
     expect(cuerpo.proyectoId).toBe(PROYECTO_ID);
+    expect(cuerpo.captchaToken).toBe('token-e2e');
   });
 
   test('con solo el correo se puede enviar', async ({ page }) => {

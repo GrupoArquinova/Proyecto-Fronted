@@ -6,6 +6,8 @@ export const environment = {
   sitioUrl: '',
   // Empresa dueña del sitio (para leer sus textos institucionales cuando todavía no hay proyectos)
   empresaId: 1,
+  // Clave del sitio de Cloudflare Turnstile (captcha de los formularios). Vacía = sin captcha. Es pública; el secreto va en el backend.
+  turnstileSiteKey: '0x4AAAAAAFiqRXMx-sXTN7iu',
   // Datos de contacto públicos de la empresa (un solo lugar para cambiarlos)
   contacto: {
     whatsapp: '573168653715',          // formato internacional, sin '+' ni espacios (para wa.me)

@@ -57,6 +57,12 @@ const multimediaZonas: Record<number, object[]> = {
 /** Responde con datos de prueba a todo lo que el sitio público pide al backend. */
 export async function simularBackend(page: Page, apiBase = 'http://localhost:8080'): Promise<void> {
   await page.route('https://res.cloudinary.com/**', route => route.fulfill({ status: 200, contentType: 'image/png', body: PNG_1X1 }));
+  // Cloudflare Turnstile: un widget falso que entrega un token al instante (el real no se carga en las pruebas)
+  await page.route('https://challenges.cloudflare.com/**', route => route.fulfill({
+    status: 200,
+    contentType: 'application/javascript',
+    body: "window.turnstile={render:(c,o)=>{setTimeout(()=>o.callback('token-e2e'),0);return 'w1'},reset:()=>{},remove:()=>{}};"
+  }));
 
   await page.route(`${apiBase}/api/**`, route => {
     const url = new URL(route.request().url());

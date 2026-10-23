@@ -46,4 +46,6 @@ export interface SolicitudPublicaRequest {
   consentimientoDatos: boolean;
   /** Campo trampa (honeypot): siempre vacío para una persona; el backend descarta lo que llegue con texto. La IP y el user-agent los fija el backend. */
   sitioWeb?: string;
+  /** Token de Cloudflare Turnstile; solo se envía cuando el sitio tiene captcha activo. */
+  captchaToken?: string;
 }

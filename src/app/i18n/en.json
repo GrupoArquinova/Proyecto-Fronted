@@ -8,6 +8,12 @@
     "pantallaCompleta": "Full screen",
     "salirPantallaCompleta": "Exit full screen",
     "cerrar": "Close",
+    "captcha": {
+      "confirma": "Confirm you are not a robot",
+      "listo": "Verification completed",
+      "expirado": "The verification expired. Please confirm it again.",
+      "error": "The verification could not be loaded. Check your connection and try again."
+    },
     "girarTitulo": "Rotate your screen",
     "girarTexto": "For a better experience, use your device in <strong>landscape</strong> mode."
   },

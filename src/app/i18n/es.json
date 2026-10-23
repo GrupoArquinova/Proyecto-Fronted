@@ -8,6 +8,12 @@
     "pantallaCompleta": "Pantalla completa",
     "salirPantallaCompleta": "Salir de pantalla completa",
     "cerrar": "Cerrar",
+    "captcha": {
+      "confirma": "Confirma que no eres un robot",
+      "listo": "Verificación completada",
+      "expirado": "La verificación expiró. Confírmala de nuevo.",
+      "error": "No se pudo cargar la verificación. Revisa tu conexión e inténtalo de nuevo."
+    },
     "girarTitulo": "Gira tu pantalla",
     "girarTexto": "Para una mejor experiencia, usa el dispositivo en modo <strong>horizontal</strong>."
   },

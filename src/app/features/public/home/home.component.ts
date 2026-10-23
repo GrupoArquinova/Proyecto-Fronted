@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, signal, DestroyRef, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LocalizadoPipe } from '../../../shared/pipes/localizado.pipe';
@@ -9,6 +9,8 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { ProyectoPublico } from '../../../core/models/proyecto.models';
 import { SolicitudPublicaRequest } from '../../../core/models/solicitud.models';
 import { SolicitudService } from '../../../core/services/solicitud.service';
+import { TurnstileService } from '../../../core/services/turnstile.service';
+import { CaptchaTurnstileComponent } from '../../../shared/components/captcha-turnstile/captcha-turnstile.component';
 import { ToastService } from '../../../core/services/toast.service';
 import { environment } from '../../../../environments/environment';
 import { EMPRESA_INFO, SERVICIOS } from './empresa-contenido';
@@ -31,6 +33,7 @@ import { BotonPantallaCompletaComponent } from '../../../shared/components/boton
     LocalizadoPipe,
     SelectorIdiomaComponent,
     BotonPantallaCompletaComponent,
+    CaptchaTurnstileComponent,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -45,6 +48,12 @@ export class HomeComponent implements OnInit {
   private seo = inject(SeoService);
   private contenidoService = inject(ContenidoService);
   private idioma = inject(IdiomaService);
+  private captcha = viewChild(CaptchaTurnstileComponent);
+
+  /** Hay captcha (el sitio tiene clave de Turnstile) y, entonces, no se envía sin su token. */
+  readonly captchaActivo = inject(TurnstileService).activo;
+  readonly captchaToken = signal<string | null>(null);
+  readonly puedeEnviar = computed(() => !this.captchaActivo || this.captchaToken() !== null);
 
   readonly contacto = environment.contacto;
   readonly whatsappUrl = `https://wa.me/${environment.contacto.whatsapp}`;
@@ -144,7 +153,7 @@ export class HomeComponent implements OnInit {
   }
 
   enviarFormulario(): void {
-    if (this.contactoForm.valid) {
+    if (this.contactoForm.valid && this.puedeEnviar()) {
       const datosFormulario: SolicitudPublicaRequest = {
         ...this.contactoForm.value,
         proyectoId: this.contactoForm.value.proyectoId
@@ -152,16 +161,19 @@ export class HomeComponent implements OnInit {
           : null,
         servicioInteres: this.contactoForm.value.servicioInteres || undefined,
         sitioWeb: this.contactoForm.value.sitioWeb ?? '',
+        ...(this.captchaToken() ? { captchaToken: this.captchaToken()! } : {}),
       };
 
       this.solicitudService.enviarSolicitud(datosFormulario).subscribe({
         next: () => {
           this.toastService.showSuccess(this.idioma.t('home.formulario.exito'));
           this.contactoForm.reset();
+          this.captcha()?.resetear();
         },
         error: (err) => {
           console.error('Error al enviar la solicitud:', err);
           this.toastService.showError(this.idioma.t('home.formulario.error'));
+          this.captcha()?.resetear();
         },
       });
     } else {

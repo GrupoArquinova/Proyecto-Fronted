@@ -77,6 +77,19 @@ La sesión del panel guarda el JWT en `localStorage` (clave `jwt_token`). Es leg
 
 Plan de migración a cookie `HttpOnly` (requiere cambios en el backend): (1) que `/auth/login` y `/auth/renovar` entreguen el token en una cookie `HttpOnly; Secure; SameSite=Strict` (o `Lax`) en vez de en el cuerpo; (2) agregar protección CSRF (token en cabecera o doble cookie) en los métodos que modifican datos y CORS con `allowCredentials`; (3) en el frontend, quitar `localStorage`, enviar las peticiones con `withCredentials: true` y decidir la sesión con un `GET /auth/yo`; (4) como el frontend (Vercel) y el backend (Render) están en dominios distintos, usar un dominio propio común (por ejemplo `www.dominio.com` y `api.dominio.com`) para que la cookie sea del mismo sitio.
 
+### Captcha de los formularios (Cloudflare Turnstile)
+
+Los formularios públicos (inicio y contacto de cada proyecto) envían a `POST /solicitudes-contacto/publico` un `captchaToken` opcional. Si la clave del sitio está **vacía** (estado actual) no se descarga ningún script, no se muestra widget y el envío es el de siempre; el backend tampoco verifica mientras no tenga secreto.
+
+Para activarlo:
+
+1. En el dashboard de Cloudflare: **Turnstile → Add site**. Pon un nombre, agrega los dominios `arquinova.vercel.app` y `localhost` (para probar en local) y elige el modo *Managed*. Cloudflare entrega una **Site Key** (pública) y una **Secret Key** (privada).
+2. Pega la Site Key en `turnstileSiteKey` de `src/environments/environment.ts` (producción, el que usa `ng build --configuration vercel`). Opcionalmente también en `environment.development.ts`. Es pública, puede ir en el repositorio.
+3. Pon la Secret Key en Render, en el servicio del backend, como variable de entorno `TURNSTILE_SECRET`. **Nunca** va en el frontend ni en el repositorio.
+4. Vuelve a desplegar frontend y backend. El botón de enviar queda deshabilitado hasta que el widget entrega el token ("Confirma que no eres un robot"); si el token expira se pide de nuevo.
+
+La CSP de `vercel.json` ya permite `https://challenges.cloudflare.com` en `script-src`, `frame-src` y `connect-src` (lo que indica la documentación de Cloudflare). El script se carga solo al montar un formulario y solo si hay clave (`TurnstileService`, `shared/components/captcha-turnstile`).
+
 ### Subidas de archivos
 
 `src/app/core/utils/archivos.ts` valida antes de subir a Cloudinary: lista cerrada de imágenes (JPEG, PNG, WebP, GIF, AVIF; el SVG se rechaza), extensión, tamaño y los primeros bytes del archivo (magic bytes). `CloudinaryService.subirArchivo` aplica la misma validación para que ninguna pantalla se la salte.

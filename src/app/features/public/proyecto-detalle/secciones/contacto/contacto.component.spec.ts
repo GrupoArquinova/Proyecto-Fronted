@@ -10,6 +10,7 @@ import { ToastService } from '../../../../../core/services/toast.service';
 import { ProyectoDetalle } from '../../../../../core/models/proyecto-detalle.models';
 import { environment } from '../../../../../../environments/environment';
 import { provideI18nPruebas } from '../../../../../i18n/pruebas';
+import { TURNSTILE_SITE_KEY, TurnstileApi } from '../../../../../core/services/turnstile.service';
 import { ContactoPublicoComponent } from './contacto.component';
 
 @Component({ selector: 'app-prueba-vacio', standalone: true, template: '' })
@@ -24,14 +25,15 @@ const detalle = (extra: Partial<ProyectoDetalle> = {}): ProyectoDetalle => ({
   ...extra
 });
 
-async function abrir(datos: ProyectoDetalle | null, consulta = '') {
+async function abrir(datos: ProyectoDetalle | null, consulta = '', claveCaptcha = '') {
   TestBed.configureTestingModule({
     providers: [
       provideRouter([
         { path: 'proyectos/:id/contacto', component: ContactoPublicoComponent },
         { path: '**', component: Vacio }
       ]),
-      provideI18nPruebas(), provideHttpClient(), provideHttpClientTesting(), ProyectoDetalleService
+      provideI18nPruebas(), provideHttpClient(), provideHttpClientTesting(), ProyectoDetalleService,
+      { provide: TURNSTILE_SITE_KEY, useValue: claveCaptcha }
     ]
   });
   TestBed.inject(ProyectoDetalleService).detalle.set(datos);
@@ -261,6 +263,86 @@ describe('ContactoPublicoComponent', () => {
   it('sin contenido de contacto en el menú: el contacto siempre existe y no redirige', async () => {
     const { router } = await abrir(detalle());
     expect(router.url).toBe('/proyectos/7/contacto');
+  });
+
+  describe('captcha (Turnstile)', () => {
+    let callbacks: Record<string, (t?: string) => void>;
+    const api = { render: vi.fn(), reset: vi.fn(), remove: vi.fn() };
+    const llenar = (c: Awaited<ReturnType<typeof abrir>>) => {
+      c.escribir('input[type="text"]', 'Ana Pérez');
+      c.escribir('input[type="tel"]', '3001234567');
+      c.escribir('textarea', 'Quiero información');
+      c.el.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();
+    };
+    const abrirConCaptcha = async () => {
+      callbacks = {};
+      api.render.mockReset().mockImplementation((_el: HTMLElement, op: Record<string, unknown>) => {
+        callbacks['exito'] = op['callback'] as (t?: string) => void;
+        callbacks['expira'] = op['expired-callback'] as () => void;
+        return 'w1';
+      });
+      api.reset.mockReset();
+      (window as unknown as { turnstile?: TurnstileApi }).turnstile = api as unknown as TurnstileApi;
+      const c = await abrir(detalle(), '', 'clave-sitio');
+      await c.harness.fixture.whenStable();
+      c.harness.detectChanges();
+      return c;
+    };
+    afterEach(() => { delete (window as unknown as { turnstile?: TurnstileApi }).turnstile; });
+
+    it('sin clave no hay widget y se envía sin captchaToken', async () => {
+      const c = await abrir(detalle());
+      expect(c.el.querySelector('app-captcha-turnstile .captcha')).toBeNull();
+      llenar(c);
+      c.enviar();
+      expect(c.http.expectOne(URL_API).request.body).not.toHaveProperty('captchaToken');
+    });
+
+    it('con clave el botón queda deshabilitado y no se envía hasta tener token', async () => {
+      const c = await abrirConCaptcha();
+      expect(c.el.querySelector('.captcha .mensaje')?.textContent).toContain('Confirma que no eres un robot');
+      expect(c.el.querySelector<HTMLButtonElement>('.enviar')?.disabled).toBe(true);
+      llenar(c);
+      c.enviar();
+      c.http.expectNone(URL_API);
+
+      callbacks['exito']('token-ok');
+      c.harness.detectChanges();
+      expect(c.el.querySelector<HTMLButtonElement>('.enviar')?.disabled).toBe(false);
+    });
+
+    it('envía el captchaToken y, al terminar, reinicia el widget y vuelve a bloquear', async () => {
+      const c = await abrirConCaptcha();
+      llenar(c);
+      callbacks['exito']('token-ok');
+      c.enviar();
+      const peticion = c.http.expectOne(URL_API);
+      expect(peticion.request.body).toMatchObject({ captchaToken: 'token-ok' });
+      peticion.flush({ id: 1 });
+      c.harness.detectChanges();
+      expect(api.reset).toHaveBeenCalledWith('w1');
+      expect(c.instancia.captchaToken()).toBeNull();
+      expect(c.el.querySelector<HTMLButtonElement>('.enviar')?.disabled).toBe(true);
+    });
+
+    it('si el envío falla también reinicia el widget', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      const c = await abrirConCaptcha();
+      llenar(c);
+      callbacks['exito']('token-ok');
+      c.enviar();
+      c.http.expectOne(URL_API).flush('x', { status: 500, statusText: 'Error' });
+      expect(api.reset).toHaveBeenCalledWith('w1');
+      expect(c.instancia.captchaToken()).toBeNull();
+    });
+
+    it('si el token expira se vuelve a bloquear el envío', async () => {
+      const c = await abrirConCaptcha();
+      callbacks['exito']('token-ok');
+      expect(c.instancia.puedeEnviar()).toBe(true);
+      callbacks['expira']();
+      expect(c.instancia.puedeEnviar()).toBe(false);
+    });
   });
 
   describe('invalido()', () => {
