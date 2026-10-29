@@ -36,9 +36,12 @@
   <!-- Portada: la foto de la zona elegida a pantalla completa y la lista numerada de zonas -->
   @default {
     <section class="portada">
+      @if (imagenPredeterminada(); as predeterminada) {
+        <img class="fondo-zona fondo-predeterminado visible" [src]="predeterminada" alt="" aria-hidden="true" />
+      }
       @for (z of zonas(); track z.id; let i = $index) {
         @if (foto(z); as imagen) {
-          <img class="fondo-zona" [class.visible]="seleccionada() === i" [src]="imagen" alt="" aria-hidden="true" />
+          <img class="fondo-zona" [class.visible]="!imagenPredeterminada() && seleccionada() === i" [src]="imagen" alt="" aria-hidden="true" />
         }
       }
 
@@ -51,6 +54,11 @@
           @if (zona.descripcion) {
             <p>{{ zona.descripcion }}</p>
           }
+        </div>
+      } @else if (imagenPredeterminada()) {
+        <div class="portada-texto">
+          <h2>{{ 'proyecto.zonas.titulo' | transloco }}</h2>
+          <p class="subtitulo-eleccion">{{ 'proyecto.zonas.eligeUna' | transloco }}</p>
         </div>
       }
 
@@ -67,7 +75,7 @@
       </ol>
 
       @if (zonaAbierta() !== null) {
-        <div class="visor-zona" role="presentation" (click)="zonaAbierta.set(null)">
+        <div class="visor-zona" role="presentation" (click)="cerrarZona()">
           <div class="marco" role="presentation" (click)="$event.stopPropagation()">
             <div class="marco-interior">
             @for (clave of [zonaAbierta()]; track clave) {
@@ -77,7 +85,7 @@
             </div>
             <p class="visor-zona-titulo">{{ nombreZonaAbierta() }}</p>
           </div>
-          <button type="button" class="visor-zona-cerrar" (click)="zonaAbierta.set(null)" [attr.aria-label]="'proyecto.zonas.cerrarImagenes' | transloco">&times;</button>
+          <button type="button" class="visor-zona-cerrar" (click)="cerrarZona()" [attr.aria-label]="'proyecto.zonas.cerrarImagenes' | transloco">&times;</button>
         </div>
       }
     </section>

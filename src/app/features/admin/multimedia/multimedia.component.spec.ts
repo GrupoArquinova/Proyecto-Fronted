@@ -64,6 +64,19 @@ describe('MultimediaComponent', () => {
   });
 
   describe('lista y filtros', () => {
+    it('ofrece el tipo "Amenidades (imagen de fondo predeterminada)" en el filtro y en el formulario, y la muestra como imagen', () => {
+      const { fixture, c, el } = crear([
+        { id: 9, tipo: 'FONDO_AMENIDADES', titulo: 'Fondo', url: 'https://x/fondo.jpg', proyectoId: 1, proyectoNombre: 'El Encanto', portada: false, publicado: true, activo: true }
+      ]);
+      expect(el.querySelector('#filtroTipo option[value="FONDO_AMENIDADES"]')?.textContent).toContain('Amenidades (imagen de fondo predeterminada)');
+      expect(el.querySelector('.media-card img')?.getAttribute('src')).toBe('https://x/fondo.jpg');
+      expect(el.querySelector('.media-card .file-placeholder')).toBeNull();
+
+      c.abrirModalCrear();
+      fixture.detectChanges();
+      expect(el.querySelector('#tipo option[value="FONDO_AMENIDADES"]')).not.toBeNull();
+    });
+
     it('muestra una tarjeta por recurso con su vínculo y los textos de respaldo', () => {
       const { el } = crear();
       const tarjetas = el.querySelectorAll('.media-card');
@@ -300,6 +313,44 @@ describe('MultimediaComponent', () => {
       http.expectOne(MULTIMEDIA).flush(null, { status: 500, statusText: 'Error' });
       expect(avisos().some((a) => a.message === 'Error al guardar archivo multimedia')).toBe(true);
       expect(consola).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('fondo de Amenidades', () => {
+    it('al elegir ese tipo el recurso pasa a ser del proyecto: se oculta "Vincular a" y la portada, y se conserva el proyecto', async () => {
+      const { fixture, c, el } = crear();
+      (el.querySelector('.btn-nuevo') as HTMLElement).click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      c.tipoPadre = 'zonaComun';
+      c.proyectoReferenciaId = 1;
+      c.formData.zonaComunId = 5;
+      c.formData.portada = true;
+
+      c.formData.tipo = 'FONDO_AMENIDADES';
+      c.onCambioTipo();
+      fixture.detectChanges();
+
+      expect(c.tipoPadre).toBe('proyecto');
+      expect(c.formData.proyectoId).toBe(1);
+      expect(c.formData.zonaComunId).toBeNull();
+      expect(c.formData.portada).toBe(false);
+      expect(el.querySelector('#multimedia-campo-2')).toBeNull();
+      expect(el.querySelector('input[name="portada"]')).toBeNull();
+      expect(el.querySelector('#proyectoId')).not.toBeNull();
+      expect(el.querySelector('#zonaComunId')).toBeNull();
+    });
+
+    it('otro tipo no toca el vínculo, y al editar un fondo ligado a una amenidad se corrige a proyecto', () => {
+      const { c } = crear();
+      c.tipoPadre = 'zonaComun';
+      c.formData.tipo = 'IMAGEN';
+      c.onCambioTipo();
+      expect(c.tipoPadre).toBe('zonaComun');
+
+      c.editarMultimedia({ id: 30, tipo: 'FONDO_AMENIDADES', url: 'https://x/f.jpg', zonaComunId: 7, portada: true, publicado: true, activo: true } as never);
+      expect(c.tipoPadre).toBe('proyecto');
+      expect(c.formData.zonaComunId).toBeNull();
     });
   });
 

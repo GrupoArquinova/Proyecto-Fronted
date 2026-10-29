@@ -566,3 +566,47 @@
 .btn-icon-mini.principal:hover {
   color: #d97706;
 }
+
+.fondo-amenidades {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+
+  .fondo-amenidades-img {
+    width: 200px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .fondo-amenidades-info {
+    flex: 1;
+    min-width: 220px;
+
+    p { margin: 0.25rem 0 0.75rem; color: #64748b; font-size: 0.9rem; }
+  }
+
+  .fondo-amenidades-acciones {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+
+    label { cursor: pointer; }
+    .ocupado { opacity: 0.6; pointer-events: none; }
+  }
+
+  .btn-quitar-fondo {
+    padding: 0.5rem 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: white;
+    color: #b91c1c;
+    cursor: pointer;
+  }
+}

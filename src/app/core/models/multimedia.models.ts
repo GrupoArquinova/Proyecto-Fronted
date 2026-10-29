@@ -1,4 +1,4 @@
-export type TipoMultimedia = 'IMAGEN' | 'VIDEO' | 'PDF' | 'PLANO' | 'PANORAMICA_360' | 'BENEFICIOS' | 'RESPALDO' | 'MAPA' | 'ZONAS_DESTACADAS' | 'OTRO';
+export type TipoMultimedia = 'IMAGEN' | 'VIDEO' | 'PDF' | 'PLANO' | 'PANORAMICA_360' | 'BENEFICIOS' | 'RESPALDO' | 'MAPA' | 'ZONAS_DESTACADAS' | 'FONDO_AMENIDADES' | 'OTRO';
 
 export interface Multimedia {
   id?: number;

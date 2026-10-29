@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ProyectoDetalleService } from './proyecto-detalle.service';
 import { provideI18nPruebas } from '../../i18n/pruebas';
+import { IdiomaService } from './idioma.service';
 import { ProyectoDetalle } from '../models/proyecto-detalle.models';
 
 const detalleVacio = (): ProyectoDetalle => ({
@@ -212,6 +213,28 @@ describe('ProyectoDetalleService', () => {
       expect(vistas()).toContain('destacadas');
       expect(service.imagenZonasDestacadas()).toBe('https://x.com/fondo.jpg');
       expect(service.esInmersiva('zonas-comunes', 'destacadas')).toBe(true);
+    });
+
+    it('imagenFondoAmenidades usa la FONDO_AMENIDADES activa y publicada más reciente, y es null sin ella', () => {
+      service.detalle.set({ ...detalleVacio(), zonasComunes: [zona(1, 'Piscina')] });
+      expect(service.imagenFondoAmenidades()).toBeNull();
+
+      const f = (id: number, extra: object = {}) => ({ id, tipo: 'FONDO_AMENIDADES' as const, url: `https://x.com/f${id}.jpg`, portada: false, publicado: true, activo: true, ...extra });
+      service.detalle.set({
+        ...detalleVacio(), zonasComunes: [zona(1, 'Piscina')],
+        multimedia: [f(1), f(2), f(3, { activo: false }), f(4, { publicado: false }), fondo]
+      });
+      expect(service.imagenFondoAmenidades()).toBe('https://x.com/f2.jpg');
+    });
+
+    it('imagenFondoAmenidades respeta el idioma cuando la imagen tiene urlEn', () => {
+      service.detalle.set({
+        ...detalleVacio(),
+        multimedia: [{ id: 1, tipo: 'FONDO_AMENIDADES' as const, url: 'https://x.com/es.jpg', urlEn: 'https://x.com/en.jpg', portada: false, publicado: true, activo: true }]
+      });
+      expect(service.imagenFondoAmenidades()).toBe('https://x.com/es.jpg');
+      TestBed.inject(IdiomaService).cambiar('en');
+      expect(service.imagenFondoAmenidades()).toBe('https://x.com/en.jpg');
     });
 
     it('la Galeria reune las imagenes de todas las zonas, con su zona, y aparece solo si hay imagenes', () => {

@@ -32,10 +32,20 @@ describe('DashboardComponent', () => {
   it('arma el panel con la barra superior, el menú lateral y la zona de contenido', () => {
     const { el } = crear();
 
-    expect(el.querySelector('.navbar .brand span')?.textContent).toBe('Admin');
+    expect(el.querySelector('.navbar .usuario-admin span')?.textContent).toBe('Admin');
+    expect(el.querySelector('.navbar .usuario-admin svg.usuario-icono')).not.toBeNull();
+    expect(el.querySelector('.navbar .brand span')).toBeNull();
     expect(el.querySelector('img.brand-logo')?.getAttribute('alt')).toBe('Logo Arquinova');
     expect(el.querySelector('app-sidebar')).not.toBeNull();
     expect(el.querySelector('main.main-content router-outlet')).not.toBeNull();
+  });
+
+  it('la esquina derecha muestra el icono de usuario y "Admin"; el nombre de la sesión aparece al pasar el mouse', () => {
+    localStorage.setItem('user_name', 'Ana Gómez');
+    const { el } = crear();
+
+    expect(el.querySelector('.navbar .usuario-admin')?.getAttribute('title')).toBe('Ana Gómez');
+    localStorage.removeItem('user_name');
   });
 
   it('el nombre del usuario es "Administrador" si no hay uno guardado, o el de la sesión', () => {

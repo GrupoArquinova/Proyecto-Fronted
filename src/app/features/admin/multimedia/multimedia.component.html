@@ -45,6 +45,7 @@
         <option value="RESPALDO">Respaldo (láminas del proyecto)</option>
         <option value="MAPA">Mapa de ubicación (imágenes)</option>
         <option value="ZONAS_DESTACADAS">Zonas destacadas (imagen de fondo)</option>
+        <option value="FONDO_AMENIDADES">Amenidades (imagen de fondo predeterminada)</option>
         <option value="OTRO">Otro</option>
       </select>
     </div>
@@ -72,7 +73,8 @@
               item.tipo === 'BENEFICIOS' ||
               item.tipo === 'RESPALDO' ||
               item.tipo === 'MAPA' ||
-              item.tipo === 'ZONAS_DESTACADAS'
+              item.tipo === 'ZONAS_DESTACADAS' ||
+              item.tipo === 'FONDO_AMENIDADES'
             ) {
               <img
                 [src]="item.url"
@@ -94,6 +96,7 @@
               item.tipo !== 'RESPALDO' &&
               item.tipo !== 'MAPA' &&
               item.tipo !== 'ZONAS_DESTACADAS' &&
+              item.tipo !== 'FONDO_AMENIDADES' &&
               item.tipo !== 'VIDEO'
             ) {
               <a
@@ -231,7 +234,8 @@
                       formData.tipo === 'BENEFICIOS' ||
                       formData.tipo === 'RESPALDO' ||
                       formData.tipo === 'MAPA' ||
-                      formData.tipo === 'ZONAS_DESTACADAS'
+                      formData.tipo === 'ZONAS_DESTACADAS' ||
+                      formData.tipo === 'FONDO_AMENIDADES'
                     ) {
                       <img [src]="formData.url" alt="Vista previa" class="preview-img" />
                     }
@@ -245,6 +249,7 @@
                       formData.tipo !== 'RESPALDO' &&
                       formData.tipo !== 'MAPA' &&
                       formData.tipo !== 'ZONAS_DESTACADAS' &&
+                      formData.tipo !== 'FONDO_AMENIDADES' &&
                       formData.tipo !== 'VIDEO'
                     ) {
                       <div class="preview-file">
@@ -313,7 +318,7 @@
               </div>
               <div class="form-group">
                 <label for="tipo">Tipo de Archivo *</label>
-                <select id="tipo" name="tipo" [(ngModel)]="formData.tipo" required>
+                <select id="tipo" name="tipo" [(ngModel)]="formData.tipo" (ngModelChange)="onCambioTipo()" required>
                   <option value="IMAGEN">Imagen</option>
                   <option value="VIDEO">Video</option>
                   <option value="PDF">PDF</option>
@@ -323,6 +328,7 @@
                   <option value="RESPALDO">Respaldo (láminas del proyecto)</option>
                   <option value="MAPA">Mapa de ubicación (imágenes)</option>
                   <option value="ZONAS_DESTACADAS">Zonas destacadas (imagen de fondo)</option>
+                  <option value="FONDO_AMENIDADES">Amenidades (imagen de fondo predeterminada)</option>
                   <option value="OTRO">Otro</option>
                 </select>
               </div>
@@ -350,6 +356,7 @@
                   placeholder="Ej. Imagen de portada del proyecto"
                 ></textarea>
               </div>
+              @if (!esFondoDeProyecto()) {
               <div class="form-group full-width">
                 <label for="multimedia-campo-2">Vincular a *</label>
                 <select id="multimedia-campo-2" name="tipoPadre" [(ngModel)]="tipoPadre" (change)="onCambioTipoPadre()">
@@ -360,6 +367,7 @@
                   <option value="etapa">Etapa</option>
                 </select>
               </div>
+              }
               @if (tipoPadre === 'proyecto') {
                 <div class="form-group full-width">
                   <label for="proyectoId">Proyecto *</label>
@@ -456,12 +464,14 @@
                   </div>
                 }
               }
+              @if (!esFondoDeProyecto()) {
               <div class="form-group full-width checkbox-group">
                 <label>
                   <input type="checkbox" name="portada" [(ngModel)]="formData.portada" />
                   Establecer como imagen de portada
                 </label>
               </div>
+              }
             </div>
           </form>
         </div>

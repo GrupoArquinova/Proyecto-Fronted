@@ -61,10 +61,14 @@ describe('CaptchaTurnstileComponent', () => {
     fixture.detectChanges();
     expect(tokens).toEqual(['tok-1']);
     expect(el.querySelector('.mensaje')?.textContent).toContain('Verificación completada');
+    // El mensaje de éxito no se pinta como alerta: solo la expiración y el error van en rojo
+    expect(el.querySelector('.mensaje')?.classList.contains('aviso')).toBe(false);
+    expect(el.querySelector('.mensaje')?.classList.contains('listo')).toBe(true);
     callbacks['expira']();
     fixture.detectChanges();
     expect(tokens).toEqual(['tok-1', null]);
     expect(el.querySelector('.mensaje')?.textContent).toContain('expiró');
+    expect(el.querySelector('.mensaje')?.classList.contains('aviso')).toBe(true);
   });
 
   it('un error del widget limpia el token y avisa', async () => {

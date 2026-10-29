@@ -156,6 +156,20 @@ export class MultimediaComponent implements OnInit, OnDestroy {
     this.imagenAmpliadaTitulo = '';
   }
 
+  /** La imagen de fondo de Amenidades es del proyecto completo: no se vincula a una amenidad, lote, tipología ni etapa. */
+  esFondoDeProyecto(): boolean {
+    return this.formData.tipo === 'FONDO_AMENIDADES';
+  }
+
+  onCambioTipo(): void {
+    if (!this.esFondoDeProyecto()) return;
+    const proyecto = this.proyectoReferenciaId ?? this.formData.proyectoId;
+    this.tipoPadre = 'proyecto';
+    this.onCambioTipoPadre();
+    this.formData.proyectoId = proyecto ? Number(proyecto) : null;
+    this.formData.portada = false;
+  }
+
   onCambioTipoPadre(): void {
     this.formData.proyectoId = null;
     this.formData.loteId = null;
@@ -301,6 +315,11 @@ export class MultimediaComponent implements OnInit, OnDestroy {
       publicado: item.publicado,
       activo: item.activo,
     };
+    // Un fondo de Amenidades guardado con otro vínculo (p. ej. una amenidad) se corrige: pasa a ser del proyecto
+    if (this.esFondoDeProyecto() && this.tipoPadre !== 'proyecto') {
+      this.tipoPadre = 'proyecto';
+      this.onCambioTipoPadre();
+    }
     this.mostrarModal = true;
   }
 

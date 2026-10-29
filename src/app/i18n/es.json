@@ -343,7 +343,8 @@
       "todas": "Todas",
       "galeria": "Galería de las amenidades",
       "imagenesDe": "Imágenes de {{nombre}}",
-      "cerrarImagenes": "Cerrar imágenes"
+      "cerrarImagenes": "Cerrar imágenes",
+      "eligeUna": "Elige una amenidad para ver sus imágenes"
     },
     "tarjeta": {
       "zona": "Amenidad",

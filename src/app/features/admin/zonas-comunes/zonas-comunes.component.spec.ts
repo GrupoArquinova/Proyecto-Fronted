@@ -126,6 +126,7 @@ describe('ZonasComunesComponent (amenidades)', () => {
       select.value = '2';
       select.dispatchEvent(new Event('change'));
       http.expectOne(`${ZONAS}/proyecto/2`).flush(structuredClone(zonasP2));
+      http.expectOne(`${API}/multimedia/proyecto/2`).flush([]);
       fixture.detectChanges();
 
       expect(c.listaZonas.map((z) => z.nombre)).toEqual(['Parque']);
@@ -153,6 +154,100 @@ describe('ZonasComunesComponent (amenidades)', () => {
       vi.advanceTimersByTime(4000);
       fixture.detectChanges();
       expect(el.querySelector('.alerta-flotante')).toBeNull();
+    });
+  });
+
+  describe('imagen de fondo de Amenidades', () => {
+    const MULTI = `${API}/multimedia`;
+    const fondo = (id: number, extra: object = {}) => ({ id, proyectoId: 2, tipo: 'FONDO_AMENIDADES', url: `https://c/f${id}.jpg`, activo: true, ...extra });
+
+    function elegirProyecto2(lista: unknown[]) {
+      const r = crear();
+      const select = r.el.querySelector('.select-proyecto') as HTMLSelectElement;
+      select.value = '2';
+      select.dispatchEvent(new Event('change'));
+      http.expectOne(`${ZONAS}/proyecto/2`).flush(structuredClone(zonasP2));
+      http.expectOne(`${MULTI}/proyecto/2`).flush(structuredClone(lista));
+      r.fixture.detectChanges();
+      return r;
+    }
+
+    it('con "todos" no hay sección', () => {
+      const { c, el } = crear();
+      expect(el.querySelector('.fondo-amenidades')).toBeNull();
+      expect(c.fondoAmenidades).toBeNull();
+    });
+
+    it('con un proyecto muestra la más reciente activa', () => {
+      const r = elegirProyecto2([fondo(1), fondo(3), fondo(4, { activo: false }), { id: 5, tipo: 'IMAGEN', url: 'x' }]);
+      expect(r.c.fondoAmenidades?.id).toBe(3);
+      expect(r.el.querySelector('.fondo-amenidades-img')?.getAttribute('src')).toBe('https://c/f3.jpg');
+      expect(r.el.querySelector('.fondo-amenidades label')?.textContent).toContain('Cambiar imagen');
+    });
+
+    it('sin imagen ofrece subirla', () => {
+      const { el } = elegirProyecto2([]);
+      expect(el.querySelector('.fondo-amenidades-img')).toBeNull();
+      expect(el.querySelector('.fondo-amenidades label')?.textContent).toContain('+ Subir imagen de fondo');
+      expect(el.querySelector('.btn-quitar-fondo')).toBeNull();
+    });
+
+    it('subir guarda FONDO_AMENIDADES del proyecto y elimina la anterior', () => {
+      vi.useFakeTimers({ toFake: ['setTimeout'] });
+      const { c } = elegirProyecto2([fondo(1)]);
+      vi.spyOn(TestBed.inject(CloudinaryService), 'subirImagen').mockReturnValue(of('https://c/nueva.jpg'));
+      c.subirFondo({ target: { files: [new File(['a'], 'nueva.jpg')], value: 'x' } } as unknown as Event);
+
+      const crearReq = http.expectOne(MULTI);
+      expect(crearReq.request.method).toBe('POST');
+      expect(crearReq.request.body).toMatchObject({ proyectoId: 2, tipo: 'FONDO_AMENIDADES', url: 'https://c/nueva.jpg', publicado: true, activo: true });
+      crearReq.flush(fondo(7, { url: 'https://c/nueva.jpg' }));
+      const borrado = http.expectOne(`${MULTI}/1`);
+      expect(borrado.request.method).toBe('DELETE');
+      borrado.flush(null);
+
+      expect(c.fondoAmenidades?.id).toBe(7);
+      expect(c.subiendoFondo).toBe(false);
+      expect(c.mensajeAlerta).toBe('Imagen de fondo de Amenidades guardada.');
+    });
+
+    it('si la subida falla avisa del error y conserva la imagen actual', () => {
+      vi.useFakeTimers({ toFake: ['setTimeout'] });
+      const { c } = elegirProyecto2([fondo(1)]);
+      vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      vi.spyOn(TestBed.inject(CloudinaryService), 'subirImagen').mockReturnValue(throwError(() => new Error('x')));
+      c.subirFondo({ target: { files: [new File(['a'], 'n.jpg')], value: '' } } as unknown as Event);
+
+      expect(c.tipoAlerta).toBe('error');
+      expect(c.subiendoFondo).toBe(false);
+      expect(c.fondoAmenidades?.id).toBe(1);
+    });
+
+    it('sin archivo o con "todos" no sube nada', () => {
+      const { c } = crear();
+      const subir = vi.spyOn(TestBed.inject(CloudinaryService), 'subirImagen');
+      c.subirFondo({ target: { files: [new File(['a'], 'n.jpg')], value: '' } } as unknown as Event);
+      c.subirFondo({ target: { files: [], value: '' } } as unknown as Event);
+      expect(subir).not.toHaveBeenCalled();
+    });
+
+    it('quitar pide confirmación y, al confirmar, la elimina', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout'] });
+      const { c } = elegirProyecto2([fondo(1)]);
+      const dialogo = TestBed.inject(ConfirmDialogService);
+
+      const cancelado = c.quitarFondo();
+      dialogo.cancel();
+      await cancelado;
+      http.expectNone(`${MULTI}/1`);
+      expect(c.fondoAmenidades).not.toBeNull();
+
+      const p = c.quitarFondo();
+      dialogo.confirm();
+      await p;
+      http.expectOne(`${MULTI}/1`).flush(null);
+      expect(c.fondoAmenidades).toBeNull();
+      expect(c.mensajeAlerta).toBe('Imagen de fondo quitada.');
     });
   });
 

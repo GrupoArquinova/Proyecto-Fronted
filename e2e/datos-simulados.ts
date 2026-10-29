@@ -54,6 +54,12 @@ const multimediaZonas: Record<number, object[]> = {
   12: [recurso(201, { zonaComunId: 12, titulo: 'Jacuzzi portada', url: IMAGEN_PORTADA_JACUZZI, portada: true })]
 };
 
+/** Imagen de fondo predeterminada de Amenidades (multimedia FONDO_AMENIDADES del proyecto). */
+export const IMAGEN_FONDO_AMENIDADES = IMG('fondo-amenidades');
+const multimediaProyecto: object[] = [
+  { id: 301, proyectoId: PROYECTO_ID, tipo: 'FONDO_AMENIDADES', url: IMAGEN_FONDO_AMENIDADES, portada: false, publicado: true, activo: true, orden: 1 }
+];
+
 /** Responde con datos de prueba a todo lo que el sitio público pide al backend. */
 export async function simularBackend(page: Page, apiBase = 'http://localhost:8080'): Promise<void> {
   await page.route('https://res.cloudinary.com/**', route => route.fulfill({ status: 200, contentType: 'image/png', body: PNG_1X1 }));
@@ -78,7 +84,7 @@ export async function simularBackend(page: Page, apiBase = 'http://localhost:808
     if (ruta === `/zonas-comunes/proyecto/${PROYECTO_ID}/publicas`) return json(zonas);
     if (ruta === `/casas-modelo/proyecto/${PROYECTO_ID}/publicas`) return json(casas);
     if (ruta === '/lotes/publicos') return json([]);
-    if (ruta === `/multimedia/proyecto/${PROYECTO_ID}`) return json([]);
+    if (ruta === `/multimedia/proyecto/${PROYECTO_ID}`) return json(multimediaProyecto);
 
     const casa = ruta.match(/^\/multimedia\/casaModelo\/(\d+)$/);
     if (casa) return json(multimediaCasas[Number(casa[1])] ?? []);

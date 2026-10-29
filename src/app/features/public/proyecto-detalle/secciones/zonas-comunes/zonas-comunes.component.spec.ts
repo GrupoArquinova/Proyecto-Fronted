@@ -116,6 +116,77 @@ describe('ZonasComunesPublicoComponent', () => {
       expect(el.querySelector('.visor-zona')).toBeNull();
     });
 
+    describe('con imagen de fondo predeterminada', () => {
+      const conFondo = () => detalle({
+        ...conZonas(),
+        multimedia: [{ tipo: 'FONDO_AMENIDADES', url: 'https://x.com/amenidades.jpg', portada: false, publicado: true, activo: true } as never]
+      });
+
+      it('al entrar no hay zona elegida: se ve la imagen predeterminada, el título y el subtítulo', async () => {
+        const { el, instancia } = await abrir(conFondo());
+        expect(instancia.seleccionada()).toBe(-1);
+        expect(instancia.zonaActiva()).toBeNull();
+        const fondos = Array.from(el.querySelectorAll<HTMLImageElement>('.fondo-zona'));
+        expect(fondos.map(f => f.getAttribute('src'))).toEqual(['https://x.com/amenidades.jpg', 'p1.jpg', 'https://x.com/proyecto.jpg', 'pq.jpg']);
+        expect(fondos.map(f => f.classList.contains('visible'))).toEqual([true, false, false, false]);
+        expect(el.querySelector('.portada-texto h2')?.textContent).toBe('Amenidades');
+        expect(el.querySelector('.portada-texto h3')).toBeNull();
+        expect(el.querySelector('.portada-texto p')?.textContent).toBe('Elige una amenidad para ver sus imágenes');
+        expect(el.querySelector('.visor-zona')).toBeNull();
+        const botones = Array.from(el.querySelectorAll<HTMLButtonElement>('.portada-lista button'));
+        expect(botones.some(b => b.classList.contains('activa'))).toBe(false);
+        expect(botones.some(b => b.getAttribute('aria-current') === 'true')).toBe(false);
+      });
+
+      it('al elegir una zona se abre su carrusel y el fondo sigue siendo la imagen predeterminada; al cerrarlo todo vuelve al inicio', async () => {
+        const { el, harness, instancia } = await abrir(conFondo());
+        el.querySelectorAll<HTMLButtonElement>('.portada-lista button')[2].click();
+        harness.detectChanges();
+
+        expect(instancia.seleccionada()).toBe(2);
+        expect(instancia.zonaAbierta()).toBe(3);
+        const fondos = Array.from(el.querySelectorAll<HTMLImageElement>('.fondo-zona'));
+        expect(fondos.map(f => f.classList.contains('visible'))).toEqual([true, false, false, false]);
+        expect(el.querySelector('.portada-texto h3')?.textContent).toBe('Parque');
+        expect(el.querySelector('.portada-texto .subtitulo-eleccion')).toBeNull();
+        expect(el.querySelectorAll('.portada-lista button')[2].getAttribute('aria-current')).toBe('true');
+        expect(el.querySelector<HTMLImageElement>('.visor-zona app-carrusel-laminas img')?.getAttribute('src')).toBe('pq.jpg');
+
+        el.querySelector<HTMLButtonElement>('.visor-zona-cerrar')!.click();
+        harness.detectChanges();
+        expect(el.querySelector('.visor-zona')).toBeNull();
+        expect(instancia.seleccionada()).toBe(-1);
+        expect(el.querySelector('.portada-texto h3')).toBeNull();
+        expect(el.querySelector('.portada-texto p')?.textContent).toBe('Elige una amenidad para ver sus imágenes');
+        expect(Array.from(el.querySelectorAll<HTMLImageElement>('.fondo-zona')).map(f => f.classList.contains('visible'))).toEqual([true, false, false, false]);
+        expect(Array.from(el.querySelectorAll<HTMLButtonElement>('.portada-lista button')).some(b => b.classList.contains('activa'))).toBe(false);
+      });
+
+      it('también se cierra tocando fuera del marco, y se puede abrir otra zona después', async () => {
+        const { el, harness, instancia } = await abrir(conFondo());
+        const botones = () => el.querySelectorAll<HTMLButtonElement>('.portada-lista button');
+        botones()[2].click();
+        harness.detectChanges();
+        el.querySelector<HTMLElement>('.visor-zona')!.click();
+        harness.detectChanges();
+        expect(el.querySelector('.visor-zona')).toBeNull();
+        expect(instancia.seleccionada()).toBe(-1);
+
+        botones()[0].click();
+        harness.detectChanges();
+        expect(instancia.zonaAbierta()).toBe(1);
+        expect(el.querySelector('.portada-texto h3')?.textContent).toBe('Piscina');
+      });
+    });
+
+    it('sin imagen predeterminada el comportamiento no cambia: la primera zona queda elegida y no hay subtítulo', async () => {
+      const { el, instancia } = await abrir(conZonas());
+      expect(instancia.seleccionada()).toBe(0);
+      expect(el.querySelector('.fondo-predeterminado')).toBeNull();
+      expect(el.querySelector('.subtitulo-eleccion')).toBeNull();
+      expect(el.querySelectorAll('.portada-lista button')[0].getAttribute('aria-current')).toBe('true');
+    });
+
     it('un índice fuera de rango no abre nada y la zona activa vuelve a la primera', async () => {
       const { instancia } = await abrir(conZonas());
       instancia.elegirZona(9);

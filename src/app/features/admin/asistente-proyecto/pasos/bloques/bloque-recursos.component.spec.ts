@@ -60,7 +60,7 @@ describe('BloqueRecursosComponent', () => {
     const { componente, subida, fixture } = crear();
     const esperado: Record<string, string[]> = {
       VIDEO: ['video'], PDF: ['pdf'], PLANO: ['imagen', 'pdf'], IMAGEN: ['imagen'], BENEFICIOS: ['imagen'],
-      RESPALDO: ['imagen'], MAPA: ['imagen'], ZONAS_DESTACADAS: ['imagen'], PANORAMICA_360: ['imagen']
+      RESPALDO: ['imagen'], MAPA: ['imagen'], ZONAS_DESTACADAS: ['imagen'], FONDO_AMENIDADES: ['imagen'], PANORAMICA_360: ['imagen']
     };
 
     for (const [tipo, archivos] of Object.entries(esperado)) {
@@ -69,7 +69,7 @@ describe('BloqueRecursosComponent', () => {
       fixture.detectChanges();
       expect(subida().tipos(), tipo).toEqual(archivos);
     }
-    expect(componente.opciones.length).toBe(9);
+    expect(componente.opciones.length).toBe(10);
   });
 
   it('elegir un tipo en el selector actualiza la señal y la etiqueta de la subida', async () => {
@@ -154,6 +154,19 @@ describe('BloqueRecursosComponent', () => {
     borrado.flush(null);
 
     expect(asistente.recursos().map(r => r.id)).toEqual([2, 3]);
+  });
+
+  it('la imagen de fondo de Amenidades es única: la nueva reemplaza y borra a la anterior', () => {
+    const { subida, componente, asistente } = crear([{ id: 1, tipo: 'FONDO_AMENIDADES', url: 'vieja', orden: 1 }]);
+
+    componente.tipo.set('FONDO_AMENIDADES');
+    subida().subido.emit({ url: 'https://cdn.test/fondo.jpg', nombre: 'fondo.jpg' });
+    const creada = http.expectOne(MULTIMEDIA);
+    expect(creada.request.body).toMatchObject({ tipo: 'FONDO_AMENIDADES', publicado: true, activo: true });
+    creada.flush({ id: 2, tipo: 'FONDO_AMENIDADES', url: 'https://cdn.test/fondo.jpg' });
+    http.expectOne(`${MULTIMEDIA}/1`).flush(null);
+
+    expect(asistente.recursos().map(r => r.id)).toEqual([2]);
   });
 
   it('un fallo al borrar la lámina anterior se ignora', () => {

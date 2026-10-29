@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import { ZonaComunService } from '../../../core/services/zona-comun.service';
@@ -10,6 +11,8 @@ import { ZonaComunImagenService } from '../../../core/services/zona-comun-imagen
 import { ZonaComunImagen } from '../../../core/models/zona-comun-imagen.models';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
 import { mensajeDeSubida } from '../../../core/utils/archivos';
+import { Multimedia } from '../../../core/models/multimedia.models';
+import { MultimediaService } from '../../../core/services/multimedia.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 
 // Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
@@ -28,6 +31,7 @@ export class ZonasComunesComponent implements OnInit {
   private zonaImagenService = inject(ZonaComunImagenService);
   private cloudinaryService = inject(CloudinaryService);
   private confirmDialog = inject(ConfirmDialogService);
+  private multimediaService = inject(MultimediaService);
 
   mostrarModalImagenes = false;
   zonaSeleccionadaParaGaleria: ZonaComun | null = null;
@@ -51,6 +55,10 @@ export class ZonasComunesComponent implements OnInit {
     titulo: '',
     esPrincipal: false,
   };
+
+  /** Imagen de fondo predeterminada de Amenidades del proyecto elegido (multimedia FONDO_AMENIDADES); solo con un proyecto elegido. */
+  fondoAmenidades: Multimedia | null = null;
+  subiendoFondo = false;
 
   listaZonas: ZonaComun[] = [];
   listaProyectos: Proyecto[] = [];
@@ -143,6 +151,77 @@ export class ZonasComunesComponent implements OnInit {
         },
       });
     }
+  }
+
+  /** Carga la imagen de fondo de Amenidades del proyecto elegido (la más reciente activa). Con "todos" no hay ninguna. */
+  cargarFondo(): void {
+    this.fondoAmenidades = null;
+    if (this.proyectoIdSeleccionado === 'todos') return;
+    const projId = Number(this.proyectoIdSeleccionado);
+    this.multimediaService.listarPorEntidad('proyecto', projId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (lista) => {
+        if (Number(this.proyectoIdSeleccionado) !== projId) return;
+        this.fondoAmenidades = lista
+          .filter((m) => m.tipo === 'FONDO_AMENIDADES' && m.activo !== false)
+          .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))[0] ?? null;
+      },
+      error: () => (this.fondoAmenidades = null),
+    });
+  }
+
+  /** Sube (o reemplaza) la imagen de fondo de Amenidades; la anterior se elimina para que quede una sola. */
+  subirFondo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file || this.subiendoFondo || this.proyectoIdSeleccionado === 'todos') return;
+
+    const projId = Number(this.proyectoIdSeleccionado);
+    const anterior = this.fondoAmenidades;
+    this.subiendoFondo = true;
+    this.cloudinaryService.subirImagen(file).pipe(
+      switchMap((url) => this.multimediaService.crearMultimedia({
+        proyectoId: projId,
+        tipo: 'FONDO_AMENIDADES',
+        titulo: 'Imagen de fondo de Amenidades',
+        url,
+        nombreArchivo: file.name,
+        orden: 1,
+        portada: false,
+        publicado: true,
+        activo: true,
+      })),
+    ).subscribe({
+      next: (creado) => {
+        this.subiendoFondo = false;
+        this.fondoAmenidades = creado;
+        this.mostrarAlerta('Imagen de fondo de Amenidades guardada.');
+        if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
+      },
+      error: (err) => {
+        console.error('Error al subir la imagen de fondo de Amenidades:', err);
+        this.subiendoFondo = false;
+        this.mostrarAlerta(mensajeDeSubida(err, 'No se pudo subir la imagen. Inténtalo de nuevo.'), 'error');
+      },
+    });
+  }
+
+  async quitarFondo(): Promise<void> {
+    const actual = this.fondoAmenidades;
+    if (actual?.id == null) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Quitar imagen de fondo',
+      message: 'Las amenidades volverán a mostrar la foto de la primera amenidad al entrar. ¿Quitarla?',
+      confirmText: 'Sí, quitar',
+    });
+    if (!ok) return;
+    this.multimediaService.eliminarMultimedia(actual.id).subscribe({
+      next: () => {
+        this.fondoAmenidades = null;
+        this.mostrarAlerta('Imagen de fondo quitada.');
+      },
+      error: () => this.mostrarAlerta('No se pudo quitar la imagen.', 'error'),
+    });
   }
 
   abrirModalCrear(): void {

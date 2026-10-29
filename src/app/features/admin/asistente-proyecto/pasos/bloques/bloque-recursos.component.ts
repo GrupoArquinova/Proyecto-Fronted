@@ -18,6 +18,7 @@ const OPCIONES: { tipo: TipoMultimedia; etiqueta: string; archivos: TipoArchivo[
   { tipo: 'RESPALDO', etiqueta: 'Lámina de respaldo (carrusel de Respaldo)', archivos: ['imagen'] },
   { tipo: 'MAPA', etiqueta: 'Imagen del mapa de ubicación (carrusel de Mapa)', archivos: ['imagen'] },
   { tipo: 'ZONAS_DESTACADAS', etiqueta: 'Imagen de zonas destacadas (vista aérea o plano con los botones de cada zona)', archivos: ['imagen'] },
+  { tipo: 'FONDO_AMENIDADES', etiqueta: 'Imagen de fondo de Amenidades (la que se ve al entrar, antes de elegir una zona)', archivos: ['imagen'] },
   { tipo: 'PANORAMICA_360', etiqueta: 'Panorámica 360°', archivos: ['imagen'] }
 ];
 
@@ -105,8 +106,9 @@ export class BloqueRecursosComponent {
       activo: true
     };
 
-    // La lámina de beneficios es una sola por proyecto: la nueva reemplaza a la anterior
-    const anterior = recurso.tipo === 'BENEFICIOS' ? this.asistente.recursos().find(r => r.tipo === 'BENEFICIOS') : undefined;
+    // La lámina de beneficios y la imagen de fondo de Amenidades son una sola por proyecto: la nueva reemplaza a la anterior
+    const unica = recurso.tipo === 'BENEFICIOS' || recurso.tipo === 'FONDO_AMENIDADES';
+    const anterior = unica ? this.asistente.recursos().find(r => r.tipo === recurso.tipo) : undefined;
 
     this.multimediaService.crearMultimedia(recurso).subscribe({
       next: creado => {

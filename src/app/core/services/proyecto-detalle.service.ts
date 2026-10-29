@@ -129,6 +129,15 @@ export class ProyectoDetalleService {
       .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0))[0]?.url ?? null);
 
   /**
+   * Imagen de fondo predeterminada de Amenidades (la que se ve al entrar, antes de elegir una zona): la multimedia
+   * FONDO_AMENIDADES activa y publicada más reciente. Ya viene en el idioma elegido (urlEn) por detalleLocal.
+   */
+  readonly imagenFondoAmenidades = computed<string | null>(() =>
+    (this.detalleLocal()?.multimedia ?? [])
+      .filter(m => m.tipo === 'FONDO_AMENIDADES' && m.activo !== false && m.publicado !== false && !!m.url)
+      .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))[0]?.url ?? null);
+
+  /**
    * Todas las imágenes de las zonas comunes (galería), en el orden de las zonas. De cada zona van primero las imágenes
    * subidas desde Multimedia (la portada primero) y después las de su galería, sin repetir.
    */

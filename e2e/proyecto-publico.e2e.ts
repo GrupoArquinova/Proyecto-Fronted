@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { IMAGEN_PORTADA_JACUZZI, PROYECTO_ID, simularBackend } from './datos-simulados';
+import { IMAGEN_FONDO_AMENIDADES, IMAGEN_PORTADA_JACUZZI, PROYECTO_ID, simularBackend } from './datos-simulados';
 
 const base = `/proyectos/${PROYECTO_ID}`;
 
@@ -106,6 +106,26 @@ test.describe('tipologías', () => {
 });
 
 test.describe('amenidades', () => {
+  test('al entrar se ve la imagen de fondo predeterminada y, al elegir una amenidad, se abre su carrusel', async ({ page }) => {
+    await page.goto(`${base}/zonas-comunes`);
+    await expect(page.getByRole('heading', { name: 'Amenidades', level: 2 })).toBeVisible();
+    await expect(page.getByText('Elige una amenidad para ver sus imágenes')).toBeVisible();
+    await expect(page.locator('.fondo-predeterminado')).toHaveAttribute('src', IMAGEN_FONDO_AMENIDADES);
+    await expect(page.locator('.fondo-predeterminado.visible')).toHaveCount(1);
+    await expect(page.locator('.visor-zona')).toHaveCount(0);
+
+    await page.getByRole('button', { name: /Jacuzzi/ }).click();
+    // El fondo sigue siendo la imagen predeterminada mientras el carrusel está abierto
+    await expect(page.locator('.fondo-predeterminado.visible')).toHaveCount(1);
+    await expect(page.locator('.visor-zona app-carrusel-laminas .imagen img')).toHaveAttribute('src', IMAGEN_PORTADA_JACUZZI);
+
+    // Al cerrarlo, la portada vuelve a su estado inicial
+    await page.locator('.visor-zona-cerrar').click();
+    await expect(page.locator('.visor-zona')).toHaveCount(0);
+    await expect(page.locator('.fondo-predeterminado.visible')).toHaveCount(1);
+    await expect(page.getByText('Elige una amenidad para ver sus imágenes')).toBeVisible();
+  });
+
   test('la portada usa la imagen principal subida desde Multimedia', async ({ page }) => {
     await page.goto(`${base}/zonas-comunes`);
     await expect(page.getByRole('heading', { name: 'Amenidades', level: 2 })).toBeVisible();

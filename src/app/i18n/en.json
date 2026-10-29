@@ -343,7 +343,8 @@
       "todas": "All",
       "galeria": "Amenities gallery",
       "imagenesDe": "Images of {{nombre}}",
-      "cerrarImagenes": "Close images"
+      "cerrarImagenes": "Close images",
+      "eligeUna": "Choose an amenity to see its images"
     },
     "tarjeta": {
       "zona": "Amenity",
