@@ -32,7 +32,8 @@ describe('DashboardComponent', () => {
   it('arma el panel con la barra superior, el menú lateral y la zona de contenido', () => {
     const { el } = crear();
 
-    expect(el.querySelector('.navbar .usuario-admin span')?.textContent).toBe('Admin');
+    expect(el.querySelector('.navbar .usuario-admin .usuario-rol')?.textContent?.trim()).toBe('Admin');
+    expect(el.querySelector('.navbar .usuario-admin .usuario-nombre')?.textContent).toBe('Administrador');
     expect(el.querySelector('.navbar .usuario-admin svg.usuario-icono')).not.toBeNull();
     expect(el.querySelector('.navbar .brand span')).toBeNull();
     expect(el.querySelector('img.brand-logo')?.getAttribute('alt')).toBe('Logo Arquinova');
@@ -46,6 +47,18 @@ describe('DashboardComponent', () => {
 
     expect(el.querySelector('.navbar .usuario-admin')?.getAttribute('title')).toBe('Ana Gómez');
     localStorage.removeItem('user_name');
+  });
+
+  it('la pastilla muestra el nombre y el correo de quien tiene la sesión (leídos del token, con tildes y ñ)', () => {
+    const carga = btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify({ sub: 'juan@arquinova.com', nombre: 'Juan Gabriel Londoño', roles: ['ROLE_ADMINISTRADOR'], exp: 4102444800 }))))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    localStorage.setItem('jwt_token', `eyJhbGciOiJIUzI1NiJ9.${carga}.firma`);
+    const { el } = crear();
+
+    expect(el.querySelector('.usuario-nombre')?.textContent).toBe('Juan Gabriel Londoño');
+    expect(el.querySelector('.usuario-rol')?.textContent).toContain('Admin');
+    expect(el.querySelector('.usuario-correo')?.textContent).toContain('juan@arquinova.com');
+    expect(el.querySelector('.navbar .usuario-admin')?.getAttribute('title')).toBe('Juan Gabriel Londoño · juan@arquinova.com');
   });
 
   it('el nombre del usuario es "Administrador" si no hay uno guardado, o el de la sesión', () => {

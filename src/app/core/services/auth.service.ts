@@ -51,11 +51,24 @@ export class AuthService {
     return null;
   }
 
+  /** Nombre de quien tiene la sesión: el que viaja en el token; si el token no lo trae, el guardado al iniciar sesión. */
   getUserName(): string {
     if (isPlatformBrowser(this.platformId)) {
+      const token = this.getToken();
+      const delToken = token ? this.leerPayload(token)?.['nombre'] : null;
+      if (typeof delToken === 'string' && delToken.trim()) {
+        return delToken.trim();
+      }
       return localStorage.getItem(USER_NAME_KEY) || NOMBRE_POR_DEFECTO;
     }
     return NOMBRE_POR_DEFECTO;
+  }
+
+  /** Correo de quien tiene la sesión (el sujeto del token), o vacío si no hay sesión. */
+  getCorreo(): string {
+    const token = this.getToken();
+    const correo = token ? this.leerPayload(token)?.['sub'] : null;
+    return typeof correo === 'string' ? correo : '';
   }
 
   /**
@@ -177,7 +190,9 @@ export class AuthService {
       const payload = token.split('.')[1];
       const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
       const relleno = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
-      const datos = JSON.parse(atob(relleno));
+      // atob entrega bytes: se decodifican como UTF-8 para que las tildes y la ñ de los nombres salgan bien
+      const bytes = Uint8Array.from(atob(relleno), c => c.charCodeAt(0));
+      const datos = JSON.parse(new TextDecoder().decode(bytes));
       return datos && typeof datos === 'object' ? (datos as Record<string, unknown>) : null;
     } catch {
       return null;

@@ -18,6 +18,7 @@ export class DashboardComponent {
   private router = inject(Router);
 
   userName = this.authService.getUserName();
+  correo = this.authService.getCorreo();
   sidebarOpen = false;
 
   toggleSidebar(): void {

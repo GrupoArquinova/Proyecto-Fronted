@@ -55,6 +55,31 @@
     font-weight: 600;
     line-height: 1;
 
+    .usuario-datos {
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+      min-width: 0;
+      max-width: 300px;
+
+      .usuario-nombre {
+        font-size: 0.92rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .usuario-rol {
+        font-size: 0.74rem;
+        font-weight: 500;
+        color: #5b7f7a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
     .usuario-icono {
       width: 30px;
       height: 30px;
@@ -146,6 +171,15 @@
 }
 
 @media (max-width: 768px) {
+  // En pantallas angostas la pastilla muestra solo el nombre y "Admin" (el correo queda en el texto que aparece al tocarla)
+  .navbar .usuario-admin .usuario-datos {
+    max-width: 150px;
+
+    .usuario-correo {
+      display: none;
+    }
+  }
+
   .hamburger-btn {
     display: block;
   }
