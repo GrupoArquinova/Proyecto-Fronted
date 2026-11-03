@@ -187,6 +187,7 @@
       "cookies": "Cookies",
       "noEncontradoSeo": "Proyecto no encontrado",
       "enLugar": "en {{lugar}}",
+      "migaInicio": "Inicio",
       "descripcionSeo": "{{nombre}}{{lugar}}: proyecto de Grupo Arquinova."
     },
     "menu": {
@@ -399,7 +400,24 @@
     "descripcionDefecto": "Grupo Arquinova S.A.S.: arquitectura, ingeniería y gestión de proyectos residenciales, rurales y turísticos en el Quindío.",
     "paginaNoEncontrada": "Página no encontrada",
     "proyectosTitulo": "Proyectos",
-    "proyectosDescripcion": "Proyectos de Grupo Arquinova en el Quindío: El Encanto y los casos de nuestro portafolio de arquitectura, ingeniería y gestión."
+    "proyectosDescripcion": "Proyectos de Grupo Arquinova en el Quindío: El Encanto y los casos de nuestro portafolio de arquitectura, ingeniería y gestión.",
+    "descripcionProyectoTipo": "{{nombre}}{{lugar}}: proyecto {{tipo}} de Grupo Arquinova ({{etapa}}).",
+    "descripcionSeccion": "{{seccion}} de {{nombre}}{{lugar}}. {{descripcion}}",
+    "altPortada": "Portada del proyecto {{nombre}}"
+  },
+  "acciones": {
+    "compartir": "Compartir",
+    "etiquetaCompartir": "Compartir {{nombre}}",
+    "menu": "Opciones para compartir",
+    "whatsapp": "WhatsApp",
+    "correo": "Correo electrónico",
+    "copiar": "Copiar enlace",
+    "copiado": "Enlace copiado al portapapeles",
+    "errorCopiar": "No se pudo copiar el enlace. Cópialo desde la barra de direcciones.",
+    "asunto": "{{nombre}} · Grupo Arquinova",
+    "texto": "Mira {{nombre}}{{lugar}}, un proyecto de Grupo Arquinova.",
+    "brochure": "Descargar brochure (PDF)",
+    "etiquetaBrochure": "Descargar el brochure de {{nombre}} en PDF"
   },
   "chat": {
     "boton": "Asistente IA",
@@ -409,8 +427,15 @@
     "placeholder": "Escribe tu consulta...",
     "enviar": "Enviar",
     "escribiendo": "Escribiendo respuesta...",
-    "error": "Lo siento, en este momento no puedo responder. Puedes escribirnos por WhatsApp y te atendemos enseguida.",
-    "demasiadas": "Has enviado muchas preguntas seguidas. Espera un momento e inténtalo de nuevo."
+    "error": "Lo siento, en este momento no puedo responder. Escríbenos por WhatsApp y te atendemos enseguida.",
+    "demasiadas": "Has enviado muchas preguntas seguidas. Espera un momento e inténtalo de nuevo.",
+    "nueva": "Nueva conversación",
+    "sugerenciasTitulo": "Preguntas sugeridas",
+    "sug1": "¿Qué proyectos tienen?",
+    "sug2": "¿Qué villas hay en El Encanto?",
+    "sug3": "¿Dónde queda El Encanto?",
+    "sug4": "¿Cómo los contacto?",
+    "aviso": "No escribas datos personales aquí (nombre, teléfono, correo, cédula)."
   },
   "whatsappModal": {
     "abrir": "Abrir WhatsApp",

@@ -3,6 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { infoDeRol, esRol } from '../../../core/models/roles';
+import { RolApi, RolService } from '../../../core/services/rol.service';
 import { Usuario } from '../../../core/models/usuario.models';
 import { UsuarioService } from '../../../core/services/usuario.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
@@ -22,6 +24,10 @@ export class UsuariosComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private toastService = inject(ToastService);
   listaAdmins: Usuario[] = [];
+  /** Roles que entrega el backend (GET /api/roles); sus ids no se suponen. */
+  roles: RolApi[] = [];
+  errorRoles = false;
+  private rolService = inject(RolService);
   modalAbierto = false;
   esEdicion = false;
   verPassword = false;
@@ -36,6 +42,31 @@ export class UsuariosComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarAdmins();
+    this.rolService.listar().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (roles) => (this.roles = roles.filter((r) => r.activo !== false)),
+      error: () => (this.errorRoles = true),
+    });
+  }
+
+  /** Nombre legible de un rol del backend ("EDITOR" → "Editor de contenido"). */
+  etiquetaRol(rol: RolApi): string {
+    const nombre = rol.nombre.replace(/^ROLE_/, '');
+    return esRol(nombre) ? (infoDeRol(nombre)?.nombre ?? nombre) : nombre;
+  }
+
+  /** Nombre legible del rol de una persona: el que manda el backend o, si no, el que corresponde a su rolId. */
+  nombreRol(usuario: Usuario): string {
+    const nombre = usuario.rolNombre?.replace(/^ROLE_/, '') ?? this.roles.find((r) => r.id === usuario.rolId)?.nombre.replace(/^ROLE_/, '');
+    if (!nombre) return 'Sin rol';
+    return esRol(nombre) ? (infoDeRol(nombre)?.nombre ?? nombre) : nombre;
+  }
+
+  /** Qué puede hacer el rol elegido en el formulario (el texto del backend o, si falta, el de la tabla de roles). */
+  get descripcionRol(): string {
+    const rol = this.roles.find((r) => r.id === this.usuarioActual.rolId);
+    if (!rol) return '';
+    const nombre = rol.nombre.replace(/^ROLE_/, '');
+    return rol.descripcion || (esRol(nombre) ? (infoDeRol(nombre)?.descripcion ?? '') : '');
   }
 
   // Requisitos de contraseña (mismos que exige el backend al crear)
@@ -72,7 +103,7 @@ export class UsuariosComponent implements OnInit {
 
   private usuarioVacio(): Usuario {
     return {
-      rolId: 1, // Asumiendo ID 1 para Administrador
+      rolId: 0, // se elige en el formulario (el id lo entrega el backend)
       nombreCompleto: '',
       correo: '',
       password: '',
@@ -95,6 +126,8 @@ export class UsuariosComponent implements OnInit {
     this.errorForm = '';
     this.verPassword = false;
     this.usuarioActual = this.usuarioVacio();
+    // Por defecto el rol con menos permisos que haya (Editor, o el primero de la lista)
+    this.usuarioActual.rolId = (this.roles.find((r) => r.nombre.replace(/^ROLE_/, '') === 'EDITOR') ?? this.roles[0])?.id ?? 0;
     this.modalAbierto = true;
   }
 
@@ -132,6 +165,10 @@ export class UsuariosComponent implements OnInit {
     if (nuevaPass && !this.esPasswordValida) {
       this.errorForm =
         'La contraseña debe tener mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y carácter especial.';
+      return;
+    }
+    if (!resto.rolId) {
+      this.errorForm = 'Elige un rol.';
       return;
     }
     // Editar sin saber a quién: no se debe crear un administrador nuevo en su lugar

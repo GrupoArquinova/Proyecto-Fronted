@@ -56,7 +56,7 @@
 
     <footer class="pie">
       <a [href]="'tel:+' + contacto.whatsapp">{{ contacto.telefonoTexto }}</a>
-      <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">{{ 'proyecto.contacto.whatsapp' | transloco }}</a>
+      <a appClickWhatsapp [proyectoId]="proyecto()?.id" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">{{ 'proyecto.contacto.whatsapp' | transloco }}</a>
       @if (lugar()) { <span>{{ lugar() }}</span> }
     </footer>
   </section>

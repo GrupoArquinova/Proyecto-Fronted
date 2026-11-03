@@ -5,3 +5,7 @@ Disallow: /admin
 Disallow: /login
 Disallow: /recuperar-password
 Disallow: /reset-password
+
+# Mapa del sitio (lo genera el backend; vercel.json lo expone en /sitemap.xml).
+# Cambiar este dominio cuando el sitio tenga dominio propio (y también sitioUrl en src/environments/environment.ts).
+Sitemap: https://arquinova.vercel.app/sitemap.xml

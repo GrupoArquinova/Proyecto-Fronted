@@ -3,6 +3,7 @@ import { Injectable, InjectionToken, effect, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { IdiomaService } from './idioma.service';
+import { LOGO_URL } from '../utils/seo-jsonld';
 
 export const NOMBRE_SITIO = 'Grupo Arquinova';
 
@@ -29,6 +30,8 @@ export interface DatosSeo {
   ruta?: string;
   /** Pide a los buscadores no mostrar la página (login, panel, páginas que no existen). */
   noindex?: boolean;
+  /** Texto alternativo de la imagen para compartir. */
+  imagenAlt?: string;
   /** Datos estructurados (schema.org) de la página. */
   jsonLd?: Record<string, unknown> | null;
 }
@@ -74,7 +77,12 @@ export class SeoService {
     const textoDescripcion = datos.descripcion ?? (datos.descripcionClave ? this.idioma.t(datos.descripcionClave) : '');
     const descripcion = recortarDescripcion(textoDescripcion || this.idioma.t('seo.descripcionDefecto'));
     const url = datos.ruta ? this.urlAbsoluta(datos.ruta) : null;
-    const imagen = datos.imagen && /^https?:\/\//i.test(datos.imagen) ? datos.imagen : null;
+    const imagenPropia = datos.imagen && /^https?:\/\//i.test(datos.imagen) ? datos.imagen : null;
+    // Sin imagen propia se comparte el logo (salvo en las páginas que no se indexan, que no necesitan tarjeta)
+    const imagen = imagenPropia ?? (datos.noindex ? null : LOGO_URL);
+    const enIngles = this.idioma.idioma() === 'en';
+    // El idioma de la página también va en <html lang> (buscadores y lectores de pantalla)
+    this.doc.documentElement.lang = enIngles ? 'en' : 'es';
 
     this.titulo.setTitle(titulo);
     this.etiqueta('name', 'description', descripcion);
@@ -85,14 +93,17 @@ export class SeoService {
     this.etiqueta('property', 'og:description', descripcion);
     this.etiqueta('property', 'og:type', 'website');
     this.etiqueta('property', 'og:site_name', NOMBRE_SITIO);
-    this.etiqueta('property', 'og:locale', this.idioma.idioma() === 'en' ? 'en_US' : 'es_CO');
+    this.etiqueta('property', 'og:locale', enIngles ? 'en_US' : 'es_CO');
+    this.etiqueta('property', 'og:locale:alternate', enIngles ? 'es_CO' : 'en_US');
     this.etiqueta('property', 'og:url', url);
     this.etiqueta('property', 'og:image', imagen);
+    this.etiqueta('property', 'og:image:alt', imagen ? (datos.imagenAlt ?? tituloBase) : null);
 
-    this.etiqueta('name', 'twitter:card', imagen ? 'summary_large_image' : 'summary');
+    this.etiqueta('name', 'twitter:card', imagenPropia ? 'summary_large_image' : 'summary');
     this.etiqueta('name', 'twitter:title', titulo);
     this.etiqueta('name', 'twitter:description', descripcion);
     this.etiqueta('name', 'twitter:image', imagen);
+    this.etiqueta('name', 'twitter:image:alt', imagen ? (datos.imagenAlt ?? tituloBase) : null);
 
     this.canonica(url);
     this.datosEstructurados(datos.jsonLd ?? null);

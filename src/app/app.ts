@@ -4,6 +4,7 @@ import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { AnaliticaService } from './core/services/analitica.service';
 import { DatosSeo, SeoService } from './core/services/seo.service';
 import { WhatsappModalComponent } from './features/whatsapp/whatsapp-modal.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
@@ -23,11 +24,15 @@ export class App {
 
   private router = inject(Router);
   private seo = inject(SeoService);
+  private analitica = inject(AnaliticaService);
 
   /** El botón de WhatsApp es para los visitantes: no aparece en el panel de administración ni en las pantallas de acceso. */
   protected readonly sitioPublico = signal(chatVisibleEn(inject(Location).path()));
 
   constructor() {
+    // Cuenta una vista por cada página pública que se visita (sin cookies; respeta "No rastrear")
+    this.analitica.iniciar();
+
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
       takeUntilDestroyed()

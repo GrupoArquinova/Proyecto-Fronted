@@ -42,6 +42,20 @@ test('el sitio funciona con la CSP de Vercel: nada bloqueado', async ({ page }) 
   const aplicada = await page.evaluate(() => [...document.styleSheets].some(h => (h.href || '').includes('styles-')));
   expect(aplicada, 'styles.css cargada').toBe(true);
 
+  // Los datos estructurados (JSON-LD) no son un script ejecutable: la CSP no los bloquea y están en la página del proyecto
+  await page.goto(`/proyectos/${PROYECTO_ID}/bienvenida`);
+  await page.waitForTimeout(900);
+  const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').first().textContent()) ?? '{}');
+  expect(ld['@graph'].map((n: { '@type': string }) => n['@type'])).toContain('Organization');
+  expect(await page.locator('link[rel="canonical"]').getAttribute('href')).toBe(`https://arquinova.vercel.app/proyectos/${PROYECTO_ID}/bienvenida`);
+  expect(await page.locator('meta[name="robots"]').getAttribute('content')).toBe('index, follow');
+  // El brochure y el botón de compartir están en el micrositio
+  expect(await page.locator('a.btn-brochure').first().getAttribute('href')).toContain('https://arquinova-backend.onrender.com/api/proyectos/');
+  // La analítica (fetch al backend ya permitido) no se bloquea
+  const evento = page.waitForRequest(r => r.url().endsWith('/api/analitica/evento'));
+  await page.goto('/proyectos');
+  await evento;
+
   const reales = [...bloqueos];
   // Control: la CSP SÍ bloquea un script en línea (si esto no se detectara, la prueba de arriba no probaría nada)
   await page.evaluate(() => { const s = document.createElement('script'); s.textContent = 'window.__x=1'; document.head.appendChild(s); });

@@ -29,12 +29,17 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
     return next(clonedReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        // 3. Manejar 401/403 únicamente en rutas protegidas y cuando había una sesión que expiró:
-        // un visitante sin sesión no debe ser enviado al login por un recurso que falló en el sitio público
-        if (!esRutaPublica && jwt && (error.status === 401 || error.status === 403)) {
-          authService.logout();
-          toastService.showInfo('Tu sesión ha expirado, por favor ingresa de nuevo.');
-          router.navigate(['/login']);
+        // 3. En rutas protegidas y con sesión: un 401 significa que el token venció o es inválido (se cierra la sesión y se pide
+        // ingresar de nuevo); un 403 es que el rol no puede hacer esa acción (la sesión sigue válida: solo se avisa).
+        // Un visitante sin sesión no debe ser enviado al login por un recurso que falló en el sitio público.
+        if (!esRutaPublica && jwt) {
+          if (error.status === 401) {
+            authService.logout();
+            toastService.showInfo('Tu sesión ha expirado, por favor ingresa de nuevo.');
+            router.navigate(['/login']);
+          } else if (error.status === 403) {
+            toastService.showError('No tienes permiso para esta acción.');
+          }
         }
         return throwError(() => error);
       })

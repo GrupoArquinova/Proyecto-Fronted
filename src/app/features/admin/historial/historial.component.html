@@ -1,0 +1,99 @@
+<div class="historial">
+  <div class="cabecera">
+    <span class="sub-title">AUDITORÍA</span>
+    <h1 class="titulo">Historial de cambios</h1>
+    <p class="intro">Quién editó qué en el panel, y cuándo.</p>
+  </div>
+
+  <form class="filtros" (ngSubmit)="buscar()" aria-label="Filtros del historial">
+    <label for="hist-usuario">Usuario
+      <select id="hist-usuario" name="usuarioId" [(ngModel)]="filtros.usuarioId">
+        <option value="">Todos</option>
+        @for (u of usuarios(); track u.id) { <option [value]="u.id">{{ u.nombre }}</option> }
+      </select>
+    </label>
+    <label for="hist-entidad">Entidad
+      <select id="hist-entidad" name="entidad" [(ngModel)]="filtros.entidad">
+        <option value="">Todas</option>
+        @for (e of entidades(); track e) { <option [value]="e">{{ e }}</option> }
+      </select>
+    </label>
+    <label for="hist-accion">Acción
+      <select id="hist-accion" name="accion" [(ngModel)]="filtros.accion">
+        <option value="">Todas</option>
+        @for (a of acciones(); track a) { <option [value]="a">{{ a }}</option> }
+      </select>
+    </label>
+    <label for="hist-texto">Texto
+      <input id="hist-texto" name="texto" type="text" autocomplete="off" [(ngModel)]="filtros.texto" placeholder="En la descripción" />
+    </label>
+    <label for="hist-desde">Desde
+      <input id="hist-desde" name="desde" type="date" [(ngModel)]="filtros.desde" [max]="hoy" />
+    </label>
+    <label for="hist-hasta">Hasta
+      <input id="hist-hasta" name="hasta" type="date" [(ngModel)]="filtros.hasta" [max]="hoy" />
+    </label>
+    <div class="botones">
+      <button type="submit" class="btn-primario">Filtrar</button>
+      <button type="button" class="btn-secundario" (click)="limpiar()">Limpiar</button>
+    </div>
+    @if (errorFiltros()) {
+      <p class="error-filtros" role="alert">{{ errorFiltros() }}</p>
+    }
+  </form>
+
+  @switch (estado()) {
+    @case ('cargando') {
+      <div class="estado" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span> Cargando historial...</div>
+    }
+    @case ('error') {
+      <div class="estado estado-error" role="alert">
+        <p>No se pudo cargar el historial de cambios.</p>
+        <button type="button" class="btn-primario" (click)="reintentar()">Reintentar</button>
+      </div>
+    }
+    @case ('listo') {
+      @if (filas().length === 0) {
+        <div class="estado">No hay cambios registrados con esos filtros.</div>
+      } @else {
+        <div class="tabla-contenedor">
+          <table>
+            <caption class="solo-lectores">Historial de cambios del panel</caption>
+            <thead>
+              <tr>
+                <th scope="col">Fecha y hora</th>
+                <th scope="col">Usuario</th>
+                <th scope="col">Acción</th>
+                <th scope="col">Entidad</th>
+                <th scope="col">Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (f of filas(); track f.id) {
+                <tr>
+                  <td class="fecha"><time [attr.datetime]="f.fechaIso">{{ f.fecha }}</time></td>
+                  <td>{{ f.usuario }}</td>
+                  <td><span class="badge" [attr.data-clase]="f.clase" [class]="'badge ' + f.clase">{{ f.accion }}</span></td>
+                  <td>
+                    {{ f.entidad }}@if (f.entidadId !== null) { <span class="ident">#{{ f.entidadId }}</span> }
+                    @if (f.ruta) {
+                      <a class="atajo" [routerLink]="f.ruta" [attr.aria-label]="'Ir a la pantalla de ' + f.entidad">Ir a la pantalla</a>
+                    }
+                  </td>
+                  <td class="descripcion">{{ f.descripcion }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="paginacion" aria-label="Paginación del historial">
+          <span class="resumen">{{ total() }} {{ total() === 1 ? 'registro' : 'registros' }}</span>
+          <button type="button" class="btn-secundario" (click)="irA(numeroPagina() - 2)" [disabled]="!hayAnterior()">Anterior</button>
+          <span aria-live="polite">Página {{ numeroPagina() }} de {{ totalPaginas() }}</span>
+          <button type="button" class="btn-secundario" (click)="irA(numeroPagina())" [disabled]="!haySiguiente()">Siguiente</button>
+        </nav>
+      }
+    }
+  }
+</div>

@@ -73,7 +73,7 @@
             <a [routerLink]="['/proyectos', d.id]" class="btn-primary">{{
               'home.destacado.conocer' | transloco
             }}</a>
-            <a [href]="whatsappDestacado()" target="_blank" rel="noopener noreferrer" class="btn-outline">{{
+            <a appClickWhatsapp [proyectoId]="d.id" [href]="whatsappDestacado()" target="_blank" rel="noopener noreferrer" class="btn-outline">{{
               'home.destacado.asesor' | transloco
             }}</a>
           </div>
@@ -311,7 +311,7 @@
             </div>
             <div>
               <span class="label">{{ 'home.contacto.whatsapp' | transloco }}</span>
-              <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="whatsapp-link"
+              <a appClickWhatsapp [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="whatsapp-link"
                 >{{ 'home.contacto.escribanos' | transloco }} &rarr;</a
               >
             </div>

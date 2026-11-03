@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DashboardComponent } from './dashboard.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { iniciarSesionFalsa } from '../../../core/testing/jwt-falso';
 
 describe('DashboardComponent', () => {
   let http: HttpTestingController;
@@ -61,6 +62,19 @@ describe('DashboardComponent', () => {
     expect(el.querySelector('.navbar .usuario-admin')?.getAttribute('title')).toBe('Juan Gabriel Londoño · juan@arquinova.com');
   });
 
+  it('el chip muestra el nombre corto del rol de la sesión', () => {
+    iniciarSesionFalsa('ROLE_COMERCIAL');
+    expect(crear().el.querySelector('.usuario-rol')?.textContent).toContain('Comercial');
+
+    TestBed.resetTestingModule();
+    iniciarSesionFalsa('ROLE_EDITOR');
+    expect(crear().el.querySelector('.usuario-rol')?.textContent).toContain('Editor');
+
+    TestBed.resetTestingModule();
+    iniciarSesionFalsa('ROLE_ADMINISTRADOR');
+    expect(crear().el.querySelector('.usuario-rol')?.textContent).toContain('Admin');
+  });
+
   it('el nombre del usuario es "Administrador" si no hay uno guardado, o el de la sesión', () => {
     expect(crear().componente.userName).toBe('Administrador');
 
@@ -90,6 +104,7 @@ describe('DashboardComponent', () => {
   });
 
   it('al navegar desde el menú lateral, el menú se cierra', () => {
+    iniciarSesionFalsa('ROLE_ADMINISTRADOR');
     const { fixture, componente, el } = crear();
     componente.toggleSidebar();
     fixture.detectChanges();

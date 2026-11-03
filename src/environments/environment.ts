@@ -4,7 +4,8 @@ export const environment = {
   apiUrl: 'https://arquinova-backend.onrender.com/api',
   // Dirección del sitio (por ejemplo https://www.dominio.com), sin barra al final. Sirve para la dirección canónica y
   // para compartir en redes. Déjala vacía mientras el sitio no tenga dominio propio.
-  sitioUrl: '',
+  // Dominio actual de Vercel; cambiarlo (y la línea Sitemap de public/robots.txt) cuando haya dominio propio.
+  sitioUrl: 'https://arquinova.vercel.app',
   // Empresa dueña del sitio (para leer sus textos institucionales cuando todavía no hay proyectos)
   empresaId: 1,
   // Clave del sitio de Cloudflare Turnstile (captcha de los formularios). Vacía = sin captcha. Es pública; el secreto va en el backend.

@@ -31,7 +31,7 @@
       </svg>
       <div class="usuario-datos">
         <strong class="usuario-nombre">{{ userName }}</strong>
-        <span class="usuario-rol">Admin@if (correo) {<span class="usuario-correo"> · {{ correo }}</span>}</span>
+        <span class="usuario-rol">{{ rolEtiqueta }}@if (correo) {<span class="usuario-correo"> · {{ correo }}</span>}</span>
       </div>
     </div>
   </header>

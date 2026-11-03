@@ -74,6 +74,9 @@
         </nav>
 
         <footer class="menu-pie">
+          @if (proyecto(); as p) {
+            <app-acciones-proyecto variante="menu" [proyectoId]="p.id!" [nombre]="p.nombre" [lugar]="ubicacionTexto()" />
+          }
           <a routerLink="/proyectos">&larr; {{ 'proyecto.armazon.todosProyectos' | transloco }}</a>
           <!-- Se abren en otra pestaña para no sacar a la persona del proyecto que está viendo -->
           <nav class="enlaces-legales" [attr.aria-label]="'proyecto.armazon.informacionLegal' | transloco">

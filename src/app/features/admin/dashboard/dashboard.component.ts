@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 
 import { Router, RouterOutlet } from '@angular/router';
+import { etiquetaDeRoles } from '../../../core/models/roles';
 import { AuthService } from '../../../core/services/auth.service';
 import { SidebarComponent } from '../shared/sidebar/sidebar.component';
 
@@ -19,6 +20,8 @@ export class DashboardComponent {
 
   userName = this.authService.getUserName();
   correo = this.authService.getCorreo();
+  /** Rol de la sesión en el chip del navbar (Admin, Comercial, Editor). */
+  rolEtiqueta = etiquetaDeRoles(this.authService.roles());
   sidebarOpen = false;
 
   toggleSidebar(): void {

@@ -51,6 +51,8 @@
     }
   }
 
+  .rol-chip { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: #e8f0ef; color: #1f423d; }
+
   .badge {
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
@@ -187,6 +189,7 @@
 
           input[type="text"],
           input[type="email"],
+          select,
           input[type="password"] {
             width: 100%;
             padding: 0.65rem 0.9rem;
@@ -195,7 +198,7 @@
             font-size: 0.9rem;
             outline: none;
             box-sizing: border-box;
-            &:focus { border-color: #1b4d3e; }
+            &:focus-visible { border-color: #1b4d3e; outline: 2px solid #1b4d3e; outline-offset: 1px; }
           }
 
           &.checkbox-group {
@@ -240,6 +243,13 @@
               color: #94a3b8;
               &.ok { color: #15803d; font-weight: 500; }
             }
+          }
+
+          .hint-rol {
+            display: block;
+            margin-top: 0.35rem;
+            font-size: 0.78rem;
+            color: #64748b;
           }
 
           .hint {

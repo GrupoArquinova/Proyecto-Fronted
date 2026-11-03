@@ -39,6 +39,54 @@ test.describe('asistente de IA', () => {
     }
   });
 
+  test('la segunda pregunta lleva el historial en la petición y "Nueva conversación" lo reinicia', async ({ page }) => {
+    const cuerpos: { pregunta: string; historial?: { rol: string; texto: string }[] }[] = [];
+    await page.route(/\/api\/chat$/, route => {
+      cuerpos.push(route.request().postDataJSON());
+      return route.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: `Respuesta ${cuerpos.length}` });
+    });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Asistente IA' }).click();
+    const campo = page.getByPlaceholder('Escribe tu consulta...');
+    await expect(campo).toBeFocused();
+    const enviar = page.getByRole('dialog').getByRole('button', { name: 'Enviar', exact: true });
+
+    await campo.fill('primera');
+    await enviar.click();
+    await expect(page.getByText('Respuesta 1')).toBeVisible();
+    await campo.fill('segunda');
+    await enviar.click();
+    await expect(page.getByText('Respuesta 2')).toBeVisible();
+
+    expect(cuerpos[0].historial).toBeUndefined();
+    expect(cuerpos[1].pregunta).toBe('segunda');
+    expect(cuerpos[1].historial).toEqual([{ rol: 'user', texto: 'primera' }, { rol: 'model', texto: 'Respuesta 1' }]);
+
+    await page.getByRole('button', { name: 'Nueva conversación' }).click();
+    await expect(page.getByText('Respuesta 1')).toHaveCount(0);
+    await campo.fill('tercera');
+    await enviar.click();
+    await expect(page.getByText('Respuesta 3')).toBeVisible();
+    expect(cuerpos[2].historial).toBeUndefined();
+  });
+
+  test('las preguntas sugeridas se envían como una pregunta normal y desaparecen', async ({ page }) => {
+    let cuerpo: { pregunta: string } | null = null;
+    await page.route(/\/api\/chat$/, route => {
+      cuerpo = route.request().postDataJSON();
+      return route.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: 'Está en la vía a la costa.' });
+    });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Asistente IA' }).click();
+    const dialogo = page.getByRole('dialog');
+    await expect(dialogo.locator('.chip')).toHaveCount(4);
+
+    await dialogo.getByRole('button', { name: '¿Dónde queda El Encanto?' }).click();
+    await expect(page.getByText('Está en la vía a la costa.')).toBeVisible();
+    expect(cuerpo!.pregunta).toBe('¿Dónde queda El Encanto?');
+    await expect(dialogo.locator('.chip')).toHaveCount(0);
+  });
+
   test('en inglés el chat sale en inglés y avisa el idioma al servidor', async ({ page }) => {
     let idioma = '';
     await page.route(/\/api\/chat$/, route => {

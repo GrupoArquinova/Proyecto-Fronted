@@ -15,7 +15,9 @@ import { ToastService } from '../../../core/services/toast.service';
 import { environment } from '../../../../environments/environment';
 import { EMPRESA_INFO, SERVICIOS } from './empresa-contenido';
 import { alMenosUnMedioDeContacto } from '../../../core/utils/solicitudes';
+import { ClickWhatsappDirective } from '../../../shared/directives/click-whatsapp.directive';
 import { SeoService } from '../../../core/services/seo.service';
+import { inicioJsonLd } from '../../../core/utils/seo-jsonld';
 import { ContenidoService } from '../../../core/services/contenido.service';
 import { BloqueIdentidad, bloquesDeIdentidad } from './identidad';
 
@@ -34,6 +36,7 @@ import { BotonPantallaCompletaComponent } from '../../../shared/components/boton
     SelectorIdiomaComponent,
     BotonPantallaCompletaComponent,
     CaptchaTurnstileComponent,
+    ClickWhatsappDirective,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -57,8 +60,9 @@ export class HomeComponent implements OnInit {
 
   readonly contacto = environment.contacto;
   readonly whatsappUrl = `https://wa.me/${environment.contacto.whatsapp}`;
-  readonly empresa = EMPRESA_INFO;
-  readonly servicios = SERVICIOS;
+  // Getters (no campos): leen los datos al usarlos; con campos, las pruebas que cargan varios archivos a la vez los veían vacíos
+  get empresa() { return EMPRESA_INFO; }
+  get servicios() { return SERVICIOS; }
 
   proyectosList = signal<ProyectoPublico[]>([]);
   /** Misión, visión y valores publicados en el panel (vacío mientras la empresa no los apruebe). */
@@ -96,26 +100,12 @@ export class HomeComponent implements OnInit {
   }
 
   private ponerSeo(): void {
+    const raiz = this.seo.urlAbsoluta('/');
     this.seo.establecer({
       titulo: this.idioma.t('home.titulo'),
       descripcion: this.idioma.t('home.empresa.parrafo1'),
       ruta: '/',
-      jsonLd: {
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: this.empresa.nombre,
-        taxID: this.empresa.nit,
-        url: this.seo.urlAbsoluta('/') ?? undefined,
-        email: this.contacto.correo,
-        telephone: this.contacto.telefonoTexto,
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: this.empresa.oficina,
-          addressLocality: 'Armenia',
-          addressRegion: 'Quindío',
-          addressCountry: 'CO',
-        },
-      },
+      jsonLd: inicioJsonLd(raiz ? raiz.replace(/\/+$/, '') : null),
     });
   }
 

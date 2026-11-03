@@ -1,0 +1,126 @@
+<div class="metricas">
+  <div class="cabecera">
+    <div>
+      <span class="sub-title">ANÁLISIS</span>
+      <h1 class="titulo">Métricas</h1>
+      <p class="periodo">Período: {{ textoPeriodo() }}</p>
+    </div>
+
+    <div class="selector" role="group" aria-label="Período de las métricas">
+      @for (o of opciones; track o.valor) {
+        <button type="button" class="opcion" [class.activa]="seleccion() === o.valor" [attr.aria-pressed]="seleccion() === o.valor"
+                (click)="elegir(o.valor)">{{ o.etiqueta }}</button>
+      }
+    </div>
+  </div>
+
+  @if (seleccion() === 'rango') {
+    <form class="rango" (ngSubmit)="aplicarRango()">
+      <label for="metricas-desde">Desde
+        <input id="metricas-desde" type="date" name="desde" [(ngModel)]="desdePersonal" [max]="hoy" />
+      </label>
+      <label for="metricas-hasta">Hasta
+        <input id="metricas-hasta" type="date" name="hasta" [(ngModel)]="hastaPersonal" [max]="hoy" />
+      </label>
+      <button type="submit" class="btn-aplicar">Aplicar</button>
+      @if (errorRango()) {
+        <p class="error-rango" role="alert">{{ errorRango() }}</p>
+      }
+    </form>
+  }
+
+  @switch (estado()) {
+    @case ('cargando') {
+      <div class="estado" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span> Cargando métricas...
+      </div>
+    }
+    @case ('error') {
+      <div class="estado estado-error" role="alert">
+        <p>No se pudieron cargar las métricas.</p>
+        <button type="button" class="btn-aplicar" (click)="reintentar()">Reintentar</button>
+      </div>
+    }
+    @case ('listo') {
+      <section class="tarjetas" aria-label="Resumen del período">
+        @for (t of tarjetas(); track t.id) {
+          <div class="tarjeta" [attr.data-tarjeta]="t.id">
+            <span class="numero">{{ t.valor }}</span>
+            <span class="etiqueta">{{ t.etiqueta }}</span>
+          </div>
+        }
+      </section>
+
+      <div class="rejilla">
+        <section class="panel panel-ancho" aria-labelledby="m-semana">
+          <h2 id="m-semana">Solicitudes por semana</h2>
+          <app-grafico-serie [puntos]="solicitudesPorSemana()" tipo="barras" unidad="solicitudes"
+                             titulo="Solicitudes por semana" columnaEtiqueta="Semana" columnaValor="Solicitudes"
+                             vacio="No hubo solicitudes en este período." />
+        </section>
+
+        <section class="panel" aria-labelledby="m-sol-proyecto">
+          <h2 id="m-sol-proyecto">Solicitudes por proyecto</h2>
+          <app-barras-horizontales [items]="solicitudesPorProyecto()" titulo="Solicitudes por proyecto"
+                                   vacio="No hubo solicitudes en este período." />
+        </section>
+
+        <section class="panel" aria-labelledby="m-lotes">
+          <h2 id="m-lotes">Lotes por estado</h2>
+          <app-barras-apiladas [items]="lotesPorProyecto()" titulo="Lotes por estado en cada proyecto"
+                               vacio="Todavía no hay lotes registrados." />
+        </section>
+
+        <section class="panel" aria-labelledby="m-visitas-proyecto">
+          <h2 id="m-visitas-proyecto">Visitas por proyecto</h2>
+          <app-barras-horizontales [items]="visitasPorProyecto()" titulo="Visitas por proyecto" [color]="'#5b8f89'"
+                                   vacio="Aún no hay visitas registradas en este período." />
+        </section>
+
+        <section class="panel" aria-labelledby="m-embudo">
+          <h2 id="m-embudo">Embudo de interés</h2>
+          <app-barras-horizontales [items]="embudo()" titulo="Embudo: vistas, WhatsApp, formularios y descargas"
+                                   [base]="baseEmbudo()" vacio="Aún no hay actividad registrada en este período." />
+          @if (baseEmbudo() > 0) {
+            <p class="nota">{{ porcentajeConversion() }}% de las visitas a proyectos terminó en un formulario.</p>
+          }
+        </section>
+
+        <section class="panel panel-ancho" aria-labelledby="m-dia">
+          <h2 id="m-dia">Visitas por día</h2>
+          <app-grafico-serie [puntos]="visitasPorDia()" tipo="linea" unidad="visitas" color="#5b8f89"
+                             titulo="Visitas al sitio por día" columnaEtiqueta="Día" columnaValor="Visitas"
+                             vacio="Aún no hay visitas registradas en este período." />
+        </section>
+
+        <section class="panel" aria-labelledby="m-temas">
+          <h2 id="m-temas">Temas más preguntados al asistente</h2>
+          <app-barras-horizontales [items]="temas()" titulo="Temas más preguntados al asistente"
+                                   vacio="El asistente no recibió preguntas en este período." />
+          @if (datos()!.chat.totalPreguntas > 0) {
+            <p class="nota">{{ datos()!.chat.totalPreguntas }} preguntas en total.</p>
+          }
+        </section>
+
+        @if (esAdministrador) {
+          <section class="panel panel-ancho" aria-labelledby="m-recientes">
+            <h2 id="m-recientes">Preguntas recientes del chat</h2>
+            @if (recientes().length > 0) {
+              <ul class="recientes">
+                @for (r of recientes(); track $index) {
+                  <li>
+                    <span class="fecha">{{ r.fecha }}</span>
+                    <span class="tema">{{ r.tema }}</span>
+                    <span class="pregunta">{{ r.pregunta }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="vacio">No hay preguntas en este período.</p>
+            }
+          </section>
+        }
+      </div>
+    }
+  }
+</div>

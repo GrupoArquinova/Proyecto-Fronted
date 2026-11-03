@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { IdiomaService } from './idioma.service';
+import { LOGO_URL } from '../utils/seo-jsonld';
 import { SITIO_URL, SeoService, recortarDescripcion } from './seo.service';
 import { provideI18nPruebas } from '../../i18n/pruebas';
 
@@ -41,19 +43,47 @@ describe('SeoService', () => {
     expect(contenido('name="robots"')).toBe('noindex, nofollow');
   });
 
-  it('con imagen usa tarjeta grande y la imagen; sin imagen quita la de la pagina anterior', () => {
-    seo.establecer({ titulo: 'El Encanto', imagen: 'https://img.test/portada.jpg' });
+  it('con imagen usa tarjeta grande y la imagen; sin imagen vuelve al logo con tarjeta pequeña', () => {
+    seo.establecer({ titulo: 'El Encanto', imagen: 'https://img.test/portada.jpg', imagenAlt: 'Portada de El Encanto' });
     expect(contenido('property="og:image"')).toBe('https://img.test/portada.jpg');
+    expect(contenido('property="og:image:alt"')).toBe('Portada de El Encanto');
     expect(contenido('name="twitter:card"')).toBe('summary_large_image');
 
     seo.establecer({ titulo: 'Proyectos' });
-    expect(meta.getTag('property="og:image"')).toBeNull();
+    expect(contenido('property="og:image"')).toBe(LOGO_URL);
     expect(contenido('name="twitter:card"')).toBe('summary');
   });
 
-  it('ignora una imagen que no es un enlace completo', () => {
+  it('ignora una imagen que no es un enlace completo y usa el logo', () => {
     seo.establecer({ titulo: 'El Encanto', imagen: 'data:image/png;base64,AAAA' });
+    expect(contenido('property="og:image"')).toBe(LOGO_URL);
+  });
+
+  it('las páginas que no se indexan no llevan imagen para compartir', () => {
+    seo.establecer({ titulo: 'Panel', noindex: true });
     expect(meta.getTag('property="og:image"')).toBeNull();
+    expect(meta.getTag('name="twitter:image"')).toBeNull();
+  });
+
+  it('pone og:locale y <html lang> según el idioma y los cambia al cambiar de idioma', async () => {
+    seo.establecer({ titulo: 'Proyectos' });
+    expect(contenido('property="og:locale"')).toBe('es_CO');
+    expect(contenido('property="og:locale:alternate"')).toBe('en_US');
+    expect(doc.documentElement.lang).toBe('es');
+
+    const idioma = TestBed.inject(IdiomaService);
+    // Primero se deja correr el arranque del idioma (toma el del navegador); luego se cambia a inglés
+    TestBed.tick();
+    await new Promise((r) => setTimeout(r, 20));
+    idioma.cambiar('en', false);
+    await vi.waitFor(() => expect(idioma.idioma()).toBe('en'));
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(contenido('property="og:locale"')).toBe('en_US');
+    });
+    expect(contenido('property="og:locale:alternate"')).toBe('es_CO');
+    expect(doc.documentElement.lang).toBe('en');
+    doc.documentElement.lang = 'es';
   });
 
   describe('con dominio configurado', () => {

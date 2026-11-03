@@ -27,6 +27,14 @@
       <header class="chat-header">
         <h3>{{ 'chat.titulo' | transloco }}</h3>
         <span class="status-dot" aria-hidden="true"></span>
+        <button
+          type="button"
+          class="nueva-conversacion"
+          (click)="nuevaConversacion()"
+          [disabled]="!mensajes().length && !cargando()"
+          [attr.aria-label]="'chat.nueva' | transloco">
+          {{ 'chat.nueva' | transloco }}
+        </button>
       </header>
 
       <div #cuerpo class="chat-body" aria-live="polite">
@@ -40,6 +48,14 @@
           </div>
         }
 
+        @if (!mensajes().length) {
+          <div class="chat-sugerencias" role="group" [attr.aria-label]="'chat.sugerenciasTitulo' | transloco">
+            @for (clave of sugerencias; track clave) {
+              <button type="button" class="chip" (click)="enviarSugerencia(clave)">{{ clave | transloco }}</button>
+            }
+          </div>
+        }
+
         @if (cargando()) {
           <div class="chat-bubble ai-msg loading">
             <p><em>{{ 'chat.escribiendo' | transloco }}</em></p>
@@ -47,8 +63,12 @@
         }
       </div>
 
+      <!-- Aviso de privacidad: la IA no debe recibir datos personales -->
+      <p class="chat-aviso">{{ 'chat.aviso' | transloco }}</p>
+
       <form class="chat-footer" (ngSubmit)="enviarMensaje()">
         <input
+          #campo
           type="text"
           name="pregunta"
           autocomplete="off"

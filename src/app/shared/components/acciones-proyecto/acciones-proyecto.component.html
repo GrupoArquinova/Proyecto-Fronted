@@ -1,0 +1,34 @@
+<div class="acciones" [class.menu]="variante() === 'menu'">
+  <button type="button" class="btn-accion btn-compartir"
+          (click)="compartir()"
+          [attr.aria-expanded]="menuAbierto()"
+          [attr.aria-controls]="idMenu()"
+          [attr.aria-label]="'acciones.etiquetaCompartir' | transloco: { nombre: nombre() }">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+      <line x1="8.6" y1="13.5" x2="15.4" y2="17.5" /><line x1="15.4" y1="6.5" x2="8.6" y2="10.5" />
+    </svg>
+    {{ 'acciones.compartir' | transloco }}
+  </button>
+
+  <a class="btn-accion btn-brochure" [href]="brochure()" download target="_blank" rel="noopener"
+     [attr.aria-label]="'acciones.etiquetaBrochure' | transloco: { nombre: nombre() }">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+    {{ 'acciones.brochure' | transloco }}
+  </a>
+</div>
+
+@if (menuAbierto()) {
+  <ul class="menu-compartir" [id]="idMenu()" [attr.aria-label]="'acciones.menu' | transloco">
+    <li><a [href]="enlaces().whatsapp" target="_blank" rel="noopener noreferrer" (click)="alElegirRed()">{{ 'acciones.whatsapp' | transloco }}</a></li>
+    <li><a [href]="enlaces().facebook" target="_blank" rel="noopener noreferrer" (click)="alElegirRed()">Facebook</a></li>
+    <li><a [href]="enlaces().x" target="_blank" rel="noopener noreferrer" (click)="alElegirRed()">X (Twitter)</a></li>
+    <li><a [href]="enlaces().correo" (click)="alElegirRed()">{{ 'acciones.correo' | transloco }}</a></li>
+    <li><button type="button" class="copiar" (click)="copiarEnlace()">{{ 'acciones.copiar' | transloco }}</button></li>
+  </ul>
+}
+
+<!-- Confirmación para lectores de pantalla y para quien ve la pantalla -->
+<p class="aviso" role="status" aria-live="polite">{{ aviso() }}</p>

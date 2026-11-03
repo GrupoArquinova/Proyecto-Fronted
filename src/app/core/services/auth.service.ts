@@ -6,6 +6,7 @@ import { ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth.mode
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { CLAVE_BORRADOR_ASISTENTE } from '../utils/almacenamiento';
+import { Rol, esRol } from '../models/roles';
 
 const TOKEN_KEY = 'jwt_token';
 const USER_NAME_KEY = 'user_name';
@@ -126,6 +127,28 @@ export class AuthService {
     const token = this.getToken();
     const roles = token ? this.leerPayload(token)?.['roles'] : null;
     return Array.isArray(roles) && roles.includes(ROL_ADMINISTRADOR);
+  }
+
+  /** Roles del panel que trae el token (sin el prefijo "ROLE_"); un rol desconocido se ignora. */
+  roles(): Rol[] {
+    const token = this.getToken();
+    const lista = token ? this.leerPayload(token)?.['roles'] : null;
+    if (!Array.isArray(lista)) return [];
+    const roles = lista
+      .filter((r): r is string => typeof r === 'string')
+      .map(r => r.replace(/^ROLE_/, ''))
+      .filter(esRol);
+    return [...new Set(roles)];
+  }
+
+  tieneRol(...permitidos: Rol[]): boolean {
+    const mios = this.roles();
+    return permitidos.some(r => mios.includes(r));
+  }
+
+  /** ¿Tiene alguno de los roles que dan entrada al panel (administrador, comercial o editor)? */
+  tieneAccesoPanel(): boolean {
+    return this.roles().length > 0;
   }
 
   /** ¿La sesión sigue vigente pero ya le queda poco? (para renovarla antes de que venza) */

@@ -13,11 +13,13 @@ test.describe('etiquetas para buscadores', () => {
     await page.goto('/');
     await expect(page).toHaveTitle('Arquitectura, ingeniería y gestión de proyectos en el Quindío | Grupo Arquinova');
     expect(await meta(page, 'name="description"')).toContain('Armenia');
-    // Sin dominio propio configurado (sitioUrl vacío) todo el sitio pide no indexarse
+    // Sin dominio propio configurado (sitioUrl vacío en desarrollo) todo el sitio pide no indexarse
     expect(await meta(page, 'name="robots"')).toBe('noindex, nofollow');
 
     const datos = JSON.parse(await page.locator('head script#datos-estructurados').textContent() ?? '{}');
     expect(datos['@type']).toBe('Organization');
+    expect(datos.logo.startsWith('https://')).toBe(true);
+    expect(datos.contactPoint.availableLanguage).toEqual(['es', 'en']);
     expect(datos.taxID).toBe('901.397.504-2');
     expect(datos.address.addressLocality).toBe('Armenia');
   });
@@ -36,8 +38,45 @@ test.describe('etiquetas para buscadores', () => {
     expect(await meta(page, 'property="og:title"')).toContain('El Encanto');
 
     const datos = JSON.parse(await page.locator('head script#datos-estructurados').textContent() ?? '{}');
-    expect(datos['@type']).toBe('Place');
-    expect(datos.address.addressLocality).toBe('La Tebaida');
+    const grafo = datos['@graph'] as Record<string, any>[];
+    const tipos = grafo.map(n => n['@type']);
+    expect(tipos).toEqual(['Organization', 'Place', 'RealEstateListing', 'BreadcrumbList']);
+    expect(grafo[1].address.addressLocality).toBe('La Tebaida');
+    expect(grafo[3].itemListElement.map((m: { name: string }) => m.name)).toEqual(['Inicio', 'Proyectos', 'El Encanto']);
+    expect(JSON.stringify(datos)).not.toMatch(/price|offers/i);
+  });
+
+  test('un proyecto lleva Open Graph, Twitter Card, idioma y portada para compartir', async ({ page }) => {
+    await page.goto(`/proyectos/${PROYECTO_ID}/bienvenida`);
+    await expect.poll(() => meta(page, 'property="og:description"')).toBe('Proyecto de prueba');
+    expect(await meta(page, 'property="og:title"')).toBe('El Encanto en La Tebaida, Quindío | Grupo Arquinova');
+    expect(await meta(page, 'property="og:locale"')).toBe('es_CO');
+    expect(await meta(page, 'property="og:image:alt"')).toBe('Portada del proyecto El Encanto');
+    expect((await meta(page, 'property="og:image"'))!.startsWith('https://')).toBe(true);
+    expect(await meta(page, 'name="twitter:title"')).toContain('El Encanto');
+    expect(await meta(page, 'name="twitter:card"')).toBeTruthy();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  });
+
+  test('al cambiar a inglés se actualizan el idioma de la página, la descripción y el esquema', async ({ page }) => {
+    await page.goto(`/proyectos/${PROYECTO_ID}/bienvenida`);
+    await expect.poll(() => meta(page, 'name="description"')).toBe('Proyecto de prueba');
+    await page.getByRole('button', { name: 'English' }).first().click();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect.poll(() => meta(page, 'name="description"')).toBe('Test project');
+    expect(await meta(page, 'property="og:locale"')).toBe('en_US');
+    const datos = JSON.parse(await page.locator('head script#datos-estructurados').textContent() ?? '{}');
+    expect(datos['@graph'][2].inLanguage).toBe('en');
+  });
+
+  test('los metas se ponen en el navegador sin romper la hidratación', async ({ page }) => {
+    const problemas: string[] = [];
+    page.on('console', m => { if (/NG05[0-9]{2}|hydrat/i.test(m.text())) problemas.push(m.text().slice(0, 200)); });
+    page.on('pageerror', e => problemas.push(e.message));
+    await page.goto(`/proyectos/${PROYECTO_ID}/bienvenida`);
+    await expect.poll(() => meta(page, 'name="description"')).toBe('Proyecto de prueba');
+    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+    expect(problemas).toEqual([]);
   });
 
   test('cada sección del proyecto cambia el título', async ({ page }) => {
@@ -77,6 +116,7 @@ test.describe('lo que recibe Google del servidor', () => {
     expect(respuesta.ok()).toBe(true);
     const texto = await respuesta.text();
     expect(texto).toContain('Disallow: /admin');
+    expect(texto).toContain('Disallow: /login');
     // La línea Sitemap la agrega el servidor de producción; el servidor de desarrollo sirve el archivo estático
   });
 

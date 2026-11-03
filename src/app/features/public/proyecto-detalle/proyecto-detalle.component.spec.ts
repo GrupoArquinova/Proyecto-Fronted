@@ -15,6 +15,7 @@ import { MultimediaService } from '../../../core/services/multimedia.service';
 import { ContenidoService } from '../../../core/services/contenido.service';
 import { Punto360Service } from '../../../core/services/punto-360.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { AnaliticaService } from '../../../core/services/analitica.service';
 import { IdiomaService } from '../../../core/services/idioma.service';
 import { provideI18nPruebas } from '../../../i18n/pruebas';
 
@@ -29,6 +30,8 @@ interface Datos {
   ubicacion?: unknown;
   multimedia?: unknown[];
   lotes?: unknown[];
+  /** Dirección del sitio que devuelve el SEO simulado (sin ella no hay direcciones absolutas). */
+  base?: string;
 }
 
 function montar(datos: Datos = {}) {
@@ -36,7 +39,7 @@ function montar(datos: Datos = {}) {
     ? of({ id: 7, empresaId: 1, nombre: 'La Hacienda', descripcion: 'Un proyecto campestre', imagenUrl: 'https://x.com/p.jpg' })
     : datos.proyecto;
   const proyectos = { getProyectoPorId: vi.fn(() => proyecto$) };
-  const seo = { establecer: vi.fn() };
+  const seo = { establecer: vi.fn(), urlAbsoluta: vi.fn((ruta: string) => (datos.base ? `${datos.base}${ruta}` : null)) };
   TestBed.configureTestingModule({
     providers: [
       provideRouter([{
@@ -333,29 +336,54 @@ describe('ProyectoDetalleComponent', () => {
 
   describe('SEO', () => {
     const ultimo = (seo: { establecer: ReturnType<typeof vi.fn> }) => seo.establecer.mock.calls.at(-1)![0] as Record<string, unknown> & { jsonLd: Record<string, unknown> };
+    const grafo = (seo: { establecer: ReturnType<typeof vi.fn> }) => (ultimo(seo).jsonLd['@graph'] as Record<string, unknown>[]);
+    const nodo = (seo: { establecer: ReturnType<typeof vi.fn> }, tipo: string) => grafo(seo).find((n) => [n['@type']].flat().includes(tipo))!;
 
-    it('describe el proyecto y su sección activa con datos estructurados de lugar', async () => {
+    it('describe el proyecto y su sección activa con una descripción propia de la sección', async () => {
       const { seo } = await abrir('/proyectos/7/ubicacion', { ubicacion });
       expect(ultimo(seo)).toMatchObject({
         titulo: 'Ubicación · La Hacienda en Tunja, Boyacá',
-        descripcion: 'Un proyecto campestre',
+        descripcion: 'Ubicación de La Hacienda en Tunja, Boyacá. Un proyecto campestre',
         imagen: 'https://x.com/p.jpg',
+        imagenAlt: 'Portada del proyecto La Hacienda',
         ruta: '/proyectos/7/ubicacion'
       });
-      expect(ultimo(seo).jsonLd).toEqual({
-        '@context': 'https://schema.org',
-        '@type': 'Place',
+    });
+
+    it('los datos estructurados llevan organización, lugar con ubicación real, página y migas, sin precios', async () => {
+      const { seo } = await abrir('/proyectos/7/ubicacion', { ubicacion, base: 'https://arquinova.test' });
+      const json = ultimo(seo).jsonLd;
+      expect(json['@context']).toBe('https://schema.org');
+
+      expect(nodo(seo, 'Organization')).toMatchObject({ name: 'Grupo Arquinova S.A.S.', url: 'https://arquinova.test/' });
+      expect(nodo(seo, 'Place')).toMatchObject({
         name: 'La Hacienda',
-        description: 'Un proyecto campestre',
         image: 'https://x.com/p.jpg',
         address: { '@type': 'PostalAddress', addressLocality: 'Tunja', addressRegion: 'Boyacá', addressCountry: 'CO' },
         geo: { '@type': 'GeoCoordinates', latitude: 5.5, longitude: -73.3 }
       });
+      // Sin tipo de registro (oferta comercial por defecto) la página es un anuncio inmobiliario
+      expect(nodo(seo, 'RealEstateListing')).toMatchObject({ url: 'https://arquinova.test/proyectos/7/ubicacion', inLanguage: 'es' });
+      const migas = nodo(seo, 'BreadcrumbList')['itemListElement'] as { name: string; item?: string }[];
+      expect(migas.map((m) => m.name)).toEqual(['Inicio', 'Proyectos', 'La Hacienda', 'Ubicación']);
+      expect(migas[1].item).toBe('https://arquinova.test/proyectos');
+      expect(migas[3].item).toBeUndefined();
+      expect(JSON.stringify(json)).not.toMatch(/price|offers/i);
     });
 
-    it('en Bienvenida el título no lleva prefijo de sección', async () => {
+    it('un caso de portafolio es una página normal (no un anuncio) y un proyecto residencial es una Residence', async () => {
+      const { seo } = await abrir('/proyectos/7/bienvenida', {
+        ubicacion, proyecto: of({ id: 7, empresaId: 1, nombre: 'La Hacienda', tipoRegistro: 'PORTAFOLIO', tipoProyecto: 'RESIDENCIAL' })
+      });
+      expect(nodo(seo, 'WebPage')).toBeDefined();
+      expect(grafo(seo).some((n) => n['@type'] === 'RealEstateListing')).toBe(false);
+      expect(nodo(seo, 'Residence')['name']).toBe('La Hacienda');
+    });
+
+    it('en Bienvenida el título no lleva prefijo de sección ni cambia la descripción del proyecto', async () => {
       const { seo } = await abrir('/proyectos/7/bienvenida', { ubicacion });
       expect(ultimo(seo)['titulo']).toBe('La Hacienda en Tunja, Boyacá');
+      expect(ultimo(seo)['descripcion']).toBe('Un proyecto campestre');
     });
 
     it('sin sección en la URL usa la ruta de Bienvenida', async () => {
@@ -364,7 +392,14 @@ describe('ProyectoDetalleComponent', () => {
       expect(ultimo(seo)['titulo']).toBe('La Hacienda en Tunja, Boyacá');
     });
 
-    it('sin descripción propia usa el texto por defecto con el lugar', async () => {
+    it('sin descripción propia usa un texto con el nombre, el tipo, el lugar y la etapa', async () => {
+      const { seo } = await abrir('/proyectos/7/bienvenida', {
+        ubicacion, proyecto: of({ id: 7, empresaId: 1, nombre: 'La Hacienda', tipoProyecto: 'RURAL', estadoProyecto: 'EN_DISENO' })
+      });
+      expect(ultimo(seo)['descripcion']).toBe('La Hacienda en Tunja, Boyacá: proyecto rural de Grupo Arquinova (en diseño).');
+    });
+
+    it('sin descripción, tipo ni etapa usa el texto por defecto con el lugar', async () => {
       const { seo } = await abrir('/proyectos/7/bienvenida', { ubicacion, proyecto: of({ id: 7, empresaId: 1, nombre: 'La Hacienda', imagenUrl: 'https://x.com/p.jpg' }) });
       expect(ultimo(seo)['descripcion']).toBe('La Hacienda en Tunja, Boyacá: proyecto de Grupo Arquinova.');
     });
@@ -373,8 +408,8 @@ describe('ProyectoDetalleComponent', () => {
       const { seo } = await abrir('/proyectos/7/bienvenida', { proyecto: of({ id: 7, empresaId: 1, nombre: 'La Hacienda' }) });
       expect(ultimo(seo)['titulo']).toBe('La Hacienda');
       expect(ultimo(seo)['descripcion']).toBe('La Hacienda: proyecto de Grupo Arquinova.');
-      expect(ultimo(seo).jsonLd['address']).toBeUndefined();
-      expect(ultimo(seo).jsonLd['geo']).toBeUndefined();
+      expect(nodo(seo, 'Place')['address']).toBeUndefined();
+      expect(nodo(seo, 'Place')['geo']).toBeUndefined();
     });
 
     it('sin imagen del proyecto usa la primera imagen de su multimedia', async () => {
@@ -385,12 +420,13 @@ describe('ProyectoDetalleComponent', () => {
     it('sin ninguna imagen manda null', async () => {
       const { seo } = await abrir('/proyectos/7/bienvenida', { proyecto: of({ id: 7, empresaId: 1, nombre: 'La Hacienda' }) });
       expect(ultimo(seo)['imagen']).toBeNull();
-      expect(ultimo(seo).jsonLd['image']).toBeUndefined();
+      expect(nodo(seo, 'Place')['image']).toBeUndefined();
     });
 
     it('una ubicación sin ciudad no manda dirección y sin coordenadas no manda geo', async () => {
       const { seo } = await abrir('/proyectos/7/bienvenida', { ubicacion: { proyectoId: 7, ciudad: '', departamento: 'Boyacá' } });
-      expect(ultimo(seo).jsonLd['address']).toBeUndefined();
+      expect(nodo(seo, 'Place')['address']).toBeUndefined();
+      expect(nodo(seo, 'Place')['geo']).toBeUndefined();
       expect(ultimo(seo)['titulo']).toBe('La Hacienda en Boyacá');
     });
 
@@ -401,8 +437,10 @@ describe('ProyectoDetalleComponent', () => {
       await vi.waitFor(() => expect(ultimo(seo)['titulo']).toBe('Contacto · La Hacienda en Tunja, Boyacá'), { timeout: 5000 });
     });
 
-    it('al cambiar de idioma los títulos y textos se rehacen en inglés', async () => {
-      const { seo, harness, menu } = await abrir('/proyectos/7/ubicacion', { ubicacion });
+    it('al cambiar de idioma los títulos, la descripción y los datos estructurados se rehacen en inglés', async () => {
+      const { seo, harness, menu } = await abrir('/proyectos/7/ubicacion', {
+        ubicacion, proyecto: of({ id: 7, empresaId: 1, nombre: 'La Hacienda', descripcion: 'Un proyecto campestre', descripcionEn: 'A country project' })
+      });
       const idioma = TestBed.inject(IdiomaService);
       idioma.cambiar('en', false);
       await vi.waitFor(() => expect(idioma.idioma()).toBe('en'), { timeout: 5000 });
@@ -410,6 +448,34 @@ describe('ProyectoDetalleComponent', () => {
 
       expect(menu()).toEqual(['Welcome', 'Location', 'Contact']);
       expect(ultimo(seo)['titulo']).toBe('Location · La Hacienda in Tunja, Boyacá');
+      expect(ultimo(seo)['descripcion']).toBe('Location of La Hacienda in Tunja, Boyacá. A country project');
+      expect(nodo(seo, 'RealEstateListing')['inLanguage']).toBe('en');
+      const migas = nodo(seo, 'BreadcrumbList')['itemListElement'] as { name: string }[];
+      expect(migas[0].name).toBe('Home');
+    });
+  });
+
+  describe('analítica y acciones', () => {
+    it('cuenta una sola visita al proyecto por apertura (cambiar de sección no suma otra)', async () => {
+      const vista = vi.spyOn(AnaliticaService.prototype, 'vistaProyecto').mockImplementation(() => undefined);
+      const { harness } = await abrir('/proyectos/7/bienvenida', { ubicacion });
+      await harness.navigateByUrl('/proyectos/7/contacto');
+      harness.detectChanges();
+      await harness.fixture.whenStable();
+      expect(vista).toHaveBeenCalledTimes(1);
+      expect(vista).toHaveBeenCalledWith(7);
+    });
+
+    it('un proyecto que no existe no cuenta visita', async () => {
+      const vista = vi.spyOn(AnaliticaService.prototype, 'vistaProyecto').mockImplementation(() => undefined);
+      await abrir('/proyectos/7/bienvenida', { proyecto: throwError(() => new HttpErrorResponse({ status: 404 })) });
+      expect(vista).not.toHaveBeenCalled();
+    });
+
+    it('el menú ofrece compartir y descargar el brochure del proyecto', async () => {
+      const { el } = await abrir('/proyectos/7/bienvenida', { ubicacion });
+      expect(el.querySelector('.menu-pie app-acciones-proyecto .btn-compartir')).not.toBeNull();
+      expect(el.querySelector('.menu-pie app-acciones-proyecto a.btn-brochure')?.getAttribute('href')).toMatch(/\/proyectos\/7\/brochure\.pdf$/);
     });
   });
 

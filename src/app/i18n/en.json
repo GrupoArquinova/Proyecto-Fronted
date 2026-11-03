@@ -187,6 +187,7 @@
       "cookies": "Cookies",
       "noEncontradoSeo": "Project not found",
       "enLugar": "in {{lugar}}",
+      "migaInicio": "Home",
       "descripcionSeo": "{{nombre}}{{lugar}}: a Grupo Arquinova project."
     },
     "menu": {
@@ -399,7 +400,24 @@
     "descripcionDefecto": "Grupo Arquinova S.A.S.: architecture, engineering and management of residential, rural and tourism projects in Quindío.",
     "paginaNoEncontrada": "Page not found",
     "proyectosTitulo": "Projects",
-    "proyectosDescripcion": "Grupo Arquinova projects in Quindío: El Encanto and the cases in our architecture, engineering and management portfolio."
+    "proyectosDescripcion": "Grupo Arquinova projects in Quindío: El Encanto and the cases in our architecture, engineering and management portfolio.",
+    "descripcionProyectoTipo": "{{nombre}}{{lugar}}: a {{tipo}} project by Grupo Arquinova ({{etapa}}).",
+    "descripcionSeccion": "{{seccion}} of {{nombre}}{{lugar}}. {{descripcion}}",
+    "altPortada": "Cover image of the {{nombre}} project"
+  },
+  "acciones": {
+    "compartir": "Share",
+    "etiquetaCompartir": "Share {{nombre}}",
+    "menu": "Sharing options",
+    "whatsapp": "WhatsApp",
+    "correo": "Email",
+    "copiar": "Copy link",
+    "copiado": "Link copied to the clipboard",
+    "errorCopiar": "The link could not be copied. Copy it from the address bar.",
+    "asunto": "{{nombre}} · Grupo Arquinova",
+    "texto": "Take a look at {{nombre}}{{lugar}}, a Grupo Arquinova project.",
+    "brochure": "Download brochure (PDF)",
+    "etiquetaBrochure": "Download the {{nombre}} brochure as a PDF"
   },
   "chat": {
     "boton": "AI assistant",
@@ -409,8 +427,15 @@
     "placeholder": "Type your question...",
     "enviar": "Send",
     "escribiendo": "Writing a reply...",
-    "error": "Sorry, I can't answer right now. You can write to us on WhatsApp and we will help you right away.",
-    "demasiadas": "You have sent many questions in a row. Please wait a moment and try again."
+    "error": "Sorry, I can't answer right now. Write to us on WhatsApp and we will help you right away.",
+    "demasiadas": "You have sent many questions in a row. Please wait a moment and try again.",
+    "nueva": "New conversation",
+    "sugerenciasTitulo": "Suggested questions",
+    "sug1": "What projects do you have?",
+    "sug2": "Which villas are in El Encanto?",
+    "sug3": "Where is El Encanto located?",
+    "sug4": "How can I contact you?",
+    "aviso": "Do not write personal data here (name, phone number, email, ID number)."
   },
   "whatsappModal": {
     "abrir": "Open WhatsApp",

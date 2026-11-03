@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { environment } from '../../../environments/environment';
 import { IdiomaService } from '../../core/services/idioma.service';
+import { ClickWhatsappDirective } from '../../shared/directives/click-whatsapp.directive';
 
 @Component({
   selector: 'app-whatsapp-modal',
   standalone: true,
-  imports: [FormsModule, TranslocoPipe],
+  imports: [FormsModule, TranslocoPipe, ClickWhatsappDirective],
   templateUrl: './whatsapp-modal.component.html',
   styleUrl: './whatsapp-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

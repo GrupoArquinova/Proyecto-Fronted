@@ -120,6 +120,12 @@
           <a [routerLink]="['/proyectos', proyecto.id]" class="card-link">
             {{ 'home.proyectos.explorar' | transloco }} &rarr;
           </a>
+          <!-- Compartir y brochure en PDF: sirven tanto para ofertas comerciales como para casos de portafolio -->
+          @if (proyecto.id) {
+            <div class="card-acciones">
+              <app-acciones-proyecto variante="tarjeta" [proyectoId]="proyecto.id" [nombre]="proyecto.nombre" [lugar]="proyecto.ubicacion" />
+            </div>
+          }
         </div>
       </div>
     }

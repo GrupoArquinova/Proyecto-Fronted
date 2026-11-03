@@ -1,6 +1,7 @@
 <aside class="sidebar">
   <nav class="sidebar-nav">
     <ul class="nav-list">
+      @if (ve('resumen')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/resumen" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -11,7 +12,21 @@
           <span>Resumen</span>
         </a>
       </li>
+      }
+      @if (ve('metricas')) {
+      <li>
+        <a (click)="onNavigated()" routerLink="/admin/metricas" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="3 17 9 11 13 15 21 7"></polyline>
+            <polyline points="15 7 21 7 21 13"></polyline>
+          </svg>
+          <span>Métricas</span>
+        </a>
+      </li>
+      }
 
+
+      @if (ve('proyectos')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/proyectos" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -30,7 +45,9 @@
           <span>Proyectos</span>
         </a>
       </li>
+      }
 
+      @if (ve('etapas')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/etapas" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41,7 +58,9 @@
           <span>Etapas</span>
         </a>
       </li>
+      }
 
+      @if (ve('lotes')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/lotes" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -52,7 +71,9 @@
           <span>Lotes</span>
         </a>
       </li>
+      }
 
+      @if (ve('zonas-comunes')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/zonas-comunes" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -62,7 +83,9 @@
           <span>Amenidades</span>
         </a>
       </li>
+      }
 
+      @if (ve('casas-modelo')) {
       <li>
   <a (click)="onNavigated()" routerLink="/admin/casas-modelo" routerLinkActive="active" class="nav-item">
     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -72,7 +95,9 @@
     <span>Tipologías</span>
   </a>
 </li>
+      }
 
+      @if (ve('multimedia')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/multimedia" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -83,7 +108,9 @@
           <span>Multimedia</span>
         </a>
       </li>
+      }
 
+      @if (ve('ubicaciones')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/ubicaciones" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -93,7 +120,9 @@
           <span>Ubicaciones</span>
         </a>
       </li>
+      }
 
+      @if (ve('solicitudes')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/solicitudes" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -103,7 +132,9 @@
           <span>Solicitudes</span>
         </a>
       </li>
+      }
 
+      @if (ve('contenido-institucional')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/contenido-institucional" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -113,8 +144,10 @@
           <span>Contenido institucional</span>
         </a>
       </li>
+      }
 
       <!-- NUEVO: Enlace para Gestión de Usuarios / Administradores -->
+      @if (ve('usuarios')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/usuarios" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -126,7 +159,21 @@
           <span>Usuarios</span>
         </a>
       </li>
+      }
+      @if (ve('historial')) {
+      <li>
+        <a (click)="onNavigated()" routerLink="/admin/historial" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <polyline points="12 7 12 12 15.5 14"></polyline>
+          </svg>
+          <span>Historial de cambios</span>
+        </a>
+      </li>
+      }
 
+
+      @if (ve('reportes')) {
       <li>
         <a (click)="onNavigated()" routerLink="/admin/reportes" routerLinkActive="active" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -137,6 +184,7 @@
           <span>Reportes</span>
         </a>
       </li>
+      }
     </ul>
   </nav>
 

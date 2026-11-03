@@ -6,13 +6,14 @@ import { MedioComponent } from '../medio/medio.component';
 import { CarruselLaminasComponent, Lamina } from '../carrusel-laminas/carrusel-laminas.component';
 import { clasificarMedio } from '../../../../../core/utils/medios';
 import { enlaceWhatsapp, mensajeConsultaVilla } from '../../../../../core/utils/whatsapp';
+import { ClickWhatsappDirective } from '../../../../../shared/directives/click-whatsapp.directive';
 import { environment } from '../../../../../../environments/environment';
 import { IdiomaService } from '../../../../../core/services/idioma.service';
 
 @Component({
   selector: 'app-casa-modelo-publico',
   standalone: true,
-  imports: [TranslocoPipe, RouterLink, MedioComponent, CarruselLaminasComponent],
+  imports: [TranslocoPipe, RouterLink, MedioComponent, CarruselLaminasComponent, ClickWhatsappDirective],
   templateUrl: './casa-modelo.component.html',
   styleUrl: './casa-modelo.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

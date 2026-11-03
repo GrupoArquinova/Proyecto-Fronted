@@ -50,8 +50,9 @@
         "items": [
           "Contact details you give us in the forms: name, email, phone, message, project or lot of interest.",
           "Technical details of the request: IP address, user agent (browser and device type), and date and time, which our server records automatically when you submit the contact form, as proof of the authorization and for security.",
-          "If you use the AI chat, the text of the questions you type. Please do not type personal or sensitive data in the chat.",
-          "Data of the people who manage the site (internal users): name, email, role and activity records within the panel.",
+          "Site usage statistics: aggregated counters of visits and clicks (see section 13). They use no cookies, do not store your IP address and are not linked to any person.",
+          "If you use the AI chat, we store only the text of the question you type, without the answer, without your IP address and without identifiers. Before storing it we automatically hide any email addresses and phone numbers it contains. Please do not type personal or sensitive data in the chat (name, phone number, email, ID number): the assistant does not need them to answer you.",
+          "Data of the people who manage the site (internal users): name, email, role and a change history that records which user creates, edits or deletes each piece of content in the panel, and when.",
           "If you write to us on WhatsApp, the data you share in the conversation, which is also governed by the terms of that service."
         ],
         "parrafos2": [
@@ -65,7 +66,7 @@
           "To contact you by phone, email or WhatsApp to give you commercial information, availability and conditions of the projects.",
           "To follow up on your request commercially and manage the relationship with prospective buyers.",
           "To send you information about new projects, construction progress or news, provided you have authorized it, with the option to stop receiving it at any time.",
-          "To prepare internal statistics and improve the website and our services.",
+          "To prepare aggregated internal statistics (without cookies or identifiers) and improve the website, the AI assistant and our services.",
           "Answering your questions through the AI chat, when you choose to use it.",
           "Displaying the maps, videos, images and 360° tours of the site, which are loaded from external providers.",
           "To ensure the security of the site and prevent fraud or misuse.",
@@ -127,20 +128,31 @@
       {
         "titulo": "11. Security measures",
         "parrafos": [
-          "We apply reasonable technical, human and administrative measures to protect the data: encrypted connection (HTTPS), panel access restricted by user and role, passwords stored in encrypted form, a limit on login attempts and activity logs. No system is completely infallible; if an incident affecting your data occurs, we will handle it in accordance with the law, including reporting it to the Superintendence of Industry and Commerce when applicable."
+          "We apply reasonable technical, human and administrative measures to protect the data: encrypted connection (HTTPS), panel access restricted by user and role, passwords stored in encrypted form, a limit on login attempts and a panel change history that records which user edits what, and when. No system is completely infallible; if an incident affecting your data occurs, we will handle it in accordance with the law, including reporting it to the Superintendence of Industry and Commerce when applicable."
         ]
       },
       {
         "titulo": "12. Data retention",
         "parrafos": [
           "We keep your data for as long as it is necessary for the purposes described and for the periods required by law. When it is no longer needed, we will securely delete or anonymize it.",
-          "Contact requests, together with the IP address and user agent recorded when they are submitted, are kept for 24 months from the date we receive them and are then deleted or anonymized. You can ask for them to be deleted before that period by writing to {{correoDatos}}, unless there is a legal or contractual duty to keep them."
+          "Contact requests, together with the IP address and user agent recorded when they are submitted, are kept for 24 months from the date we receive them and are then deleted or anonymized. You can ask for them to be deleted before that period by writing to {{correoDatos}}, unless there is a legal or contractual duty to keep them.",
+          "The text of the questions asked to the AI assistant is kept for 12 months and then deleted. The site analytics counters are aggregated and do not identify any person."
         ]
       },
       {
-        "titulo": "13. Cookies and similar technologies",
+        "titulo": "13. Analytics, cookies and similar technologies",
         "parrafos": [
-          "The site uses the technical storage necessary for its operation. See our Cookie policy for more details."
+          "The site uses the technical storage necessary for its operation. See our Cookie policy for more details.",
+          "Site analytics: we measure how the site is used with our own system that uses no cookies, does not store your IP address and does not assign identifiers to your browser or to you. Only these events are counted, in aggregate form:"
+        ],
+        "items": [
+          "Viewing a page of the site and opening a project page.",
+          "Clicking a WhatsApp button or link.",
+          "Using the button to share a project.",
+          "Submitting a contact form, starting a conversation with the assistant and downloading a project brochure (our server counts these three)."
+        ],
+        "parrafos2": [
+          "If your browser has \"Do Not Track\" or Global Privacy Control turned on, the site sends none of these events. The IP address stored when you submit a contact form (section 5) serves a different purpose and is not used for analytics."
         ]
       },
       {
@@ -268,7 +280,7 @@
         "items": [
           "Necessary technical storage: it lets the site work, for example keeping the session of the people who manage the site and remembering interface preferences. It does not require consent because it is essential for the service.",
           "Embedded third-party content: Google Maps maps, YouTube videos and other resources may set their own cookies when they are loaded on a page. They are governed by the policies of those providers.",
-          "Analytics and advertising: this site currently does not use analytics or advertising cookies. If we enable them in the future, we will tell you and ask for your consent before using them."
+          "Analytics and advertising: this site does not use analytics or advertising cookies. We measure visits with our own aggregated counters that use no cookies, do not store your IP address and do not identify you (more details in section 13 of the Personal data processing policy); if you turn on \"Do Not Track\", nothing is counted. If we use analytics or advertising cookies in the future, we will tell you and ask for your consent before using them."
         ]
       },
       {

@@ -24,7 +24,7 @@ describe('jwtInterceptor', () => {
         provideRouter([]),
         provideHttpClient(withInterceptors([jwtInterceptor])),
         provideHttpClientTesting(),
-        { provide: ToastService, useValue: { showInfo: vi.fn() } }
+        { provide: ToastService, useValue: { showInfo: vi.fn(), showError: vi.fn() } }
       ]
     });
     http = TestBed.inject(HttpClient);
@@ -106,5 +106,17 @@ describe('jwtInterceptor', () => {
 
     expect(TestBed.inject(AuthService).getToken()).toBeNull();
     expect(navegar).toHaveBeenCalledWith(['/login']);
+  });
+
+  it('un 403 en el panel avisa que no hay permiso y NO cierra la sesión', () => {
+    localStorage.setItem('jwt_token', token(3000));
+    const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    http.get(`${environment.apiUrl}/usuarios`).subscribe({ error: () => undefined });
+    backend.expectOne(`${environment.apiUrl}/usuarios`).flush({}, { status: 403, statusText: 'Forbidden' });
+
+    expect(TestBed.inject(AuthService).getToken()).not.toBeNull();
+    expect(navegar).not.toHaveBeenCalled();
+    expect(TestBed.inject(ToastService).showError).toHaveBeenCalledWith('No tienes permiso para esta acción.');
   });
 });

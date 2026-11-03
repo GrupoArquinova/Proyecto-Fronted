@@ -14,6 +14,13 @@ const admins = [
   { id: 1, rolId: 1, nombreCompleto: 'Ana Gómez', correo: 'ana@arquinova.co', activo: true },
   { id: 2, rolId: 1, nombreCompleto: 'Luis Pérez', correo: 'luis@arquinova.co', activo: false },
 ];
+const ROLES = environment.apiUrl + '/roles';
+const rolesApi = [
+  { id: 11, nombre: 'ADMINISTRADOR', descripcion: 'Acceso total del sistema', activo: true },
+  { id: 12, nombre: 'COMERCIAL', descripcion: null, activo: true },
+  { id: 13, nombre: 'EDITOR', descripcion: null, activo: true },
+  { id: 14, nombre: 'ANTIGUO', descripcion: 'Sin uso', activo: false },
+];
 const CLAVE_VALIDA = 'Segura#2026';
 
 describe('UsuariosComponent', () => {
@@ -28,6 +35,7 @@ describe('UsuariosComponent', () => {
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
     http.expectOne(USUARIOS).flush(structuredClone(lista));
+    http.expectOne(ROLES).flush(structuredClone(rolesApi));
     fixture.detectChanges();
     return { fixture, componente: fixture.componentInstance, el: fixture.nativeElement as HTMLElement };
   }
@@ -62,6 +70,7 @@ describe('UsuariosComponent', () => {
       fixture.detectChanges();
 
       http.expectOne(USUARIOS).flush(null, { status: 500, statusText: 'Error' });
+      http.expectOne(ROLES).flush([]);
 
       expect(consola).toHaveBeenCalled();
       expect(fixture.componentInstance.listaAdmins).toEqual([]);
@@ -113,14 +122,14 @@ describe('UsuariosComponent', () => {
   });
 
   describe('modal', () => {
-    it('"+ Nuevo Administrador" abre el formulario vacío y "Cancelar" lo cierra', () => {
+    it('"+ Nuevo usuario" abre el formulario vacío y "Cancelar" lo cierra', () => {
       const { fixture, componente, el } = crear();
 
       el.querySelector<HTMLButtonElement>('.header-section .btn-primary')!.click();
       fixture.detectChanges();
 
-      expect(el.querySelector('.modal-header h3')?.textContent).toContain('Crear Nuevo Administrador');
-      expect(componente.usuarioActual).toEqual({ rolId: 1, nombreCompleto: '', correo: '', password: '', activo: true });
+      expect(el.querySelector('.modal-header h3')?.textContent).toContain('Crear nuevo usuario');
+      expect(componente.usuarioActual).toEqual({ rolId: 13, nombreCompleto: '', correo: '', password: '', activo: true });
       expect(el.querySelector('.modal-footer .btn-primary')?.textContent).toContain('Guardar');
 
       el.querySelector<HTMLButtonElement>('.btn-secondary')!.click();
@@ -144,7 +153,7 @@ describe('UsuariosComponent', () => {
       el.querySelector<HTMLButtonElement>('.btn-action.edit')!.click();
       fixture.detectChanges();
 
-      expect(el.querySelector('.modal-header h3')?.textContent).toContain('Editar Administrador');
+      expect(el.querySelector('.modal-header h3')?.textContent).toContain('Editar usuario');
       expect(componente.usuarioActual).toMatchObject({ id: 1, nombreCompleto: 'Ana Gómez', password: '' });
       expect(el.querySelector('.hint')?.textContent).toContain('la contraseña actual no cambia');
       expect(el.querySelector('.modal-footer .btn-primary')?.textContent).toContain('Actualizar');
@@ -237,7 +246,7 @@ describe('UsuariosComponent', () => {
 
       componente.guardarUsuario();
       const peticion = http.expectOne((r) => r.method === 'POST' && r.url === USUARIOS);
-      expect(peticion.request.body).toEqual({ rolId: 1, nombreCompleto: 'Nuevo Admin', correo: 'nuevo@correo.com', activo: true, password: CLAVE_VALIDA });
+      expect(peticion.request.body).toEqual({ rolId: 13, nombreCompleto: 'Nuevo Admin', correo: 'nuevo@correo.com', activo: true, password: CLAVE_VALIDA });
       peticion.flush({ id: 3 });
       http.expectOne(USUARIOS).flush([]);
       fixture.detectChanges();
@@ -420,6 +429,68 @@ describe('UsuariosComponent', () => {
 
       expect(consola).toHaveBeenCalled();
       expect(componente.mensajeExito).toBe('');
+    });
+  });
+  describe('roles', () => {
+    it('la tabla muestra el nombre legible del rol de cada persona', () => {
+      const { el } = crear([
+        { id: 1, rolId: 11, nombreCompleto: 'Ana', correo: 'ana@arquinova.co', activo: true },
+        { id: 2, rolId: 12, nombreCompleto: 'Luis', correo: 'luis@arquinova.co', activo: true },
+        { id: 3, rolId: 13, rolNombre: 'EDITOR', nombreCompleto: 'Eva', correo: 'eva@arquinova.co', activo: true },
+        { id: 4, rolId: 99, rolNombre: 'ROLE_COMERCIAL', nombreCompleto: 'Zoe', correo: 'zoe@arquinova.co', activo: true },
+        { id: 5, rolId: 77, nombreCompleto: 'Sin', correo: 'sin@arquinova.co', activo: true },
+      ]);
+      const roles = Array.from(el.querySelectorAll('tbody .rol-chip')).map((c) => c.textContent?.trim());
+      expect(roles).toEqual(['Administrador', 'Comercial', 'Editor de contenido', 'Comercial', 'Sin rol']);
+    });
+
+    it('el formulario ofrece los roles activos que entrega el backend, con su descripción', () => {
+      const { componente, fixture, el } = crear();
+      componente.abrirModalCrear();
+      fixture.detectChanges();
+
+      const opciones = Array.from(el.querySelectorAll('#usuarios-campo-rol option')).map((o) => o.textContent?.trim());
+      expect(opciones).toEqual(['Administrador', 'Comercial', 'Editor de contenido']);
+
+      componente.usuarioActual.rolId = 11;
+      fixture.detectChanges();
+      expect(el.querySelector('#usuarios-rol-ayuda')?.textContent).toContain('Acceso total del sistema'); // la del backend
+      componente.usuarioActual.rolId = 12;
+      fixture.detectChanges();
+      expect(el.querySelector('#usuarios-rol-ayuda')?.textContent).toContain('solicitudes'); // la de respaldo
+    });
+
+    it('al crear envía el id de rol elegido (no uno supuesto)', () => {
+      const { componente, fixture } = crear();
+      componente.abrirModalCrear();
+      componente.usuarioActual = { ...componente.usuarioActual, nombreCompleto: 'Nuevo', correo: 'nuevo@correo.com', password: CLAVE_VALIDA, rolId: 12 };
+      fixture.detectChanges();
+      componente.guardarUsuario();
+
+      const peticion = http.expectOne((r) => r.method === 'POST' && r.url === USUARIOS);
+      expect(peticion.request.body.rolId).toBe(12);
+      peticion.flush({});
+      http.expectOne(USUARIOS).flush([]);
+    });
+
+    it('no deja guardar sin rol', () => {
+      const { componente } = crear();
+      componente.abrirModalCrear();
+      componente.usuarioActual = { ...componente.usuarioActual, nombreCompleto: 'Nuevo', correo: 'n@c.com', password: CLAVE_VALIDA, rolId: 0 };
+      componente.guardarUsuario();
+      expect(componente.errorForm).toBe('Elige un rol.');
+    });
+
+    it('si /roles falla avisa en el formulario', () => {
+      TestBed.configureTestingModule({ imports: [UsuariosComponent], providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
+      const fixture = TestBed.createComponent(UsuariosComponent);
+      http = TestBed.inject(HttpTestingController);
+      fixture.detectChanges();
+      http.expectOne(USUARIOS).flush([]);
+      http.expectOne(ROLES).flush(null, { status: 403, statusText: 'Forbidden' });
+      fixture.componentInstance.abrirModalCrear();
+      fixture.detectChanges();
+      expect((fixture.nativeElement as HTMLElement).querySelector('#usuarios-rol-ayuda')?.textContent).toContain('No se pudieron cargar los roles');
     });
   });
 });

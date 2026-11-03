@@ -9,6 +9,7 @@ import { SolicitudService } from '../../../../../core/services/solicitud.service
 import { ToastService } from '../../../../../core/services/toast.service';
 import { SolicitudPublicaRequest } from '../../../../../core/models/solicitud.models';
 import { alMenosUnMedioDeContacto } from '../../../../../core/utils/solicitudes';
+import { ClickWhatsappDirective } from '../../../../../shared/directives/click-whatsapp.directive';
 import { environment } from '../../../../../../environments/environment';
 import { IdiomaService } from '../../../../../core/services/idioma.service';
 import { TurnstileService } from '../../../../../core/services/turnstile.service';
@@ -17,7 +18,7 @@ import { CaptchaTurnstileComponent } from '../../../../../shared/components/capt
 @Component({
   selector: 'app-contacto-publico',
   standalone: true,
-  imports: [TranslocoPipe, ReactiveFormsModule, CaptchaTurnstileComponent],
+  imports: [TranslocoPipe, ReactiveFormsModule, CaptchaTurnstileComponent, ClickWhatsappDirective],
   templateUrl: './contacto.component.html',
   styleUrl: './contacto.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

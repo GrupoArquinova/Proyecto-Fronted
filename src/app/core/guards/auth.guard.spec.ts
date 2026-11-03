@@ -5,18 +5,18 @@ import { authGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
 
 describe('authGuard', () => {
-  const ejecutar = (logueado: boolean, administrador = true) => {
+  const ejecutar = (logueado: boolean, accesoPanel = true) => {
     const cerrar = vi.fn();
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AuthService, useValue: { isLoggedIn: () => logueado, esAdministrador: () => administrador, logout: cerrar } }
+        { provide: AuthService, useValue: { isLoggedIn: () => logueado, tieneAccesoPanel: () => accesoPanel, logout: cerrar } }
       ]
     });
     return { resultado: TestBed.runInInjectionContext(() => authGuard({} as any, {} as any)), cerrar };
   };
 
-  it('permite el paso a un administrador con sesion activa', () => {
+  it('permite el paso a quien tiene un rol del panel y sesion activa', () => {
     expect(ejecutar(true, true).resultado).toBe(true);
   });
 
@@ -25,7 +25,7 @@ describe('authGuard', () => {
     expect(TestBed.inject(Router).serializeUrl(resultado as UrlTree)).toBe('/login');
   });
 
-  it('con sesion pero sin rol de administrador cierra la sesion local y manda a /login', () => {
+  it('con sesion pero sin ningun rol del panel cierra la sesion local y manda a /login', () => {
     const { resultado, cerrar } = ejecutar(true, false);
     expect(TestBed.inject(Router).serializeUrl(resultado as UrlTree)).toBe('/login');
     expect(cerrar).toHaveBeenCalled();

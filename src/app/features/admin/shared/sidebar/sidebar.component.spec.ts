@@ -1,22 +1,28 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SidebarComponent } from './sidebar.component';
+import { iniciarSesionFalsa } from '../../../../core/testing/jwt-falso';
 
 describe('SidebarComponent', () => {
-  function crear() {
+  afterEach(() => localStorage.clear());
+
+  function crear(rol = 'ROLE_ADMINISTRADOR') {
+    iniciarSesionFalsa(rol);
     TestBed.configureTestingModule({ imports: [SidebarComponent], providers: [provideRouter([{ path: '**', children: [] }])] });
     const fixture = TestBed.createComponent(SidebarComponent);
     fixture.detectChanges();
     return { fixture, componente: fixture.componentInstance, el: fixture.nativeElement as HTMLElement };
   }
 
-  it('lista los enlaces del panel con su ruta, en orden', () => {
-    const { el } = crear();
+  const enlacesDe = (el: HTMLElement) =>
+    Array.from(el.querySelectorAll<HTMLAnchorElement>('a.nav-item')).map((a) => [a.textContent?.trim(), a.getAttribute('href')]);
 
-    const enlaces = Array.from(el.querySelectorAll<HTMLAnchorElement>('a.nav-item')).map((a) => [a.textContent?.trim(), a.getAttribute('href')]);
-    expect(enlaces).toEqual([
+  it('el administrador ve todos los enlaces del panel, en orden', () => {
+    const { el } = crear();
+    expect(enlacesDe(el)).toEqual([
       ['Resumen', '/admin/resumen'],
+      ['Métricas', '/admin/metricas'],
       ['Proyectos', '/admin/proyectos'],
       ['Etapas', '/admin/etapas'],
       ['Lotes', '/admin/lotes'],
@@ -27,8 +33,23 @@ describe('SidebarComponent', () => {
       ['Solicitudes', '/admin/solicitudes'],
       ['Contenido institucional', '/admin/contenido-institucional'],
       ['Usuarios', '/admin/usuarios'],
+      ['Historial de cambios', '/admin/historial'],
       ['Reportes', '/admin/reportes'],
     ]);
+  });
+
+  it('el comercial solo ve Métricas y Solicitudes', () => {
+    const { el } = crear('ROLE_COMERCIAL');
+    expect(enlacesDe(el)).toEqual([
+      ['Métricas', '/admin/metricas'],
+      ['Solicitudes', '/admin/solicitudes'],
+    ]);
+  });
+
+  it('el editor solo ve las pantallas de contenido', () => {
+    const { el } = crear('ROLE_EDITOR');
+    const textos = enlacesDe(el).map((e) => e[0]);
+    expect(textos).toEqual(['Proyectos', 'Etapas', 'Lotes', 'Amenidades', 'Tipologías', 'Multimedia', 'Ubicaciones', 'Contenido institucional']);
   });
 
   it('al hacer clic en un enlace avisa que se navegó (para cerrar el menú en móvil)', () => {

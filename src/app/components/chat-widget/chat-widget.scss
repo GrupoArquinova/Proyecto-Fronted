@@ -80,12 +80,56 @@ $curva: cubic-bezier(0.23, 1, 0.32, 1);
   padding: 0.9rem 1.1rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
 
   h3 {
     margin: 0;
     font-size: 1rem;
     font-weight: 700;
+  }
+}
+
+.nueva-conversacion {
+  margin-left: auto;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+
+  &:disabled { opacity: 0.45; cursor: default; }
+  &:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) { background: rgba(255, 255, 255, 0.15); }
+  }
+}
+
+.chat-sugerencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+
+  .chip {
+    background: #ffffff;
+    color: $verde;
+    border: 1px solid $verde;
+    border-radius: 999px;
+    padding: 0.4rem 0.8rem;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-align: left;
+
+    &:focus-visible { outline: 2px solid $verde; outline-offset: 2px; }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover { background: $verde; color: #ffffff; }
+    }
   }
 }
 
@@ -133,6 +177,16 @@ $curva: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .loading em { color: #64748b; }
+
+.chat-aviso {
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  color: #475569;
+}
 
 .chat-footer {
   display: flex;

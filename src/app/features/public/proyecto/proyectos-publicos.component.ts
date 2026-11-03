@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { RouterModule } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { AccionesProyectoComponent } from '../../../shared/components/acciones-proyecto/acciones-proyecto.component';
 import { LocalizadoPipe } from '../../../shared/pipes/localizado.pipe';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import {
@@ -14,7 +15,7 @@ import {
 @Component({
   selector: 'app-proyectos-publicos',
   standalone: true,
-  imports: [RouterModule, TranslocoPipe, LocalizadoPipe],
+  imports: [RouterModule, TranslocoPipe, LocalizadoPipe, AccionesProyectoComponent],
   templateUrl: './proyectos-publicos.component.html',
   styleUrl: './proyectos-publicos.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

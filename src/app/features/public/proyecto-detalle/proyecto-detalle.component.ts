@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -7,7 +7,10 @@ import { filter, map, startWith } from 'rxjs';
 import { ProyectoDetalleService } from '../../../core/services/proyecto-detalle.service';
 import { SECCIONES_CON_PORTADA } from '../../../core/models/proyecto-detalle.models';
 import { BotonPantallaCompletaComponent } from '../../../shared/components/boton-pantalla-completa/boton-pantalla-completa.component';
-import { SeoService } from '../../../core/services/seo.service';
+import { AnaliticaService } from '../../../core/services/analitica.service';
+import { SeoService, recortarDescripcion } from '../../../core/services/seo.service';
+import { proyectoJsonLd } from '../../../core/utils/seo-jsonld';
+import { AccionesProyectoComponent } from '../../../shared/components/acciones-proyecto/acciones-proyecto.component';
 import { IdiomaService } from '../../../core/services/idioma.service';
 import { SelectorIdiomaComponent } from '../../../shared/components/selector-idioma/selector-idioma.component';
 
@@ -24,6 +27,7 @@ import { SelectorIdiomaComponent } from '../../../shared/components/selector-idi
     TranslocoPipe,
     SelectorIdiomaComponent,
     BotonPantallaCompletaComponent,
+    AccionesProyectoComponent,
   ],
   providers: [ProyectoDetalleService],
   templateUrl: './proyecto-detalle.component.html',
@@ -36,6 +40,7 @@ export class ProyectoDetalleComponent {
   readonly datos = inject(ProyectoDetalleService);
   private seo = inject(SeoService);
   private idioma = inject(IdiomaService);
+  private analitica = inject(AnaliticaService);
 
   /** Título, descripción y datos para buscadores de la página del proyecto y de su sección activa. */
   private readonly seoDelProyecto = effect(() => {
@@ -53,45 +58,68 @@ export class ProyectoDetalleComponent {
 
     const p = detalle.proyecto;
     const u = detalle.ubicacion;
+    const ingles = this.idioma.idioma() === 'en';
     const lugar = [u?.ciudad, u?.departamento].filter(Boolean).join(', ');
     const seccion = this.seccionTitulo();
-    const prefijo = seccion && this.seccionActiva() !== 'bienvenida' ? `${seccion} · ` : '';
+    const idSeccion = this.seccionActiva() || 'bienvenida';
+    const conSeccion = !!seccion && idSeccion !== 'bienvenida';
+    const prefijo = conSeccion ? `${seccion} · ` : '';
     const imagen = p.imagenUrl ?? detalle.multimedia.find((m) => m.tipo === 'IMAGEN')?.url ?? null;
     const enLugar = lugar ? ` ${this.idioma.t('proyecto.armazon.enLugar', { lugar })}` : '';
-    const descripcion =
-      p.descripcion ||
-      this.idioma.t('proyecto.armazon.descripcionSeo', { nombre: p.nombre, lugar: enLugar });
-    const ruta = `/proyectos/${p.id}/${this.seccionActiva() || 'bienvenida'}`;
+    const tipo = p.tipoProyecto ? this.idioma.t(`tipoProyecto.${p.tipoProyecto}`).toLocaleLowerCase(ingles ? 'en' : 'es') : '';
+    const etapa = p.estadoProyecto ? this.idioma.t(`etapaProyecto.${p.estadoProyecto}`).toLocaleLowerCase(ingles ? 'en' : 'es') : '';
+
+    // Descripción propia del proyecto (en inglés si está traducida); si no hay, una con su nombre, tipo, lugar y etapa
+    const propia = (ingles ? p.descripcionEn || p.descripcion : p.descripcion) ?? '';
+    const generica = tipo && etapa
+      ? this.idioma.t('seo.descripcionProyectoTipo', { nombre: p.nombre, lugar: enLugar, tipo, etapa })
+      : this.idioma.t('proyecto.armazon.descripcionSeo', { nombre: p.nombre, lugar: enLugar });
+    const base = propia.trim() || generica;
+    // Cada sección lleva su propia descripción (no repite la de las demás páginas del mismo proyecto)
+    const descripcion = conSeccion
+      ? this.idioma.t('seo.descripcionSeccion', { seccion, nombre: p.nombre, lugar: enLugar, descripcion: base })
+      : base;
+    const ruta = `/proyectos/${p.id}/${idSeccion}`;
+    const raiz = this.seo.urlAbsoluta('/');
+    const nombreProyecto = `${p.nombre}${enLugar}`;
 
     this.seo.establecer({
-      titulo: `${prefijo}${p.nombre}${enLugar}`,
+      titulo: `${prefijo}${nombreProyecto}`,
       descripcion,
       imagen,
+      imagenAlt: this.idioma.t('seo.altPortada', { nombre: p.nombre }),
       ruta,
-      jsonLd: {
-        '@context': 'https://schema.org',
-        '@type': 'Place',
-        name: p.nombre,
-        description: descripcion,
-        image: imagen ?? undefined,
-        address: u?.ciudad
-          ? {
-              '@type': 'PostalAddress',
-              addressLocality: u.ciudad,
-              addressRegion: u.departamento,
-              addressCountry: 'CO',
-            }
-          : undefined,
-        geo:
-          u?.latitud != null && u?.longitud != null
-            ? {
-                '@type': 'GeoCoordinates',
-                latitude: Number(u.latitud),
-                longitude: Number(u.longitud),
-              }
-            : undefined,
-      },
+      jsonLd: proyectoJsonLd({
+        base: raiz ? raiz.replace(/\/+$/, '') : null,
+        ruta,
+        idioma: ingles ? 'en' : 'es',
+        nombre: p.nombre,
+        descripcion: recortarDescripcion(base, 300),
+        imagen,
+        tipoProyecto: p.tipoProyecto,
+        ofertaComercial: p.tipoRegistro !== 'PORTAFOLIO',
+        ciudad: u?.ciudad,
+        departamento: u?.departamento,
+        latitud: u?.latitud,
+        longitud: u?.longitud,
+        migas: [
+          { nombre: this.idioma.t('proyecto.armazon.migaInicio'), ruta: '/' },
+          { nombre: this.idioma.t('seo.proyectosTitulo'), ruta: '/proyectos' },
+          { nombre: p.nombre, ruta: conSeccion ? `/proyectos/${p.id}/bienvenida` : undefined },
+          ...(conSeccion ? [{ nombre: seccion }] : []),
+        ],
+      }),
     });
+  });
+
+  /** Se cuenta una sola vez por apertura del proyecto (cambiar de sección o de idioma no suma otra visita). */
+  private vistaContada: number | null = null;
+  private readonly contarVista = effect(() => {
+    const id = this.datos.estado() === 'listo' ? (this.datos.detalleLocal()?.proyecto.id ?? null) : null;
+    if (id != null && id !== this.vistaContada) {
+      this.vistaContada = id;
+      untracked(() => this.analitica.vistaProyecto(id));
+    }
   });
 
   private proyectoId = 0;
