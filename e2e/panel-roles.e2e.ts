@@ -204,4 +204,40 @@ test.describe('historial de cambios', () => {
     expect(url.searchParams.get('texto')).toBe('lote');
     expect(url.searchParams.get('page')).toBe('0');
   });
+
+  test('limpiar el historial: marcar filas, confirmar y eliminar manda los IDs elegidos', async ({ page }) => {
+    await prepararPanel(page, 'ROLE_ADMINISTRADOR');
+    await page.goto('/admin/historial');
+    await expect(page.locator('tbody tr')).toHaveCount(3);
+    await expect(page.getByRole('button', { name: 'Eliminar seleccionados' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Eliminar todo el historial (3)' })).toBeEnabled();
+
+    await page.getByLabel('Seleccionar todos los registros de esta página').check();
+    await expect(page.locator('.contador')).toContainText('3 seleccionados');
+    await page.locator('tbody input[type="checkbox"]').nth(1).uncheck();
+    await expect(page.locator('.contador')).toContainText('2 seleccionados');
+
+    const pedido = page.waitForRequest(r => r.url().endsWith('/api/admin/auditoria/eliminar-seleccion'));
+    await page.route(/\/api\/admin\/auditoria\/eliminar-seleccion$/, route => route.fulfill(json({ eliminados: 2 })));
+    await page.getByRole('button', { name: 'Eliminar seleccionados' }).click();
+    await expect(page.getByText('No se puede deshacer', { exact: false }).first()).toBeVisible();
+    await page.getByRole('button', { name: 'Sí, eliminar' }).click();
+    expect((await pedido).postDataJSON()).toEqual({ ids: [1, 3] });
+    await expect(page.getByText('Se eliminaron 2 registros del historial.')).toBeVisible();
+  });
+
+  test('borrar todo el historial pide dos confirmaciones y manda confirmarTodo', async ({ page }) => {
+    await prepararPanel(page, 'ROLE_ADMINISTRADOR');
+    await page.goto('/admin/historial');
+    await expect(page.locator('tbody tr')).toHaveCount(3);
+    await page.route(/\/api\/admin\/auditoria\/eliminar-filtrados$/, route => route.fulfill(json({ eliminados: 3 })));
+    const pedido = page.waitForRequest(r => r.url().endsWith('/api/admin/auditoria/eliminar-filtrados'));
+
+    await page.getByRole('button', { name: 'Eliminar todo el historial (3)' }).click();
+    await page.getByRole('button', { name: 'Continuar' }).click();
+    await expect(page.getByText('Última confirmación')).toBeVisible();
+    await page.getByRole('button', { name: 'Sí, eliminar todo' }).click();
+
+    expect((await pedido).postDataJSON()).toEqual({ confirmarTodo: true });
+  });
 });

@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject } from
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { puedeVerSeccion } from '../../../../core/models/roles';
 import { AuthService } from '../../../../core/services/auth.service';
+import { BotonPantallaCompletaComponent } from '../../../../shared/components/boton-pantalla-completa/boton-pantalla-completa.component';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, BotonPantallaCompletaComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

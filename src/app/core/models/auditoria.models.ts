@@ -42,3 +42,15 @@ export interface FiltroAuditoria {
   page?: number;
   size?: number;
 }
+
+/** Los filtros con los que se eliminan registros en lote (son los mismos de la consulta, sin la paginación). */
+export interface FiltroEliminacion {
+  usuarioId?: number | null;
+  entidad?: string;
+  accion?: string;
+  texto?: string;
+  /** YYYY-MM-DD */
+  desde?: string;
+  /** YYYY-MM-DD */
+  hasta?: string;
+}

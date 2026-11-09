@@ -1,0 +1,117 @@
+// Vive en el pie oscuro de la página de inicio: colores claros sobre fondo oscuro.
+:host {
+  display: block;
+  margin-top: 1.75rem;
+  max-width: 380px;
+}
+
+.wallet {
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+  color: #ffffff;
+}
+
+.descripcion {
+  margin: 0 0 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+input {
+  flex: 1 1 180px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  // 16px evita el zoom automático de iOS/Android al enfocar el campo
+  font-size: 1rem;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #79a8a3;
+    outline-offset: 2px;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: #f2a1a1;
+  }
+}
+
+button {
+  min-height: 44px;
+  padding: 0 1.2rem;
+  border: none;
+  border-radius: 999px;
+  background: #2c5953;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #3a736b;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #79a8a3;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+}
+
+.privacidad {
+  margin: 0.6rem 0 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.estado {
+  margin: 0.5rem 0 0;
+  min-height: 1.2em;
+  font-size: 0.85rem;
+  line-height: 1.45;
+
+  &.error {
+    color: #f2a1a1;
+  }
+
+  &.ok {
+    color: #9fd8c9;
+  }
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

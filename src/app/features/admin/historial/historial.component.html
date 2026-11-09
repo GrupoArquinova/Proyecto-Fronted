@@ -56,11 +56,41 @@
       @if (filas().length === 0) {
         <div class="estado">No hay cambios registrados con esos filtros.</div>
       } @else {
+        <section class="limpieza" aria-labelledby="limpieza-titulo">
+          <div class="limpieza-texto">
+            <h2 id="limpieza-titulo">Limpiar el historial</h2>
+            <p>Marca las casillas y elimina lo elegido, o elimina todo lo que coincida con los filtros
+              (para borrar por fecha usa "Desde" y "Hasta", o estos atajos). Lo eliminado no se puede recuperar.</p>
+            <div class="atajos" role="group" aria-label="Ver los registros anteriores a">
+              <span>Ver los de más de:</span>
+              <button type="button" class="chip" (click)="filtrarAnterioresA(30)">30 días</button>
+              <button type="button" class="chip" (click)="filtrarAnterioresA(90)">90 días</button>
+              <button type="button" class="chip" (click)="filtrarAnterioresA(180)">6 meses</button>
+            </div>
+          </div>
+          <div class="limpieza-acciones">
+            <span class="contador" aria-live="polite">{{ cantidadSeleccionada() }} {{ cantidadSeleccionada() === 1 ? 'seleccionado' : 'seleccionados' }}</span>
+            <button type="button" class="btn-peligro" (click)="eliminarSeleccionados()" [disabled]="cantidadSeleccionada() === 0 || eliminando()">
+              Eliminar seleccionados
+            </button>
+            @if (cantidadSeleccionada() > 0) {
+              <button type="button" class="btn-secundario" (click)="quitarSeleccion()">Quitar selección</button>
+            }
+            <button type="button" class="btn-peligro btn-peligro-suave" (click)="eliminarFiltrados()" [disabled]="total() === 0 || eliminando()">
+              {{ etiquetaFiltrados() }}
+            </button>
+          </div>
+        </section>
+
         <div class="tabla-contenedor">
           <table>
             <caption class="solo-lectores">Historial de cambios del panel</caption>
             <thead>
               <tr>
+                <th scope="col" class="casilla">
+                  <input type="checkbox" [checked]="todosMarcados()" [indeterminate]="algunoMarcado()" (change)="alternarTodos()"
+                         aria-label="Seleccionar todos los registros de esta página" />
+                </th>
                 <th scope="col">Fecha y hora</th>
                 <th scope="col">Usuario</th>
                 <th scope="col">Acción</th>
@@ -70,7 +100,11 @@
             </thead>
             <tbody>
               @for (f of filas(); track f.id) {
-                <tr>
+                <tr [class.marcada]="seleccion().has(f.id)">
+                  <td class="casilla">
+                    <input type="checkbox" [checked]="seleccion().has(f.id)" (change)="alternar(f.id)"
+                           [attr.aria-label]="'Seleccionar el registro del ' + f.fecha + ' de ' + f.usuario" />
+                  </td>
                   <td class="fecha"><time [attr.datetime]="f.fechaIso">{{ f.fecha }}</time></td>
                   <td>{{ f.usuario }}</td>
                   <td><span class="badge" [attr.data-clase]="f.clase" [class]="'badge ' + f.clase">{{ f.accion }}</span></td>

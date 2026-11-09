@@ -437,6 +437,21 @@
     "sug4": "How can I contact you?",
     "aviso": "Do not write personal data here (name, phone number, email, ID number)."
   },
+  "wallet": {
+    "titulo": "Take us with you on your phone",
+    "descripcion": "Get a Grupo Arquinova card by email with the QR code of our website, ready to save in Google Wallet (Android).",
+    "etiqueta": "Your email address",
+    "placeholder": "you@email.com",
+    "enviar": "Send to my email",
+    "enviando": "Sending…",
+    "privacidad": "We only use your email to send you the card and we do not store it.",
+    "enviado": "Done! Check your inbox (and spam folder) to save the card in Google Wallet.",
+    "correoInvalido": "Enter a valid email, for example you@email.com.",
+    "errorLimite": "We already sent the card to that email a moment ago, or there are many requests. Check your inbox (and spam folder) or try again in an hour.",
+    "errorNoDisponible": "The digital card is not available right now. Please try again later.",
+    "errorRed": "We could not reach the server. Check your connection and try again.",
+    "errorGenerico": "Something went wrong. Please try again."
+  },
   "whatsappModal": {
     "abrir": "Open WhatsApp",
     "titulo": "Talk to an Advisor",

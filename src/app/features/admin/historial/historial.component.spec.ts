@@ -2,7 +2,9 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { HistorialComponent } from './historial.component';
 import { environment } from '../../../../environments/environment';
 
@@ -192,5 +194,186 @@ describe('HistorialComponent', () => {
       expect(anterior.disabled).toBe(false);
       expect(siguiente.disabled).toBe(true);
     });
+  });
+});
+
+describe('HistorialComponent: limpiar el historial', () => {
+  let http: HttpTestingController;
+  let abrir: ReturnType<typeof vi.fn>;
+  let exito: ReturnType<typeof vi.fn>;
+  let falla: ReturnType<typeof vi.fn>;
+
+  afterEach(() => http.verify());
+
+  /** `respuestas`: lo que contesta el diálogo de confirmación en cada pregunta, en orden. */
+  function crear(respuestas: boolean[] = [true]) {
+    abrir = vi.fn();
+    for (const r of respuestas) abrir.mockResolvedValueOnce(r);
+    abrir.mockResolvedValue(false);
+    exito = vi.fn();
+    falla = vi.fn();
+    TestBed.configureTestingModule({
+      imports: [HistorialComponent],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(),
+        { provide: ConfirmDialogService, useValue: { open: abrir } },
+        { provide: ToastService, useValue: { showSuccess: exito, showError: falla, showInfo: vi.fn() } }]
+    });
+    http = TestBed.inject(HttpTestingController);
+    const fixture = TestBed.createComponent(HistorialComponent);
+    fixture.detectChanges();
+    http.expectOne(URL_USUARIOS).flush([]);
+    http.expectOne(URL_FILTROS).flush({ entidades: [], acciones: [] });
+    http.expectOne((r) => r.url === URL).flush(pagina([registro(1), registro(2), registro(3)], { totalElementos: 3 }));
+    fixture.detectChanges();
+    return { fixture, c: fixture.componentInstance, el: fixture.nativeElement as HTMLElement };
+  }
+  const filasMarcables = (el: HTMLElement) => Array.from(el.querySelectorAll<HTMLInputElement>('tbody input[type="checkbox"]'));
+  const boton = (el: HTMLElement, texto: string) =>
+    Array.from(el.querySelectorAll<HTMLButtonElement>('.limpieza button')).find(b => b.textContent?.includes(texto));
+  /** Recarga que hace la pantalla después de eliminar: filtros del selector y la página de nuevo. */
+  const recargar = (fixture: { detectChanges(): void }, contenido: unknown[], extra: Record<string, unknown> = {}) => {
+    http.expectOne(URL_FILTROS).flush({ entidades: [], acciones: [] });
+    http.expectOne((r) => r.url === URL).flush(pagina(contenido, extra));
+    fixture.detectChanges();
+  };
+
+  it('cada fila tiene su casilla y el botón de eliminar seleccionados empieza apagado', () => {
+    const { el } = crear();
+    expect(filasMarcables(el)).toHaveLength(3);
+    expect(boton(el, 'Eliminar seleccionados')?.disabled).toBe(true);
+    expect(el.querySelector('.contador')?.textContent).toContain('0 seleccionados');
+  });
+
+  it('la casilla del encabezado marca y desmarca toda la página, y queda a medias con una sola', () => {
+    const { fixture, el } = crear();
+    const cabecera = el.querySelector<HTMLInputElement>('thead input[type="checkbox"]') as HTMLInputElement;
+
+    cabecera.click();
+    fixture.detectChanges();
+    expect(filasMarcables(el).every(c => c.checked)).toBe(true);
+    expect(el.querySelector('.contador')?.textContent).toContain('3 seleccionados');
+    expect(boton(el, 'Eliminar seleccionados')?.disabled).toBe(false);
+
+    cabecera.click();
+    fixture.detectChanges();
+    expect(filasMarcables(el).some(c => c.checked)).toBe(false);
+
+    filasMarcables(el)[1].click();
+    fixture.detectChanges();
+    expect(el.querySelector('.contador')?.textContent).toContain('1 seleccionado');
+    expect(cabecera.indeterminate).toBe(true);
+    expect(el.querySelectorAll('tbody tr.marcada')).toHaveLength(1);
+  });
+
+  it('eliminar seleccionados: confirma, manda solo los IDs marcados, avisa y recarga la lista', async () => {
+    const { fixture, c, el } = crear();
+    filasMarcables(el)[0].click();
+    filasMarcables(el)[2].click();
+    fixture.detectChanges();
+
+    const hecho = c.eliminarSeleccionados();
+    const req = await vi.waitFor(() => http.expectOne(`${URL}/eliminar-seleccion`));
+    expect(req.request.body).toEqual({ ids: [1, 3] });
+    req.flush({ eliminados: 2 });
+    await hecho;
+
+    expect(abrir).toHaveBeenCalledTimes(1);
+    expect(abrir.mock.calls[0][0].message).toContain('2 registros');
+    expect(exito).toHaveBeenCalledWith('Se eliminaron 2 registros del historial.');
+    recargar(fixture, [registro(2)], { totalElementos: 1 });
+    expect(c.cantidadSeleccionada()).toBe(0);
+    expect(filasMarcables(el)).toHaveLength(1);
+  });
+
+  it('si se cancela la confirmación no se elimina nada', async () => {
+    const { fixture, c, el } = crear([false]);
+    filasMarcables(el)[0].click();
+    fixture.detectChanges();
+
+    await c.eliminarSeleccionados();
+
+    expect(abrir).toHaveBeenCalledTimes(1);
+    http.expectNone(`${URL}/eliminar-seleccion`);
+    expect(c.cantidadSeleccionada()).toBe(1);
+  });
+
+  it('eliminar por filtros: manda los filtros aplicados, con una sola confirmación y sin confirmarTodo', async () => {
+    const { fixture, c, el } = crear([true]);
+    c.filtros = { usuarioId: '', entidad: 'REPORTES', accion: '', texto: '', desde: '2026-10-01', hasta: '2026-10-31' };
+    c.buscar();
+    http.expectOne((r) => r.url === URL).flush(pagina([registro(1), registro(2)], { totalElementos: 40 }));
+    fixture.detectChanges();
+    expect(boton(el, 'filtrados')?.textContent).toContain('Eliminar los 40 registros filtrados');
+
+    const hecho = c.eliminarFiltrados();
+    const req = await vi.waitFor(() => http.expectOne(`${URL}/eliminar-filtrados`));
+    expect(req.request.body).toEqual({ confirmarTodo: false, entidad: 'REPORTES', desde: '2026-10-01', hasta: '2026-10-31' });
+    req.flush({ eliminados: 40 });
+    await hecho;
+
+    expect(abrir).toHaveBeenCalledTimes(1);
+    expect(abrir.mock.calls[0][0].message).toContain('40 registros');
+    expect(exito).toHaveBeenCalledWith('Se eliminaron 40 registros del historial.');
+    recargar(fixture, [], { totalElementos: 0, totalPaginas: 0 });
+  });
+
+  it('sin filtros el botón dice "todo el historial", pide dos confirmaciones y manda confirmarTodo', async () => {
+    const { fixture, c, el } = crear([true, true]);
+    expect(boton(el, 'todo el historial')?.textContent).toContain('Eliminar todo el historial (3)');
+
+    const hecho = c.eliminarFiltrados();
+    const req = await vi.waitFor(() => http.expectOne(`${URL}/eliminar-filtrados`));
+    expect(abrir).toHaveBeenCalledTimes(2);
+    expect(req.request.body).toEqual({ confirmarTodo: true });
+    req.flush({ eliminados: 3 });
+    await hecho;
+    recargar(fixture, [], { totalElementos: 0, totalPaginas: 0 });
+  });
+
+  it('borrar todo se detiene si en la segunda confirmación se arrepiente', async () => {
+    const { c } = crear([true, false]);
+
+    await c.eliminarFiltrados();
+
+    expect(abrir).toHaveBeenCalledTimes(2);
+    http.expectNone(`${URL}/eliminar-filtrados`);
+  });
+
+  it('los atajos de 30, 90 días y 6 meses filtran por "Hasta" para ver qué se borraría', () => {
+    const { c } = crear();
+    c.filtrarAnterioresA(30);
+    const req = http.expectOne((r) => r.url === URL);
+    const esperado = new Date();
+    esperado.setDate(esperado.getDate() - 30);
+    const iso = `${esperado.getFullYear()}-${String(esperado.getMonth() + 1).padStart(2, '0')}-${String(esperado.getDate()).padStart(2, '0')}`;
+    expect(req.request.params.get('hasta')).toBe(iso);
+    expect(req.request.params.get('desde')).toBeNull();
+    req.flush(pagina([]));
+  });
+
+  it('si el backend falla muestra el error y no vacía la selección', async () => {
+    const { fixture, c, el } = crear();
+    filasMarcables(el)[0].click();
+    fixture.detectChanges();
+
+    const hecho = c.eliminarSeleccionados();
+    const req = await vi.waitFor(() => http.expectOne(`${URL}/eliminar-seleccion`));
+    req.flush({ message: 'No se pudo' }, { status: 500, statusText: 'Error' });
+    await hecho;
+
+    expect(falla).toHaveBeenCalled();
+    expect(exito).not.toHaveBeenCalled();
+    expect(c.eliminando()).toBe(false);
+    expect(c.cantidadSeleccionada()).toBe(1);
+  });
+
+  it('si queda vacía una página que no es la primera, vuelve a la anterior', () => {
+    const { fixture, c } = crear();
+    c.irA(1);
+    http.expectOne((r) => r.url === URL).flush(pagina([], { pagina: 1, totalElementos: 25, totalPaginas: 1 }));
+    const anterior = http.expectOne((r) => r.url === URL);
+    expect(anterior.request.params.get('page')).toBe('0');
+    anterior.flush(pagina([registro(1)], { totalElementos: 25 }));
+    fixture.detectChanges();
   });
 });

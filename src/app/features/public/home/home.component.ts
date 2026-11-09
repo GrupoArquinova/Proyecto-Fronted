@@ -23,6 +23,7 @@ import { BloqueIdentidad, bloquesDeIdentidad } from './identidad';
 
 import { IdiomaService } from '../../../core/services/idioma.service';
 import { SelectorIdiomaComponent } from '../../../shared/components/selector-idioma/selector-idioma.component';
+import { SolicitudWallet } from '../../../solicitud-wallet/solicitud-wallet';
 import { BotonPantallaCompletaComponent } from '../../../shared/components/boton-pantalla-completa/boton-pantalla-completa.component';
 
 @Component({
@@ -37,6 +38,7 @@ import { BotonPantallaCompletaComponent } from '../../../shared/components/boton
     BotonPantallaCompletaComponent,
     CaptchaTurnstileComponent,
     ClickWhatsappDirective,
+    SolicitudWallet,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],

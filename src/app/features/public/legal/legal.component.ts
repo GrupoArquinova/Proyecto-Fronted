@@ -8,6 +8,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { IdiomaService } from '../../../core/services/idioma.service';
 import { partesDeTexto } from './legal.config';
 import { SeoService } from '../../../core/services/seo.service';
+import { BotonPantallaCompletaComponent } from '../../../shared/components/boton-pantalla-completa/boton-pantalla-completa.component';
 
 interface SeccionLegal {
   titulo: string;
@@ -29,7 +30,7 @@ const DOCUMENTOS_EN = contenidoEn as unknown as Record<string, DocumentoLegal>;
 @Component({
   selector: 'app-legal',
   standalone: true,
-  imports: [RouterLink, TranslocoPipe],
+  imports: [RouterLink, TranslocoPipe, BotonPantallaCompletaComponent],
   templateUrl: './legal.component.html',
   styleUrl: './legal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

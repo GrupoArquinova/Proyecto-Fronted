@@ -437,6 +437,21 @@
     "sug4": "¿Cómo los contacto?",
     "aviso": "No escribas datos personales aquí (nombre, teléfono, correo, cédula)."
   },
+  "wallet": {
+    "titulo": "Llévanos en tu celular",
+    "descripcion": "Recibe en tu correo una tarjeta de Grupo Arquinova con el código QR de nuestro sitio, lista para guardar en Google Wallet (Android).",
+    "etiqueta": "Tu correo electrónico",
+    "placeholder": "tu@correo.com",
+    "enviar": "Enviar a mi correo",
+    "enviando": "Enviando…",
+    "privacidad": "Usamos tu correo solo para enviarte la tarjeta y no lo guardamos.",
+    "enviado": "¡Listo! Revisa tu bandeja de entrada (y el spam) para guardar la tarjeta en Google Wallet.",
+    "correoInvalido": "Escribe un correo válido, por ejemplo tu@correo.com.",
+    "errorLimite": "Ya enviamos la tarjeta a ese correo hace poco o hay muchas solicitudes. Revisa tu bandeja (y el spam) o inténtalo de nuevo en una hora.",
+    "errorNoDisponible": "La tarjeta digital no está disponible por ahora. Inténtalo más tarde.",
+    "errorRed": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+    "errorGenerico": "Ocurrió un error. Inténtalo de nuevo."
+  },
   "whatsappModal": {
     "abrir": "Abrir WhatsApp",
     "titulo": "Contacta un Asesor",
