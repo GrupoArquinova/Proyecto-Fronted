@@ -37,11 +37,11 @@
   @default {
     <section class="portada">
       @if (imagenPredeterminada(); as predeterminada) {
-        <img class="fondo-zona fondo-predeterminado visible" [src]="predeterminada" alt="" aria-hidden="true" />
+        <img class="fondo-zona fondo-predeterminado visible" [src]="predeterminada | imagenOptimizada: 1600" alt="" aria-hidden="true" />
       }
       @for (z of zonas(); track z.id; let i = $index) {
         @if (foto(z); as imagen) {
-          <img class="fondo-zona" [class.visible]="!imagenPredeterminada() && seleccionada() === i" [src]="imagen" alt="" aria-hidden="true" />
+          <img class="fondo-zona" [class.visible]="!imagenPredeterminada() && seleccionada() === i" [src]="imagen | imagenOptimizada: 1600" alt="" aria-hidden="true" />
         }
       }
 

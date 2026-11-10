@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { SubidaArchivoComponent } from '../subida-archivo/subida-archivo.component';
 import { ArchivoSubido } from '../../../core/services/multimedia.service';
+import { ImagenOptimizadaPipe } from '../../pipes/imagen-optimizada.pipe';
 
 /**
  * Renders y planos de una tipología que todavía no se ha guardado: se suben a Cloudinary al elegirlos y quedan en la lista
@@ -9,14 +10,14 @@ import { ArchivoSubido } from '../../../core/services/multimedia.service';
 @Component({
   selector: 'app-archivos-tipologia',
   standalone: true,
-  imports: [SubidaArchivoComponent],
+  imports: [ImagenOptimizadaPipe, SubidaArchivoComponent],
   template: `
     <div class="grupo">
       <span class="titulo">Imágenes de la tipología (renders)</span>
       <ul class="miniaturas">
         @for (img of imagenes(); track img.url) {
           <li>
-            <img [src]="img.url" [alt]="img.nombre" />
+            <img [src]="img.url | imagenOptimizada: 800" [alt]="img.nombre" loading="lazy" decoding="async" />
             <button type="button" (click)="quitar('imagenes', img)" aria-label="Quitar imagen">&times;</button>
           </li>
         }
@@ -30,7 +31,7 @@ import { ArchivoSubido } from '../../../core/services/multimedia.service';
       <ul class="miniaturas">
         @for (plano of planos(); track plano.url) {
           <li>
-            <img [src]="plano.url" [alt]="plano.nombre" />
+            <img [src]="plano.url | imagenOptimizada: 1600" [alt]="plano.nombre" loading="lazy" decoding="async" />
             <span>{{ plano.nombre }}</span>
             <button type="button" (click)="quitar('planos', plano)" aria-label="Quitar plano">&times;</button>
           </li>

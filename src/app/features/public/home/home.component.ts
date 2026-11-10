@@ -17,7 +17,7 @@ import { EMPRESA_INFO, SERVICIOS } from './empresa-contenido';
 import { alMenosUnMedioDeContacto } from '../../../core/utils/solicitudes';
 import { ClickWhatsappDirective } from '../../../shared/directives/click-whatsapp.directive';
 import { SeoService } from '../../../core/services/seo.service';
-import { inicioJsonLd } from '../../../core/utils/seo-jsonld';
+import { LOGO_URL, inicioJsonLd } from '../../../core/utils/seo-jsonld';
 import { ContenidoService } from '../../../core/services/contenido.service';
 import { BloqueIdentidad, bloquesDeIdentidad } from './identidad';
 
@@ -25,11 +25,13 @@ import { IdiomaService } from '../../../core/services/idioma.service';
 import { SelectorIdiomaComponent } from '../../../shared/components/selector-idioma/selector-idioma.component';
 import { SolicitudWallet } from '../../../solicitud-wallet/solicitud-wallet';
 import { BotonPantallaCompletaComponent } from '../../../shared/components/boton-pantalla-completa/boton-pantalla-completa.component';
+import { ImagenOptimizadaPipe } from '../../../shared/pipes/imagen-optimizada.pipe';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
+    ImagenOptimizadaPipe,
     RouterModule,
     ReactiveFormsModule,
     TranslocoPipe,
@@ -45,6 +47,8 @@ import { BotonPantallaCompletaComponent } from '../../../shared/components/boton
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
+  /** El logo de Cloudinary; la plantilla lo pide liviano con el pipe imagenOptimizada. */
+  protected readonly logo = LOGO_URL;
   private destroyRef = inject(DestroyRef);
   private proyectoService = inject(ProyectoService);
   private fb = inject(FormBuilder);

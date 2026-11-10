@@ -9,6 +9,7 @@ import { IdiomaService } from '../../../../../core/services/idioma.service';
 import { formatoArea } from '../../../../../core/utils/lotes';
 import { CarruselLaminasComponent, Lamina } from '../carrusel-laminas/carrusel-laminas.component';
 import { Visor360Component } from '../visor-360/visor-360.component';
+import { ImagenOptimizadaPipe } from '../../../../../shared/pipes/imagen-optimizada.pipe';
 
 /**
  * Tarjeta que se abre al pulsar un botón sobre la imagen. Muestra los datos del lote, de la etapa o de la zona común
@@ -17,7 +18,7 @@ import { Visor360Component } from '../visor-360/visor-360.component';
 @Component({
   selector: 'app-tarjeta-punto',
   standalone: true,
-  imports: [TranslocoPipe, Visor360Component, CarruselLaminasComponent],
+  imports: [ImagenOptimizadaPipe, TranslocoPipe, Visor360Component, CarruselLaminasComponent],
   templateUrl: './tarjeta-punto.component.html',
   styleUrl: './tarjeta-punto.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

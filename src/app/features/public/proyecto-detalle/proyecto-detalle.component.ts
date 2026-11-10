@@ -13,6 +13,7 @@ import { proyectoJsonLd } from '../../../core/utils/seo-jsonld';
 import { AccionesProyectoComponent } from '../../../shared/components/acciones-proyecto/acciones-proyecto.component';
 import { IdiomaService } from '../../../core/services/idioma.service';
 import { SelectorIdiomaComponent } from '../../../shared/components/selector-idioma/selector-idioma.component';
+import { ImagenOptimizadaPipe } from '../../../shared/pipes/imagen-optimizada.pipe';
 
 /**
  * Micrositio de un proyecto: menú lateral con las secciones que el administrador ya llenó
@@ -22,6 +23,7 @@ import { SelectorIdiomaComponent } from '../../../shared/components/selector-idi
   selector: 'app-proyecto-detalle',
   standalone: true,
   imports: [
+    ImagenOptimizadaPipe,
     RouterLink,
     RouterOutlet,
     TranslocoPipe,

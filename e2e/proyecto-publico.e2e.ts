@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
 import { IMAGEN_FONDO_AMENIDADES, IMAGEN_PORTADA_JACUZZI, PROYECTO_ID, simularBackend } from './datos-simulados';
 
+/** Cloudinary entrega las imágenes del sitio livianas: formato y calidad automáticos y ancho máximo de 1600 px. */
+const optimizada = (url: string) => url.replace('/image/upload/', '/image/upload/f_auto,q_auto,c_limit,w_1600/');
+
 const base = `/proyectos/${PROYECTO_ID}`;
 
 test.beforeEach(async ({ page }) => {
@@ -110,14 +113,14 @@ test.describe('amenidades', () => {
     await page.goto(`${base}/zonas-comunes`);
     await expect(page.getByRole('heading', { name: 'Amenidades', level: 2 })).toBeVisible();
     await expect(page.getByText('Elige una amenidad para ver sus imágenes')).toBeVisible();
-    await expect(page.locator('.fondo-predeterminado')).toHaveAttribute('src', IMAGEN_FONDO_AMENIDADES);
+    await expect(page.locator('.fondo-predeterminado')).toHaveAttribute('src', optimizada(IMAGEN_FONDO_AMENIDADES));
     await expect(page.locator('.fondo-predeterminado.visible')).toHaveCount(1);
     await expect(page.locator('.visor-zona')).toHaveCount(0);
 
     await page.getByRole('button', { name: /Jacuzzi/ }).click();
     // El fondo sigue siendo la imagen predeterminada mientras el carrusel está abierto
     await expect(page.locator('.fondo-predeterminado.visible')).toHaveCount(1);
-    await expect(page.locator('.visor-zona app-carrusel-laminas .imagen img')).toHaveAttribute('src', IMAGEN_PORTADA_JACUZZI);
+    await expect(page.locator('.visor-zona app-carrusel-laminas .imagen img')).toHaveAttribute('src', optimizada(IMAGEN_PORTADA_JACUZZI));
 
     // Al cerrarlo, la portada vuelve a su estado inicial
     await page.locator('.visor-zona-cerrar').click();
@@ -133,7 +136,7 @@ test.describe('amenidades', () => {
     await page.getByRole('button', { name: /Jacuzzi/ }).click();
     // El carrusel de la zona empieza por la imagen de Multimedia y sigue con la galería
     const imagen = page.locator('app-carrusel-laminas .imagen img');
-    await expect(imagen).toHaveAttribute('src', IMAGEN_PORTADA_JACUZZI);
+    await expect(imagen).toHaveAttribute('src', optimizada(IMAGEN_PORTADA_JACUZZI));
   });
 });
 

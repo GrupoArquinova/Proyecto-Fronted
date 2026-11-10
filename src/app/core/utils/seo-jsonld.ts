@@ -3,6 +3,12 @@ import { environment } from '../../../environments/environment';
 /** Logo de la empresa (el mismo del panel); sirve como imagen para compartir cuando una página no tiene otra. */
 export const LOGO_URL = 'https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg';
 
+/**
+ * Imagen para WhatsApp, Facebook, LinkedIn y X cuando la página no tiene una propia: el logo centrado sobre fondo blanco en
+ * 1200×630 (la proporción 1,91:1 que piden las redes), generado por Cloudinary. Es la misma dirección que lleva index.html.
+ */
+export const IMAGEN_COMPARTIR_URL = 'https://res.cloudinary.com/dn3s7utod/image/upload/c_pad,w_1200,h_630,b_rgb:FFFFFF,f_jpg,q_auto/v1790258444/logo-Arquinova_dgkosg.jpg';
+
 /** Datos fijos de la empresa (los mismos de EMPRESA_INFO de la página de inicio; una prueba comprueba que coincidan). */
 export const DATOS_EMPRESA = {
   nombre: 'Grupo Arquinova S.A.S.',

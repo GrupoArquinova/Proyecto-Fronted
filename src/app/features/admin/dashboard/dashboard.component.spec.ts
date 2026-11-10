@@ -51,15 +51,15 @@ describe('DashboardComponent', () => {
   });
 
   it('la pastilla muestra el nombre y el correo de quien tiene la sesión (leídos del token, con tildes y ñ)', () => {
-    const carga = btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify({ sub: 'juan@arquinova.com', nombre: 'Juan Gabriel Londoño', roles: ['ROLE_ADMINISTRADOR'], exp: 4102444800 }))))
+    const carga = btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify({ sub: 'ana@arquinova.com', nombre: 'Ana María Gómez', roles: ['ROLE_ADMINISTRADOR'], exp: 4102444800 }))))
       .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     localStorage.setItem('jwt_token', `eyJhbGciOiJIUzI1NiJ9.${carga}.firma`);
     const { el } = crear();
 
-    expect(el.querySelector('.usuario-nombre')?.textContent).toBe('Juan Gabriel Londoño');
+    expect(el.querySelector('.usuario-nombre')?.textContent).toBe('Ana María Gómez');
     expect(el.querySelector('.usuario-rol')?.textContent).toContain('Admin');
-    expect(el.querySelector('.usuario-correo')?.textContent).toContain('juan@arquinova.com');
-    expect(el.querySelector('.navbar .usuario-admin')?.getAttribute('title')).toBe('Juan Gabriel Londoño · juan@arquinova.com');
+    expect(el.querySelector('.usuario-correo')?.textContent).toContain('ana@arquinova.com');
+    expect(el.querySelector('.navbar .usuario-admin')?.getAttribute('title')).toBe('Ana María Gómez · ana@arquinova.com');
   });
 
   it('el chip muestra el nombre corto del rol de la sesión', () => {

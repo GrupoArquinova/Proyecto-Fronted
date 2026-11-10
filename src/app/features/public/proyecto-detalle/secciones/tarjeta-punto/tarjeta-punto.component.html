@@ -13,7 +13,7 @@
       <app-visor-360 [url]="url" [titulo]="'proyecto.tarjeta.tZona' | transloco: { nombre: punto().etiqueta }" />
     } @else if (panorama() === null) {
       @if (foto(); as imagen) {
-        <img class="foto" [src]="imagen" [alt]="punto().etiqueta" />
+        <img class="foto" [src]="imagen | imagenOptimizada: 1200" decoding="async" [alt]="punto().etiqueta" />
       }
       <p class="vacio">{{ 'proyecto.tarjeta.zonaSin360' | transloco }}</p>
     } @else {

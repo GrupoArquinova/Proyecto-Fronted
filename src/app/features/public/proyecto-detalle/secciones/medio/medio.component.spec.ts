@@ -18,7 +18,8 @@ describe('MedioComponent', () => {
   it('una imagen se muestra con su texto alternativo y carga diferida', () => {
     const { el } = crear('https://res.cloudinary.com/x/image/upload/v1/foto.jpg', 'La foto');
     const img = el.querySelector('img')!;
-    expect(img.getAttribute('src')).toBe('https://res.cloudinary.com/x/image/upload/v1/foto.jpg');
+    // Cloudinary la entrega liviana: formato y calidad automáticos y ancho máximo
+    expect(img.getAttribute('src')).toBe('https://res.cloudinary.com/x/image/upload/f_auto,q_auto,c_limit,w_1600/v1/foto.jpg');
     expect(img.alt).toBe('La foto');
     expect(img.getAttribute('loading')).toBe('lazy');
     expect(el.querySelector('iframe, video, a')).toBeNull();

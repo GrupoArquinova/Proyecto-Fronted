@@ -24,7 +24,7 @@
          [class.inmersivo]="inmersivo()">
 
       <div class="fondo" aria-hidden="true"
-           [style.backgroundImage]="proyecto()?.imagenUrl ? 'url(' + proyecto()?.imagenUrl + ')' : null"></div>
+           [style.backgroundImage]="proyecto()?.imagenUrl ? 'url(' + (proyecto()?.imagenUrl | imagenOptimizada: 1600) + ')' : null"></div>
 
       <button type="button" class="btn-menu-movil" (click)="menuMovilAbierto.set(true)" [attr.aria-label]="'proyecto.armazon.abrirMenu' | transloco">
         &#9776;

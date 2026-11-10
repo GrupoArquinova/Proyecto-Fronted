@@ -4,11 +4,12 @@ import { inicializarSeccion } from '../seccion.utils';
 import { MedioComponent } from '../medio/medio.component';
 import { CarruselLaminasComponent } from '../carrusel-laminas/carrusel-laminas.component';
 import { SECCION_BENEFICIOS } from '../../../../../core/models/proyecto-detalle.models';
+import { ImagenOptimizadaPipe } from '../../../../../shared/pipes/imagen-optimizada.pipe';
 
 @Component({
   selector: 'app-bienvenida',
   standalone: true,
-  imports: [TranslocoPipe, MedioComponent, CarruselLaminasComponent],
+  imports: [ImagenOptimizadaPipe, TranslocoPipe, MedioComponent, CarruselLaminasComponent],
   templateUrl: './bienvenida.component.html',
   styleUrl: './bienvenida.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

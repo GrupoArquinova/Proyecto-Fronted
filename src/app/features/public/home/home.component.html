@@ -4,7 +4,7 @@
     <div class="logo-container">
       <a href="#inicio"
         ><img
-          src="https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg"
+          [src]="logo | imagenOptimizada: 400"
           [alt]="'home.logoAlt' | transloco"
           class="logo"
       /></a>
@@ -51,7 +51,7 @@
   @if (destacado(); as d) {
     <section id="destacado" class="featured-section">
       <div class="featured-card">
-        <div class="featured-image" [style.backgroundImage]="'url(' + d.imagenUrl + ')'"></div>
+        <div class="featured-image" [style.backgroundImage]="'url(' + (d.imagenUrl | imagenOptimizada: 1600) + ')'"></div>
         <div class="featured-body">
           <span class="section-tag">{{ 'home.destacado.etiqueta' | transloco }}</span>
           <h2>{{ d.nombre }}</h2>
@@ -114,7 +114,7 @@
       <div class="projects-grid">
         @for (proyecto of proyectosDestacados(); track proyecto.id) {
           <div class="project-card">
-            <div class="card-image" [style.backgroundImage]="'url(' + proyecto.imagenUrl + ')'">
+            <div class="card-image" [style.backgroundImage]="'url(' + (proyecto.imagenUrl | imagenOptimizada: 800) + ')'">
               @if (proyecto.estado) {
                 <span class="badge-status">{{
                   proyecto.estadoProyecto
@@ -424,9 +424,10 @@
     <div class="footer-container">
       <div class="footer-col">
         <img
-          src="https://res.cloudinary.com/dn3s7utod/image/upload/v1790258444/logo-Arquinova_dgkosg.jpg"
+          [src]="logo | imagenOptimizada: 400"
           [alt]="'home.pie.logoAlt' | transloco"
           class="footer-logo"
+          loading="lazy"
         />
         <p>{{ 'home.pie.descripcion' | transloco }}</p>
         <div class="footer-contact-info">

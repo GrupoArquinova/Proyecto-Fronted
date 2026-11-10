@@ -1,6 +1,7 @@
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Punto360 } from '../../../../../core/models/punto-360.models';
+import { ImagenOptimizadaPipe } from '../../../../../shared/pipes/imagen-optimizada.pipe';
 
 /** Posición sobre el plano en porcentaje (0–100) del ancho y del alto de la imagen. */
 export interface PosicionPlano360 {
@@ -15,7 +16,7 @@ export interface PosicionPlano360 {
 @Component({
   selector: 'app-plano-puntos',
   standalone: true,
-  imports: [TranslocoPipe],
+  imports: [ImagenOptimizadaPipe, TranslocoPipe],
   templateUrl: './plano-puntos.component.html',
   styleUrl: './plano-puntos.component.scss',
   host: { '[class.completo]': 'completo()' },

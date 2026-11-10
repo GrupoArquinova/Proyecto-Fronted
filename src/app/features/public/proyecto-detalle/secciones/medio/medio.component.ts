@@ -2,6 +2,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { clasificarMedio } from '../../../../../core/utils/medios';
+import { ImagenOptimizadaPipe } from '../../../../../shared/pipes/imagen-optimizada.pipe';
 
 /**
  * Muestra una URL del administrador de la forma adecuada: imagen, video, reproductor
@@ -10,12 +11,12 @@ import { clasificarMedio } from '../../../../../core/utils/medios';
 @Component({
   selector: 'app-medio',
   standalone: true,
-  imports: [TranslocoPipe],
+  imports: [ImagenOptimizadaPipe, TranslocoPipe],
   host: { '[class.completo]': 'completo()' },
   template: `
     @switch (clasificado().tipo) {
       @case ('imagen') {
-        <img [src]="url()" [alt]="titulo()" loading="lazy" />
+        <img [src]="url() | imagenOptimizada: 1600" [alt]="titulo()" loading="lazy" decoding="async" />
       }
       @case ('video') {
         <video [src]="url()" controls preload="metadata" [attr.aria-label]="titulo()"></video>

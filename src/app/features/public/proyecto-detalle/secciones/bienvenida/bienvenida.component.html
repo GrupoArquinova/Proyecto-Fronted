@@ -12,9 +12,9 @@
         <app-carrusel-laminas [laminas]="laminasBeneficios()" [alt]="'proyecto.bienvenida.beneficiosDe' | transloco: { nombre: p.nombre }" [etiqueta]="'proyecto.bienvenida.beneficiosAria' | transloco" />
       } @else if (imagenBeneficios(); as lamina) {
         <section class="lamina" [attr.aria-label]="'proyecto.bienvenida.beneficiosAria' | transloco">
-          <div class="lamina-fondo" [style.backgroundImage]="'url(' + lamina + ')'"></div>
+          <div class="lamina-fondo" [style.backgroundImage]="'url(' + (lamina | imagenOptimizada: 1600) + ')'"></div>
           <div class="lamina-imagen">
-            <img [src]="lamina" [alt]="'proyecto.bienvenida.beneficiosDe' | transloco: { nombre: p.nombre }" />
+            <img [src]="lamina | imagenOptimizada: 1600" [alt]="'proyecto.bienvenida.beneficiosDe' | transloco: { nombre: p.nombre }" />
           </div>
         </section>
       } @else if (beneficios(); as b) {
@@ -27,14 +27,14 @@
 
     @case ('video') {
       @if (video(); as v) {
-        <section class="pantalla-video" [style.backgroundImage]="p.imagenUrl ? 'url(' + p.imagenUrl + ')' : null">
+        <section class="pantalla-video" [style.backgroundImage]="p.imagenUrl ? 'url(' + (p.imagenUrl | imagenOptimizada: 1600) + ')' : null">
           <app-medio [completo]="true" [url]="v.url" [titulo]="v.titulo || ('proyecto.bienvenida.videoTitulo' | transloco)" />
         </section>
       }
     }
 
     @default {
-      <section class="hero" [style.backgroundImage]="p.imagenUrl ? 'url(' + p.imagenUrl + ')' : null">
+      <section class="hero" [style.backgroundImage]="p.imagenUrl ? 'url(' + (p.imagenUrl | imagenOptimizada: 1600) + ')' : null">
         <div class="hero-contenido">
           <span class="etiqueta">{{ etiqueta() }}</span>
           <h2>{{ p.nombre }}</h2>

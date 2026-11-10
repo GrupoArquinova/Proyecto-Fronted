@@ -11,11 +11,12 @@ import {
   ETAPAS_PROYECTO,
   TIPOS_PROYECTO,
 } from '../../../core/models/proyecto.models';
+import { ImagenOptimizadaPipe } from '../../../shared/pipes/imagen-optimizada.pipe';
 
 @Component({
   selector: 'app-proyectos-publicos',
   standalone: true,
-  imports: [RouterModule, TranslocoPipe, LocalizadoPipe, AccionesProyectoComponent],
+  imports: [ImagenOptimizadaPipe, RouterModule, TranslocoPipe, LocalizadoPipe, AccionesProyectoComponent],
   templateUrl: './proyectos-publicos.component.html',
   styleUrl: './proyectos-publicos.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -3,7 +3,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { IdiomaService } from './idioma.service';
-import { LOGO_URL } from '../utils/seo-jsonld';
+import { IMAGEN_COMPARTIR_URL } from '../utils/seo-jsonld';
 import { SITIO_URL, SeoService, recortarDescripcion } from './seo.service';
 import { provideI18nPruebas } from '../../i18n/pruebas';
 
@@ -43,20 +43,20 @@ describe('SeoService', () => {
     expect(contenido('name="robots"')).toBe('noindex, nofollow');
   });
 
-  it('con imagen usa tarjeta grande y la imagen; sin imagen vuelve al logo con tarjeta pequeña', () => {
+  it('con imagen usa tarjeta grande y la imagen; sin imagen vuelve a la imagen de la marca (1200×630), también con tarjeta grande', () => {
     seo.establecer({ titulo: 'El Encanto', imagen: 'https://img.test/portada.jpg', imagenAlt: 'Portada de El Encanto' });
     expect(contenido('property="og:image"')).toBe('https://img.test/portada.jpg');
     expect(contenido('property="og:image:alt"')).toBe('Portada de El Encanto');
     expect(contenido('name="twitter:card"')).toBe('summary_large_image');
 
     seo.establecer({ titulo: 'Proyectos' });
-    expect(contenido('property="og:image"')).toBe(LOGO_URL);
-    expect(contenido('name="twitter:card"')).toBe('summary');
+    expect(contenido('property="og:image"')).toBe(IMAGEN_COMPARTIR_URL);
+    expect(contenido('name="twitter:card"')).toBe('summary_large_image');
   });
 
   it('ignora una imagen que no es un enlace completo y usa el logo', () => {
     seo.establecer({ titulo: 'El Encanto', imagen: 'data:image/png;base64,AAAA' });
-    expect(contenido('property="og:image"')).toBe(LOGO_URL);
+    expect(contenido('property="og:image"')).toBe(IMAGEN_COMPARTIR_URL);
   });
 
   it('las páginas que no se indexan no llevan imagen para compartir', () => {

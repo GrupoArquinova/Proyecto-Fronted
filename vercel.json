@@ -23,6 +23,17 @@
   ],
   "rewrites": [
     {
+      "source": "/proyectos/:id(\\d+)/:seccion*",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|Pinterest|SkypeUriPreview).*"
+        }
+      ],
+      "destination": "https://arquinova-backend.onrender.com/api/publico/compartir/proyectos/:id"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "https://arquinova-backend.onrender.com/api/publico/sitemap.xml"
     },

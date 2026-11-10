@@ -3,7 +3,7 @@ import { Injectable, InjectionToken, effect, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { IdiomaService } from './idioma.service';
-import { LOGO_URL } from '../utils/seo-jsonld';
+import { IMAGEN_COMPARTIR_URL } from '../utils/seo-jsonld';
 
 export const NOMBRE_SITIO = 'Grupo Arquinova';
 
@@ -78,8 +78,8 @@ export class SeoService {
     const descripcion = recortarDescripcion(textoDescripcion || this.idioma.t('seo.descripcionDefecto'));
     const url = datos.ruta ? this.urlAbsoluta(datos.ruta) : null;
     const imagenPropia = datos.imagen && /^https?:\/\//i.test(datos.imagen) ? datos.imagen : null;
-    // Sin imagen propia se comparte el logo (salvo en las páginas que no se indexan, que no necesitan tarjeta)
-    const imagen = imagenPropia ?? (datos.noindex ? null : LOGO_URL);
+    // Sin imagen propia se comparte el logo en 1200×630 (salvo en las páginas que no se indexan, que no necesitan tarjeta)
+    const imagen = imagenPropia ?? (datos.noindex ? null : IMAGEN_COMPARTIR_URL);
     const enIngles = this.idioma.idioma() === 'en';
     // El idioma de la página también va en <html lang> (buscadores y lectores de pantalla)
     this.doc.documentElement.lang = enIngles ? 'en' : 'es';
@@ -99,7 +99,7 @@ export class SeoService {
     this.etiqueta('property', 'og:image', imagen);
     this.etiqueta('property', 'og:image:alt', imagen ? (datos.imagenAlt ?? tituloBase) : null);
 
-    this.etiqueta('name', 'twitter:card', imagenPropia ? 'summary_large_image' : 'summary');
+    this.etiqueta('name', 'twitter:card', imagen ? 'summary_large_image' : 'summary');
     this.etiqueta('name', 'twitter:title', titulo);
     this.etiqueta('name', 'twitter:description', descripcion);
     this.etiqueta('name', 'twitter:image', imagen);

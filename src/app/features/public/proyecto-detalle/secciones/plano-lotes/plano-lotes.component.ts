@@ -2,6 +2,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Lote } from '../../../../../core/models/lote.models';
 import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes';
+import { ImagenOptimizadaPipe } from '../../../../../shared/pipes/imagen-optimizada.pipe';
 
 /**
  * Imagen del proyecto con los lotes marcados encima (color según estado). Solo se dibujan los
@@ -10,11 +11,11 @@ import { estadoDeLote, posicionesEnPlano } from '../../../../../core/utils/lotes
 @Component({
   selector: 'app-plano-lotes',
   standalone: true,
-  imports: [TranslocoPipe],
+  imports: [ImagenOptimizadaPipe, TranslocoPipe],
   template: `
     @if (imagenUrl() && marcadores().length > 0) {
       <div class="plano">
-        <img [src]="imagenUrl()" [alt]="'proyecto.planoLotes.alt' | transloco" />
+        <img [src]="imagenUrl() | imagenOptimizada: 2400" decoding="async" [alt]="'proyecto.planoLotes.alt' | transloco" />
         @for (m of marcadores(); track m.lote.id) {
           <button type="button" class="marca" [class]="m.estado" [class.activa]="m.lote.id === seleccionadoId()"
                   [style.left.%]="m.x" [style.top.%]="m.y"

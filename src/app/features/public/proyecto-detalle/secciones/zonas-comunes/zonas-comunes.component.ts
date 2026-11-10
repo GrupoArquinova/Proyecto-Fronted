@@ -6,6 +6,7 @@ import { PlanoPuntosComponent } from '../plano-puntos/plano-puntos.component';
 import { TarjetaPuntoComponent } from '../tarjeta-punto/tarjeta-punto.component';
 import { Punto360 } from '../../../../../core/models/punto-360.models';
 import { ZonaComun } from '../../../../../core/models/zona-comun.models';
+import { ImagenOptimizadaPipe } from '../../../../../shared/pipes/imagen-optimizada.pipe';
 
 /**
  * Zonas comunes, en tres vistas a pantalla completa:
@@ -17,7 +18,7 @@ import { ZonaComun } from '../../../../../core/models/zona-comun.models';
 @Component({
   selector: 'app-zonas-comunes-publico',
   standalone: true,
-  imports: [TranslocoPipe, CarruselLaminasComponent, PlanoPuntosComponent, TarjetaPuntoComponent],
+  imports: [ImagenOptimizadaPipe, TranslocoPipe, CarruselLaminasComponent, PlanoPuntosComponent, TarjetaPuntoComponent],
   templateUrl: './zonas-comunes.component.html',
   styleUrl: './zonas-comunes.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

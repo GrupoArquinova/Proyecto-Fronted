@@ -2,7 +2,7 @@
   <section class="carrusel" [attr.aria-label]="etiqueta() || ('proyecto.bienvenida.imagenes' | transloco)" [class.sin-miniaturas]="!miniaturasVisibles()">
     <!-- Clic en la mitad izquierda: imagen anterior; en la derecha: siguiente (también se desliza en táctil) -->
     <div class="imagen" role="presentation" (click)="clicEnImagen($event)" (pointerdown)="pista.set(false)" (touchstart)="inicioToque($event)" (touchend)="finToque($event)">
-      <img [src]="lamina.url" [alt]="lamina.titulo || alt()" draggable="false" />
+      <img [src]="lamina.url | imagenOptimizada: 1600" decoding="async" [alt]="lamina.titulo || alt()" draggable="false" />
     </div>
 
     @if (ampliable()) {
@@ -54,7 +54,7 @@
                 <button type="button" [class.activa]="i === indiceActual()" (click)="irA(i)"
                         [attr.aria-label]="'proyecto.carrusel.verN' | transloco: { n: i + 1, total: laminas().length }"
                         [attr.aria-current]="i === indiceActual()">
-                  <img [src]="item.url" alt="" loading="lazy" />
+                  <img [src]="item.url | imagenOptimizada: 400" alt="" loading="lazy" decoding="async" />
                 </button>
               </li>
             }

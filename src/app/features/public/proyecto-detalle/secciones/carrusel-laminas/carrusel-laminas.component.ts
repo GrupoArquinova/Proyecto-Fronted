@@ -1,6 +1,7 @@
 import { TranslocoPipe } from '@jsverse/transloco';
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, computed, effect, inject, input, signal } from '@angular/core';
+import { ImagenOptimizadaPipe } from '../../../../../shared/pipes/imagen-optimizada.pipe';
 
 export interface Lamina {
   id?: number;
@@ -16,7 +17,7 @@ export interface Lamina {
 @Component({
   selector: 'app-carrusel-laminas',
   standalone: true,
-  imports: [TranslocoPipe],
+  imports: [ImagenOptimizadaPipe, TranslocoPipe],
   templateUrl: './carrusel-laminas.component.html',
   styleUrl: './carrusel-laminas.component.scss',
   host: { '[class.en-marco]': 'enMarco()', '[class.ampliada]': 'ampliada()' },
