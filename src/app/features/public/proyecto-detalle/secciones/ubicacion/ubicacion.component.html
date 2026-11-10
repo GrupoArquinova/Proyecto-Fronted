@@ -1,0 +1,95 @@
+@if (ubicacion(); as u) {
+  @if (inmersiva()) {
+
+    <!-- Pantalla completa: la imagen, el video o el plano llenan el espacio y el menú flota encima -->
+    @switch (vista()) {
+      @case ('entorno-360') {
+        @if (tipoEntorno() === 'imagen') {
+          <app-visor-360 [completo]="true" [url]="u.recorrido360Url!" [titulo]="'proyecto.ubicacion.tEntorno' | transloco"
+                         [puntos]="puntosEntorno()" (puntoElegido)="abrirPunto($event)" />
+        } @else {
+          <div class="lienzo"><app-medio [completo]="true" [url]="u.recorrido360Url!" [titulo]="'proyecto.ubicacion.tRecorrido' | transloco" /></div>
+        }
+      }
+
+      @case ('vista-aerea') {
+        @if (tipoAerea() === 'imagen') {
+          <app-visor-360 [completo]="true" [url]="u.vistaAereaUrl!" [titulo]="'proyecto.ubicacion.tVistaAerea' | transloco"
+                         [puntos]="puntosAerea()" (puntoElegido)="abrirPunto($event)" />
+        } @else {
+          <div class="lienzo"><app-medio [completo]="true" [url]="u.vistaAereaUrl!" [titulo]="'proyecto.ubicacion.tLaVistaAerea' | transloco" /></div>
+        }
+      }
+
+      @case ('google-maps') {
+        <div class="lienzo">
+          <iframe [src]="googleMaps()!" [title]="'proyecto.ubicacion.mapaGoogleDe' | transloco: { nombre: u.proyectoNombre || ('proyecto.ubicacion.elProyecto' | transloco) }" loading="lazy" allowfullscreen
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      }
+
+      @case ('mapa') {
+        <app-carrusel-laminas [laminas]="mapas()" [alt]="'proyecto.ubicacion.mapaUbicacionDe' | transloco: { nombre: u.proyectoNombre || ('proyecto.ubicacion.elProyecto' | transloco) }" [etiqueta]="'proyecto.ubicacion.mapaEtiqueta' | transloco" />
+      }
+
+      @case ('urbanismo') {
+        <app-plano-puntos [completo]="true" [url]="u.urbanismoUrl!" [puntos]="puntosPlano()"
+                          (puntoElegido)="abrirPunto($event)" />
+      }
+    }
+
+    @if (tarjeta(); as punto) {
+      <app-tarjeta-punto [punto]="punto" (cerrar)="tarjeta.set(null)" />
+    }
+
+  } @else {
+    <section class="ubicacion">
+
+      @switch (vista()) {
+        @case ('entorno-360') {
+          <h2>{{ 'proyecto.ubicacion.entorno' | transloco }}</h2>
+          <app-medio [url]="u.recorrido360Url!" [titulo]="'proyecto.ubicacion.tRecorrido' | transloco" />
+        }
+
+        @case ('vista-aerea') {
+          <h2>{{ 'proyecto.ubicacion.vistaAerea' | transloco }}</h2>
+          <app-medio [url]="u.vistaAereaUrl!" [titulo]="'proyecto.ubicacion.tLaVistaAerea' | transloco" />
+        }
+
+        @case ('urbanismo') {
+          <h2>{{ 'proyecto.ubicacion.urbanismo' | transloco }}</h2>
+          <app-medio [url]="u.urbanismoUrl!" [titulo]="'proyecto.ubicacion.tPlano' | transloco" />
+        }
+
+        @case ('mapa') {
+          <h2>{{ 'proyecto.ubicacion.mapa' | transloco }}</h2>
+          @if (mapaUrl(); as mapa) {
+            <iframe [src]="mapa" [title]="'proyecto.ubicacion.mapaTitulo' | transloco" loading="lazy"
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"></iframe>
+          }
+        }
+
+        @case ('google-maps') {
+          <h2>{{ 'proyecto.ubicacion.googleMaps' | transloco }}</h2>
+          <app-medio [url]="u.googleMapsUrl!" [titulo]="'proyecto.ubicacion.tGoogleMaps' | transloco" />
+        }
+
+        @default {
+          <h2>{{ 'proyecto.ubicacion.titulo' | transloco }}</h2>
+        }
+      }
+
+      @if (lugar() || u.referencias) {
+        <aside class="datos">
+          @if (lugar()) {
+            <p><strong>{{ 'proyecto.ubicacion.direccion' | transloco }}</strong> {{ lugar() }}</p>
+          }
+          @if (u.referencias) {
+            <p><strong>{{ 'proyecto.ubicacion.comoLlegar' | transloco }}</strong> {{ u.referencias }}</p>
+          }
+        </aside>
+      }
+    </section>
+  }
+}

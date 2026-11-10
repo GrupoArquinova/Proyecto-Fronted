@@ -1,0 +1,51 @@
+/** Estado de atención de una solicitud (NUEVO, EN_GESTION, CERRADO). */
+export interface EstadoSolicitud {
+  id: number;
+  nombre: string;
+  descripcion?: string;
+  orden: number;
+  activo: boolean;
+}
+
+export interface Solicitud {
+  id: number;
+  estadoId: number;
+  estadoNombre?: string;
+  proyectoId?: number;
+  proyectoNombre?: string;
+  loteId?: number;
+  loteCodigo?: string;
+  casaModeloId?: number;
+  casaModeloNombre?: string;
+  nombre: string;
+  correo?: string | null;
+  telefono?: string | null;
+  servicioInteres?: string | null;
+  mensaje?: string;
+  consentimientoDatos: boolean;
+  atendidaPorNombre?: string;
+  atendidaEn?: string;
+  observacionesInternas?: string;
+  creadoEn: string;
+}
+
+/** Cuerpo del formulario de contacto público (POST /solicitudes-contacto/publico). */
+export interface SolicitudPublicaRequest {
+  nombre: string;
+  /** Basta con uno de los dos: teléfono o correo. */
+  correo?: string;
+  telefono?: string;
+  servicioInteres?: string;
+  /** Idioma del sitio cuando la persona escribió ("es" o "en"). */
+  idioma?: string;
+  proyectoId: number | null;
+  loteId?: number | null;
+  /** Tipología (villa) por la que se consulta. */
+  casaModeloId?: number | null;
+  mensaje?: string;
+  consentimientoDatos: boolean;
+  /** Campo trampa (honeypot): siempre vacío para una persona; el backend descarta lo que llegue con texto. La IP y el user-agent los fija el backend. */
+  sitioWeb?: string;
+  /** Token de Cloudflare Turnstile; solo se envía cuando el sitio tiene captcha activo. */
+  captchaToken?: string;
+}

@@ -1,0 +1,116 @@
+@use '../tokens' as t;
+
+:host {
+  position: relative;
+  display: block;
+  background: #0b1413;
+  overflow: hidden;
+  border-radius: t.$radio;
+}
+
+// A pantalla completa: el plano queda a la derecha del menú flotante (--menu-offset lo define el visor)
+:host(.completo) {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+}
+
+// El mismo plano, desenfocado y oscuro, rellena los costados
+.fondo {
+  position: absolute;
+  inset: -30px;
+  background: center / cover no-repeat;
+  filter: blur(26px) brightness(0.5);
+}
+
+.area {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  padding: 0;
+}
+
+:host(.completo) .area {
+  position: absolute;
+  inset: 0;
+  padding: 0.8rem 0.8rem 0.8rem calc(var(--menu-offset, 0px) + 0.4rem);
+  transition: padding-left 0.25s ease;
+}
+
+.caja {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  cursor: crosshair;
+  max-width: 100%;
+  max-height: 100%;
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100vh - 1.6rem);
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+}
+
+// Botón de una etapa: icono de cámara con la etiqueta encima
+.pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: t.$fuente;
+  line-height: 1.1;
+  transition: transform 0.15s;
+
+  &:hover { transform: translate(-50%, -50%) scale(1.1); z-index: 2; }
+}
+
+.etiqueta {
+  order: -1;
+  padding: 0.18rem 0.55rem;
+  background: rgba(18, 26, 26, 0.86);
+  color: t.$blanco;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.icono {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  background: rgba(t.$verde, 0.92);
+  color: t.$blanco;
+  border: 2px solid t.$blanco;
+  border-radius: 50%;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
+
+  svg { width: 18px; height: 18px; }
+}
+
+.pendiente {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  background: #ffd23f;
+  border: 3px solid t.$blanco;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255, 210, 63, 0.45);
+  pointer-events: none;
+}

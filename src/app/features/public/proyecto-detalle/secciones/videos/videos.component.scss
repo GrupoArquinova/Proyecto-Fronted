@@ -1,0 +1,61 @@
+@use '../tokens' as t;
+
+:host { display: block; }
+
+.seccion {
+  max-width: 980px;
+  margin: 0 auto;
+
+  h2 {
+    margin-bottom: 1.4rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 3px solid t.$verde-claro;
+    width: fit-content;
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: t.$verde;
+  }
+}
+
+.descripcion {
+  margin-top: 1.2rem;
+  padding: 1.2rem 1.5rem;
+  background: t.$fondo-suave;
+  border-left: 4px solid t.$verde;
+  border-radius: 0 t.$radio t.$radio 0;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.pie {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.92rem;
+  color: t.$texto-suave;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+
+  button {
+    padding: 0.5rem 1.2rem;
+    background: t.$blanco;
+    color: t.$verde;
+    border: 1px solid t.$borde;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+
+    &:hover { background: t.$fondo-suave; }
+    &.activo { background: t.$verde; border-color: t.$verde; color: t.$blanco; }
+  }
+}
+
+// Los controles de formulario no heredan la tipografía por defecto
+button, input, textarea { font-family: inherit; }

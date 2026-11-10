@@ -1,0 +1,63 @@
+@if (proyecto(); as p) {
+  <section class="tarjeta">
+    <h2>{{ 'proyecto.contacto.titulo' | transloco }}</h2>
+    <p class="sub">{{ 'proyecto.contacto.sub' | transloco: { nombre: p.nombre } }}</p>
+    @if (lote(); as l) {
+      <p class="lote">{{ 'proyecto.contacto.consultandoLote' | transloco }} <strong>{{ l.codigo }}</strong></p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <label class="campo-nombre">
+        {{ 'proyecto.contacto.nombre' | transloco }}
+        <input type="text" formControlName="nombre" [placeholder]="'proyecto.contacto.nombreEjemplo' | transloco" autocomplete="name"
+               [class.error]="invalido('nombre')" />
+        @if (invalido('nombre')) { <small>{{ 'proyecto.contacto.errorNombre' | transloco }}</small> }
+      </label>
+
+      <label class="campo-telefono">
+        {{ 'proyecto.contacto.telefono' | transloco }}
+        <input type="tel" formControlName="telefono" [placeholder]="'proyecto.contacto.telefonoEjemplo' | transloco" autocomplete="tel"
+               [class.error]="invalido('telefono') || faltaMedioDeContacto()" />
+      </label>
+
+      <label class="campo-correo">
+        {{ 'proyecto.contacto.correo' | transloco }}
+        <input type="email" formControlName="correo" [placeholder]="'home.formulario.correoEjemplo' | transloco" autocomplete="email"
+               [class.error]="invalido('correo') || faltaMedioDeContacto()" />
+        @if (invalido('correo')) { <small>{{ 'proyecto.contacto.errorCorreo' | transloco }}</small> }
+        @else if (faltaMedioDeContacto()) { <small>{{ 'proyecto.contacto.faltaMedio' | transloco }}</small> }
+        @else { <small class="ayuda">{{ 'proyecto.contacto.ayuda' | transloco }}</small> }
+      </label>
+
+      <label class="campo-mensaje">
+        {{ 'proyecto.contacto.mensaje' | transloco }}
+        <textarea formControlName="mensaje" rows="4" [placeholder]="'proyecto.contacto.mensajeEjemplo' | transloco"
+                  [class.error]="invalido('mensaje')"></textarea>
+        @if (invalido('mensaje')) { <small>{{ 'proyecto.contacto.errorMensaje' | transloco }}</small> }
+      </label>
+
+      <label class="consentimiento">
+        <input type="checkbox" formControlName="consentimientoDatos" />
+        <span>{{ 'proyecto.contacto.consentimientoAntes' | transloco }} <a href="/legal/politica-datos" target="_blank" rel="noopener noreferrer">{{ 'proyecto.contacto.consentimientoEnlace' | transloco }}</a>.</span>
+      </label>
+      @if (invalido('consentimientoDatos')) { <small class="aviso">{{ 'proyecto.contacto.errorConsentimiento' | transloco }}</small> }
+
+      <!-- Trampa para bots: las personas no la ven ni la llenan; el backend descarta el envío si trae texto -->
+      <div class="campo-trampa" aria-hidden="true">
+        <label>Sitio web <input type="text" formControlName="sitioWeb" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
+      <app-captcha-turnstile (token)="captchaToken.set($event)" />
+
+      <button type="submit" class="enviar" [disabled]="enviando() || !puedeEnviar()">
+        {{ (enviando() ? 'proyecto.contacto.enviando' : 'proyecto.contacto.enviar') | transloco }}
+      </button>
+    </form>
+
+    <footer class="pie">
+      <a [href]="'tel:+' + contacto.whatsapp">{{ contacto.telefonoTexto }}</a>
+      <a appClickWhatsapp [proyectoId]="proyecto()?.id" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">{{ 'proyecto.contacto.whatsapp' | transloco }}</a>
+      @if (lugar()) { <span>{{ lugar() }}</span> }
+    </footer>
+  </section>
+}

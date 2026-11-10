@@ -1,0 +1,31 @@
+<section class="wallet" aria-labelledby="wallet-titulo">
+  <h4 id="wallet-titulo">{{ 'wallet.titulo' | transloco }}</h4>
+  <p class="descripcion">{{ 'wallet.descripcion' | transloco }}</p>
+
+  <form (submit)="enviar($event)" novalidate>
+    <label class="visualmente-oculto" for="wallet-correo">{{ 'wallet.etiqueta' | transloco }}</label>
+    <input
+      id="wallet-correo"
+      type="email"
+      name="email"
+      inputmode="email"
+      autocomplete="email"
+      maxlength="254"
+      [formControl]="correo"
+      [placeholder]="'wallet.placeholder' | transloco"
+      [attr.aria-invalid]="estado() === 'error' && correo.invalid ? 'true' : null"
+      aria-describedby="wallet-estado"
+    />
+    <button type="submit" [disabled]="estado() === 'enviando'">
+      {{ (estado() === 'enviando' ? 'wallet.enviando' : 'wallet.enviar') | transloco }}
+    </button>
+  </form>
+
+  <p class="privacidad">{{ 'wallet.privacidad' | transloco }}</p>
+
+  <p id="wallet-estado" class="estado" [class.error]="estado() === 'error'" [class.ok]="estado() === 'enviado'" role="status" aria-live="polite">
+    @if (mensajeClave()) {
+      {{ mensajeClave() | transloco }}
+    }
+  </p>
+</section>

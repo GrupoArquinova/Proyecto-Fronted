@@ -1,0 +1,374 @@
+<div class="admin-container">
+  <!-- Cabecera -->
+  <div class="header-section">
+    <div>
+      <span class="sub-title">GESTIÓN DE INFRAESTRUCTURA</span>
+      <h2>Amenidades</h2>
+    </div>
+    <div class="header-actions">
+      <select [(ngModel)]="proyectoIdSeleccionado" (change)="cargarZonas(); cargarFondo()" class="select-proyecto">
+        <option value="todos">🌐 Todas las amenidades (Todos los proyectos)</option>
+        @for (p of listaProyectos; track p.id) {
+          <option [value]="p.id">{{ p.nombre }}</option>
+        }
+      </select>
+      <button class="btn-primary" (click)="abrirModalCrear()"><span>+</span> Nueva amenidad</button>
+    </div>
+  </div>
+
+  <!-- Alerta -->
+  @if (mensajeAlerta) {
+    <div class="alerta-flotante" [class.alerta-error]="tipoAlerta === 'error'" [attr.role]="tipoAlerta === 'error' ? 'alert' : 'status'">
+      <span>{{ tipoAlerta === 'error' ? '✕' : '✓' }} {{ mensajeAlerta }}</span>
+    </div>
+  }
+
+  <!-- Imagen de fondo predeterminada de Amenidades (la que se ve al entrar en la página pública) -->
+  @if (proyectoIdSeleccionado !== 'todos') {
+    <div class="fondo-amenidades">
+      @if (fondoAmenidades; as fondo) {
+        <img [src]="fondo.url" alt="Imagen de fondo de Amenidades" class="fondo-amenidades-img" />
+      }
+      <div class="fondo-amenidades-info">
+        <strong>Imagen de fondo de Amenidades</strong>
+        <p>Es la que se ve al entrar, antes de elegir una amenidad. Al elegir una amenidad se abre su carrusel de imágenes.</p>
+        <div class="fondo-amenidades-acciones">
+          <label class="btn-primary" [class.ocupado]="subiendoFondo">
+            {{ subiendoFondo ? 'Subiendo...' : (fondoAmenidades ? 'Cambiar imagen' : '+ Subir imagen de fondo') }}
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden [disabled]="subiendoFondo" (change)="subirFondo($event)" />
+          </label>
+          @if (fondoAmenidades) {
+            <button type="button" class="btn-quitar-fondo" (click)="quitarFondo()">Quitar</button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Grid de Zonas Comunes -->
+  @if (listaZonas.length > 0) {
+    <div class="cards-grid">
+      @for (zona of listaZonas; track zona.id) {
+        <div class="item-card">
+          <div class="card-header-info">
+            <div>
+              @if (zona.proyectoNombre) {
+                <span class="badge-proyecto">{{ zona.proyectoNombre }}</span>
+              }
+              <h3>{{ zona.nombre }}</h3>
+            </div>
+            <span class="badge" [class.activo]="zona.publicado" [class.inactivo]="!zona.publicado">
+              {{ zona.publicado ? 'Publicado' : 'Oculto' }}
+            </span>
+          </div>
+          <p class="card-desc">{{ zona.descripcion || 'Sin descripción registrada.' }}</p>
+          <div class="card-footer">
+            <button
+              class="btn-icon gallery"
+              (click)="abrirGaleriaImagenes(zona)"
+              title="Gestionar Galería de Imágenes"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </button>
+            <button class="btn-icon edit" (click)="abrirModalEditar(zona)" title="Editar">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button class="btn-icon delete" (click)="prepararEliminacion(zona.id)" title="Eliminar">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path
+                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    @if (!cargando) {
+      <div class="empty-state">
+        <p>No hay amenidades registradas.</p>
+      </div>
+    }
+  }
+
+  <!-- Modal Crear / Editar -->
+  @if (mostrarModal) {
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>{{ esEdicion ? 'Editar amenidad' : 'Nueva amenidad' }}</h3>
+          <button class="close-btn" (click)="cerrarModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="zonas-comunes-campo-1">Proyecto al que pertenece *</label>
+            <select id="zonas-comunes-campo-1" [(ngModel)]="zonaActual.proyectoId" class="modal-select">
+              @for (p of listaProyectos; track p.id) {
+                <option [value]="p.id">{{ p.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="zonas-comunes-campo-2">Nombre de la Zona *</label>
+            <input id="zonas-comunes-campo-2"
+              type="text"
+              [(ngModel)]="zonaActual.nombre"
+              placeholder="Ej. Piscina Olímpica, Cancha Múltiple"
+            />
+          </div>
+          <div class="form-group">
+            <label for="zonas-comunes-campo-3">Nombre en inglés (opcional)</label>
+            <input id="zonas-comunes-campo-3"
+              type="text"
+              [(ngModel)]="zonaActual.nombreEn"
+              placeholder="e.g. Olympic Pool, Multi-sport Court"
+            />
+          </div>
+          <div class="form-group">
+            <label for="zonas-comunes-campo-4">Descripción</label>
+            <textarea id="zonas-comunes-campo-4"
+              [(ngModel)]="zonaActual.descripcion"
+              rows="3"
+              placeholder="Detalles de la amenidad..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="zonas-comunes-campo-5">Descripción en inglés (opcional)</label>
+            <textarea id="zonas-comunes-campo-5"
+              [(ngModel)]="zonaActual.descripcionEn"
+              rows="3"
+              placeholder="Description in English. If empty, the site shows the Spanish text."
+            ></textarea>
+          </div>
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" [(ngModel)]="zonaActual.publicado" /> Publicar en la plataforma
+              pública
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button class="btn-primary" (click)="guardarZona()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal de Galería de Imágenes -->
+  @if (mostrarModalImagenes) {
+    <div class="modal-overlay">
+      <div class="modal-content modal-galeria">
+        <div class="modal-header">
+          <h3>Galería: {{ zonaSeleccionadaParaGaleria?.nombre }}</h3>
+          <button class="close-btn" (click)="cerrarModalImagenes()">×</button>
+        </div>
+        <div class="modal-body">
+          <!-- Formulario para agregar o editar imagen -->
+          <div class="sub-form-imagen" [class.modo-edicion]="imagenEditandoId">
+            @if (imagenEditandoId) {
+              <div class="sub-form-titulo">
+                <span>Editando imagen</span>
+                <button
+                  type="button"
+                  class="btn-cancelar-edicion"
+                  (click)="cancelarEdicionImagen()"
+                >
+                  Cancelar edición
+                </button>
+              </div>
+            }
+            <div class="form-group">
+              <label for="zonas-comunes-campo-6">Subir desde archivo local</label>
+              <input id="zonas-comunes-campo-6"
+                type="file"
+                class="file-input"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                (change)="onArchivoSeleccionado($event)"
+                [disabled]="subiendoImagen"
+              />
+              @if (subiendoImagen) {
+                <p class="subiendo-texto">Subiendo imagen...</p>
+              }
+              @if (errorImagen) {
+                <p class="error-texto">{{ errorImagen }}</p>
+              }
+            </div>
+            <div class="form-group">
+              <label for="zonas-comunes-campo-7">O ingresa la URL de la Imagen *</label>
+              <input id="zonas-comunes-campo-7"
+                type="text"
+                [(ngModel)]="nuevaImagen.imagenUrl"
+                placeholder="https://ejemplo.com/imagen.jpg"
+              />
+            </div>
+            <div class="form-group">
+              <label for="zonas-comunes-campo-8">Título (Opcional)</label>
+              <input id="zonas-comunes-campo-8"
+                type="text"
+                [(ngModel)]="nuevaImagen.titulo"
+                placeholder="Ej. Vista lateral de la piscina"
+              />
+            </div>
+            <button
+              class="btn-primary btn-agregar-img"
+              (click)="agregarImagenAZona()"
+              [disabled]="subiendoImagen"
+            >
+              {{
+                subiendoImagen
+                  ? 'Subiendo...'
+                  : imagenEditandoId
+                    ? 'Guardar Cambios'
+                    : '+ Agregar Imagen'
+              }}
+            </button>
+          </div>
+          <hr class="divider" />
+          <h4>Imágenes asociadas ({{ listaImagenesZona.length }})</h4>
+          @if (listaImagenesZona.length > 0) {
+            <div class="imagenes-grid">
+              @for (img of listaImagenesZona; track img.id) {
+                <div class="img-card" [class.editando]="imagenEditandoId === img.id">
+                  @if (!imagenesConError.has(img.id!)) {
+                    <img
+                      [src]="img.imagenUrl"
+                      [alt]="img.titulo || 'Imagen de amenidad'"
+                      (error)="marcarImagenConError(img.id)"
+                    />
+                  }
+                  @if (imagenesConError.has(img.id!)) {
+                    <div class="img-error-placeholder">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                    </div>
+                  }
+                  <div class="img-info">
+                    <span class="img-title" [title]="img.titulo">{{
+                      img.titulo || 'Sin título'
+                    }}</span>
+                    @if (img.esPrincipal) {
+                      <span class="badge-principal">Principal</span>
+                    }
+                    <div class="img-actions">
+                      @if (!img.esPrincipal) {
+                        <button
+                          class="btn-icon-mini principal"
+                          (click)="marcarImagenPrincipal(img)"
+                          title="Marcar como imagen principal"
+                          aria-label="Marcar como imagen principal"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                          </svg>
+                        </button>
+                      }
+                      <button
+                        class="btn-icon-mini"
+                        (click)="editarImagenZona(img)"
+                        title="Editar imagen"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path
+                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                          ></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </button>
+                      <button
+                        class="btn-icon-mini delete"
+                        (click)="eliminarImagenZona(img.id)"
+                        title="Eliminar imagen"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path
+                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="sin-imagenes-txt">No hay imágenes registradas para esta amenidad.</p>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="cerrarModalImagenes()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (cargando) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
+  }
+</div>

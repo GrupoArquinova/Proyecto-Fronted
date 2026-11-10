@@ -1,1 +1,209 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'shared/styles/admin-tokens' as t;
+@import '@photo-sphere-viewer/core/index.css';
+@import '@photo-sphere-viewer/markers-plugin/index.css';
+
+/* Barlow autoalojada (respaldo de Bahnschrift); sin Google Fonts. Solo latino, woff2. */
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('../node_modules/@fontsource/barlow/files/barlow-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('../node_modules/@fontsource/barlow/files/barlow-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('../node_modules/@fontsource/barlow/files/barlow-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('../node_modules/@fontsource/barlow/files/barlow-latin-700-normal.woff2') format('woff2');
+}
+
+/* Campo trampa (honeypot) de los formularios de contacto: fuera de pantalla, sin tabulación y sin ocupar espacio */
+.campo-trampa {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Reset global de márgenes, paddings y fondo */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0f1716; /* Coincide con el tono oscuro de tu footer */
+  overflow-x: hidden; /* Elimina definitivamente el scroll horizontal */
+  scroll-behavior: smooth;
+}
+
+app-root {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Estilos globales para el botón flotante de WhatsApp */
+.whatsapp-float {
+  position: fixed;
+  width: 58px;
+  height: 58px;
+  bottom: 25px;
+  right: 25px;
+  background-color: #25d366;
+  color: #ffffff;
+  border-radius: 50px;
+  text-align: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #20ba5a;
+    transform: scale(1.08);
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .whatsapp-icon {
+    width: 34px;
+    height: 34px;
+    fill: #ffffff;
+  }
+}
+
+/* =============================================
+   OVERLAY GLOBAL: ROTACIÓN DE DISPOSITIVO
+   ============================================= */
+.rotate-device-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1f2b28 0%, #2c5953 100%);
+  z-index: 999999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  box-sizing: border-box;
+
+  .rotate-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    max-width: 320px;
+    width: 100%;
+
+    .phone-icon {
+      margin-bottom: 1.5rem;
+
+      svg {
+        width: 60px;
+        height: 60px;
+        color: #ffffff;
+        animation: wiggleRotate 2.5s ease-in-out infinite;
+      }
+    }
+
+    h2 {
+      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+      color: #ffffff;
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin: 0 0 0.85rem 0;
+      letter-spacing: 0.01em;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 0;
+
+      strong {
+        color: #ffffff;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@keyframes wiggleRotate {
+  0%   { transform: rotate(0deg); }
+  30%  { transform: rotate(-80deg); }
+  60%  { transform: rotate(-90deg); }
+  80%  { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@media screen and (max-width: 900px) and (orientation: portrait) {
+  .rotate-device-overlay {
+    display: flex !important;
+  }
+
+  .whatsapp-float {
+    display: none !important;
+  }
+}
+/* Donde hay botón de pantalla completa (home y micrositio de proyecto), va debajo de WhatsApp */
+body.con-pantalla-completa .whatsapp-btn-float { bottom: 80px; }
+body.con-pantalla-completa .whatsapp-modal-container { --wa-bottom: 150px; }
+/* Pantallas bajas (celular en horizontal): el modal va al lado del botón, no encima */
+@media (max-height: 560px) {
+  body.con-pantalla-completa .whatsapp-modal-container { --wa-bottom: 12px; }
+}
+
+/* ===== Panel de administración: tipografía (Bahnschrift, estilo DIN) =====
+   La pila de fuentes vive en shared/styles/admin-tokens.scss ($font-ui). Aquí solo se reparte a los controles de
+   formulario, que no la heredan, y se afinan títulos y números. No toca el micrositio público. */
+.admin-layout {
+  button, input, select, textarea { font-family: inherit; }
+  h1, h2, h3, h4 { font-weight: 600; letter-spacing: 0.01em; }
+  th { letter-spacing: 0.04em; }
+  table, td, th { font-variant-numeric: tabular-nums; }
+}
+
+/* ===== Micrositio: entrada suave de cada vista =====
+   La sección que se abre aparece con un desvanecimiento corto y un desplazamiento de 8 px (ease-out fuerte, 220 ms).
+   Solo opacidad y transform; "backwards" para que al terminar no quede ningún transform aplicado (rompería los
+   elementos con position: fixed de dentro). No se aplica a las vistas a pantalla completa. */
+@keyframes entrada-vista {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.visor:not(.inmersivo) .pagina > :not(router-outlet) {
+  animation: entrada-vista 220ms cubic-bezier(0.23, 1, 0.32, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .visor:not(.inmersivo) .pagina > :not(router-outlet) { animation: none; }
+}

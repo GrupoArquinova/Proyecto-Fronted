@@ -1,0 +1,69 @@
+// Funciona sobre fondos oscuros o de cristal (menú del micrositio y tarjetas del listado): texto y bordes heredan el color.
+:host { display: block; color: inherit; }
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  min-height: 36px;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: inherit;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  svg { width: 16px; height: 16px; flex: none; }
+
+  &:hover { background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.7); }
+  &:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+}
+
+.menu-compartir {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+
+  a, button {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.7rem;
+    font: inherit;
+    font-size: 0.85rem;
+    text-align: left;
+    color: inherit;
+    text-decoration: none;
+    background: none;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover { background: rgba(255, 255, 255, 0.15); }
+    &:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+  }
+}
+
+.aviso {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  &:empty { display: none; }
+}

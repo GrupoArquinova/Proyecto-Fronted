@@ -1,0 +1,112 @@
+@switch (datos.estado()) {
+  @case ('cargando') {
+    <div class="estado-pantalla" role="status">
+      <div class="spinner"></div>
+      <p>{{ 'proyecto.estado.cargando' | transloco }}</p>
+    </div>
+  }
+  @case ('no-encontrado') {
+    <div class="estado-pantalla">
+      <h2>{{ 'proyecto.estado.noEncontradoTitulo' | transloco }}</h2>
+      <p>{{ 'proyecto.estado.noEncontradoTexto' | transloco }}</p>
+      <a routerLink="/proyectos" class="btn-estado">&larr; {{ 'proyecto.estado.verTodos' | transloco }}</a>
+    </div>
+  }
+  @case ('error') {
+    <div class="estado-pantalla">
+      <h2>{{ 'proyecto.estado.errorTitulo' | transloco }}</h2>
+      <p>{{ 'proyecto.estado.errorTexto' | transloco }}</p>
+      <button type="button" class="btn-estado" (click)="reintentar()">{{ 'proyecto.estado.reintentar' | transloco }}</button>
+    </div>
+  }
+  @case ('listo') {
+    <div class="visor" [class.colapsado]="menuColapsado()" [class.movil-abierto]="menuMovilAbierto()"
+         [class.inmersivo]="inmersivo()">
+
+      <div class="fondo" aria-hidden="true"
+           [style.backgroundImage]="proyecto()?.imagenUrl ? 'url(' + (proyecto()?.imagenUrl | imagenOptimizada: 1600) + ')' : null"></div>
+
+      <button type="button" class="btn-menu-movil" (click)="menuMovilAbierto.set(true)" [attr.aria-label]="'proyecto.armazon.abrirMenu' | transloco">
+        &#9776;
+      </button>
+      <div class="velo" role="presentation" (click)="cerrarMenuMovil()"></div>
+
+      <aside class="menu" [attr.aria-label]="'proyecto.armazon.secciones' | transloco">
+        <header class="menu-marca">
+          <span class="sello">Arquinova</span>
+          <h1>{{ proyecto()?.nombre }}</h1>
+          @if (ubicacionTexto()) {
+            <p class="lugar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" />
+              </svg>
+              {{ ubicacionTexto() }}
+            </p>
+          }
+        </header>
+
+        <nav>
+          @for (seccion of datos.secciones(); track seccion.id) {
+            <div class="menu-grupo" [class.activo]="seccionActiva() === seccion.id">
+              <a class="menu-seccion"
+                 [routerLink]="['/proyectos', proyecto()?.id, seccion.id]"
+                 (click)="cerrarMenuMovil()">
+                {{ seccion.titulo }}
+              </a>
+
+              @if (seccionActiva() === seccion.id && seccion.subsecciones.length > 0) {
+                <ul class="menu-vistas">
+                  @for (vista of seccion.subsecciones; track vista.id) {
+                    <li>
+                      <a [routerLink]="['/proyectos', proyecto()?.id, seccion.id]"
+                         [queryParams]="{ vista: vista.id }"
+                         [class.activa]="vistaDe(seccion.id) === vista.id"
+                         (click)="cerrarMenuMovil()">
+                        {{ vista.titulo }}
+                      </a>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </nav>
+
+        <footer class="menu-pie">
+          @if (proyecto(); as p) {
+            <app-acciones-proyecto variante="menu" [proyectoId]="p.id!" [nombre]="p.nombre" [lugar]="ubicacionTexto()" />
+          }
+          <a routerLink="/proyectos">&larr; {{ 'proyecto.armazon.todosProyectos' | transloco }}</a>
+          <!-- Se abren en otra pestaña para no sacar a la persona del proyecto que está viendo -->
+          <nav class="enlaces-legales" [attr.aria-label]="'proyecto.armazon.informacionLegal' | transloco">
+            <a routerLink="/legal/politica-datos" target="_blank" rel="noopener noreferrer">{{ 'proyecto.armazon.datos' | transloco }}</a>
+            <a routerLink="/legal/terminos" target="_blank" rel="noopener noreferrer">{{ 'proyecto.armazon.terminos' | transloco }}</a>
+            <a routerLink="/legal/cookies" target="_blank" rel="noopener noreferrer">{{ 'proyecto.armazon.cookies' | transloco }}</a>
+          </nav>
+          <app-selector-idioma variante="cristal" />
+        </footer>
+      </aside>
+
+      <button type="button" class="btn-colapsar" (click)="menuColapsado.set(!menuColapsado())"
+              [attr.aria-label]="(menuColapsado() ? 'proyecto.armazon.mostrarMenu' : 'proyecto.armazon.ocultarMenu') | transloco">
+        {{ menuColapsado() ? '›' : '‹' }}
+      </button>
+
+      <app-boton-pantalla-completa />
+
+      <main class="contenido">
+        <div class="barra">
+          <strong>{{ seccionTitulo() }}</strong>
+          @if (vistaTitulo() && vistaTitulo() !== seccionTitulo()) {
+            <span class="sep">›</span>
+            <span>{{ vistaTitulo() }}</span>
+          }
+        </div>
+        <div class="pagina">
+          <router-outlet></router-outlet>
+        </div>
+      </main>
+    </div>
+  }
+}

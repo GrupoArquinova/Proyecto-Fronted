@@ -1,0 +1,106 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, forkJoin, map, of, catchError } from 'rxjs';
+import { Proyecto, CrearProyectoDTO, CatalogoPublico, etiquetaEtapa } from '../models/proyecto.models';
+import { Ubicacion } from '../models/ubicacion.models';
+import { UbicacionService } from './ubicacion.service';
+import { Lote } from '../models/lote.models';
+import { LoteService } from './lote.service';
+import { environment } from '../../../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ProyectoService {
+  private http = inject(HttpClient);
+  private loteService = inject(LoteService);
+  private ubicacionService = inject(UbicacionService);
+  
+  // URL base de tu backend en Spring Boot
+  private apiUrl = `${environment.apiUrl}/proyectos`;
+
+  /**
+   * Obtiene la lista completa de proyectos registrados
+   */
+  getProyectos(): Observable<Proyecto[]> {
+    return this.http.get<Proyecto[]>(this.apiUrl);
+  }
+
+  /** Solo proyectos publicados y activos (sitio público). */
+  getProyectosPublicos(): Observable<Proyecto[]> {
+    return this.http.get<Proyecto[]>(this.apiUrl, { params: { soloPublicados: true } });
+  }
+
+  /**
+   * Proyectos + lotes publicados, combinados para las páginas públicas.
+   * Es el único lugar que calcula totalLotes / lotesDisponibles y los valores por defecto.
+   */
+  obtenerCatalogoPublico(): Observable<CatalogoPublico> {
+    return forkJoin({
+      proyectos: this.getProyectosPublicos(),
+      lotes: this.loteService.obtenerLotesPublicos(),
+      // Si falla la consulta de ubicaciones, el catálogo se muestra igual, sin municipio
+      ubicaciones: this.ubicacionService.obtenerUbicaciones().pipe(catchError(() => of([] as Ubicacion[])))
+    }).pipe(
+      map(({ proyectos, lotes, ubicaciones }) => ({
+        totalLotes: lotes.length,
+        // El proyecto destacado va primero
+        proyectos: [...proyectos].sort((a, b) => Number(!!b.destacado) - Number(!!a.destacado)).map(p => {
+          const delProyecto = lotes.filter(l => this.perteneceAProyecto(l, p));
+          const sitio = ubicaciones.find(u => u.proyectoId === p.id);
+          const lugar = [sitio?.ciudad, sitio?.departamento].filter(Boolean).join(', ');
+          return {
+            ...p,
+            id: p.id as number,
+            totalLotes: delProyecto.length,
+            lotesDisponibles: delProyecto.filter(l => this.estaDisponible(l)).length,
+            imagenUrl: p.imagenUrl || 'assets/images/default-project.svg',
+            // Etapa real del proyecto (antes se mostraba "EN VENTA" para todos)
+            estado: etiquetaEtapa(p.estadoProyecto) || p.estado || '',
+            ubicacion: lugar || p.ubicacion || 'Colombia',
+            municipio: sitio?.ciudad ?? '',
+            descripcion: p.descripcion || ''
+          };
+        })
+      }))
+    );
+  }
+
+  private perteneceAProyecto(lote: Lote, proyecto: Proyecto): boolean {
+    return lote.proyectoId !== undefined
+      ? lote.proyectoId === proyecto.id
+      : lote.proyectoNombre === proyecto.nombre;
+  }
+
+  private estaDisponible(lote: Lote): boolean {
+    return lote.estadoId === 1 || lote.estadoNombre?.toUpperCase() === 'DISPONIBLE';
+  }
+
+  /**
+   * Obtiene un proyecto por su ID
+   */
+  getProyectoPorId(id: number): Observable<Proyecto> {
+    return this.http.get<Proyecto>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Envía un JSON con los datos del proyecto (incluida la URL de Cloudinary) a Spring Boot
+   */
+  crearProyecto(proyecto: CrearProyectoDTO): Observable<Proyecto> {
+    return this.http.post<Proyecto>(this.apiUrl, proyecto);
+  }
+
+  /**
+   * Actualiza la información de un proyecto existente
+   */
+  actualizarProyecto(id: number, proyecto: Partial<Proyecto>): Observable<Proyecto> {
+    return this.http.put<Proyecto>(`${this.apiUrl}/${id}`, proyecto);
+  }
+
+  /**
+   * Elimina un proyecto por ID
+   */
+  eliminarProyecto(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+}

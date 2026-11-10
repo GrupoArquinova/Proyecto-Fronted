@@ -1,0 +1,42 @@
+<div class="asistente">
+  <header class="cabecera">
+    <div>
+      <a routerLink="/admin/proyectos" class="volver">&larr; Proyectos</a>
+      <h1>Nuevo proyecto</h1>
+    </div>
+  </header>
+
+  @if (cargando()) {
+    <p class="estado">Cargando...</p>
+  } @else {
+    @if (borradorRecuperado(); as nombre) {
+      <div class="borrador" role="status">
+        <span>Retomaste el borrador <strong>{{ nombre }}</strong>.</span>
+        <button type="button" (click)="empezarDeNuevo()">Empezar un proyecto nuevo</button>
+      </div>
+    }
+
+    <ol class="pasos" aria-label="Pasos del asistente">
+      @for (p of pasos; track p.numero) {
+        <li [class]="estado(p.numero)">
+          <button type="button" [disabled]="!puedeIr(p.numero)" (click)="asistente.irAPaso(p.numero)"
+                  [attr.aria-current]="estado(p.numero) === 'actual' ? 'step' : null">
+            <span class="numero">{{ estado(p.numero) === 'completo' ? '✓' : p.numero }}</span>
+            <span class="titulo">{{ p.titulo }}</span>
+          </button>
+        </li>
+      }
+    </ol>
+
+    <section class="panel">
+      @switch (asistente.paso()) {
+        @case (1) { <app-paso-proyecto /> }
+        @case (2) { <app-paso-ubicacion /> }
+        @case (3) { <app-paso-etapas /> }
+        @case (4) { <app-paso-lotes /> }
+        @case (5) { <app-paso-contenido /> }
+        @case (6) { <app-paso-revisar /> }
+      }
+    </section>
+  }
+</div>

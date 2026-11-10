@@ -1,0 +1,216 @@
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { FormsModule } from '@angular/forms';
+import { Proyecto } from '../../../core/models/proyecto.models';
+import { CasaModelo } from '../../../core/models/casa-modelo.models';
+import { CasaModeloService } from '../../../core/services/casa-modelo.service';
+import { ProyectoService } from '../../../core/services/proyecto.service';
+import { ArchivoSubido, MultimediaService } from '../../../core/services/multimedia.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { Multimedia, TipoMultimedia } from '../../../core/models/multimedia.models';
+import { SubidaArchivoComponent } from '../../../shared/components/subida-archivo/subida-archivo.component';
+import { ArchivosTipologiaComponent } from '../../../shared/components/archivos-tipologia/archivos-tipologia.component';
+
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
+@Component({
+  selector: 'app-casas-modelo',
+  standalone: true,
+  imports: [FormsModule, SubidaArchivoComponent, ArchivosTipologiaComponent],
+  templateUrl: './casas-modelo.component.html',
+  styleUrls: ['./casas-modelo.component.scss'],
+})
+export class CasasModeloComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private casaModeloService = inject(CasaModeloService);
+  private proyectoService = inject(ProyectoService);
+  private multimediaService = inject(MultimediaService);
+  private toast = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
+
+  listaCasas: CasaModelo[] = [];
+  listaProyectos: Proyecto[] = [];
+  modalAbierto = false;
+  /** Imágenes (renders) y planos subidos de la tipología que se está editando. */
+  imagenes: Multimedia[] = [];
+  planos: Multimedia[] = [];
+  /** Al crear una tipología: renders y planos ya subidos que se asocian cuando se guarda. */
+  imagenesNuevas: ArchivoSubido[] = [];
+  planosNuevos: ArchivoSubido[] = [];
+  guardando = false;
+  esEdicion = false;
+
+  casaActual: CasaModelo = {
+    proyectoId: 0,
+    nombre: '',
+    descripcion: '',
+    areaConstruidaM2: undefined,
+    numeroHabitaciones: undefined,
+    numeroBanos: undefined,
+    tourVirtualUrl: '',
+    planoUrl: '',
+    publicado: true,
+    activo: true,
+  };
+
+  ngOnInit(): void {
+    this.cargarCasas();
+    this.cargarProyectos();
+  }
+
+  cargarCasas(): void {
+    this.casaModeloService.listar().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => (this.listaCasas = data),
+      error: (err) => console.error('Error al cargar casas modelo', err),
+    });
+  }
+
+  cargarProyectos(): void {
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => (this.listaProyectos = data),
+      error: (err) => console.error('Error al cargar proyectos', err),
+    });
+  }
+
+  abrirModalCrear(): void {
+    this.esEdicion = false;
+    this.imagenesNuevas = [];
+    this.planosNuevos = [];
+    this.casaActual = {
+      proyectoId: this.listaProyectos.length > 0 ? (this.listaProyectos[0].id ?? 0) : 0,
+      nombre: '',
+      descripcion: '',
+      areaConstruidaM2: undefined,
+      numeroHabitaciones: undefined,
+      numeroBanos: undefined,
+      tourVirtualUrl: '',
+      planoUrl: '',
+      publicado: true,
+      activo: true,
+    };
+    this.modalAbierto = true;
+  }
+
+  abrirModalEditar(casa: CasaModelo): void {
+    this.esEdicion = true;
+    this.casaActual = { ...casa };
+    this.imagenes = [];
+    this.planos = [];
+    this.modalAbierto = true;
+    this.cargarArchivos();
+  }
+
+  private cargarArchivos(): void {
+    const id = this.casaActual.id;
+    if (id == null) return;
+    this.multimediaService.listarPorEntidad('casaModelo', id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (lista) => {
+        const ordenada = [...lista].sort(
+          (a, b) => (a.orden ?? 0) - (b.orden ?? 0) || (a.id ?? 0) - (b.id ?? 0),
+        );
+        this.imagenes = ordenada.filter((m) => m.tipo === 'IMAGEN');
+        this.planos = ordenada.filter((m) => m.tipo === 'PLANO');
+      },
+      error: () => this.toast.showError('No se pudieron cargar las imágenes de la tipología.'),
+    });
+  }
+
+  /** Guarda en la tipología un archivo ya subido a Cloudinary (render o plano). */
+  agregarArchivo(
+    tipo: Extract<TipoMultimedia, 'IMAGEN' | 'PLANO'>,
+    archivo: { url: string; nombre: string },
+  ): void {
+    const id = this.casaActual.id;
+    if (id == null) return;
+    const lista = tipo === 'IMAGEN' ? this.imagenes : this.planos;
+    const orden = Math.max(0, ...lista.map((m) => m.orden ?? 0)) + 1;
+    const recurso = this.multimediaService.recursoDeTipologia(id, tipo, archivo, orden);
+    recurso.portada = tipo === 'IMAGEN' && lista.length === 0;
+    this.multimediaService.crearMultimedia(recurso).subscribe({
+      next: (creado) => {
+        if (tipo === 'IMAGEN') this.imagenes = [...this.imagenes, creado];
+        else this.planos = [...this.planos, creado];
+      },
+      error: () =>
+        this.toast.showError('El archivo se subió pero no se pudo asociar a la tipología.'),
+    });
+  }
+
+  async quitarArchivo(recurso: Multimedia): Promise<void> {
+    if (recurso.id == null) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Quitar archivo',
+      message: '¿Quitar este archivo de la tipología? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, quitar',
+      type: 'danger',
+    });
+    if (!ok) return;
+    this.multimediaService.eliminarMultimedia(recurso.id).subscribe({
+      next: () => {
+        this.imagenes = this.imagenes.filter((m) => m.id !== recurso.id);
+        this.planos = this.planos.filter((m) => m.id !== recurso.id);
+      },
+      error: () => this.toast.showError('No se pudo quitar el archivo.'),
+    });
+  }
+
+  cerrarModal(): void {
+    this.modalAbierto = false;
+  }
+
+  guardarCasa(): void {
+    if (this.esEdicion && this.casaActual.id) {
+      this.casaModeloService.actualizar(this.casaActual.id, this.casaActual).subscribe({
+        next: () => {
+          this.cargarCasas();
+          this.cerrarModal();
+        },
+        error: (err) => console.error('Error al actualizar casa modelo', err),
+      });
+    } else {
+      this.guardando = true;
+      this.casaModeloService.crear(this.casaActual).subscribe({
+        next: (creada) => {
+          const conArchivos = creada.id != null && (this.imagenesNuevas.length > 0 || this.planosNuevos.length > 0);
+          if (!conArchivos) return this.terminarCreacion(0);
+          this.multimediaService
+            .guardarArchivosDeTipologia(creada.id as number, this.imagenesNuevas, this.planosNuevos)
+            .subscribe((fallidos) => this.terminarCreacion(fallidos));
+        },
+        error: (err) => {
+          this.guardando = false;
+          console.error('Error al crear casa modelo', err);
+          this.toast.showError('No se pudo crear la tipología.');
+        },
+      });
+    }
+  }
+
+  private terminarCreacion(fallidos: number): void {
+    this.guardando = false;
+    if (fallidos > 0) {
+      this.toast.showError(`La tipología se creó, pero ${fallidos} archivo(s) no se pudieron asociar. Ábrela con Editar para volver a subirlos.`);
+    } else {
+      this.toast.showSuccess('Tipología creada correctamente');
+    }
+    this.cargarCasas();
+    this.cerrarModal();
+  }
+
+  async eliminarCasa(id?: number): Promise<void> {
+    if (!id) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar tipología',
+      message: '¿Estás seguro de eliminar esta tipología? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
+    this.casaModeloService.eliminar(id).subscribe({
+      next: () => this.cargarCasas(),
+      error: (err) => console.error('Error al eliminar casa modelo', err),
+    });
+  }
+}

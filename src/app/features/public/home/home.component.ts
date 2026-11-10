@@ -1,0 +1,179 @@
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, signal, DestroyRef, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { LocalizadoPipe } from '../../../shared/pipes/localizado.pipe';
+import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { ProyectoService } from '../../../core/services/proyecto.service';
+import { ProyectoPublico } from '../../../core/models/proyecto.models';
+import { SolicitudPublicaRequest } from '../../../core/models/solicitud.models';
+import { SolicitudService } from '../../../core/services/solicitud.service';
+import { TurnstileService } from '../../../core/services/turnstile.service';
+import { CaptchaTurnstileComponent } from '../../../shared/components/captcha-turnstile/captcha-turnstile.component';
+import { ToastService } from '../../../core/services/toast.service';
+import { environment } from '../../../../environments/environment';
+import { EMPRESA_INFO, SERVICIOS } from './empresa-contenido';
+import { alMenosUnMedioDeContacto } from '../../../core/utils/solicitudes';
+import { ClickWhatsappDirective } from '../../../shared/directives/click-whatsapp.directive';
+import { SeoService } from '../../../core/services/seo.service';
+import { LOGO_URL, inicioJsonLd } from '../../../core/utils/seo-jsonld';
+import { ContenidoService } from '../../../core/services/contenido.service';
+import { BloqueIdentidad, bloquesDeIdentidad } from './identidad';
+
+import { IdiomaService } from '../../../core/services/idioma.service';
+import { SelectorIdiomaComponent } from '../../../shared/components/selector-idioma/selector-idioma.component';
+import { SolicitudWallet } from '../../../solicitud-wallet/solicitud-wallet';
+import { BotonPantallaCompletaComponent } from '../../../shared/components/boton-pantalla-completa/boton-pantalla-completa.component';
+import { ImagenOptimizadaPipe } from '../../../shared/pipes/imagen-optimizada.pipe';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [
+    ImagenOptimizadaPipe,
+    RouterModule,
+    ReactiveFormsModule,
+    TranslocoPipe,
+    LocalizadoPipe,
+    SelectorIdiomaComponent,
+    BotonPantallaCompletaComponent,
+    CaptchaTurnstileComponent,
+    ClickWhatsappDirective,
+    SolicitudWallet,
+  ],
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class HomeComponent implements OnInit {
+  /** El logo de Cloudinary; la plantilla lo pide liviano con el pipe imagenOptimizada. */
+  protected readonly logo = LOGO_URL;
+  private destroyRef = inject(DestroyRef);
+  private proyectoService = inject(ProyectoService);
+  private fb = inject(FormBuilder);
+  private solicitudService = inject(SolicitudService);
+  private toastService = inject(ToastService);
+  private seo = inject(SeoService);
+  private contenidoService = inject(ContenidoService);
+  private idioma = inject(IdiomaService);
+  private captcha = viewChild(CaptchaTurnstileComponent);
+
+  /** Hay captcha (el sitio tiene clave de Turnstile) y, entonces, no se envía sin su token. */
+  readonly captchaActivo = inject(TurnstileService).activo;
+  readonly captchaToken = signal<string | null>(null);
+  readonly puedeEnviar = computed(() => !this.captchaActivo || this.captchaToken() !== null);
+
+  readonly contacto = environment.contacto;
+  readonly whatsappUrl = `https://wa.me/${environment.contacto.whatsapp}`;
+  // Getters (no campos): leen los datos al usarlos; con campos, las pruebas que cargan varios archivos a la vez los veían vacíos
+  get empresa() { return EMPRESA_INFO; }
+  get servicios() { return SERVICIOS; }
+
+  proyectosList = signal<ProyectoPublico[]>([]);
+  /** Misión, visión y valores publicados en el panel (vacío mientras la empresa no los apruebe). */
+  identidad = signal<BloqueIdentidad[]>([]);
+  contactoForm: FormGroup;
+
+  totalProyectos = signal(0);
+  proyectosDestacados = signal<ProyectoPublico[]>([]);
+  /** Proyecto marcado como destacado en el panel (se muestra arriba, con botón al asesor). */
+  destacado = signal<ProyectoPublico | null>(null);
+  whatsappDestacado = signal('');
+
+  constructor() {
+    this.contactoForm = this.fb.group(
+      {
+        nombre: ['', Validators.required],
+        correo: ['', [Validators.email]],
+        telefono: [''],
+        proyectoId: [null],
+        servicioInteres: [''],
+        mensaje: [''],
+        consentimientoDatos: [false, Validators.requiredTrue],
+        // Honeypot: oculto para las personas (ver .campo-trampa en styles.scss)
+        sitioWeb: [''],
+      },
+      { validators: alMenosUnMedioDeContacto },
+    );
+
+    // Los textos de SEO se vuelven a poner cuando cambia el idioma
+    effect(() => this.ponerSeo());
+  }
+
+  ngOnInit(): void {
+    this.cargarCatalogo();
+  }
+
+  private ponerSeo(): void {
+    const raiz = this.seo.urlAbsoluta('/');
+    this.seo.establecer({
+      titulo: this.idioma.t('home.titulo'),
+      descripcion: this.idioma.t('home.empresa.parrafo1'),
+      ruta: '/',
+      jsonLd: inicioJsonLd(raiz ? raiz.replace(/\/+$/, '') : null),
+    });
+  }
+
+  /** Una sola consulta: alimenta el select del formulario y las tarjetas destacadas. */
+  cargarCatalogo(): void {
+    this.proyectoService.obtenerCatalogoPublico().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ proyectos }) => {
+        const destacado = proyectos.find((p) => p.destacado) ?? null;
+        this.proyectosList.set(proyectos);
+        this.proyectosDestacados.set(proyectos.slice(0, 3));
+        this.destacado.set(destacado);
+        this.whatsappDestacado.set(destacado ? this.enlaceWhatsapp(destacado) : '');
+        this.totalProyectos.set(proyectos.length);
+        this.cargarIdentidad(proyectos[0]?.empresaId ?? environment.empresaId);
+      },
+      error: (err) => {
+        console.error('Error al cargar los proyectos:', err);
+        this.cargarIdentidad(environment.empresaId);
+      },
+    });
+  }
+
+  /** Solo se piden y muestran los textos que el administrador dejó publicados. */
+  private cargarIdentidad(empresaId: number): void {
+    this.contenidoService.obtenerPublicadosPorEmpresa(empresaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (contenidos) => this.identidad.set(bloquesDeIdentidad(contenidos)),
+      error: () => this.identidad.set([]),
+    });
+  }
+
+  /** WhatsApp con el mensaje ya escrito sobre el proyecto; no se envía nada hasta que la persona lo envíe. */
+  private enlaceWhatsapp(proyecto: ProyectoPublico): string {
+    const mensaje = this.idioma.t('home.destacado.whatsapp', { nombre: proyecto.nombre });
+    return `${this.whatsappUrl}?text=${encodeURIComponent(mensaje)}`;
+  }
+
+  enviarFormulario(): void {
+    if (this.contactoForm.valid && this.puedeEnviar()) {
+      const datosFormulario: SolicitudPublicaRequest = {
+        ...this.contactoForm.value,
+        proyectoId: this.contactoForm.value.proyectoId
+          ? Number(this.contactoForm.value.proyectoId)
+          : null,
+        servicioInteres: this.contactoForm.value.servicioInteres || undefined,
+        sitioWeb: this.contactoForm.value.sitioWeb ?? '',
+        ...(this.captchaToken() ? { captchaToken: this.captchaToken()! } : {}),
+      };
+
+      this.solicitudService.enviarSolicitud(datosFormulario).subscribe({
+        next: () => {
+          this.toastService.showSuccess(this.idioma.t('home.formulario.exito'));
+          this.contactoForm.reset();
+          this.captcha()?.resetear();
+        },
+        error: (err) => {
+          console.error('Error al enviar la solicitud:', err);
+          this.toastService.showError(this.idioma.t('home.formulario.error'));
+          this.captcha()?.resetear();
+        },
+      });
+    } else {
+      this.contactoForm.markAllAsTouched();
+    }
+  }
+}

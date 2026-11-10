@@ -1,0 +1,151 @@
+$sidebar-bg: #2c5953;
+$hover-bg: rgba(255, 255, 255, 0.08);
+$active-bg: rgba(255, 255, 255, 0.16);
+$press-bg: rgba(255, 255, 255, 0.22);
+$text-color: #ffffff;
+
+// La altura de la barra superior la define el dashboard (--navbar-h); 65px por si el sidebar se usa suelto.
+.sidebar {
+  width: 250px;
+  height: calc(100vh - var(--navbar-h, 65px));
+  height: calc(100dvh - var(--navbar-h, 65px)); // dvh: sigue la barra del navegador en el celular
+  background-color: $sidebar-bg;
+  padding: 1.5rem 0 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  // Los enlaces se desplazan solos si no caben (celular horizontal, ventanas bajas);
+  // "Cerrar sesión" queda siempre visible abajo.
+  .sidebar-nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain; // no arrastra la página de atrás al llegar al final
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.85rem 1.5rem;
+        color: $text-color;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 400;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        transition: background-color 0.15s ease;
+
+        .nav-icon {
+          width: 20px;
+          height: 20px;
+          flex-shrink: 0;
+        }
+
+        span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+          &:hover {
+            background-color: $hover-bg;
+          }
+        }
+
+        &:active {
+          background-color: $press-bg;
+        }
+
+        &.active {
+          background-color: $active-bg;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  /* Sección inferior para Cerrar Sesión: nunca se encoge ni se tapa */
+  .sidebar-footer {
+    flex-shrink: 0;
+    padding-top: 0.5rem;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background-color: $sidebar-bg;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    .logout-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: $text-color;
+      font-size: 0.95rem;
+      font-weight: 400;
+      cursor: pointer;
+      text-align: left;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.15s ease;
+
+      .nav-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background-color: $hover-bg;
+        }
+      }
+
+      &:active {
+        background-color: $press-bg;
+      }
+    }
+  }
+
+  // Pantallas bajas (celular en horizontal): menos aire para que quepan más secciones sin desplazar
+  @media (max-height: 520px) {
+    padding-top: 0.5rem;
+
+    .sidebar-nav .nav-list {
+      gap: 0;
+
+      .nav-item {
+        padding: 0.6rem 1.25rem;
+      }
+    }
+
+    .sidebar-footer {
+      padding-top: 0;
+
+      .logout-button {
+        padding: 0.65rem 1.25rem;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-nav .nav-list .nav-item,
+    .sidebar-footer .logout-button {
+      transition: none;
+    }
+  }
+}

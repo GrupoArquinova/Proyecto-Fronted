@@ -1,0 +1,912 @@
+// Variables de Paleta Arquinova
+$color-primary: rgb(42, 102, 101);       // #2a6665
+$color-secondary: rgb(60, 112, 110);    // #3C706E
+$color-dark: rgb(25, 35, 34);           // Fondo oscuro general
+$color-card-dark: rgb(32, 46, 44);      // Fondo para tarjetas oscuras
+$color-light: #ffffff;
+$color-muted: rgba(255, 255, 255, 0.7);
+
+/* Habilitar scroll suave y offset para el menú fijo */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px; /* Evita que el menú fijo tape los títulos al hacer clic */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: $color-dark;
+  color: $color-light;
+  overflow-y: auto;
+}
+
+.landing-container {
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+  color: $color-light;
+  background-color: $color-dark;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* NAVBAR FIJO */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 4rem;
+  background-color: $color-light;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+  .logo {
+    height: 40px;
+    cursor: pointer;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    .nav-item {
+      text-decoration: none;
+      color: #333;
+      font-size: 0.95rem;
+      padding: 0.5rem 1.2rem;
+      border-radius: 50px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        color: #ffffff;
+        background-color: #2a6665;
+      }
+    }
+
+    .btn-admin {
+      text-decoration: none;
+      background-color: #eef1f1;
+      color: #4a5554;
+      border: 1px solid #d8e0df;
+      padding: 0.4rem 1.2rem;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
+
+      &:hover {
+        background-color: #e0e6e5;
+        border-color: $color-primary;
+        color: $color-primary;
+      }
+    }
+  }
+}
+
+/* HERO SECTION */
+.hero-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10rem 6rem 6rem 6rem;
+  background: url('https://res.cloudinary.com/dn3s7utod/image/upload/v1790973153/seebensee-2384369-810x540_tdtca1.jpg') center/cover no-repeat;
+  min-height: 85vh;
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(20, 30, 29, 0.85) 0%, rgba(20, 30, 29, 0.35) 100%);
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+
+    .sub-category {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-size: 3.8rem;
+      line-height: 1.1;
+      margin: 1.5rem 0;
+      font-weight: 400;
+
+      .italic-text {
+        font-style: italic;
+        color: #79a8a3;
+        font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+      }
+    }
+
+    .hero-description {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: $color-muted;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1.2rem;
+
+      .btn-primary {
+        background-color: $color-primary;
+        color: $color-light;
+        padding: 0.8rem 2rem;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: $color-secondary;
+        }
+      }
+
+      .btn-secondary {
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: $color-light;
+        padding: 0.8rem 2rem;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+          border-color: $color-light;
+        }
+      }
+    }
+  }
+}
+
+/* SECCIONES COMUNES */
+.section-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 3.5rem auto;
+
+  .section-tag {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: #79a8a3;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+    font-weight: 400;
+    margin: 0.5rem 0 1rem 0;
+    color: #ffffff;
+  }
+
+  p {
+    color: $color-muted;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
+/* 2. PROYECTOS SECTION */
+.projects-section {
+  padding: 7rem 4rem;
+  background-color: #ffffff;
+  color: #333333;
+
+  .section-header {
+    h2 { color: #2c3e3b; }
+    p { color: #666666; }
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+
+    .project-card {
+      background: #eaf0ee; // gris verdoso claro
+      border: 1px solid #d3dfdc;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      }
+
+      .card-image {
+        height: 220px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+
+        .badge-status {
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          background: rgba(0, 0, 0, 0.6);
+          color: #fff;
+          padding: 0.3rem 0.8rem;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+      }
+
+      .card-body {
+        padding: 1.8rem;
+
+        .location {
+          font-size: 0.8rem;
+          color: #7a8a88;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        h3 {
+          font-size: 1.6rem;
+          font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+          margin: 0.4rem 0 0.8rem 0;
+          color: #253533;
+        }
+
+        p {
+          font-size: 0.9rem;
+          color: #555555;
+          line-height: 1.5;
+          margin-bottom: 1.5rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .card-metrics {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          padding: 1rem 0;
+          border-top: 1px solid #d3dfdc;
+          border-bottom: 1px solid #d3dfdc;
+          text-align: center;
+          margin-bottom: 1.5rem;
+
+          strong {
+            display: block;
+            font-size: 1.1rem;
+            color: #2a6665;
+            font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+          }
+
+          span {
+            font-size: 0.7rem;
+            color: #888;
+            letter-spacing: 1px;
+          }
+        }
+
+        .card-link {
+          text-decoration: none;
+          color: #2a6665;
+          font-weight: 600;
+          font-size: 0.95rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: gap 0.2s ease;
+
+          &:hover {
+            gap: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 3. EMPRESA SECTION */
+.about-section {
+  padding: 6rem 4rem;
+  background-color: #eaf0ee;
+  color: #333333;
+
+  .section-header {
+    h2 { color: #2c3e3b; }
+  }
+
+  .about-body {
+    max-width: 820px;
+    margin: 0 auto;
+    text-align: center;
+
+    p {
+      margin: 0 0 1.2rem;
+      font-size: 1.08rem;
+      line-height: 1.8;
+      color: #4a5554;
+    }
+  }
+
+  // Misión, visión y valores: tarjetas sobrias debajo de "Quiénes somos"
+  .identity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.4rem;
+    max-width: 1000px;
+    margin: 3rem auto 0;
+  }
+
+  .identity-card {
+    padding: 1.6rem 1.7rem;
+    background: #ffffff;
+    border: 1px solid rgba(42, 102, 101, 0.14);
+    border-top: 4px solid $color-primary;
+    border-radius: 14px;
+
+    h3 {
+      margin: 0 0 0.7rem;
+      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+      font-size: 1.15rem;
+      color: #2c3e3b;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.7;
+      color: #4a5554;
+      white-space: pre-line;
+    }
+  }
+}
+
+/* 4. SERVICIOS SECTION */
+.services-section {
+  padding: 7rem 4rem;
+  background-color: $color-dark;
+  color: $color-light;
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 columnas
+    gap: 1.8rem;
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 100%;
+
+    .service-card {
+      background: $color-card-dark;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+      }
+
+      .icon-container {
+        width: 45px;
+        height: 45px;
+        background: rgba(42, 102, 101, 0.3);
+        color: #ffffff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        margin-bottom: 1.2rem;
+      }
+
+      h3 {
+        font-size: 1.15rem;
+        font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+        margin: 0 0 0.6rem 0;
+        color: #ffffff;
+      }
+
+      p {
+        font-size: 0.85rem;
+        color: $color-muted;
+        line-height: 1.5;
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* 4. CONTACTO SECTION */
+.contact-section {
+  // Ocupa la ventana completa y deja la caja en el centro, debajo del menú fijo, para verla entera sin scroll
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 6rem 4rem 2.5rem;
+  background-color: rgb(20, 30, 29);
+
+  .contact-container-box {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 3rem;
+    background: $color-card-dark;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2.2rem 2.4rem;
+    width: 100%;
+
+    .contact-info {
+      h2 { font-size: 2.5rem; font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif; margin: 0.5rem 0 1rem 0; }
+      p { color: $color-muted; line-height: 1.6; margin-bottom: 2rem; }
+
+      .contact-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .icon-container {
+      width: 42px;
+      height: 42px;
+      background-color: rgba(121, 168, 163, 0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #79a8a3;
+      flex-shrink: 0;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .label {
+      font-size: 0.75rem;
+      color: #7a8a88;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+    }
+
+    p, a {
+      font-size: 1rem;
+      color: #fff;
+      margin: 0;
+      text-decoration: none;
+    }
+
+    .whatsapp-link {
+      color: #79a8a3;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #9cd4cf;
+      }
+    }
+  }
+}
+    }
+
+    .contact-form-card {
+      background: rgb(25, 35, 34);
+      padding: 1.8rem 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+
+      h3 {
+        font-size: 1.4rem;
+        font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+        margin-top: 0;
+        margin-bottom: 1rem;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 0.85rem;
+
+        label {
+          display: block;
+          font-size: 0.82rem;
+          color: $color-muted;
+          margin-bottom: 0.4rem;
+        }
+
+        input, select, textarea {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          padding: 0.65rem 0.9rem;
+          border-radius: 8px;
+          color: #fff;
+          font-size: 0.9rem;
+          outline: none;
+          transition: border-color 0.2s;
+
+          &:focus {
+            border-color: #79a8a3;
+          }
+
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+          }
+        }
+
+        select option {
+          background: #253533;
+          color: #fff;
+        }
+
+        // La casilla no debe heredar el ancho completo de los campos de texto
+        input[type='checkbox'] {
+          width: 16px;
+          height: 16px;
+          padding: 0;
+          flex-shrink: 0;
+          accent-color: #5eead4;
+        }
+      }
+
+      // Aviso de que basta con teléfono o correo; se pone rojo si se intentó enviar sin ninguno
+      .aviso-medio {
+        margin: -0.35rem 0 0.8rem;
+        font-size: 0.78rem;
+        color: $color-muted;
+
+        &.error { color: #fca5a5; }
+      }
+
+      .btn-submit {
+        width: 100%;
+        background-color: $color-primary;
+        color: #fff;
+        border: none;
+        padding: 0.9rem;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-top: 0.5rem;
+
+        &:hover:not(:disabled) {
+          background-color: $color-secondary;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+/* FOOTER PROFESIONAL */
+.footer-arquinova {
+  background-color: rgb(15, 23, 22);
+  color: #ffffff;
+  padding: 3rem 2rem 1.5rem 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .footer-col {
+      .footer-logo {
+        height: 38px;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        color: $color-muted;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        max-width: 350px;
+        margin-bottom: 1.5rem;
+      }
+
+      h4 {
+        font-size: 1.1rem;
+        font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+        margin-bottom: 1.2rem;
+        color: #ffffff;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          margin-bottom: 0.8rem;
+
+          a {
+            color: $color-muted;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+
+            &:hover {
+              color: #79a8a3;
+            }
+          }
+        }
+      }
+
+      .footer-contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+
+        span {
+          color: $color-muted;
+          font-size: 0.88rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+    }
+  }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 1.5rem auto 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.4);
+
+    .legal-links {
+      display: flex;
+      gap: 1.5rem;
+
+      a {
+        color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+/* BOTÓN FLOTANTE WHATSAPP */
+.whatsapp-float {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #25d366;
+  color: #fff;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+/* RESPONSIVE DESIGN */
+/* Barra superior en pantallas medianas y celulares horizontales: más compacta, para que quepan todos los enlaces y el selector de idioma */
+.navbar .nav-links .nav-item { white-space: nowrap; }
+
+@media (max-width: 1180px) {
+  .navbar { padding: 0.8rem 1.5rem; }
+  .navbar .nav-links { gap: 0.3rem; }
+  .navbar .nav-links .nav-item { padding: 0.4rem 0.75rem; font-size: 0.88rem; }
+}
+
+@media (max-width: 760px) {
+  .navbar { padding: 0.6rem 1rem; }
+  .navbar .logo { height: 32px; }
+  .navbar .nav-links { gap: 0.15rem; }
+  .navbar .nav-links .nav-item { padding: 0.35rem 0.5rem; font-size: 0.8rem; }
+  /* El acceso del panel es para el equipo interno: en el celular se oculta para dejar sitio al selector de idioma */
+  .navbar .nav-links .btn-admin { display: none; }
+}
+
+@media (max-width: 1024px) {
+  .services-section .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-arquinova .footer-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 968px) {
+  .projects-section .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-section .contact-container-box {
+    grid-template-columns: 1fr;
+  }
+
+  .services-section .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-arquinova .footer-container {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-arquinova .footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+
+.form-group-checkbox {
+  margin-bottom: 1rem;
+
+  .checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    line-height: 1.4;
+
+    input[type="checkbox"] {
+      margin-top: 0.2rem;
+      cursor: pointer;
+    }
+
+    a {
+      color: #5eead4;
+      text-decoration: underline;
+    }
+  }
+}
+.footer-arquinova .footer-dato { color: rgba(255, 255, 255, 0.7); }
+
+/* PROYECTO DESTACADO */
+.featured-section {
+  padding: 5rem 4rem;
+  background-color: #eaf0ee;
+
+  .featured-card {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #d3dfdc;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .featured-image {
+    min-height: 340px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .featured-body {
+    padding: 2.5rem;
+    color: #333333;
+
+    .section-tag { display: block; margin-bottom: 0.4rem; }
+
+    h2 {
+      margin: 0 0 0.6rem;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #253533;
+    }
+
+    .featured-meta {
+      margin: 0 0 1rem;
+      color: #7a8a88;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.8rem;
+    }
+
+    .featured-text {
+      margin: 0 0 1.6rem;
+      line-height: 1.7;
+      color: #555555;
+    }
+  }
+
+  .featured-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+
+    .btn-primary,
+    .btn-outline {
+      display: inline-block;
+      padding: 0.8rem 1.6rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .btn-primary { background: #2a6665; color: #ffffff; }
+    .btn-outline { border: 1px solid #2a6665; color: #2a6665; }
+    .btn-outline:hover { background: rgba(42, 102, 101, 0.08); }
+  }
+}
+
+@media (max-width: 968px) {
+  .featured-section { padding: 3rem 1.5rem; }
+  .featured-section .featured-card { grid-template-columns: 1fr; }
+  .featured-section .featured-body { padding: 1.6rem; }
+}
+
+.projects-section .project-card .card-body .participacion {
+  margin: 0 0 1.5rem;
+  font-size: 0.85rem;
+  color: #555555;
+}

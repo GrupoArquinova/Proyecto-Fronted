@@ -1,0 +1,118 @@
+import { expect, test } from '@playwright/test';
+import { PROYECTO_ID, simularBackend } from './datos-simulados';
+
+test.beforeEach(async ({ page }) => {
+  await simularBackend(page);
+});
+
+const esEnvio = (r: { url(): string; method(): string }) =>
+  r.url().endsWith('/solicitudes-contacto/publico') && r.method() === 'POST';
+
+test.describe('formulario de contacto del proyecto', () => {
+  test('con solo el teléfono se puede enviar', async ({ page }) => {
+    await page.goto(`/proyectos/${PROYECTO_ID}/contacto`);
+    await page.getByLabel('Nombre').fill('Ana Gómez');
+    await page.getByLabel('Teléfono / WhatsApp').fill('300 123 4567');
+    await page.getByLabel('Mensaje').fill('Quiero información de las villas');
+    await page.getByRole('checkbox').check();
+
+    const [peticion] = await Promise.all([
+      page.waitForRequest(esEnvio),
+      page.getByRole('button', { name: 'Enviar mensaje' }).click()
+    ]);
+    const cuerpo = peticion.postDataJSON();
+    expect(cuerpo.telefono).toBe('300 123 4567');
+    expect(cuerpo.correo).toBe('');
+    expect(cuerpo.proyectoId).toBe(PROYECTO_ID);
+    expect(cuerpo.captchaToken).toBe('token-e2e');
+  });
+
+  test('con solo el correo se puede enviar', async ({ page }) => {
+    await page.goto(`/proyectos/${PROYECTO_ID}/contacto`);
+    await page.getByLabel('Nombre').fill('Luis Mora');
+    await page.getByLabel('Correo').fill('luis@example.com');
+    await page.getByLabel('Mensaje').fill('Quisiera una cita');
+    await page.getByRole('checkbox').check();
+
+    const [peticion] = await Promise.all([
+      page.waitForRequest(esEnvio),
+      page.getByRole('button', { name: 'Enviar mensaje' }).click()
+    ]);
+    expect(peticion.postDataJSON().correo).toBe('luis@example.com');
+  });
+
+  test('desde una villa el mensaje ya viene escrito y la solicitud lleva la villa', async ({ page }) => {
+    await page.goto(`/proyectos/${PROYECTO_ID}/contacto?casa=8`);
+    await expect(page.getByLabel('Mensaje')).toHaveValue(/Villa Samán/);
+
+    await page.getByLabel('Nombre').fill('Ana Gómez');
+    await page.getByLabel('Correo').fill('ana@example.com');
+    await page.getByRole('checkbox').check();
+    const [peticion] = await Promise.all([
+      page.waitForRequest(esEnvio),
+      page.getByRole('button', { name: 'Enviar mensaje' }).click()
+    ]);
+    const cuerpo = peticion.postDataJSON();
+    expect(cuerpo.casaModeloId).toBe(8);
+    expect(cuerpo.loteId).toBeNull();
+    // La trampa viaja vacía y no se envían ip ni user-agent (los fija el backend)
+    expect(cuerpo.sitioWeb).toBe('');
+    expect(cuerpo).not.toHaveProperty('userAgent');
+    expect(cuerpo).not.toHaveProperty('ip');
+  });
+
+  test('en la tipología el botón "Solicitar información" lleva al formulario con la villa', async ({ page }) => {
+    await page.goto(`/proyectos/${PROYECTO_ID}/casa-modelo`);
+    await page.getByRole('link', { name: 'Solicitar información' }).first().click();
+
+    await expect(page).toHaveURL(/\/contacto\?casa=\d+/);
+  });
+
+  test('sin teléfono ni correo no se envía y avisa qué falta', async ({ page }) => {
+    let enviada = false;
+    page.on('request', r => { if (esEnvio(r)) enviada = true; });
+
+    await page.goto(`/proyectos/${PROYECTO_ID}/contacto`);
+    await page.getByLabel('Nombre').fill('Sin Medio');
+    await page.getByLabel('Mensaje').fill('Hola');
+    await page.getByRole('checkbox').check();
+    await page.getByRole('button', { name: 'Enviar mensaje' }).click();
+
+    await expect(page.getByText('Déjanos un teléfono o un correo para poder responderte.')).toBeVisible();
+    expect(enviada).toBe(false);
+  });
+});
+
+test.describe('formulario de contacto del inicio', () => {
+  test('el servicio de interés viaja con la solicitud y solo se pide un medio de contacto', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#contacto').scrollIntoViewIfNeeded();
+    const formulario = page.locator('.contact-form-card');
+
+    await formulario.getByPlaceholder('Juan Pérez').fill('Marta Ríos');
+    await formulario.getByPlaceholder('correo@ejemplo.com').fill('marta@example.com');
+    await formulario.locator('select[formControlName="servicioInteres"]').selectOption({ index: 1 });
+    await formulario.getByRole('checkbox').check();
+
+    const [peticion] = await Promise.all([
+      page.waitForRequest(esEnvio),
+      formulario.getByRole('button', { name: 'Enviar solicitud' }).click()
+    ]);
+    const cuerpo = peticion.postDataJSON();
+    expect(cuerpo.correo).toBe('marta@example.com');
+    expect(cuerpo.servicioInteres).toBeTruthy();
+  });
+
+  test('el botón de enviar sigue apagado sin ningún medio de contacto', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#contacto').scrollIntoViewIfNeeded();
+    const formulario = page.locator('.contact-form-card');
+
+    await formulario.getByPlaceholder('Juan Pérez').fill('Marta Ríos');
+    await formulario.getByRole('checkbox').check();
+    await expect(formulario.getByRole('button', { name: 'Enviar solicitud' })).toBeDisabled();
+
+    await formulario.getByPlaceholder('Ej: 300 123 4567').fill('3001112233');
+    await expect(formulario.getByRole('button', { name: 'Enviar solicitud' })).toBeEnabled();
+  });
+});

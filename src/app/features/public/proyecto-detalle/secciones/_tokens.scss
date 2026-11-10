@@ -1,0 +1,33 @@
+// Identidad visual del micrositio de proyecto.
+// Paleta del manual de marca: verde petróleo #2A6665 (RGB 42,102,101), gris #363838 y blanco.
+$verde: #2a6665;
+$verde-claro: #3c706e;
+$gris: #363838;
+$blanco: #ffffff;
+
+// Tipografía única para todo el micrositio
+$fuente: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+// Derivados de la paleta (tintes del mismo color, no colores nuevos)
+$texto: $gris;
+$texto-suave: #6a6a6a;
+$borde: rgba($verde, 0.16);
+$fondo-suave: rgba($verde, 0.06);
+$fondo-suave-2: rgba($verde, 0.11);
+$sombra: 0 6px 24px rgba($verde, 0.1);
+$sombra-fuerte: 0 14px 40px rgba($verde, 0.18);
+$radio: 16px;
+
+// Panel de contenido del micrositio: marfil con un matiz verde (no blanco puro, que contrasta demasiado con el menú
+// translúcido) y una sombra tintada del mismo verde oscuro del fondo en vez de negra.
+$superficie: #f8faf8;
+// Vidrio claro del panel: lo bastante opaco (86 %) para que el texto verde y gris mantenga buen contraste sobre la foto.
+$superficie-vidrio: rgba(248, 250, 248, 0.86);
+$sombra-panel: 0 16px 48px rgba(8, 30, 28, 0.34);
+
+// Estados de los lotes: único lugar donde se usan colores fuera de la marca,
+// porque el significado (libre / apartado / vendido) debe entenderse de un vistazo.
+$disponible: #2f9e63;
+$reservado: #d9951a;
+$vendido: #c94a4a;
+$sin-estado: #8a8a8a;

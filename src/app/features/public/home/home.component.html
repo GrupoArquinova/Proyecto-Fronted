@@ -1,0 +1,496 @@
+<div class="landing-container">
+  <!-- Navbar Superior Fijo -->
+  <header class="navbar">
+    <div class="logo-container">
+      <a href="#inicio"
+        ><img
+          [src]="logo | imagenOptimizada: 400"
+          [alt]="'home.logoAlt' | transloco"
+          class="logo"
+      /></a>
+    </div>
+    <nav class="nav-links">
+      <a href="#inicio" class="nav-item active">{{ 'home.nav.inicio' | transloco }}</a>
+      <a href="#servicios" class="nav-item">{{ 'home.nav.servicios' | transloco }}</a>
+      <a href="#proyectos" class="nav-item">{{ 'home.nav.proyectos' | transloco }}</a>
+      <a href="#empresa" class="nav-item">{{ 'home.nav.empresa' | transloco }}</a>
+      @if (destacado()) {
+        <a [routerLink]="['/proyectos', destacado()!.id]" class="nav-item">{{ destacado()!.nombre }}</a>
+      }
+      <a href="#contacto" class="nav-item">{{ 'home.nav.contacto' | transloco }}</a>
+      <app-selector-idioma />
+      <a routerLink="/login" class="btn-admin">{{ 'home.nav.admin' | transloco }}</a>
+    </nav>
+  </header>
+
+  <!-- 1. Hero Section -->
+  <section id="inicio" class="hero-section">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <span class="sub-category">{{ 'home.hero.categoria' | transloco }}</span>
+
+      <h1 class="hero-title">
+        {{ 'home.hero.linea1' | transloco }} <br />
+        <span class="italic-text">{{ 'home.hero.linea2' | transloco }}</span> <br />
+        <span class="italic-text">{{ 'home.hero.linea3' | transloco }}</span>
+      </h1>
+
+      <p class="hero-description">
+        {{ 'home.hero.descripcion' | transloco }}
+      </p>
+
+      <div class="hero-buttons">
+        <a href="#proyectos" class="btn-primary">{{ 'home.hero.verProyectos' | transloco }}</a>
+        <a href="#servicios" class="btn-secondary">{{ 'home.hero.servicios' | transloco }}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Proyecto destacado (el que se marca en el panel) -->
+  @if (destacado(); as d) {
+    <section id="destacado" class="featured-section">
+      <div class="featured-card">
+        <div class="featured-image" [style.backgroundImage]="'url(' + (d.imagenUrl | imagenOptimizada: 1600) + ')'"></div>
+        <div class="featured-body">
+          <span class="section-tag">{{ 'home.destacado.etiqueta' | transloco }}</span>
+          <h2>{{ d.nombre }}</h2>
+          <p class="featured-meta">
+            {{ d.ubicacion }}
+            @if (d.estado) {
+              <span>
+                ·
+                {{
+                  d.estadoProyecto ? ('etapaProyecto.' + d.estadoProyecto | transloco) : d.estado
+                }}</span
+              >
+            }
+          </p>
+          @if (d.descripcion) {
+            <p class="featured-text">{{ d.descripcion | localizado: d.descripcionEn }}</p>
+          }
+          <div class="featured-buttons">
+            <a [routerLink]="['/proyectos', d.id]" class="btn-primary">{{
+              'home.destacado.conocer' | transloco
+            }}</a>
+            <a appClickWhatsapp [proyectoId]="d.id" [href]="whatsappDestacado()" target="_blank" rel="noopener noreferrer" class="btn-outline">{{
+              'home.destacado.asesor' | transloco
+            }}</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- 3. Servicios -->
+  <section id="servicios" class="services-section">
+    <div class="section-header">
+      <span class="section-tag">{{ 'home.servicios.etiqueta' | transloco }}</span>
+      <h2>{{ 'home.servicios.titulo' | transloco }}</h2>
+      <p>{{ 'home.servicios.subtitulo' | transloco }}</p>
+    </div>
+
+    <div class="services-grid">
+      @for (servicio of servicios; track servicio; let i = $index) {
+        <div class="service-card">
+          <div class="icon-container">0{{ i + 1 }}</div>
+          <h3>{{ 'home.servicios.lista.' + servicio.clave + '.titulo' | transloco }}</h3>
+          <p>{{ 'home.servicios.lista.' + servicio.clave + '.descripcion' | transloco }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- 2. Sección Portafolio / Proyectos -->
+  <section class="projects-section" id="proyectos">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">{{ 'home.proyectos.etiqueta' | transloco }}</span>
+        <h2>{{ 'home.proyectos.titulo' | transloco }}</h2>
+        <p>{{ 'home.proyectos.subtitulo' | transloco }}</p>
+      </div>
+
+      <!-- Contenedor de Tarjetas Dinámicas -->
+      <div class="projects-grid">
+        @for (proyecto of proyectosDestacados(); track proyecto.id) {
+          <div class="project-card">
+            <div class="card-image" [style.backgroundImage]="'url(' + (proyecto.imagenUrl | imagenOptimizada: 800) + ')'">
+              @if (proyecto.estado) {
+                <span class="badge-status">{{
+                  proyecto.estadoProyecto
+                    ? ('etapaProyecto.' + proyecto.estadoProyecto | transloco)
+                    : proyecto.estado
+                }}</span>
+              }
+            </div>
+            <div class="card-body">
+              <span class="location"
+                >{{ proyecto.ubicacion }}
+                @if (proyecto.tipoRegistro === 'PORTAFOLIO') {
+                  <span> · {{ 'home.proyectos.portafolio' | transloco }}</span>
+                }
+              </span>
+              <h3>{{ proyecto.nombre }}</h3>
+              @if (proyecto.descripcion) {
+                <p>{{ proyecto.descripcion | localizado: proyecto.descripcionEn }}</p>
+              }
+              @if (proyecto.tipoRegistro === 'PORTAFOLIO' && proyecto.participacion) {
+                <p class="participacion">
+                  <strong>{{ 'home.proyectos.participacion' | transloco }}</strong>
+                  {{ proyecto.participacion | localizado: proyecto.participacionEn }}
+                </p>
+              }
+              <!-- Métricas dinámicas (solo proyectos con oferta comercial) -->
+              @if (proyecto.tipoRegistro !== 'PORTAFOLIO') {
+                <div class="card-metrics">
+                  <div class="metric">
+                    <strong>{{ proyecto.totalLotes }}</strong>
+                    <span>{{ 'home.proyectos.lotes' | transloco }}</span>
+                  </div>
+                  <div class="metric">
+                    <strong>{{ proyecto.lotesDisponibles }}</strong>
+                    <span>{{ 'home.proyectos.disponibles' | transloco }}</span>
+                  </div>
+                  <div class="metric">
+                    <strong>360°</strong>
+                    <span>{{ 'home.proyectos.experiencia' | transloco }}</span>
+                  </div>
+                </div>
+              }
+              <a [routerLink]="['/proyectos', proyecto.id]" class="card-link">
+                {{ 'home.proyectos.explorar' | transloco }} &rarr;
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Botón para ver el catálogo completo si hay más proyectos -->
+      <div class="text-center mt-5" style="margin-top: 40px; text-align: center">
+        <a
+          routerLink="/proyectos"
+          class="btn btn-primary"
+          style="
+            padding: 12px 30px;
+            background: #2a6665;
+            color: #fff;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 600;
+          "
+        >
+          {{ 'home.proyectos.verTodos' | transloco: { total: totalProyectos() } }}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Empresa: respalda lo comercial, por eso va después de servicios y proyectos -->
+  <section id="empresa" class="about-section">
+    <div class="section-header">
+      <span class="section-tag">{{ 'home.empresa.etiqueta' | transloco }}</span>
+      <h2>{{ 'home.empresa.titulo' | transloco }}</h2>
+    </div>
+
+    <div class="about-body">
+      <p>{{ 'home.empresa.parrafo1' | transloco }}</p>
+      <p>{{ 'home.empresa.parrafo2' | transloco }}</p>
+    </div>
+
+    <!-- Misión, visión y valores: salen solo cuando la empresa los aprueba y se publican en el panel -->
+    @if (identidad().length > 0) {
+      <div class="identity-grid">
+        @for (bloque of identidad(); track bloque) {
+          <article class="identity-card">
+            <h3>{{ 'home.empresa.identidad.' + bloque.seccion | transloco }}</h3>
+            <p>{{ bloque.contenido | localizado: bloque.contenidoEn }}</p>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- 4. Sección Contáctanos y Formulario -->
+  <section id="contacto" class="contact-section">
+    <div class="contact-container-box">
+      <div class="contact-info">
+        <span class="section-tag">{{ 'home.contacto.etiqueta' | transloco }}</span>
+        <h2>{{ 'home.contacto.titulo' | transloco }}</h2>
+        <p>{{ 'home.contacto.texto' | transloco }}</p>
+
+        <div class="contact-details-list">
+          <div class="contact-item">
+            <div class="icon-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <span class="label">{{ 'home.contacto.telefono' | transloco }}</span>
+              <p>{{ contacto.telefonoTexto }}</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="icon-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                ></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div>
+              <span class="label">{{ 'home.contacto.correo' | transloco }}</span>
+              <p>{{ contacto.correo }}</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="icon-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+            <div>
+              <span class="label">{{ 'home.contacto.oficina' | transloco }}</span>
+              <p>{{ empresa.oficina }}</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="icon-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <span class="label">{{ 'home.contacto.whatsapp' | transloco }}</span>
+              <a appClickWhatsapp [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="whatsapp-link"
+                >{{ 'home.contacto.escribanos' | transloco }} &rarr;</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form-card">
+        <form [formGroup]="contactoForm" (ngSubmit)="enviarFormulario()">
+          <h3>{{ 'home.formulario.titulo' | transloco }}</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="home-campo-1">{{ 'home.formulario.nombre' | transloco }}</label>
+              <input id="home-campo-1"
+                type="text"
+                formControlName="nombre"
+                [placeholder]="'home.formulario.nombreEjemplo' | transloco"
+              />
+            </div>
+            <div class="form-group">
+              <label for="home-campo-2">{{ 'home.formulario.telefono' | transloco }}</label>
+              <input id="home-campo-2"
+                type="text"
+                formControlName="telefono"
+                [placeholder]="'home.formulario.telefonoEjemplo' | transloco"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="home-campo-3">{{ 'home.formulario.correo' | transloco }}</label>
+              <input id="home-campo-3"
+                type="email"
+                formControlName="correo"
+                [placeholder]="'home.formulario.correoEjemplo' | transloco"
+              />
+            </div>
+            <div class="form-group">
+              <label for="home-campo-4">{{ 'home.formulario.servicio' | transloco }}</label>
+              <select id="home-campo-4" formControlName="servicioInteres" class="form-control">
+                <option value="">{{ 'home.formulario.seleccioneServicio' | transloco }}</option>
+                @for (s of servicios; track s) {
+                  <option [value]="s.titulo">
+                    {{ 'home.servicios.lista.' + s.clave + '.titulo' | transloco }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+          <p
+            class="aviso-medio"
+            [class.error]="contactoForm.hasError('sinMedioDeContacto') && contactoForm.touched"
+          >
+            {{ 'home.formulario.avisoMedio' | transloco }}
+          </p>
+
+          <div class="form-group">
+            <label for="home-campo-5">{{ 'home.formulario.proyecto' | transloco }}</label>
+            <select id="home-campo-5" formControlName="proyectoId" class="form-control">
+              <option [value]="null">{{ 'home.formulario.seleccioneProyecto' | transloco }}</option>
+              @for (p of proyectosList(); track p.id) {
+                <option [value]="p.id">
+                  {{ p.nombre }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="home-campo-6">{{ 'home.formulario.mensaje' | transloco }}</label>
+            <textarea id="home-campo-6"
+              formControlName="mensaje"
+              rows="2"
+              [placeholder]="'home.formulario.mensajeEjemplo' | transloco"
+            ></textarea>
+          </div>
+
+          <div class="form-group form-group-checkbox">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="consentimientoDatos" />
+              <span>
+                {{ 'home.formulario.consentimientoAntes' | transloco }}
+                <a routerLink="/legal/politica-datos" target="_blank" rel="noopener noreferrer">{{
+                  'home.formulario.consentimientoEnlace' | transloco
+                }}</a
+                >{{ 'home.formulario.consentimientoDespues' | transloco }}
+              </span>
+            </label>
+          </div>
+
+          <!-- Trampa para bots: las personas no la ven ni la llenan; el backend descarta el envío si trae texto -->
+          <div class="campo-trampa" aria-hidden="true">
+            <label>Sitio web <input type="text" formControlName="sitioWeb" tabindex="-1" autocomplete="off" /></label>
+          </div>
+
+          <app-captcha-turnstile (token)="captchaToken.set($event)" />
+
+          <button type="submit" class="btn-submit" [disabled]="contactoForm.invalid || !puedeEnviar()">
+            {{ 'home.formulario.enviar' | transloco }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER DE LA EMPRESA -->
+  <footer class="footer-arquinova">
+    <div class="footer-container">
+      <div class="footer-col">
+        <img
+          [src]="logo | imagenOptimizada: 400"
+          [alt]="'home.pie.logoAlt' | transloco"
+          class="footer-logo"
+          loading="lazy"
+        />
+        <p>{{ 'home.pie.descripcion' | transloco }}</p>
+        <div class="footer-contact-info">
+          <span>{{ empresa.ciudad }}</span>
+          <span>{{ empresa.oficina }}</span>
+          <span>{{ contacto.correo }}</span>
+          <span>{{ contacto.telefonoTexto }}</span>
+        </div>
+        <app-solicitud-wallet />
+      </div>
+      <div class="footer-col">
+        <h4>{{ 'home.pie.enlaces' | transloco }}</h4>
+        <ul>
+          <li>
+            <a href="#inicio">{{ 'home.nav.inicio' | transloco }}</a>
+          </li>
+          <li>
+            <a href="#servicios">{{ 'home.nav.servicios' | transloco }}</a>
+          </li>
+          <li>
+            <a href="#proyectos">{{ 'home.nav.proyectos' | transloco }}</a>
+          </li>
+          <li>
+            <a href="#empresa">{{ 'home.nav.empresa' | transloco }}</a>
+          </li>
+          <li>
+            <a href="#contacto">{{ 'home.nav.contacto' | transloco }}</a>
+          </li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>{{ 'home.pie.legal' | transloco }}</h4>
+        <ul>
+          <li>
+            <span class="footer-dato">{{ empresa.nombre }}</span>
+          </li>
+          <li>
+            <span class="footer-dato">NIT {{ empresa.nit }}</span>
+          </li>
+          <li>
+            <a routerLink="/legal/terminos">{{ 'home.pie.terminos' | transloco }}</a>
+          </li>
+          <li>
+            <a routerLink="/legal/politica-datos">{{ 'home.pie.politicaDatos' | transloco }}</a>
+          </li>
+          <li>
+            <a routerLink="/legal/cookies">{{ 'home.pie.cookies' | transloco }}</a>
+          </li>
+          <li>
+            <a routerLink="/legal/aviso-privacidad">{{ 'home.pie.avisoPrivacidad' | transloco }}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 {{ empresa.nombre }}. {{ 'home.pie.derechos' | transloco }}</p>
+      <div class="legal-links">
+        <a routerLink="/legal/politica-datos">{{ 'home.pie.privacidad' | transloco }}</a>
+        <a routerLink="/legal/aviso-legal">{{ 'home.pie.avisoLegal' | transloco }}</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- Pantalla completa (en el celular libera la barra del navegador); va debajo del botón de WhatsApp -->
+<app-boton-pantalla-completa />

@@ -1,0 +1,480 @@
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs';
+
+import { FormsModule } from '@angular/forms';
+import { ZonaComunService } from '../../../core/services/zona-comun.service';
+import { ZonaComun } from '../../../core/models/zona-comun.models';
+import { Proyecto } from '../../../core/models/proyecto.models';
+import { ProyectoService } from '../../../core/services/proyecto.service';
+import { ZonaComunImagenService } from '../../../core/services/zona-comun-imagen.service';
+import { ZonaComunImagen } from '../../../core/models/zona-comun-imagen.models';
+import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { mensajeDeSubida } from '../../../core/utils/archivos';
+import { Multimedia } from '../../../core/models/multimedia.models';
+import { MultimediaService } from '../../../core/services/multimedia.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+
+// Sin OnPush a propósito: esta pantalla guarda sus datos en variables normales (sin signals) que cambia al llegar la respuesta
+// del servidor; con OnPush se quedaría en "Cargando...". Migrarla exige pasar esos datos a signals y probarla de punta a punta.
+@Component({
+  selector: 'app-zonas-comunes',
+  standalone: true,
+  imports: [FormsModule],
+  templateUrl: './zonas-comunes.component.html',
+  styleUrls: ['./zonas-comunes.component.scss'],
+})
+export class ZonasComunesComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private zonaService = inject(ZonaComunService);
+  private proyectoService = inject(ProyectoService);
+  private zonaImagenService = inject(ZonaComunImagenService);
+  private cloudinaryService = inject(CloudinaryService);
+  private confirmDialog = inject(ConfirmDialogService);
+  private multimediaService = inject(MultimediaService);
+
+  mostrarModalImagenes = false;
+  zonaSeleccionadaParaGaleria: ZonaComun | null = null;
+  listaImagenesZona: ZonaComunImagen[] = [];
+  archivoSeleccionado: File | null = null;
+
+  // Estado de subida a Cloudinary
+  subiendoImagen = false;
+  errorImagen = '';
+
+  // Imágenes cuya URL falló al cargar
+  imagenesConError = new Set<number>();
+
+  // Modo edición dentro de la galería: si tiene valor, el formulario
+  // superior pasa a "editar" en vez de "agregar".
+  imagenEditandoId: number | null = null;
+
+  nuevaImagen: ZonaComunImagen = {
+    zonaComunId: 0,
+    imagenUrl: '',
+    titulo: '',
+    esPrincipal: false,
+  };
+
+  /** Imagen de fondo predeterminada de Amenidades del proyecto elegido (multimedia FONDO_AMENIDADES); solo con un proyecto elegido. */
+  fondoAmenidades: Multimedia | null = null;
+  subiendoFondo = false;
+
+  listaZonas: ZonaComun[] = [];
+  listaProyectos: Proyecto[] = [];
+
+  proyectoIdSeleccionado: string | number = 'todos';
+
+
+  cargando = false;
+  mostrarModal = false;
+  esEdicion = false;
+  mensajeAlerta = '';
+  /** El aviso se pinta distinto si es un error (rojo, con ✕) que si es un éxito (verde, con ✓). */
+  tipoAlerta: 'exito' | 'error' = 'exito';
+
+  zonaActual: ZonaComun = {
+    proyectoId: 1,
+    nombre: '',
+    descripcion: '',
+    publicado: true,
+    activo: true,
+  };
+
+  ngOnInit(): void {
+    this.cargarProyectos();
+  }
+
+  cargarProyectos(): void {
+    this.proyectoService.getProyectos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (proyectos) => {
+        this.listaProyectos = proyectos;
+        this.cargarZonas();
+      },
+      error: (err) => {
+        console.error('Error al cargar proyectos', err);
+        this.mostrarAlerta('No se pudieron cargar los proyectos.', 'error');
+      },
+    });
+  }
+
+  cargarZonas(): void {
+    this.cargando = true;
+
+    if (this.proyectoIdSeleccionado === 'todos') {
+      if (this.listaProyectos.length === 0) {
+        this.listaZonas = [];
+        this.cargando = false;
+        return;
+      }
+
+      let peticionesCompletadas = 0;
+      const zonasAcumuladas: ZonaComun[] = [];
+
+      this.listaProyectos.forEach((proj) => {
+        this.zonaService.listarPorProyecto(proj.id as number).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+          next: (zonas) => {
+            const zonasConProyecto = zonas.map((z) => ({ ...z, proyectoNombre: proj.nombre }));
+            zonasAcumuladas.push(...zonasConProyecto);
+            peticionesCompletadas++;
+
+            if (peticionesCompletadas === this.listaProyectos.length) {
+              this.listaZonas = zonasAcumuladas;
+              this.cargando = false;
+            }
+          },
+          error: () => {
+            peticionesCompletadas++;
+            if (peticionesCompletadas === this.listaProyectos.length) {
+              this.listaZonas = zonasAcumuladas;
+              this.cargando = false;
+            }
+          },
+        });
+      });
+    } else {
+      const projId = Number(this.proyectoIdSeleccionado);
+      const proyectoActual = this.listaProyectos.find((p) => p.id === projId);
+
+      this.zonaService.listarPorProyecto(projId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (data) => {
+          this.listaZonas = data.map((z) => ({
+            ...z,
+            proyectoNombre: proyectoActual ? proyectoActual.nombre : 'Proyecto ' + projId,
+          }));
+          this.cargando = false;
+        },
+        error: (err) => {
+          console.error('Error al cargar zonas comunes', err);
+          this.cargando = false;
+          this.mostrarAlerta('Error al obtener las amenidades.', 'error');
+        },
+      });
+    }
+  }
+
+  /** Carga la imagen de fondo de Amenidades del proyecto elegido (la más reciente activa). Con "todos" no hay ninguna. */
+  cargarFondo(): void {
+    this.fondoAmenidades = null;
+    if (this.proyectoIdSeleccionado === 'todos') return;
+    const projId = Number(this.proyectoIdSeleccionado);
+    this.multimediaService.listarPorEntidad('proyecto', projId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (lista) => {
+        if (Number(this.proyectoIdSeleccionado) !== projId) return;
+        this.fondoAmenidades = lista
+          .filter((m) => m.tipo === 'FONDO_AMENIDADES' && m.activo !== false)
+          .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))[0] ?? null;
+      },
+      error: () => (this.fondoAmenidades = null),
+    });
+  }
+
+  /** Sube (o reemplaza) la imagen de fondo de Amenidades; la anterior se elimina para que quede una sola. */
+  subirFondo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file || this.subiendoFondo || this.proyectoIdSeleccionado === 'todos') return;
+
+    const projId = Number(this.proyectoIdSeleccionado);
+    const anterior = this.fondoAmenidades;
+    this.subiendoFondo = true;
+    this.cloudinaryService.subirImagen(file).pipe(
+      switchMap((url) => this.multimediaService.crearMultimedia({
+        proyectoId: projId,
+        tipo: 'FONDO_AMENIDADES',
+        titulo: 'Imagen de fondo de Amenidades',
+        url,
+        nombreArchivo: file.name,
+        orden: 1,
+        portada: false,
+        publicado: true,
+        activo: true,
+      })),
+    ).subscribe({
+      next: (creado) => {
+        this.subiendoFondo = false;
+        this.fondoAmenidades = creado;
+        this.mostrarAlerta('Imagen de fondo de Amenidades guardada.');
+        if (anterior?.id != null) this.multimediaService.eliminarMultimedia(anterior.id).subscribe({ error: () => undefined });
+      },
+      error: (err) => {
+        console.error('Error al subir la imagen de fondo de Amenidades:', err);
+        this.subiendoFondo = false;
+        this.mostrarAlerta(mensajeDeSubida(err, 'No se pudo subir la imagen. Inténtalo de nuevo.'), 'error');
+      },
+    });
+  }
+
+  async quitarFondo(): Promise<void> {
+    const actual = this.fondoAmenidades;
+    if (actual?.id == null) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Quitar imagen de fondo',
+      message: 'Las amenidades volverán a mostrar la foto de la primera amenidad al entrar. ¿Quitarla?',
+      confirmText: 'Sí, quitar',
+    });
+    if (!ok) return;
+    this.multimediaService.eliminarMultimedia(actual.id).subscribe({
+      next: () => {
+        this.fondoAmenidades = null;
+        this.mostrarAlerta('Imagen de fondo quitada.');
+      },
+      error: () => this.mostrarAlerta('No se pudo quitar la imagen.', 'error'),
+    });
+  }
+
+  abrirModalCrear(): void {
+    this.esEdicion = false;
+    const defaultProj =
+      this.proyectoIdSeleccionado !== 'todos'
+        ? Number(this.proyectoIdSeleccionado)
+        : this.listaProyectos.length > 0
+          ? (this.listaProyectos[0].id ?? 1)
+          : 1;
+
+    this.zonaActual = {
+      proyectoId: defaultProj,
+      nombre: '',
+      descripcion: '',
+      publicado: true,
+      activo: true,
+    };
+    this.mostrarModal = true;
+  }
+
+  abrirModalEditar(zona: ZonaComun): void {
+    this.esEdicion = true;
+    this.zonaActual = { ...zona };
+    this.mostrarModal = true;
+  }
+
+  cerrarModal(): void {
+    this.mostrarModal = false;
+  }
+
+  guardarZona(): void {
+    if (!this.zonaActual.nombre.trim()) {
+      this.mostrarAlerta('El nombre de la amenidad es obligatorio.', 'error');
+      return;
+    }
+
+    if (!this.zonaActual.proyectoId) {
+      this.mostrarAlerta('Debe asociar la amenidad a un proyecto.', 'error');
+      return;
+    }
+
+    this.cargando = true;
+    if (this.esEdicion && this.zonaActual.id) {
+      this.zonaService.actualizar(this.zonaActual.id, this.zonaActual).subscribe({
+        next: () => {
+          this.cargando = false;
+          this.mostrarAlerta('Amenidad actualizada con éxito.');
+          this.cerrarModal();
+          this.cargarZonas();
+        },
+        error: (err) => {
+          this.cargando = false;
+          console.error(err);
+          this.mostrarAlerta('Error al actualizar la amenidad.', 'error');
+        },
+      });
+    } else {
+      this.zonaService.crear(this.zonaActual).subscribe({
+        next: () => {
+          this.cargando = false;
+          this.mostrarAlerta('Amenidad creada con éxito.');
+          this.cerrarModal();
+          this.cargarZonas();
+        },
+        error: (err) => {
+          this.cargando = false;
+          console.error(err);
+          this.mostrarAlerta('Error al crear la amenidad.', 'error');
+        },
+      });
+    }
+  }
+
+  async prepararEliminacion(id?: number): Promise<void> {
+    if (!id) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar amenidad',
+      message: '¿Estás seguro de que deseas eliminar esta amenidad? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
+
+    this.cargando = true;
+    this.zonaService.eliminar(id).subscribe({
+      next: () => {
+        this.cargando = false;
+        this.mostrarAlerta('Amenidad eliminada correctamente.');
+        this.cargarZonas();
+      },
+      error: (err) => {
+        this.cargando = false;
+        console.error(err);
+        this.mostrarAlerta('No se pudo eliminar el registro.', 'error');
+      },
+    });
+  }
+
+  // --- MÉTODOS PARA GALERÍA E IMÁGENES ---
+  abrirGaleriaImagenes(zona: ZonaComun): void {
+    this.zonaSeleccionadaParaGaleria = zona;
+    this.cancelarEdicionImagen();
+    this.cargarImagenesDeZona(zona.id!);
+    this.mostrarModalImagenes = true;
+  }
+
+  cargarImagenesDeZona(zonaId: number): void {
+    this.zonaImagenService.listarPorZona(zonaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (imgs) => (this.listaImagenesZona = imgs),
+      error: (err) => {
+        console.error('Error al cargar imágenes de la zona', err);
+        this.mostrarAlerta('No se pudieron cargar las imágenes de la amenidad.', 'error');
+      },
+    });
+  }
+
+  cerrarModalImagenes(): void {
+    this.mostrarModalImagenes = false;
+    this.zonaSeleccionadaParaGaleria = null;
+    this.listaImagenesZona = [];
+    this.archivoSeleccionado = null;
+    this.cancelarEdicionImagen();
+  }
+
+  /** Sube el archivo a Cloudinary en vez de convertirlo a base64. */
+  onArchivoSeleccionado(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.archivoSeleccionado = file;
+    this.subiendoImagen = true;
+    this.errorImagen = '';
+
+    this.cloudinaryService.subirImagen(file).subscribe({
+      next: (secureUrl) => {
+        this.nuevaImagen.imagenUrl = secureUrl;
+        this.subiendoImagen = false;
+      },
+      error: (err) => {
+        console.error('Error subiendo imagen a Cloudinary:', err);
+        this.errorImagen = mensajeDeSubida(err, 'No se pudo subir la imagen. Intenta de nuevo.');
+        this.subiendoImagen = false;
+        this.archivoSeleccionado = null;
+      },
+    });
+  }
+
+  /** Guarda la imagen: crea una nueva, o actualiza si está en modo edición. */
+  agregarImagenAZona(): void {
+    if (!this.nuevaImagen.imagenUrl.trim()) {
+      this.mostrarAlerta('Debe ingresar una URL o seleccionar un archivo de imagen.', 'error');
+      return;
+    }
+
+    if (this.imagenEditandoId) {
+      this.zonaImagenService.actualizar(this.imagenEditandoId, this.nuevaImagen).subscribe({
+        next: () => {
+          this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
+          this.cancelarEdicionImagen();
+          this.mostrarAlerta('Imagen actualizada correctamente.');
+        },
+        error: (err) => {
+          console.error('Error al actualizar imagen', err);
+          this.mostrarAlerta('Error al actualizar la imagen.', 'error');
+        },
+      });
+    } else {
+      this.zonaImagenService.crear(this.nuevaImagen).subscribe({
+        next: () => {
+          this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
+          this.resetFormularioImagen();
+          this.mostrarAlerta('Imagen agregada a la galería correctamente.');
+        },
+        error: (err) => {
+          console.error('Error al agregar imagen', err);
+          this.mostrarAlerta('Error al guardar la imagen.', 'error');
+        },
+      });
+    }
+  }
+
+  /** Carga los datos de una imagen existente en el formulario para editarla. */
+  editarImagenZona(img: ZonaComunImagen): void {
+    this.imagenEditandoId = img.id!;
+    this.nuevaImagen = { ...img };
+    this.archivoSeleccionado = null;
+    this.errorImagen = '';
+  }
+
+  /** Sale del modo edición y vuelve al formulario de "agregar". */
+  cancelarEdicionImagen(): void {
+    this.imagenEditandoId = null;
+    this.resetFormularioImagen();
+  }
+
+  private resetFormularioImagen(): void {
+    this.nuevaImagen = {
+      zonaComunId: this.zonaSeleccionadaParaGaleria?.id ?? 0,
+      imagenUrl: '',
+      titulo: '',
+      esPrincipal: false,
+    };
+    this.archivoSeleccionado = null;
+    this.errorImagen = '';
+  }
+
+  async eliminarImagenZona(id?: number): Promise<void> {
+    if (!id) return;
+    const ok = await this.confirmDialog.open({
+      title: 'Eliminar imagen',
+      message: '¿Deseas eliminar esta imagen de la galería? Esta acción no se puede deshacer.',
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+    });
+    if (!ok) return;
+    this.zonaImagenService.eliminar(id).subscribe({
+      next: () => {
+        if (this.imagenEditandoId === id) {
+          this.cancelarEdicionImagen();
+        }
+        this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
+        this.mostrarAlerta('Imagen eliminada.');
+      },
+      error: (err) => {
+        console.error('Error al eliminar imagen', err);
+        this.mostrarAlerta('No se pudo eliminar la imagen.', 'error');
+      },
+    });
+  }
+
+  /** Deja la imagen como la principal de la amenidad (la que se usa como portada); solo puede haber una. */
+  marcarImagenPrincipal(img: ZonaComunImagen): void {
+    if (!img.id || img.esPrincipal) return;
+    this.zonaImagenService.marcarComoPrincipal(img.id).subscribe({
+      next: () => {
+        this.cargarImagenesDeZona(this.zonaSeleccionadaParaGaleria!.id!);
+        this.mostrarAlerta('Imagen principal actualizada.');
+      },
+      error: (err) => {
+        console.error('Error al marcar la imagen principal', err);
+        this.mostrarAlerta('No se pudo marcar la imagen como principal.', 'error');
+      },
+    });
+  }
+
+  marcarImagenConError(id?: number): void {
+    if (id) this.imagenesConError.add(id);
+  }
+
+  private mostrarAlerta(msg: string, tipo: 'exito' | 'error' = 'exito'): void {
+    this.mensajeAlerta = msg;
+    this.tipoAlerta = tipo;
+    setTimeout(() => (this.mensajeAlerta = ''), 4000);
+  }
+}

@@ -1,0 +1,242 @@
+@use '../../../shared/styles/admin-tokens' as t;
+.admin-layout {
+  --navbar-h: 65px; // lo usan la barra, el cuerpo y el sidebar
+  height: 100vh;
+  height: 100dvh; // celular: sigue la barra del navegador
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f6f6;
+  color: #2d3748;
+  overflow: hidden;
+  font-family: t.$font-ui;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  z-index: 10;
+  height: var(--navbar-h);
+  box-sizing: border-box;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-family: t.$font-ui;
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #2c5953;
+
+    .brand-logo {
+      height: 38px !important;
+      max-height: 38px !important;
+      width: auto !important;
+      object-fit: contain !important;
+      display: block;
+    }
+  }
+
+  .usuario-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.3rem 0.85rem 0.3rem 0.35rem;
+    border-radius: 999px;
+    background-color: #eef4f3;
+    border: 1px solid #d7e5e3;
+    color: #2c5953;
+    font-family: t.$font-ui;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+
+    .usuario-datos {
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+      min-width: 0;
+      max-width: 300px;
+
+      .usuario-nombre {
+        font-size: 0.92rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .usuario-rol {
+        font-size: 0.74rem;
+        font-weight: 500;
+        color: #5b7f7a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .usuario-icono {
+      width: 30px;
+      height: 30px;
+      padding: 5px;
+      box-sizing: border-box;
+      border-radius: 50%;
+      background-color: #2c5953;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+  }
+
+  .btn-logout {
+    background-color: #e11d48;
+    color: #ffffff;
+    border: none;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #be123c;
+    }
+  }
+}
+
+.admin-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2.5rem 3rem;
+  overflow-y: auto !important;
+  background-color: #f4f6f6;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.welcome-box {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+  margin-top: 1.5rem;
+
+  h1 {
+    font-family: t.$font-ui;
+    color: #2c5953;
+    margin-bottom: 0.75rem;
+    font-size: 1.8rem;
+  }
+
+  p {
+    color: #718096;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
+.hamburger-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #2c5953;
+  cursor: pointer;
+  padding: 0.2rem;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  // En pantallas angostas la pastilla muestra solo el nombre y "Admin" (el correo queda en el texto que aparece al tocarla)
+  .navbar .usuario-admin .usuario-datos {
+    max-width: 150px;
+
+    .usuario-correo {
+      display: none;
+    }
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+  
+  .main-content {
+    padding: 1.5rem;
+  }
+  
+  .app-sidebar {
+    position: fixed;
+    top: var(--navbar-h);
+    left: -250px;
+    height: calc(100vh - var(--navbar-h));
+    height: calc(100dvh - var(--navbar-h));
+    z-index: 100;
+    transition: left 0.3s ease;
+  }
+  
+  .admin-body.sidebar-open {
+    .app-sidebar {
+      left: 0;
+    }
+    
+    .sidebar-overlay {
+      display: block;
+      position: fixed;
+      top: var(--navbar-h);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+    }
+  }
+}
+
+
+@media (max-height: 520px) {
+  .admin-layout {
+    --navbar-h: 52px;
+  }
+
+  .navbar {
+    padding: 0.4rem 1rem;
+
+    .brand .brand-logo {
+      height: 30px !important;
+      max-height: 30px !important;
+    }
+  }
+
+  .main-content {
+    padding: 1rem 1.25rem;
+  }
+}
+
+.hamburger-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}

@@ -1,0 +1,224 @@
+.all-projects-container {
+  padding: 120px 4rem 4rem 4rem;
+  background-color: #141e1d;
+  min-height: 100vh;
+  color: #fff;
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+
+  .header-seccion {
+    text-align: center;
+    margin-bottom: 3rem;
+
+    .section-tag {
+      color: #79a8a3;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+      margin: 0.5rem 0;
+      color: #fff;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1rem;
+    }
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @media (max-width: 992px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+
+    .project-card {
+      background: #202e2c;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      }
+
+      .card-image {
+        height: 220px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+
+        .badge-status {
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(4px);
+          color: #fff;
+          padding: 0.3rem 0.8rem;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+      }
+
+      .card-body {
+        padding: 1.8rem;
+
+        .location {
+          font-size: 0.8rem;
+          color: #7a8a88;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        h3 {
+          font-size: 1.5rem;
+          font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+          margin: 0.4rem 0 0.8rem 0;
+          color: #fff;
+        }
+
+        p {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.7);
+          line-height: 1.5;
+          margin-bottom: 1.5rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        /* Estilo para las métricas de lotes y disponibles */
+        .card-metrics {
+          display: flex;
+          justify-content: space-between;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 1rem 0;
+          margin-bottom: 1.5rem;
+
+          .metric {
+            text-align: center;
+            flex: 1;
+
+            strong {
+              display: block;
+              font-size: 1.1rem;
+              color: #fff;
+              font-family: 'Bahnschrift', 'DIN Alternate', 'Barlow', sans-serif;
+            }
+
+            span {
+              font-size: 0.7rem;
+              color: #7a8a88;
+              letter-spacing: 1px;
+              margin-top: 0.2rem;
+              display: block;
+            }
+          }
+        }
+
+        .card-acciones {
+          margin-top: 1.1rem;
+          color: #fff;
+        }
+
+        .card-link {
+          color: #79a8a3;
+          text-decoration: none;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: #9cd4cf;
+          }
+        }
+      }
+    }
+  }
+
+  // Botón para volver al inicio, arriba para que el cliente lo vea sin bajar
+  .back-home {
+    text-align: left;
+    max-width: 1200px;
+    margin: 0 auto 1.5rem;
+
+    a {
+      display: inline-block;
+      color: #fff;
+      background: #2a6665;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #357774;
+      }
+    }
+  }
+}
+
+.all-projects-container {
+  .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+
+    select {
+      padding: 0.55rem 1rem;
+      background: #202e2c;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.9rem;
+    }
+
+    .limpiar {
+      padding: 0.55rem 1.1rem;
+      background: transparent;
+      color: #79a8a3;
+      border: 1px solid #79a8a3;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  }
+
+  .sin-resultados {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .project-card .card-body .participacion {
+    margin: 0 0 1.5rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}

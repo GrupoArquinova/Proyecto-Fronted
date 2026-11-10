@@ -42,3 +42,11 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+.claude/
+.vercel
+
+# Playwright
+/test-results/
+/playwright-report/
